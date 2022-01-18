@@ -1,18 +1,20 @@
 <template>
 
-  	<b-container>
+	<b-container>
 
 		<h1>Origami Annotation Tool</h1>
-		<b-row>
-		    <textarea :rows="fileTextLines" cols="300">
-				{{ this.fileText.join("\n") }}
-			</textarea>
-		</b-row>
-		<b-row>
-			<b-form>
-				<input type="file" @change="onFileSelected">
-			</b-form>
-		</b-row>
+
+		<!-- Selects participant.tsv file -->
+		<file-selector v-on:file-selected="fileText += $event"></file-selector>
+
+		<!-- Moves to column annotation page.
+				Only enabled when file content has been loaded -->
+		<b-button 
+			:variant="nextPageButtonColor"
+			:disabled="nextPageButtonDisabled"
+			to="/column-annotation" nuxt>
+			Annotate Columns
+		</b-button>
 
 	</b-container>
 
@@ -20,60 +22,39 @@
 
 <script>
 
-import Vue from "vue";
-import Papa from "papaparse";
+import { BButton } from "bootstrap-vue";
 
 export default {
   	
 	name: "IndexPage",
 
 	data() {
+
 		return {
 
-			fileInput: {},
-			fileText: ["File text here..."],
-			minimumTextLines: 2,
-			sourceList: []
+			fileText: ["File text here..."]
 		}
 	},
 	
 	components: {
 
+		"b-button": BButton
 	},
 
 	computed: {
 
-		fileTextLines() {
+		nextPageButtonColor() {
 
-			let numLines = this.fileText.length;
-			return numLines > 0 ? numLines : this.minimumTextLines;
+			// Return the next page button color (clickable is green, gray otherwise)
+			return this.nextPageButtonDisabled ? "secondary" : "success";
+		},		
+
+		nextPageButtonDisabled() {
+
+			// Return whether fileText is a file with multiple lines or 
+			// a file with one line but not the default text
+			return (this.fileText.length == 1 && this.fileText[0] == "File text here...");
 		}
-	},
-
-	methods: {
-
-		onFileSelected(p_event){
-
-			this.fileInput = p_event.target.files[0];
-			
-			// eslint-disable-next-line
-			// console.log(116, this.fileInput.name.split('.')[0]);
-
-			Papa.parse(this.fileInput, {
-				complete: results => {
-					this.sourceList = results.data[0];
-					console.log(results.data);
-					this.fileText = results.data;
-				},
-			});
-		}
-	},
-
-	// props: {
-    //     selectedTerm: String,
-    //     init: Object,
-    //     searchResults: Array,
-    //     selectedConcepts: Array
-    // },
+	}
 }
 </script>
