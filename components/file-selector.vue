@@ -75,3 +75,7 @@
 	}
 
 </script>
+
+<!-- Component styles -->
+<style scoped>
+</style>

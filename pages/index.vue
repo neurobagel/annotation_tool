@@ -5,16 +5,22 @@
 		<h1>Origami Annotation Tool</h1>
 
 		<!-- Selects participant.tsv file -->
-		<file-selector v-on:file-selected="fileText += $event"></file-selector>
+		<file-selector v-on:file-selected="saveTsvFileData($event)"></file-selector>
 
-		<!-- Moves to column annotation page.
-				Only enabled when file content has been loaded -->
-		<b-button 
-			:variant="nextPageButtonColor"
-			:disabled="nextPageButtonDisabled"
-			to="/column-annotation" nuxt>
-			Annotate Columns
-		</b-button>
+		<b-row>
+			<textarea rows="10" cols="200">{{ $store.state.tsvFile }}</textarea>
+		</b-row>
+		
+		<b-row>
+			<!-- Moves to column annotation page.
+					Only enabled when file content has been loaded -->
+			<b-button 
+				:variant="nextPageButtonColor"
+				:disabled="nextPageButtonDisabled"
+				to="/column-categorization" nuxt>
+				Annotate Columns
+			</b-button>
+		</b-row>
 
 	</b-container>
 
@@ -22,39 +28,59 @@
 
 <script>
 
-import { BButton } from "bootstrap-vue";
+	import { BButton } from "bootstrap-vue";
 
-export default {
-  	
-	name: "IndexPage",
+	export default {
+		
+		name: "IndexPage",
 
-	data() {
+		data() {
 
-		return {
+			return {
 
-			fileText: ["File text here..."]
-		}
-	},
-	
-	components: {
+				fileText: ["File text here..."]
+			}
+		},
+		
+		components: {
 
-		"b-button": BButton
-	},
+			"b-button": BButton
+		},
 
-	computed: {
+		computed: {
 
-		nextPageButtonColor() {
+			nextPageButtonColor() {
 
-			// Return the next page button color (clickable is green, gray otherwise)
-			return this.nextPageButtonDisabled ? "secondary" : "success";
-		},		
+				// Return the next page button color (clickable is green, gray otherwise)
+				return this.nextPageButtonDisabled ? "secondary" : "success";
+			},		
 
-		nextPageButtonDisabled() {
+			nextPageButtonDisabled() {
 
-			// Return whether fileText is a file with multiple lines or 
-			// a file with one line but not the default text
-			return (this.fileText.length == 1 && this.fileText[0] == "File text here...");
+				// Return whether fileText is a file with multiple lines or 
+				// a file with one line but not the default text
+				return (this.fileText.length == 1 && this.fileText[0] == "File text here...");
+			}
+		},
+
+		methods: {
+
+			saveTsvFileData(p_fileData) {
+				
+				// 1. Save the file data locally to the page
+				this.fileText = p_fileData;
+
+				// 2. Update the store with tsv file data
+				this.$store.dispatch('saveTsvFile', p_fileData);
+			}
 		}
 	}
-}
 </script>
+
+<!-- App styles -->
+<style>
+
+	.row {
+		margin: 1em;
+	}
+</style>
