@@ -47,6 +47,7 @@
 				minTextAreaCols: 300,
 				fileInput: {},
 				fileText: ["File text here..."],
+				jsonObj: {},
 				minTextAreaRows: 2
 			}
 		},
@@ -57,19 +58,37 @@
 
 				// 1. Save the file name
 				this.fileInput = p_event.target.files[0];
+				console.log("this.fileInput: " + this.fileInput);
 				
 				// 2. Parse the whole file and save the lines
-				Papa.parse(this.fileInput, {
+				
+				// A. CSV file parsing
+				if ( this.fileInput.name.toLowerCase().endsWith(".csv") ) {
 
-					complete: results => {
+					Papa.parse(this.fileInput, {
 
-						// A. Save the file data
-						this.fileText = results.data;
+						complete: results => {
 
-						// B. Send the file data to any parent/listener
-						this.$emit("file-selected", this.fileText);
-					},
-				});
+							// A. Save the file data
+							this.fileText = results.data;
+
+							// B. Send the file data to any parent/listener
+							this.$emit("file-selected", this.fileText);
+						},
+					});
+				} 
+				// B. JSON file parsing
+				else if ( this.fileInput.name.toLowerCase().endsWith(".json") ) {
+
+					this.jsonObj = this.fileInput.text().then(text => {
+						 JSON.parse(text)
+					});
+
+					console.log("JSON OBJ RETURNED:\n" + Object.keys(this.jsonObj));
+
+					this.$emit("file-selected", this.jsonObj);
+				}
+
 			}
 		}
 	}

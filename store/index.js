@@ -26,7 +26,23 @@ export const actions = {
 
 		// 2. Save the tsv dict to state data
 		p_context.commit("setTsvFile", tsvRowDictArray);
-	}	
+	},
+	
+	saveJsonFile(p_context, p_jsonStringData) {
+
+		// 0. Check for json data validity here
+		if ( !p_jsonStringData || 0 == Object.keys(p_jsonStringData).length ) {
+			alert("Invalid json file data!");
+			return;
+		}
+
+		// Transform the string data into JSON
+		let jsonObj = JSON.parse(p_jsonStringData);
+
+		// 1. Save the json dict to state data
+		p_context.commit("setJsonFile", jsonObj);
+
+	}
 }
 
 // Mutations - Change state data, as called by Actions
@@ -34,9 +50,15 @@ export const mutations = {
 
 	setTsvFile(p_state, p_tsvRowDictArray) {
 
-		// 3. Save the new tsv row dictionary list to state data
+		// 1. Save the new tsv row dictionary list to state data
 		p_state.tsvFile = p_tsvRowDictArray;
-	}
+	},
+
+	setJsonFile(p_state, p_jsonData) {
+
+		// 1. Save the new json dictionary to state data
+		p_state.jsonFile = p_jsonData;
+	}	
 }
 
 // Getters - Give access to state data

@@ -7,6 +7,9 @@
 		<!-- Selects participant.tsv file -->
 		<file-selector v-on:file-selected="saveTsvFileData($event)"></file-selector>
 
+		<!-- Selects participant.json file -->
+		<file-selector v-on:file-selected="saveJsonFileData($event)"></file-selector>
+
 		<b-row>
 			<textarea rows="10" cols="200">{{ $store.state.tsvFile }}</textarea>
 		</b-row>
@@ -71,8 +74,17 @@
 				this.fileText = p_fileData;
 
 				// 2. Update the store with tsv file data
-				this.$store.dispatch('saveTsvFile', p_fileData);
-			}
+				this.$store.dispatch("saveTsvFile", p_fileData);
+			},
+
+			saveJsonFileData(p_fileData) {
+				
+				// 1. Save the file data locally to the page
+				this.jsonFileData = p_fileData;
+
+				// 2. Update the store with tsv file data
+				this.$store.dispatch("saveJsonFile", p_fileData);
+			}			
 		}
 	}
 </script>
