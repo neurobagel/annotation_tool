@@ -14,34 +14,16 @@
 
 <script>
 
-	import { BFormInput } from "bootstrap-vue"; // File selection
 	import Papa from "papaparse";				// Input file reading
 
 	export default {
 		
-		components: { 
-
-			"b-form-input": BFormInput
-		},
-
-		computed: {
-			
-			fileTextLineCount() {
-
-				// Return the number of lines of the file or the minimum number of lines for the text area
-				return this.fileText.length > 1 ? this.fileText.length : this.minTextAreaRows;
-			}
-		},
-
 		data() {
 
 			return {
 
-				minTextAreaCols: 300,
 				fileInput: {},
 				fileText: ["File text here..."],
-				jsonObj: {},
-				minTextAreaRows: 2
 			}
 		},
 
@@ -95,7 +77,7 @@
 				else if ( this.fileInput.name.toLowerCase().endsWith(".json") ) {
 
 					// I. Reference to this json object in this component's data
-					var myJson = this.jsonObj;
+					var myJson;
 
 					// II. Create a file reader object for reading the json file contents
 					let reader = new FileReader();
