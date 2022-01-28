@@ -1,0 +1,50 @@
+{
+    "age": {
+        "Description": "age of the participant",
+        "Units": "years"
+    },
+    "sex": {
+        "Description": "sex of the participant as reported by the participant",
+        "Levels": {
+            "M": "male",
+            "F": "female"
+        }
+    },
+    "group": {
+        "Description": "diagnostic status determined by the study clinician at baseline",
+        "Levels": {
+            "UD": "individuals with unipolar depression including those diagnosed with MDD and PDD",
+            "HC": "healthy controls",
+	    "HCconvertedMDD": "individual that presented as HC at baseline, but converted to MDD during the course of the study"
+        }
+    },
+    "group_dx": {
+        "Description": "specific diagnosis determined by the study clinician at baseline",
+        "Levels": {
+            "MDD": "major depressive disorder",
+            "PDD": "persistent depressive disorder",
+            "HC": "healthy controls",
+            "HCconvertedMDD": "individual that presented as HC at baseline, but converted to MDD during the course of the study"
+        }
+    },
+    "number_comorbid_dx": {
+        "Description": "a number of diagnoses comorbid with UD (e.g., GAD, PTSD)",
+        "Units": "number"
+    },
+    "medload": {
+        "Description": "reflects the number of dosage of psychotropic medications taken by participants. Higher numbers correspond to more medications and/or higher medication dosage ",
+        "Units": "arbitraty units" 
+    },
+    "iq": {
+        "Description": "IQ derived based on the NART assessment.",
+        "Units": "arbitraty units"
+    },
+    "session": {
+        "Description": "scanning session",
+        "Levels": {
+            "1": "baseline",
+            "2": "6 months follow-up scan"
+        }
+    }
+}
+
