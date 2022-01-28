@@ -3,15 +3,8 @@
 	<b-container>
 
 		<b-row>
-			<textarea :rows="fileTextLineCount" :cols="minTextAreaCols">
-				{{ this.fileText.join("\n") }}
-			</textarea>
-		</b-row>
-
-		<b-row>
 			<b-form>
-				<input type="file" @change="onFileSelected">
-				<!-- <b-form-input v-model="file" placeholder="Enter your name"></b-form-input> -->
+				<input type="file" :accept="contentType" @change="onFileSelected">
 			</b-form>
 		</b-row>
 
@@ -58,43 +51,73 @@
 
 				// 1. Save the file name
 				this.fileInput = p_event.target.files[0];
-				console.log("this.fileInput: " + this.fileInput);
+
+				// A. If no file selected, emit a no file selected message
+				if ( "undefined" == typeof this.fileInput ) {
+					this.$emit("file-selected", "none");
+					return;
+				}
 				
 				// 2. Parse the whole file and save the lines
 				
-				// A. CSV file parsing
-				if ( this.fileInput.name.toLowerCase().endsWith(".csv") ) {
+				// A. TSV file parsing
+				if ( this.fileInput.name.toLowerCase().endsWith(".tsv") ) {
 
 					Papa.parse(this.fileInput, {
 
 						complete: results => {
 
-							// A. Save the file data
+							// I. Save the file data
 							this.fileText = results.data;
 
-							// B. Send the file data to any parent/listener
-							this.$emit("file-selected", this.fileText);
+							// II. Convert data to array of strings
+							var fileStringArray = [];
+							let cleanedString = "";
+							for ( let numericKey in this.fileText ){
+
+								// a. Skip blank lines
+								if ( 0 == this.fileText[numericKey][0].length )
+									continue;
+
+								// b. Replace multiple spaces with just one
+								cleanedString = this.fileText[numericKey][0].replace(/\s+/g, " ");
+
+								// b. Save the tsv line
+								fileStringArray.push(cleanedString);
+							}
+
+							// III. Send the file data to any parent/listener
+							this.$emit("file-selected", fileStringArray);
 						},
 					});
 				} 
 				// B. JSON file parsing
 				else if ( this.fileInput.name.toLowerCase().endsWith(".json") ) {
 
-					this.jsonObj = this.fileInput.text().then(text => {
-						 JSON.parse(text)
-					});
+					// I. Reference to this json object in this component's data
+					var myJson = this.jsonObj;
 
-					console.log("JSON OBJ RETURNED:\n" + Object.keys(this.jsonObj));
+					// II. Create a file reader object for reading the json file contents
+					let reader = new FileReader();
 
-					this.$emit("file-selected", this.jsonObj);
+					// III. On loading the file contents:
+					reader.onload = e => {
+
+						// a. Save a reference to the loaded contents
+						myJson = e.target.result;
+
+						// b. Send the file data to any parent/listener
+						this.$emit("file-selected", myJson);
+					};
+
+					// IV. Read the json file contents as text
+					reader.readAsText(this.fileInput);
 				}
 
-			}
-		}
+			}		
+		},
+
+		props: ["contentType"]
 	}
 
 </script>
-
-<!-- Component styles -->
-<style scoped>
-</style>

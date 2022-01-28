@@ -4,15 +4,29 @@
 
 		<h1>Origami Annotation Tool</h1>
 
+		<!-- Debug component - shows file contents -->
+		<b-row>
+			<h2>TSV File</h2>
+			<textarea rows="5" cols="200" v-model="stringifiedTsvFile"></textarea>
+		</b-row>		
+
 		<!-- Selects participant.tsv file -->
-		<file-selector v-on:file-selected="saveTsvFileData($event)"></file-selector>
+		<file-selector 
+			content-type="text/tab-separated-values"
+			v-on:file-selected="saveTsvFileData($event)">
+		</file-selector>
+
+		<!-- Debug component - shows file contents -->
+		<b-row>
+			<h2>JSON File</h2>
+			<textarea rows="5" cols="200" v-model="stringifiedJsonFile" ></textarea>
+		</b-row>
 
 		<!-- Selects participant.json file -->
-		<file-selector v-on:file-selected="saveJsonFileData($event)"></file-selector>
-
-		<b-row>
-			<textarea rows="10" cols="200">{{ $store.state.tsvFile }}</textarea>
-		</b-row>
+		<file-selector 
+			content-type="application/json"
+			v-on:file-selected="saveJsonFileData($event)">
+		</file-selector>
 		
 		<b-row>
 			<!-- Moves to column annotation page.
@@ -40,8 +54,10 @@
 		data() {
 
 			return {
-
-				fileText: ["File text here..."]
+				
+				myModel: ["This is my text"],
+				jsonSelected: false,
+				tsvSelected: false
 			}
 		},
 		
@@ -60,29 +76,54 @@
 
 			nextPageButtonDisabled() {
 
-				// Return whether fileText is a file with multiple lines or 
-				// a file with one line but not the default text
-				return (this.fileText.length == 1 && this.fileText[0] == "File text here...");
+				// Return if at least a tsv file has been selected
+				// Json file is not required
+				return ( !this.tsvSelected );
+			},
+
+			stringifiedJsonFile() {
+
+				return [JSON.stringify(this.$store.state.jsonFile, null, 4)]
+			},
+
+			stringifiedTsvFile() {
+
+				let storeTsv = this.$store.state.tsvFile;
+
+				if ( 0 == storeTsv.length )
+					return [""];
+
+				let textAreaArray = [Object.keys(storeTsv[0]).join("\t")];
+				for ( let index = 0; index < storeTsv.length; index++ ) {
+					textAreaArray.push(Object.values(storeTsv[index]).join("\t"));
+				}
+
+				return [textAreaArray.join("\n")];
 			}
+
 		},
 
 		methods: {
 
 			saveTsvFileData(p_fileData) {
-				
-				// 1. Save the file data locally to the page
-				this.fileText = p_fileData;
 
-				// 2. Update the store with tsv file data
+				// 0. Make sure a file has been selected
+				this.tsvSelected = ( "none" != p_fileData );
+				if ( !this.tsvSelected )
+					return;
+
+				// 1. Update the store with tsv file data
 				this.$store.dispatch("saveTsvFile", p_fileData);
 			},
 
 			saveJsonFileData(p_fileData) {
-				
-				// 1. Save the file data locally to the page
-				this.jsonFileData = p_fileData;
 
-				// 2. Update the store with tsv file data
+				// 0. Make sure a file has been selected
+				this.jsonSelected = ( "none" != p_fileData );
+				if ( !this.jsonSelected )
+					return;				
+
+				// 1. Update the store with tsv file data
 				this.$store.dispatch("saveJsonFile", p_fileData);
 			}			
 		}
