@@ -151,26 +151,32 @@ function printArray(p_array, p_arrayName, p_stringify=false) {
 // Action helpers
 function convertTsvLinesToDict(p_tsvLines){
 
-	// 1. Get column header values
-	let headerFields = p_tsvLines[0].split(" ");
-
-	// 2. Create a dictionary based on the header values for each row
-	let rowDict = null;
-	let tsvFields = null;
+	// 0. Data structure for table will be stored here
 	var tsvRowDictArray = [];
-	for ( let index = 1; index < p_tsvLines.length; index++ ) {
 
-		// A. Split the tsv line into its fields
-		tsvFields = p_tsvLines[index].split(" ");
+	// 1. First tsv line contains column headers
+	let columnHeaders = p_tsvLines[0];
 
-		// B. Fill out a new dictionary for each row
-		rowDict = {};
-		for ( let headerIndex = 0; headerIndex < headerFields.length; headerIndex++ ) {
-			rowDict[headerFields[headerIndex]] = tsvFields[headerIndex];
+	// 2. Create dictionaries for each tsv row keyed on the column headers 
+	for ( let index = 1; index < p_tsvLines.length; index++ ){
+
+		let tsvRowDict = {}
+
+		// A. Loop through the tsv row, matching entries with the tsv column headers
+		for ( let index2 = 0; index2 < columnHeaders.length; index2++ ) {
+
+			// I. Potential warning in case file is malformed.
+			// NOTE: Graceful handling of this will be required
+			if ( p_tsvLines[index].length != columnHeaders.length ){
+				console.log("WARNING: tsv row " + parseInt(index) + " has different size than tsv header.");
+			}
+
+			// II. Save the field for this row, keyed by the current column header
+			tsvRowDict[columnHeaders[index2]] = p_tsvLines[index][index2];
 		}
 
-		// C. Save the row dictionary to the tsv file line collection
-		tsvRowDictArray.push(rowDict);
+		// B. Save the row dictionary
+		tsvRowDictArray.push(tsvRowDict);
 	}
 
 	return tsvRowDictArray;

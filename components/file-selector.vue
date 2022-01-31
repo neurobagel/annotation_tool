@@ -43,7 +43,7 @@
 				// 2. Parse the whole file and save the lines
 				
 				// A. TSV file parsing
-				if ( this.fileInput.name.toLowerCase().endsWith(".tsv") ) {
+				if ( this.fileInput.name.toLowerCase().endsWith(".tsv") ) {			
 
 					Papa.parse(this.fileInput, {
 
@@ -52,24 +52,8 @@
 							// I. Save the file data
 							this.fileText = results.data;
 
-							// II. Convert data to array of strings
-							var fileStringArray = [];
-							let cleanedString = "";
-							for ( let numericKey in this.fileText ){
-
-								// a. Skip blank lines
-								if ( 0 == this.fileText[numericKey][0].length )
-									continue;
-
-								// b. Replace multiple spaces with just one
-								cleanedString = this.fileText[numericKey][0].replace(/\s+/g, " ");
-
-								// b. Save the tsv line
-								fileStringArray.push(cleanedString);
-							}
-
-							// III. Send the file data to any parent/listener
-							this.$emit("file-selected", fileStringArray);
+							// II. Send the file data to the store to be processed and saved
+							this.$emit("file-selected", this.fileText);
 						},
 					});
 				} 
