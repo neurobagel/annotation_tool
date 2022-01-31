@@ -1,0 +1,12 @@
+ID	DIR	REASON
+ds003685	good	correctly formatted but has missing age values
+ds000121	bad	age and sex columns are switched out
+ds003694	bad	column headers exist but everything else is missing, not BIDS conform
+ds001919	interesting	unusual character for missing values "-"
+ds001971	interesting	age is given as a range "XX-XX" where X is an integer
+ds003653	good	age is a normal float
+ds000244	interesting	age is a float, but with a comma as decimal delimiter, probably a european thing
+ds001353	interesting	age is given as a datetime string, "Y030" with "Y" to denote years
+ds002134	interesting	age is given in months here
+ds001547	interesting	female sex is denoted by "W" here, probably a translation issue
+ds002345	bad	values in each column are further separated by comma, maybe to denote sessions
