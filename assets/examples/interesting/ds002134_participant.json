@@ -1,0 +1,55 @@
+{
+"session": {
+    "Description": "Imaging session"
+  },
+"genotype": {
+    "Description": "Animal genotype",
+    "Levels": {
+      "C57BL/6": "Control wild-type",
+      "3xTG": "Experimental AD"
+    }
+  },
+"virus": {
+    "Description": "Viral vector used to transfect left entrorhinal cortex",
+    "Levels": {
+      "ChR2-mCherry": "Opsin experimental virus",
+      "mCherry": "Fluorophore control virus"
+    }
+  },
+"age": {
+    "Description": "Age in month at time of recording"
+  },
+"sex": {
+    "Description": "Animal sex",
+    "Levels": {
+      "M": "Male"
+    }
+  },
+"Weight": {
+    "Description": "Animal weight in grams"
+  },
+"Temperature": {
+    "Description": "Animal rectal temperature in Celcius"
+  },
+"DOB": {
+    "Description": "Animal date of birth"
+  },
+"Surgery_date": {
+    "Description": "Date of surgery"
+  },
+"Experiment_Date": {
+    "Description": "Date of recording"
+  },
+"run-1": {
+    "Description": "resting-state or n/a for EPI run-1"
+  },
+"run-2": {
+    "Description": "Optogenetic stimulation in Hz for EPI run-2"
+  },
+"run-3": {
+    "Description": "Optogenetic stimulation in Hz for EPI run-3"
+  },
+"run-4": {
+    "Description": "Optogenetic stimulation in Hz for EPI run-4"
+  }
+}
