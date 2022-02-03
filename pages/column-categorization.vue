@@ -1,9 +1,11 @@
 <template>
 
-	<b-container>
+	<b-container fluid>
+
+		<tool-navbar :navItemsState="navbarState"></tool-navbar>
 		
 		<b-row>
-			<h1>Column Categorization</h1>
+			<h2>Column Categorization</h2>
 		</b-row>
 
 		<b-row>
@@ -28,11 +30,27 @@
 					:currentPalette="$store.state.columnCategorization.current"
 					:defaultPalette="$store.state.columnCategorization.default"
 					:tableData="tableDataFromTsvAndOrJson"
-					v-on:column-name-selected="$store.dispatch('linkColumnWithCategory', $event)">
+					v-on:column-name-selected="changeState('annotation', $event)">
 				</filedata-table>
 			</b-col>
 
 		</b-row>
+
+		<b-row>
+			
+			<b-col cols="10"></b-col>
+			
+			<b-col cols="2">
+				<!-- Only enabled when at least one column has been categorized -->
+				<b-button 
+					:variant="nextPageButtonColor"
+					:disabled="nextPageButtonDisabled"
+					to="/annotation">
+					Annotate Columns
+				</b-button>
+			</b-col>
+			
+		</b-row>		
 
 	</b-container>
 
@@ -53,8 +71,18 @@
 					{ key: "column" },
 					{ key: "description" }
 				],
+
+				navbarState: {
+
+					"index": true,
+					"column-categorization": true,
+					"annotation": false,
+					"download": false
+				},
 				
 				paintingColor: "white",
+
+				pageName: "column-categorization",
 
 				recommendedColumns: {
 					
@@ -86,6 +114,45 @@
 		},
 
 		computed: {
+
+			nextPageButtonColor() {
+
+				// Return the next page button color (clickable is green, gray otherwise)
+				return this.nextPageButtonDisabled ? "secondary" : "success";
+			},		
+
+			nextPageButtonDisabled() {
+
+				// 0. Get column categorization dataset from the store
+				let columnCategorization = this.$store.getters.columnCategorization;
+
+				// 1. Return if at least one column has been categorized (painted)
+
+				// A. Get a list of the column names for traversing the table
+				let sidecarColumns = Object.keys(columnCategorization.dataSet);
+
+				// B. Get the default colors
+				let defaultBackgroundColor = columnCategorization.default.bColor;
+				let defaultForegroundColor = columnCategorization.default.fColor;
+
+				console.log("defaultBackgroundColor: " + defaultBackgroundColor);
+				console.log("defaultForegroundColor: " + defaultForegroundColor);
+
+				// C. Check the table for painted rows
+				for ( let index = 0; index < sidecarColumns.length; index++ ) {
+
+					let key = sidecarColumns[index];
+					console.log("Looking at sidecar column " + key + "...");
+					console.log("Current painted color: " + columnCategorization.dataSet[key].bColor);
+
+					// I. Is row painted?
+					if ( defaultBackgroundColor != columnCategorization.dataSet[key].bColor )
+						return false;
+				}			
+
+				// No columns have been painted
+				return true;
+			},			
 
 			tableDataFromTsvAndOrJson() {
 
@@ -188,6 +255,34 @@
 
 		methods: {
 
+			changeState(p_state, p_data) {
+
+				if ( "annotation" == p_state ) {
+
+					console.log("Request to change to annotation state...");
+
+					// 1. Color or uncolor this table row
+					this.$store.dispatch("linkColumnWithCategory", p_data)
+
+					// 2. Open or close access to the annotation page
+					let columnCategorization = this.$store.getters.columnCategorization;
+					let disable = ( columnCategorization.default.bColor == columnCategorization.current.bColor );
+					this.annotationAccess(disable);
+
+					// Return state has changed
+					return true;
+				}
+
+				// Return state could not be changed
+				return false;
+			},
+
+			annotationAccess(p_enable) {
+				
+				// 1. Column categorization is now available on navbar
+				this.navbarState["annotation"] = true;
+			},			
+
 			getPaintClass(p_item, p_type) {
 
 				// Table row ID generation
@@ -240,8 +335,26 @@
 				}
 
 				return paintClass;
-			},			
-		}
+			},
+
+			// pageAccessibility(p_routeName) {
+
+			// 	let routeMatch = ( p_routeName == this.pageName );
+			// 	let hasTableData = ( this.tableData.length > 0 );
+
+			// 	console.log("column-categorization pageAccessibility");
+			// 	console.log("Route match: " + routeMatch);
+			// 	console.log("Has table data: " + hasTableData);
+
+			// 	return ( routeMatch && hasTableData );
+			// }
+		},
+
+		// mounted() {
+
+		// 	// Insert page accessibility function into store here
+		// 	this.$store.dispatch("newPageAccesibility", this.pageName, this.pageAccessibility);
+		// }		
 	}
 </script>
 

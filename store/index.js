@@ -26,7 +26,7 @@ export const state = () => ({
   
 // Actions - Call mutations to change state data in order to maintain trace of 
 // what component changed state data and when
-export const actions = { 
+export const actions = {
 
 	linkColumnWithCategory(p_context, p_columnName) {
 
@@ -39,7 +39,7 @@ export const actions = {
 			bColor: categorizationInfo.current.bColor,
 			fColor: categorizationInfo.current.fColor
 		});
-	},
+	},	
 	
 	saveTsvFile(p_context, p_tsvLines) {
 	
@@ -124,20 +124,19 @@ export const mutations = {
 export const getters = {
 
 	tsvFile(p_state) {
-		return state.tsvFile;
+		return p_state.tsvFile;
 	},
 
 	jsonFile(p_state) {
-		return state.jsonFile;
+		return p_state.jsonFile;
 	},
 
 	currentPainting(p_state) {
-		return state.painting.current;
+		return p_state.columnCategorization.current;
 	},
 
-	columnCanvas(p_state) {
-
-		return state.painting.columnCanvas;
+	columnCategorization(p_state) {
+		return p_state.columnCategorization;
 	}
 }
 
@@ -169,6 +168,8 @@ function convertTsvLinesToDict(p_tsvLines){
 			// NOTE: Graceful handling of this will be required
 			if ( p_tsvLines[index].length != columnHeaders.length ){
 				console.log("WARNING: tsv row " + parseInt(index) + " has different size than tsv header.");
+				console.log("Row size: " + parseInt(p_tsvLines[index].length));
+				console.log("Header fields: " + columnHeaders.length);
 			}
 
 			// II. Save the field for this row, keyed by the current column header

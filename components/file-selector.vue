@@ -1,14 +1,14 @@
 <template>
 
-	<b-container>
+	<div>
 
-		<b-row>
+		<b-row class="file-selector-row">
 			<b-form>
 				<input type="file" :accept="contentType" @change="onFileSelected">
 			</b-form>
 		</b-row>
 
-	</b-container>
+	</div>
 
 </template>
 
@@ -87,3 +87,13 @@
 	}
 
 </script>
+
+<style>
+
+.file-selector-row {
+
+	margin-left: 0 !important;
+	padding-left: 0 !important;
+}
+
+</style>
