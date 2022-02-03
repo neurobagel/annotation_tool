@@ -34,6 +34,16 @@
 
 		</b-row>
 
+		<b-row>
+			<!-- Moves to column annotation page.
+					Only enabled when file content has been loaded -->
+			<b-button 
+				variant="success"
+				to="/annotation" nuxt>
+				Annotate Columns
+			</b-button>
+		</b-row>
+
 	</b-container>
 
 </template>
