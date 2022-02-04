@@ -6,7 +6,9 @@
         <b-navbar toggleable="lg" type="light" variant="light">
 
             <!-- Brand -->
-            <b-navbar-brand class="brand-styling">Origami Annotation Tool</b-navbar-brand>
+            <b-navbar-brand class="brand-styling">
+                Origami Annotation Tool - <span class="page-name">{{ pageName }}</span>
+            </b-navbar-brand>
 
             <!-- Collapse toggle -->
             <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
@@ -24,33 +26,11 @@
                 </b-navbar-nav> -->
 
                 <!-- Right aligned nav items -->
-                <b-navbar-nav class="ml-auto nav-pills" id="right-nav">
+                <b-navbar-nav class="ml-auto" id="right-nav">
 
-                    <!-- For 2/1/2022 TODO - define color classes that indicate pages not yet are enabled -->
-                    <b-nav-item 
-                        to="/" 
-                        :active="'index' == this.$route.name"
-                        :class="('index' == this.$route.name) ? 'currentPageNavPill' : ''"
-                        :disabled="!navItemsState['index']">File Selection</b-nav-item>
-                    <b-nav-item 
-                        to="column-categorization"
-                        :active="'column-categorization' == this.$route.name"
-                        :class="('column-categorization' == this.$route.name) ? 'currentPageNavPill' : ''"
-                        :disabled="!navItemsState['column-categorization']">Categorization</b-nav-item>
-                    <!-- <b-nav-item 
-                        to="annotation" 
-                        :active="'annotation' == this.$route.name"
-                        :class="('annotation' == this.$route.name) ? 'currentPageNav' : ''"
-                        :disabled="!navItemsState['annotation']">Categorization</b-nav-item>
-                    <b-nav-item 
-                        to="download" 
-                        :active="'download' == this.$route.name"
-                        :class="('download' == this.$route.name) ? 'currentPageNav' : ''"
-                        :disabled="!navItemsState['download']">Categorization</b-nav-item> -->
-
-                    <!-- <b-nav-item to="" :active="$route.name == 'index'">File Selection</b-nav-item>
-                    <b-nav-item to="column-categorization" :active="$route.name == 'column-categorization'">Categorization</b-nav-item>
-                    <b-nav-item to="annotation" :active="$route.name == 'annotation'">Annotation</b-nav-item> -->
+                    <b-nav-item v-for="navItem in navItemsState" :key="navItem.pageInfo.pageName"
+                        :to="navItem.pageInfo.location"
+                        :disabled="!navItem.enabled">{{ navItem.pageInfo.fullName }}</b-nav-item>
 
                     <!-- Search bar -->
                     <!-- <b-nav-form>
@@ -122,7 +102,7 @@
             }
         },
 
-        props: ["navItemsState"]
+        props: ["navItemsState", "pageName"]
 
     }
 </script>
@@ -157,6 +137,11 @@
 
 .navbar {
     background-color: white !important;
+}
+
+.page-name {
+    
+    color: #28a745;
 }
 
 #right-nav {

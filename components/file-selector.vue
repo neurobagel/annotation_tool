@@ -4,7 +4,11 @@
 
 		<b-row class="file-selector-row">
 			<b-form>
-				<input type="file" :accept="contentType" @change="onFileSelected">
+				<label class="file-selector-button btn">
+					Choose file
+					<input type="file" :accept="contentType" @change="onFileSelected"/>
+				</label>
+				<span>{{ fileSelectorLabel }}</span>
 			</b-form>
 		</b-row>
 
@@ -22,8 +26,21 @@
 
 			return {
 
+				file1: null,
+				file2: null,
+
 				fileInput: {},
 				fileText: ["File text here..."],
+			}
+		},
+
+		computed: {
+
+			fileSelectorLabel() {
+
+				if ( "name" in this.fileInput && this.fileInput.name.length > 0 )
+					return this.fileInput.name;
+				return "";
 			}
 		},
 
@@ -90,10 +107,49 @@
 
 <style>
 
+input[type="file"] {
+
+	display: none;
+}
+
+/*.btn:hover {
+	
+	color: white;
+}*/
+
+.custom-file-upload {
+
+	border: 1px solid #ccc;
+	display: inline-block;
+	padding: 6px 12px;
+	cursor: pointer;
+}
+
+.file-selector-button {
+
+	background-color: #28a745;
+	border-color: #28a745;
+	border-radius: 5px;
+	color: white;
+	padding: 0.5em 0.75em 0.5em 0.75em;
+}
+.file-selector-button:hover {
+	
+	border-color: green;
+	background-color: green;
+	color: white;
+}
+.file-selector-button:active {
+  background: #e5e5e5;
+  -webkit-box-shadow: inset 0px 0px 5px #c1c1c1;
+     -moz-box-shadow: inset 0px 0px 5px #c1c1c1;
+          box-shadow: inset 0px 0px 5px #c1c1c1;
+   outline: none;
+}
+
 .file-selector-row {
 
 	margin-left: 0 !important;
 	padding-left: 0 !important;
 }
-
 </style>

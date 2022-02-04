@@ -40,7 +40,7 @@ Navitem stats
 	<b-container fluid>
 
 		<!-- Navigation bar -->
-		<tool-navbar :navItemsState="navbarState"></tool-navbar>
+		<tool-navbar :pageName="fullName" :navItemsState="navItemsState"></tool-navbar>
 
 		<!-- TSV file loading area -->
 		<b-row>
@@ -61,7 +61,7 @@ Navitem stats
 			<h2>Data dictionary</h2>
 
 			<!-- Debug component - shows file contents -->			
-			<textarea rows="5" cols="200" v-model="stringifiedJsonFile" ></textarea>
+			<textarea rows="5" cols="200" v-model="stringifiedJsonFile"></textarea>
 
 			<!-- Selects participant.json file -->
 			<file-selector 
@@ -77,10 +77,11 @@ Navitem stats
 			<b-col cols="3">
 				<!-- Only enabled when file content has been loaded -->
 				<b-button 
-					:variant="nextPageButtonColor"
+					class="float-right"
 					:disabled="nextPageButtonDisabled"
-					to="/column-categorization">
-					Categorize Columns
+					:to="'/' + pageNames.categorization.location"
+					:variant="nextPageButtonColor">
+					Next step: Categorize columns
 				</b-button>
 			</b-col>
 
@@ -100,17 +101,29 @@ Navitem stats
 
 			return {
 				
+				// File selected flags
 				jsonSelected: false,
-				myModel: ["This is my text"],
-				pageName: "index",
 				tsvSelected: false,
 
-				navbarState: {
-					"index": true,
-					"column-categorization": false,
-					"annotation": false,
-					"download": false
-				}
+				// Initial status of the navbar items for other pages
+				navItemsState: [
+
+					{
+					  	enabled: false,
+						pageInfo: this.$store.state.pageNames.categorization,
+					},
+					{ 
+						enabled: false,
+						pageInfo: this.$store.state.pageNames.annotation,
+					},
+					{
+						enabled: false,
+						pageInfo: this.$store.state.pageNames.download,
+					}
+				],
+
+				fullName: this.$store.state.pageNames.home.fullName,
+				pageNames: this.$store.state.pageNames
 			}
 		},
 
@@ -131,22 +144,30 @@ Navitem stats
 
 			stringifiedJsonFile() {
 
-				return [JSON.stringify(this.$store.state.jsonFile, null, 4)]
+				// 0. Return a blank string if there is no loaded json file
+				if ( typeof this.$store.state.jsonFile === "undefined" ||
+					 0 == Object.keys(this.$store.state.jsonFile).length )
+					return "";
+				
+				// 1. Return a string version of the json file
+				return JSON.stringify(this.$store.state.jsonFile, null, 4);
 			},
 
 			stringifiedTsvFile() {
 
+				// 0. Return a blank string is there is no loaded tsv file
+				if ( 0 == this.$store.state.tsvFile.length )
+					return "";
+
+				// 1. Convert the tsv file data into a list of strings
 				let storeTsv = this.$store.state.tsvFile;
-
-				if ( 0 == storeTsv.length )
-					return [""];
-
 				let textAreaArray = [Object.keys(storeTsv[0]).join("\t")];
 				for ( let index = 0; index < storeTsv.length; index++ ) {
 					textAreaArray.push(Object.values(storeTsv[index]).join("\t"));
 				}
 
-				return [textAreaArray.join("\n")];
+				// 2. Return the tsv file data joined as one string
+				return textAreaArray.join("\n");
 			}
 
 		},
@@ -155,7 +176,7 @@ Navitem stats
 
 			changeState(p_state, p_data) {
 
-				if ( "column-categorization" == p_state ) {
+				if ( this.pageNames.categorization.pageName == p_state ) {
 
 					// 1. Check if tsv file has been selected
 					if ( "none" == p_data )
@@ -175,26 +196,21 @@ Navitem stats
 			columnCategorizationAccess(p_enable) {
 				
 				// 1. Column categorization is now available on navbar
-				this.navbarState["column-categorization"] = true;
+				for ( let index = 0; index < this.navItemsState.length; index++ ) {
+					if ( this.pageNames.categorization.pageName == this.navItemsState[index].pageInfo.pageName ) {
+						this.navItemsState[index].enabled = true;
+						break;
+					}
+				}
 
 				// 2. Indicate tsv file has been selected
 				this.tsvSelected = true;
 			},
 
-			// pageAccessibility(p_routeName) {
-
-			// 	let routeMatch = ( p_routeName == this.pageName );
-
-			// 	console.log("index pageAccessibility");
-			// 	console.log("Route match: " + routeMatch);
-
-			// 	return ( routeMatch );
-			// },
-
 			saveTsvFileData(p_fileData) {
 
 				// 1. Enable access to the column categorization page
-				this.changeState("column-categorization", p_fileData); 
+				this.changeState(this.pageNames.categorization.pageName, p_fileData); 
 
 				// 2. Update the store with tsv file data
 				this.$store.dispatch("saveTsvFile", p_fileData);
@@ -210,13 +226,7 @@ Navitem stats
 				// 1. Update the store with tsv file data
 				this.$store.dispatch("saveJsonFile", p_fileData);
 			}			
-		},
-
-		// mounted() {
-
-		// 	// Insert page accessibility function into store here
-		// 	this.$store.dispatch("newPageAccesibility", this.pageName, this.pageAccessibility);
-		// }
+		}
 	}
 </script>
 
@@ -224,9 +234,12 @@ Navitem stats
 <style>
 
 	.container-fluid {
+		
 		padding: 0;
 	}
+
 	.row {
+	
 		margin: 1em;
 		padding-left: 2em;
 		padding-right: 2em;

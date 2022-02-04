@@ -20,7 +20,35 @@ export const state = () => ({
 			category: "",
 			fColor: "black"			
 		},
-		dataSet: {}
+		dataSet: {},
+		paintedTable: {}
+	},
+
+	pageNames: {
+		
+		home: {
+			fullName: "Home",
+			location: "/",
+			pageName: "index",
+		},
+
+		categorization: {
+			fullName: "Categorization",
+			location: "categorization",
+			pageName: "categorization"
+		},
+
+		annotation: {
+			fullName: "Annotation",
+			location: "annotation",
+			pageName: "annotation"
+		},
+
+		download: {
+			fullName: "Download",
+			location: "download",
+			pageName: "download"
+		}
 	}
 })
   
@@ -87,6 +115,7 @@ export const actions = {
 // Mutations - Change state data, as called by Actions
 export const mutations = {
 
+	// NOTE: State or p_state? 02/04/2022
 	addColumnCategorization(p_state, p_categorization) {
 
 		// Save the categorization in the store using the column name as a key
@@ -107,6 +136,7 @@ export const mutations = {
 
 		// 1. Save the new json dictionary to state data
 		p_state.jsonFile = p_jsonData;
+		console.log("JSON data set: " + JSON.stringify(p_state.jsonFile));
 	},
 
 	setCurrentPaintInfo(p_state, p_newPaintingInfo) {
@@ -164,11 +194,16 @@ function convertTsvLinesToDict(p_tsvLines){
 		// A. Loop through the tsv row, matching entries with the tsv column headers
 		for ( let index2 = 0; index2 < columnHeaders.length; index2++ ) {
 
+			// Skip blank lines
+			if ( "" == p_tsvLines[index] )
+				continue;
+
 			// I. Potential warning in case file is malformed.
 			// NOTE: Graceful handling of this will be required
 			if ( p_tsvLines[index].length != columnHeaders.length ){
 				console.log("WARNING: tsv row " + parseInt(index) + " has different size than tsv header.");
 				console.log("Row size: " + parseInt(p_tsvLines[index].length));
+				console.log("Row: \'" + p_tsvLines[index] + "\'");
 				console.log("Header fields: " + columnHeaders.length);
 			}
 
