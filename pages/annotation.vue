@@ -14,7 +14,7 @@
                      :width="mockupImage.width"
                      :height="mockupImage.height"/>
             </b-col>
-            <b-col cols="4"></b-col>                
+            <b-col cols="4"></b-col>
         </b-row>
 
     </b-container>
@@ -31,9 +31,9 @@
 
                 mockupImage: {
 
-                    filename: "myimage.jpeg",
-                    height: 300,
-                    width: 300
+                    filename: "annotation_mockup.jpg",
+                    height: 956,
+                    width: 1045
                 }
             }
         }
