@@ -54,9 +54,26 @@
 
 <script>
 
+	// String literals
+
 	export default {
 
 		name: "CategorizationPage",
+
+		created() {
+
+			// 0. Data structure for page state
+			var pageStateObj = {
+
+				currentState: STATE_NOCATEGORIES_PAINTED,
+				data: {},
+				decider: this.changeState,
+				name: this.stateData.initialData.name,
+			};
+
+			// 1. Attempt to instantiate a page state object for this page
+			this.$store.dispatch("createPageStateObj", pageStateObj);
+		},
 
 		data() {
 
@@ -88,6 +105,8 @@
 				fullName: this.$store.state.pageNames.categorization.fullName,
 				pageNames: this.$store.state.pageNames,
 
+				nextPageButtonDisabled: true,
+
 				recommendedColumns: {
 					
 					names: [
@@ -116,6 +135,25 @@
 					]
 				},
 
+				stateData: {
+
+					// Data for the initial page state
+					initialData: {
+
+						name: "categorization",
+						decider: null
+					},
+
+					// Possible states of this page
+					possibleStates: [
+
+						STATE_NOCATEGORIES_PAINTED,
+						ONE_CATEGORY_PAINTED,
+						MULTIPLE_CATEGORIES_PAINTED
+					],					
+
+				},
+
 				tableData: {}
 			}
 		},
@@ -126,9 +164,17 @@
 
 				// Return the next page button color (clickable is green, gray otherwise)
 				return this.nextPageButtonDisabled ? "secondary" : "success";
-			},		
+			},
 
-			nextPageButtonDisabled() {
+			// nextPageButtonDisabled() {
+
+			// 	console.log("nextPageButtonDisabled");
+			// 	return ( 0 == this.numberPaintedColumns );
+			// },
+
+			/*nextPageButtonDisabled() {
+
+				console.log("In nextPageButtonDisabled");
 
 				// 0. Save a reference to the store table data set
 				let tableDataSet = this.$store.state.columnCategorization.dataSet;
@@ -152,7 +198,31 @@
 				console.log("All default colors");
 
 				return true;
-			},			
+			},*/
+
+			numberPaintedColumns() {
+
+				// 0. Save a reference to the store table data set
+				let tableDataSet = this.$store.state.columnCategorization.dataSet;
+
+				// 0. Default row colors
+				let defaultBackgroundColor = this.$store.state.columnCategorization.default.bColor;
+				let defaultForegroundColor = this.$store.state.columnCategorization.default.fColor;
+
+				// 0. Counts number of painted columns
+				let columnCount = 0;
+
+				for ( let columnName in tableDataSet ) {
+
+					if ( defaultBackgroundColor != tableDataSet[columnName].bColor || 
+						 defaultForegroundColor != tableDataSet[columnName].fColor ) {
+
+						columnCount += 1;
+					}
+				}
+
+				return columnCount;
+			},	
 
 			tableDataFromTsvAndOrJson() {
 
@@ -257,9 +327,27 @@
 
 		methods: {
 
+			annotationAccess(p_enable) {
+				
+				// 1. Column categorization is now available on navbar
+				for ( let index = 0; index < this.navItemsState.length; index++ ) {
+					if ( this.pageNames.annotation.pageName == this.navItemsState[index].pageInfo.pageName ) {
+						this.navItemsState[index].enabled = p_enable;
+						break;
+					}
+				}
+
+				
+			},
+
 			changeState(p_state, p_data) {
 
 				console.log("Change state");
+
+				let enactStateChange = false;
+
+				// Set disabled status of next page button
+				this.nextPageButtonDisabled = ( 0 == this.numberPaintedColumns );
 
 				if ( this.pageNames.annotation.pageName == p_state ) {
 
@@ -278,24 +366,11 @@
 					this.annotationAccess(enable);
 
 					// Return state has changed
-					return true;
+					enactStateChange = true;
 				}
 
 				// Return state could not be changed
-				return false;
-			},
-
-			annotationAccess(p_enable) {
-				
-				// 1. Column categorization is now available on navbar
-				for ( let index = 0; index < this.navItemsState.length; index++ ) {
-					if ( this.pageNames.annotation.pageName == this.navItemsState[index].pageInfo.pageName ) {
-						this.navItemsState[index].enabled = p_enable;
-						break;
-					}
-				}
-
-				
+				return enactStateChange;
 			},			
 
 			getPaintClass(p_item, p_type) {
@@ -350,7 +425,7 @@
 				}
 
 				return paintClass;
-			}
+			}	
 		},		
 	}
 </script>

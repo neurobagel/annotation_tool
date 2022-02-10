@@ -1,29 +1,6 @@
 // Root state - Stores state data
 export const state = () => ({
 
-	// index.vue data
-	tsvFile: [],
-	jsonFile: {},
-
-	// column-categorization.vue data
-	columnCategorization: {
-
-		current: {
-
-			bColor: "white",
-			category: "",
-			fColor: "black"
-		},
-		default: {
-
-			bColor: "white",
-			category: "",
-			fColor: "black"			
-		},
-		dataSet: {},
-		paintedTable: {}
-	},
-
 	pageNames: {
 		
 		home: {
@@ -49,6 +26,48 @@ export const state = () => ({
 			location: "download",
 			pageName: "download"
 		}
+	},
+
+	pageData: {
+
+		// index.vue
+		home: {
+
+			tsvFile: null,
+			jsonFile: null
+		},
+
+		// categorization.vue
+		categorization: {
+
+			columnCategorization: {
+
+				current: {
+		
+					bColor: "white",
+					category: "",
+					fColor: "black"
+				},
+				default: {
+		
+					bColor: "white",
+					category: "",
+					fColor: "black"			
+				},
+				dataSet: {},
+				paintedTable: {}
+			},
+		},
+
+		// annotation.vue
+		annotation: {
+
+		},
+
+		// download.vue
+		download: {
+
+		}
 	}
 })
   
@@ -70,33 +89,25 @@ export const actions = {
 	},	
 	
 	saveTsvFile(p_context, p_tsvLines) {
-	
-		// 0. Check for tsv data validity here
-		if ( !p_tsvLines || 0 == p_tsvLines.length ) {
-			alert("Invalid tsv file data!");
-			return;
-		}	
 
-		// 1. Convert the tsv lines into a dict for each line
-		var tsvRowDictArray = convertTsvLinesToDict(p_tsvLines);
+		// 1. Attempt to convert the tsv lines into a dict for each line if valid data given
+		let newTsvData = [];
+		if ( null != p_tsvLines ) 
+			newTsvData = convertTsvLinesToDict(p_tsvLines);
 
-		// 2. Save the tsv dict to state data
-		p_context.commit("setTsvFile", tsvRowDictArray);
+		// 2. Save either an empty array or array of tsv dictionaries to state data
+		p_context.commit("setTsvFile", newTsvData);
 	},
 	
 	saveJsonFile(p_context, p_jsonStringData) {
 
-		// 0. Check for json data validity here
-		if ( !p_jsonStringData || 0 == Object.keys(p_jsonStringData).length ) {
-			alert("Invalid json file data!");
-			return;
-		}
+		// 1. Attempt to transform the string data into JSON if valid data given
+		let newJsonData = {};
+		if ( null != p_jsonStringData )
+			newJsonData = JSON.parse(p_jsonStringData);
 
-		// Transform the string data into JSON
-		let jsonObj = JSON.parse(p_jsonStringData);
-
-		// 1. Save the json dict to state data
-		p_context.commit("setJsonFile", jsonObj);
+		// 2. Save either an empty object or the JSON dict to state data
+		p_context.commit("setJsonFile", newJsonData);
 
 	},
 
@@ -115,7 +126,7 @@ export const actions = {
 // Mutations - Change state data, as called by Actions
 export const mutations = {
 
-	// NOTE: State or p_state? 02/04/2022
+	// MIGHT CHANGE
 	addColumnCategorization(p_state, p_categorization) {
 
 		// Save the categorization in the store using the column name as a key
@@ -128,17 +139,17 @@ export const mutations = {
 
 	setTsvFile(p_state, p_tsvRowDictArray) {
 
-		// 1. Save the new tsv row dictionary list to state data
-		p_state.tsvFile = p_tsvRowDictArray;
+		// Save the new tsv row dictionary list to state data
+		p_state.pageData.home.tsvFile = p_tsvRowDictArray;
 	},
 
 	setJsonFile(p_state, p_jsonData) {
 
-		// 1. Save the new json dictionary to state data
-		p_state.jsonFile = p_jsonData;
-		console.log("JSON data set: " + JSON.stringify(p_state.jsonFile));
+		// Save the new json dictionary to state data
+		p_state.pageData.home.jsonFile = p_jsonData;
 	},
 
+	// MIGHT CHANGE
 	setCurrentPaintInfo(p_state, p_newPaintingInfo) {
 
 		// 1. Save the new paint category
@@ -153,18 +164,20 @@ export const mutations = {
 // Getters - Give access to state data
 export const getters = {
 
-	tsvFile(p_state) {
-		return p_state.tsvFile;
+	pageNames(p_state) {
+		return p_state.pageNames;
 	},
 
-	jsonFile(p_state) {
-		return p_state.jsonFile;
+	pageData(p_state) {
+		return p_state.pageData;
 	},
 
+	// MIGHT CHANGE
 	currentPainting(p_state) {
 		return p_state.columnCategorization.current;
 	},
 
+	// MIGHT CHANGE
 	columnCategorization(p_state) {
 		return p_state.columnCategorization;
 	}

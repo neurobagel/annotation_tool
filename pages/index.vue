@@ -47,7 +47,7 @@ Navitem stats
 			<h2>TSV File</h2>
 
 			<!-- Debug component - shows file contents -->			
-			<textarea rows="5" cols="200" v-model="stringifiedTsvFile"></textarea>
+			<textarea rows="5" cols="200" v-model="stringifiedTsvFile" :key="currentState"></textarea>
 			
 			<!-- Selects participant.tsv file -->
 			<file-selector 
@@ -61,7 +61,7 @@ Navitem stats
 			<h2>Data dictionary</h2>
 
 			<!-- Debug component - shows file contents -->			
-			<textarea rows="5" cols="200" v-model="stringifiedJsonFile"></textarea>
+			<textarea rows="5" cols="200" v-model="stringifiedJsonFile" :key="currentState"></textarea>
 
 			<!-- Selects participant.json file -->
 			<file-selector 
@@ -78,9 +78,9 @@ Navitem stats
 				<!-- Only enabled when file content has been loaded -->
 				<b-button 
 					class="float-right"
-					:disabled="nextPageButtonDisabled"
+					:disabled="!readyForNextStepFlag"
 					:to="'/' + pageNames.categorization.location"
-					:variant="nextPageButtonColor">
+					:variant="nextPageButtonColorValue">
 					Next step: Categorize columns
 				</b-button>
 			</b-col>
@@ -97,70 +97,78 @@ Navitem stats
 		
 		name: "IndexPage",
 
+		created() {
+
+			// Determine page state from data contents and change to that new state
+			this.changeToNewState();
+		},
+
 		data() {
 
 			return {
-				
-				// File selected flags
-				jsonSelected: false,
-				tsvSelected: false,
 
-				// Initial status of the navbar items for other pages
+				readyForNextStepFlag: false,
+				nextPageButtonColorValue: "secondary",
+
+				// Current state of the page
+				currentState: 0,
+
+				// Full text name of this page
+				fullName: this.$store.getters.pageNames.home.fullName, 
+
+				// Status of the navbar item links for other pages
 				navItemsState: [
 
 					{
 					  	enabled: false,
-						pageInfo: this.$store.state.pageNames.categorization,
+						pageInfo: this.$store.getters.pageNames.categorization,
 					},
 					{ 
 						enabled: false,
-						pageInfo: this.$store.state.pageNames.annotation,
+						pageInfo: this.$store.getters.pageNames.annotation,
 					},
 					{
 						enabled: false,
-						pageInfo: this.$store.state.pageNames.download,
+						pageInfo: this.$store.getters.pageNames.download,
 					}
-				],
+				],				
 
-				fullName: this.$store.state.pageNames.home.fullName,
-				pageNames: this.$store.state.pageNames
+				// Possible states of this page
+				possibleStates: {
+
+					STATE_NOFILES_LOADED: 0,
+					STATE_TSVFILE_LOADED: 1 << 1,
+					STATE_JSONFILE_LOADED: 1 << 2,
+					STATE_BOTHFILES_LOADED: (1 << 1) | (1 << 2)
+				},
+
+				// Local reference to the page names in the store
+				pageNames: this.$store.getters.pageNames,
 			}
 		},
 
 		computed: {
 
-			nextPageButtonColor() {
-
-				// Return the next page button color (clickable is green, gray otherwise)
-				return this.nextPageButtonDisabled ? "secondary" : "success";
-			},		
-
-			nextPageButtonDisabled() {
-
-				// Return if at least a tsv file has been selected
-				// Json file is not required
-				return ( !this.tsvSelected );
-			},
-
 			stringifiedJsonFile() {
 
 				// 0. Return a blank string if there is no loaded json file
-				if ( typeof this.$store.state.jsonFile === "undefined" ||
-					 0 == Object.keys(this.$store.state.jsonFile).length )
+				if ( null == this.$store.state.pageData.home.jsonFile ) {
 					return "";
-				
+				}
+
 				// 1. Return a string version of the json file
-				return JSON.stringify(this.$store.state.jsonFile, null, 4);
+				return JSON.stringify(this.jsonFile(), null, 4);
 			},
 
 			stringifiedTsvFile() {
 
 				// 0. Return a blank string is there is no loaded tsv file
-				if ( 0 == this.$store.state.tsvFile.length )
+				if ( null == this.$store.state.pageData.home.tsvFile ) {
 					return "";
+				}
 
 				// 1. Convert the tsv file data into a list of strings
-				let storeTsv = this.$store.state.tsvFile;
+				let storeTsv = this.tsvFile();
 				let textAreaArray = [Object.keys(storeTsv[0]).join("\t")];
 				for ( let index = 0; index < storeTsv.length; index++ ) {
 					textAreaArray.push(Object.values(storeTsv[index]).join("\t"));
@@ -169,63 +177,135 @@ Navitem stats
 				// 2. Return the tsv file data joined as one string
 				return textAreaArray.join("\n");
 			}
-
 		},
 
-		methods: {
+		methods: {		
 
-			changeState(p_state, p_data) {
-
-				if ( this.pageNames.categorization.pageName == p_state ) {
-
-					// 1. Check if tsv file has been selected
-					if ( "none" == p_data )
-						return false;
-
-					// 2. Open access to the column categorization page
-					this.columnCategorizationAccess(true);
-
-					// Return state has changed
-					return true;
-				}
-
-				// Return state could not be changed
-				return false;
-			},
-
-			columnCategorizationAccess(p_enable) {
+			categorizationPageAccess(p_enable) {
 				
-				// 1. Column categorization is now available on navbar
+				// 1. Enable/disable access to the categorization page
 				for ( let index = 0; index < this.navItemsState.length; index++ ) {
+
+					// A. Look for the categorization nav item
 					if ( this.pageNames.categorization.pageName == this.navItemsState[index].pageInfo.pageName ) {
-						this.navItemsState[index].enabled = true;
+
+						// i. Enable/disable the next step button
+						this.readyForNextStepFlag = p_enable;
+
+						// ii. Change the next step button's color
+						this.nextPageButtonColorValue = ( p_enable ) ? "success" : "secondary";
+
+						// iii. Enable/disable the categorization nav item
+						this.navItemsState[index].enabled = p_enable;
+
 						break;
 					}
 				}
+			},			
 
-				// 2. Indicate tsv file has been selected
-				this.tsvSelected = true;
+			changeState(p_state) {
+
+				switch ( p_state ) {
+
+					// Handle changes for when a tsv file has been loaded
+					case this.possibleStates.STATE_TSVFILE_LOADED:
+					case this.possibleStates.STATE_BOTHFILES_LOADED:
+						this.changeState_TsvFileLoaded();
+						break;
+
+					// No interface changes necessary
+					case this.possibleStates.STATE_JSONFILE_LOADED:
+						break;
+
+					// Handle changes for when no files are loaded
+					default:
+						this.changeState_NoFilesLoaded();
+						break;
+				}
 			},
+
+			changeState_NoFilesLoaded() {
+
+				// Disable access to the categorization page
+				this.categorizationPageAccess(false);
+			},
+
+			changeState_TsvFileLoaded(p_data) {
+
+				// Enable access to the categorization page
+				this.categorizationPageAccess(true);
+			},
+
+			changeToNewState() {
+
+				// 1. Determine page state from data contents
+				let newState = this.determineState();
+
+				// 2. Change the page to the determined state
+				this.changeState(newState);
+			},
+
+			determineState() {
+
+				// 1. Reset the state to default
+				let newState = this.possibleStates.STATE_NOFILES_LOADED;
+
+				// 2. Add appropriate state flags based on data contents
+				if ( this.tsvFileLoaded() )
+					newState |= this.possibleStates.STATE_TSVFILE_LOADED;
+				if ( this.jsonFileLoaded() )
+					newState |= this.possibleStates.STATE_JSONFILE_LOADED;
+
+				return newState;
+			},
+
+			jsonFile() {
+
+				// Return the object currently saved as the json file in the data store
+				return this.$store.getters.pageData.home.jsonFile;
+			},
+
+			jsonFileLoaded() {
+
+				// Return whether or not a json file has been loaded in the data store
+				return ( null != this.$store.getters.pageData.home.jsonFile );
+			},				
 
 			saveTsvFileData(p_fileData) {
 
-				// 1. Enable access to the column categorization page
-				this.changeState(this.pageNames.categorization.pageName, p_fileData); 
+				// 0. Determine if a tsv file has been selected
+				let newFileData = ( null == p_fileData || 0 == p_fileData.length ) ? null : p_fileData;
 
-				// 2. Update the store with tsv file data
-				this.$store.dispatch("saveTsvFile", p_fileData);
+				// 1. Update the store with tsv file data
+				this.$store.dispatch("saveTsvFile", newFileData);
+
+				// 2. Determine page state from the new data contents and change to that new state
+				this.changeToNewState();
 			},
 
 			saveJsonFileData(p_fileData) {
 
-				// 0. Make sure a file has been selected
-				this.jsonSelected = ( "none" != p_fileData );
-				if ( !this.jsonSelected )
-					return;				
+				// 0. Determine if a json file has been selected
+				let newFileData = ( "none" == p_fileData ) ? null : p_fileData;
 
-				// 1. Update the store with tsv file data
-				this.$store.dispatch("saveJsonFile", p_fileData);
-			}			
+				// 1. Update the store with json file data
+				this.$store.dispatch("saveJsonFile", newFileData);
+
+				// 2. Determine page state from the new data contents and change to that new state
+				this.changeToNewState();
+			},
+
+			tsvFile() {
+
+				// Return the list currently saved as the tsv file in the data store
+				return this.$store.getters.pageData.home.tsvFile;
+			},
+
+			tsvFileLoaded() {
+
+				// Return whether or not a tsv file has been loaded in the data store
+				return ( null != this.$store.getters.pageData.home.tsvFile );
+			},						
 		}
 	}
 </script>
