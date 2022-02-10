@@ -1,40 +1,3 @@
-<!-- 
-
-Starting on the landing page we,
-
-1) Select a tsv file
-	A) Change the state to enable access to the column categorization page
-		I) This change in state triggers several actions on the interface
-			a) Categorization nav enabled
-			b) Categorize button enabled
-		II) This requires a general change state function that
-			a) Gets flags depicting what state changes are to be made
-				i) Example of this would be triggering column-categorization enable page actions
-				or triggering annotation enable page actions
-2) Optionally select a JSON file
-
-Description of the in-code events
-
-1) User selects TSV file
-2) In select function, calls 'changeState' function in index page's methods
-	A) Change state function triggers interface changes and opens access to next page
-		I) nextPageAccess(enable=true)
-			a) Enable access
-			b) Relevant interface changes to enable UI access
-
-
--->
-
-<!-- 
-
-Navitem stats
-
-1) Disable - grey
-2) Active page - green pill
-3) Enabled but not active page - black
-
--->
-
 <template>
 
 	<b-container fluid>
@@ -80,7 +43,7 @@ Navitem stats
 					class="float-right"
 					:disabled="!readyForNextStepFlag"
 					:to="'/' + pageNames.categorization.location"
-					:variant="nextPageButtonColorValue">
+					:variant="nextPageButtonColor">
 					Next step: Categorize columns
 				</b-button>
 			</b-col>
@@ -107,9 +70,6 @@ Navitem stats
 
 			return {
 
-				readyForNextStepFlag: false,
-				nextPageButtonColorValue: "secondary",
-
 				// Current state of the page
 				currentState: 0,
 
@@ -120,7 +80,7 @@ Navitem stats
 				navItemsState: [
 
 					{
-					  	enabled: false,
+						enabled: false,
 						pageInfo: this.$store.getters.pageNames.categorization,
 					},
 					{ 
@@ -131,7 +91,10 @@ Navitem stats
 						enabled: false,
 						pageInfo: this.$store.getters.pageNames.download,
 					}
-				],				
+				],
+
+				// Bootstrap variant color of the button leading to the categorization page
+				nextPageButtonColor: "secondary",				
 
 				// Possible states of this page
 				possibleStates: {
@@ -144,6 +107,9 @@ Navitem stats
 
 				// Local reference to the page names in the store
 				pageNames: this.$store.getters.pageNames,
+
+				// Whether or not page has enabled access to the categorization page
+				readyForNextStepFlag: false,
 			}
 		},
 
@@ -193,7 +159,7 @@ Navitem stats
 						this.readyForNextStepFlag = p_enable;
 
 						// ii. Change the next step button's color
-						this.nextPageButtonColorValue = ( p_enable ) ? "success" : "secondary";
+						this.nextPageButtonColor = ( p_enable ) ? "success" : "secondary";
 
 						// iii. Enable/disable the categorization nav item
 						this.navItemsState[index].enabled = p_enable;
@@ -205,19 +171,20 @@ Navitem stats
 
 			changeState(p_state) {
 
+				// 1. Trigger the behavior for the requested state change
 				switch ( p_state ) {
 
-					// Handle changes for when a tsv file has been loaded
+					// A. Handle changes for when a tsv file has been loaded
 					case this.possibleStates.STATE_TSVFILE_LOADED:
 					case this.possibleStates.STATE_BOTHFILES_LOADED:
 						this.changeState_TsvFileLoaded();
 						break;
 
-					// No interface changes necessary
+					// B. No interface changes necessary
 					case this.possibleStates.STATE_JSONFILE_LOADED:
 						break;
 
-					// Handle changes for when no files are loaded
+					// C. Handle changes for when no files are loaded
 					default:
 						this.changeState_NoFilesLoaded();
 						break;
