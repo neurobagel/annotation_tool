@@ -3,7 +3,7 @@
 	<b-container fluid>
 
 		<!-- Navigation bar -->
-		<tool-navbar :pageName="fullName" :navItemsState="navItemsState"></tool-navbar>
+		<tool-navbar :navItemsState="navItemsState" :pageName="fullName"></tool-navbar>
 
 		<!-- TSV file loading area -->
 		<b-row>
@@ -94,7 +94,10 @@
 				],
 
 				// Bootstrap variant color of the button leading to the categorization page
-				nextPageButtonColor: "secondary",				
+				nextPageButtonColor: "secondary",
+
+				// Local reference to the page names in the store
+				pageNames: this.$store.getters.pageNames,
 
 				// Possible states of this page
 				possibleStates: {
@@ -104,9 +107,6 @@
 					STATE_JSONFILE_LOADED: 1 << 2,
 					STATE_BOTHFILES_LOADED: (1 << 1) | (1 << 2)
 				},
-
-				// Local reference to the page names in the store
-				pageNames: this.$store.getters.pageNames,
 
 				// Whether or not page has enabled access to the categorization page
 				readyForNextStepFlag: false,
@@ -155,18 +155,18 @@
 					// A. Look for the categorization nav item
 					if ( this.pageNames.categorization.pageName == this.navItemsState[index].pageInfo.pageName ) {
 
-						// i. Enable/disable the next step button
-						this.readyForNextStepFlag = p_enable;
-
-						// ii. Change the next step button's color
-						this.nextPageButtonColor = ( p_enable ) ? "success" : "secondary";
-
-						// iii. Enable/disable the categorization nav item
+						// i. Enable/disable the categorization nav item
 						this.navItemsState[index].enabled = p_enable;
 
 						break;
 					}
 				}
+
+				// 2. Enable/disable the next step button
+				this.readyForNextStepFlag = p_enable;
+
+				// 3. Change the next step button's color
+				this.nextPageButtonColor = ( p_enable ) ? "success" : "secondary";
 			},			
 
 			changeState(p_state) {

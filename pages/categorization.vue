@@ -9,7 +9,7 @@
 			<b-col cols="4">
 				<coloring-listgroup
 					:columnData="recommendedColumns"
-					:defaultPalette="$store.state.columnCategorization.default"
+					:defaultPalette="$store.state.pageData.categorization.default"
 					tag="recommended-column"
 					title="Recommended Columns"
 					instructions="Click column type and then corresponding column from tsv file"
@@ -22,10 +22,10 @@
 				<filedata-table
 					:fields="columnMatchTableFields"
 					:paintClass="getPaintClass"
-					:currentPalette="$store.state.columnCategorization.current"
-					:defaultPalette="$store.state.columnCategorization.default"
+					:currentPalette="$store.state.pageData.categorization.current"
+					:defaultPalette="$store.state.pageData.categorization.default"
 					:tableData="tableDataFromTsvAndOrJson"
-					v-on:column-name-selected="changeState(pageNames.annotation.pageName, $event)">
+					v-on:column-name-selected="tableClick($event)">
 				</filedata-table>
 			</b-col>
 
@@ -39,7 +39,7 @@
 				<!-- Only enabled when at least one column has been categorized -->
 				<b-button
 					class="float-right"
-					:disabled="nextPageButtonDisabled"
+					:disabled="!readyForNextStepFlag"
 					:to="'/' + pageNames.annotation.location"
 					:variant="nextPageButtonColor">
 					Next step: Annotate columns
@@ -62,30 +62,31 @@
 
 		created() {
 
-			// 0. Data structure for page state
-			var pageStateObj = {
-
-				currentState: STATE_NOCATEGORIES_PAINTED,
-				data: {},
-				decider: this.changeState,
-				name: this.stateData.initialData.name,
-			};
-
-			// 1. Attempt to instantiate a page state object for this page
-			this.$store.dispatch("createPageStateObj", pageStateObj);
-		},
+			// Determine page state from data contents and change to that new state
+			this.changeToNewState();
+		},		
 
 		data() {
 
 			return {
-					
+
+				// Columns for file data table	
 				columnMatchTableFields: [
 
 					{ key: "column" },
 					{ key: "description" }
 				],
 
-				// Initial status of the navbar items for other pages
+				// Current state of the page
+				currentState: 0,
+
+				// Default table background color
+				defaultBackgroundColor: this.$store.getters.pageData.categorization.default.bColor,
+
+				// Full text name of this page
+				fullName: this.$store.getters.pageNames.categorization.fullName, 
+
+				// Status of the navbar item links for other pages
 				navItemsState: [
 					
 					{
@@ -101,12 +102,34 @@
 						pageInfo: this.$store.state.pageNames.download
 					}
 				],
+
+				// Bootstrap variant color of the button leading to the categorization page
+				nextPageButtonColor: "secondary",
+
+				// Possible states of this page
+				possibleStates: {
+
+					STATE_NOCATEGORIES_PAINTED: 0,
+					STATE_ATLEASTONE_CATEGORY_PAINTED: 1 << 1
+				},								
 				
-				fullName: this.$store.state.pageNames.categorization.fullName,
-				pageNames: this.$store.state.pageNames,
+				// Local reference to the page names in the store
+				pageNames: this.$store.getters.pageNames,
 
-				nextPageButtonDisabled: true,
+				paintClasses: {
 
+					paint0: "column-paint-0",
+					paint1: "column-paint-1",
+					paint2: "column-paint-2",
+					paint3: "column-paint-3",
+					paint4: "column-paint-4",
+					paintDefault: "column-paint-default"
+				},
+
+				// Whether or not page has enabled access to the annotation page
+				readyForNextStepFlag: false,
+
+				// Data for the coloring listgroup
 				recommendedColumns: {
 					
 					names: [
@@ -133,107 +156,28 @@
 						"black",
 						"white"
 					]
-				},
-
-				stateData: {
-
-					// Data for the initial page state
-					initialData: {
-
-						name: "categorization",
-						decider: null
-					},
-
-					// Possible states of this page
-					possibleStates: [
-
-						STATE_NOCATEGORIES_PAINTED,
-						ONE_CATEGORY_PAINTED,
-						MULTIPLE_CATEGORIES_PAINTED
-					],					
-
-				},
-
-				tableData: {}
+				}
 			}
 		},
 
-		computed: {
-
-			nextPageButtonColor() {
-
-				// Return the next page button color (clickable is green, gray otherwise)
-				return this.nextPageButtonDisabled ? "secondary" : "success";
-			},
-
-			// nextPageButtonDisabled() {
-
-			// 	console.log("nextPageButtonDisabled");
-			// 	return ( 0 == this.numberPaintedColumns );
-			// },
-
-			/*nextPageButtonDisabled() {
-
-				console.log("In nextPageButtonDisabled");
-
-				// 0. Save a reference to the store table data set
-				let tableDataSet = this.$store.state.columnCategorization.dataSet;
-
-				// 0. Default row colors
-				let defaultBackgroundColor = this.$store.state.columnCategorization.default.bColor;
-				let defaultForegroundColor = this.$store.state.columnCategorization.default.fColor;
-
-				// 1. Check to see if any of the records indicate a painted row
-				console.log("HERE: " + JSON.stringify(tableDataSet));
-				for ( let columnName in tableDataSet ) {
-
-					if ( defaultBackgroundColor != tableDataSet[columnName].bColor || 
-						 defaultForegroundColor != tableDataSet[columnName].fColor ) {
-
-						console.log("Found non-default color");
-						return false;
-					}
-				}
-
-				console.log("All default colors");
-
-				return true;
-			},*/
-
-			numberPaintedColumns() {
-
-				// 0. Save a reference to the store table data set
-				let tableDataSet = this.$store.state.columnCategorization.dataSet;
-
-				// 0. Default row colors
-				let defaultBackgroundColor = this.$store.state.columnCategorization.default.bColor;
-				let defaultForegroundColor = this.$store.state.columnCategorization.default.fColor;
-
-				// 0. Counts number of painted columns
-				let columnCount = 0;
-
-				for ( let columnName in tableDataSet ) {
-
-					if ( defaultBackgroundColor != tableDataSet[columnName].bColor || 
-						 defaultForegroundColor != tableDataSet[columnName].fColor ) {
-
-						columnCount += 1;
-					}
-				}
-
-				return columnCount;
-			},	
+		computed: {	
 
 			tableDataFromTsvAndOrJson() {
 
 				// 0. Check that there is tsv and json data in the data store
-				let tsvFile = this.$store.state.tsvFile;
-				let jsonFile = this.$store.state.jsonFile;
-				if ( 0 == tsvFile.length && 0 == Object.keys(jsonFile).length )
+				let tsvFile = this.$store.state.pageData.home.tsvFile;
+				let jsonFile = this.$store.state.pageData.home.jsonFile;
+				if ( null == tsvFile && null == jsonFile )
 					return [];
 
+				console.log("Point 1");
+				console.log("tsvFile: " + tsvFile);
+				console.log("jsonFile: " + jsonFile);
+
 				// Uses both tsv and json data
-				if ( Object.keys(jsonFile).length > 0 ) {
+				if ( null != jsonFile ) {
+
+					console.log("Point 2a");
 
 					// 1. Produce an array of dicts
 					var tsvJsonDictArray = [];
@@ -261,6 +205,8 @@
 							//"fColor": this.$store.state.columnCategorization.default.fColor,
 						});
 					}
+
+					console.log("Point 2b");
 
 					// B. and a corresponding "description" column that is (possibly) sourced from the json file
 					for ( let json_column in jsonFile ) {
@@ -293,11 +239,15 @@
 						}
 					}
 
+					console.log("Point 2c");
+
 					// 2. Save the table in this component's data
-					this.tableData = tsvJsonDictArray;
+					this.$store.dispatch("saveTableData", tsvJsonDictArray);
 				}
 				// Uses just tsv data
 				else {
+
+					console.log("Point 3a");
 
 					// 1. Produce an array of dicts
 					var tsvDictArray = [];
@@ -316,122 +266,225 @@
 						});
 					}
 
+					console.log("Point 3b");
+
 					// 2. Save the table in this component's data
-					this.tableData = tsvDictArray;
+					this.$store.dispatch("saveTableData", tsvDictArray);
 				}
 
-				return this.tableData;
-			},
-
+				return this.tableData();
+			}
 		},
 
 		methods: {
 
-			annotationAccess(p_enable) {
+			annotationPageAccess(p_enable) {
+
+				console.log("Annotation page access with p_enable: " + p_enable);
 				
-				// 1. Column categorization is now available on navbar
+				// 1. Enable/disable access to the annotation page on the nav bar
 				for ( let index = 0; index < this.navItemsState.length; index++ ) {
+					
+					// A. Look for the annotation nav item
 					if ( this.pageNames.annotation.pageName == this.navItemsState[index].pageInfo.pageName ) {
+
+						console.log("Found annotation pagename");
+						
+						// i. Enable/disable the annotation nav item
 						this.navItemsState[index].enabled = p_enable;
+						
 						break;
 					}
 				}
 
-				
+				// 2. Enable/disable the next step button
+				this.readyForNextStepFlag = p_enable;
+
+				// 3. Change the next step button's color
+				this.nextPageButtonColor = ( p_enable ) ? "success" : "secondary";
+			},			
+
+			changeToNewState() {
+
+				// 1. Determine page state from data contents
+				let newState = this.determineState();
+
+				// 2. Change the page to the determined state
+				this.changeState(newState);
 			},
 
-			changeState(p_state, p_data) {
+			determineState() {
 
-				console.log("Change state");
+				// 1. Reset the state to default
+				let newState = this.possibleStates.STATE_NOCATEGORIES_PAINTED;
 
-				let enactStateChange = false;
+				// 2. Count the number of painted rows in the table
+				let paintedRowsCount = this.countPaintedColumns();
 
-				// Set disabled status of next page button
-				this.nextPageButtonDisabled = ( 0 == this.numberPaintedColumns );
+				// 3. Add appropriate state flags based on data contents
+				if ( paintedRowsCount > 0 )
+					newState |= this.possibleStates.STATE_ATLEASTONE_CATEGORY_PAINTED;
 
-				if ( this.pageNames.annotation.pageName == p_state ) {
+				return newState;
+			},
 
-					console.log("Attempt at changing to annotation access");
+			changeState(p_state) {
 
-					// 1. Color or uncolor this table row
-					this.$store.dispatch("linkColumnWithCategory", p_data);
+				// 1. Trigger the behavior for the requested state change
+				switch ( p_state ) {
 
-					// 2. Record the color change on this row
+					// A. Handle changes for when at least one category is painted
+					case this.possibleStates.STATE_ATLEASTONE_CATEGORY_PAINTED:
+						this.changeState_AtLeastOneCategoryPainted();
+						break;
 
+					// B. Handle changes for no categories are painted
+					default:
+						this.changeState_NoCategoriesPainted();
+						break;
+				}
+			},
 
-					// 3. Open or close access to the annotation page
-					let columnCategorization = this.$store.getters.columnCategorization;
-					let enable = !this.nextPageButtonDisabled;
-					
-					this.annotationAccess(enable);
+			changeState_AtLeastOneCategoryPainted() {
 
-					// Return state has changed
-					enactStateChange = true;
+				// Enable access to the annotation page
+				this.annotationPageAccess(true);
+			},
+
+			changeState_NoCategoriesPainted() {
+
+				// Disable access to the annotation page
+				this.annotationPageAccess(false);
+			},
+
+			countPaintedColumns() {
+
+				// 0. Save a reference to the store table data set
+				let paintingData = this.$store.getters.paintingData;
+
+				// 0. Default row colors
+				let defaultBackgroundColor = this.$store.state.pageData.categorization.default.bColor;
+				let defaultForegroundColor = this.$store.state.pageData.categorization.default.fColor;
+
+				// 0. Counts number of painted columns
+				let columnCount = 0;
+
+				for ( let columnName in paintingData ) {
+
+					if ( defaultBackgroundColor != paintingData[columnName].bColor || 
+						 defaultForegroundColor != paintingData[columnName].fColor ) {
+
+						columnCount += 1;
+					}
 				}
 
-				// Return state could not be changed
-				return enactStateChange;
-			},			
+				console.log("Column count: " + columnCount);
+
+				return columnCount;
+			},
 
 			getPaintClass(p_item, p_type) {
 
-				// Table row ID generation
-				
-				// When provided, the primary-key will generate a unique ID for
-				// each item row <tr> element. The ID will be in the format of
-				// {table-id}__row_{primary-key-value}, where {table-id} is the
-				// unique ID of the <b-table> and {primary-key-value} is the value
-				// of the item's field value for the field specified by primary-key.
-
 				// 0. Get reference to this row element
-				// ID guide: column-paint-table__row_0
-				let itemID = "column-paint-table" + "__row_" + p_item["primary-key"];
-
+				let itemID = this.paintTableKey(p_item["primary-key"]);
 				let tableRow = document.getElementById(itemID);	
 
 				// 0. If table row doesn't exist, it means the element has not yet been created
 				// and the default style should be used
 				if ( !tableRow )
-					return "column-paint-default";
+					return this.paintClasses.paintDefault;
 
 				// 1. Determine the new class based on the table row's current background color
 				let paintClass = "";
 				
 				// A. Check for current background color on item
-				let tableRowBColor = this.$store.state.columnCategorization.default.bColor;
+				let tableRowBColor = this.defaultBackgroundColor;
 				if ( "style" in tableRow )
 					tableRowBColor = tableRow.style.backgroundColor;
 
 				// B. Determine new class
 				switch ( tableRowBColor ) {
 
-					case this.backgroundColors[0]:
-						paintClass = "column-paint-0";
+					case this.recommendedColumns.backgroundColors[0]:
+						console.log("Class zero");
+						paintClass = this.paintClasses.paint0;
 						break;
-					case this.backgroundColors[1]:
-						paintClass = "column-paint-1";
+					case this.recommendedColumns.backgroundColors[1]:
+						console.log("Class one");
+						paintClass = this.paintClasses.paint1;
 						break;
-					case this.backgroundColors[2]:
-						paintClass = "column-paint-2";
+					case this.recommendedColumns.backgroundColors[2]:
+						console.log("Class two");
+						paintClass = this.paintClasses.paint2;
 						break;
-					case this.backgroundColors[3]:
-						paintClass = "column-paint-3";
+					case this.recommendedColumns.backgroundColors[3]:
+						console.log("Class four");
+						paintClass = this.paintClasses.paint3;
 						break;
-					case this.backgroundColors[4]:
-						paintClass = "column-paint-4";
+					case this.recommendedColumns.backgroundColors[4]:
+						console.log("Class five");
+						paintClass = this.paintClasses.paint4;
 						break;
 					default:
-						paintClass = "column-paint-default";																
+						console.log("Class default");
+						paintClass = this.paintClasses.paintDefault;
+						break;
 				}
 
 				return paintClass;
+			},
+
+			paintTableKey(p_primaryKey) {
+
+				// Table row ID generation
+				//
+				// When provided, the primary-key will generate a unique ID for
+				// each item row <tr> element. The ID will be in the format of
+				// {table-id}__row_{primary-key-value}, where {table-id} is the
+				// unique ID of the <b-table> and {primary-key-value} is the value
+				// of the item's field value for the field specified by primary-key.
+				//
+				// ID example: column-paint-table__row_0
+
+				return "column-paint-table" + "__row_" + p_primaryKey;
+			},						
+
+			tableClick(p_clickData) {
+
+				// 0. Coloring will be determined by previously defined category-column linkage in store
+				let columnName = p_clickData.column;
+				let paintingData = this.$store.getters.paintingData;
+
+				// 1. Color or uncolor table row
+
+				// A. Determine if coloring or uncoloring has occurred
+
+				// I. Unclicked columns will be colored by default
+				let coloring = !( columnName in paintingData );
+
+				// II. Look for the column in the painting data to decide
+				if ( columnName in paintingData ) {
+					coloring = ( this.defaultBackgroundColor == paintingData[columnName].bColor );
+				}
+
+				// B. Record the color/uncolor in the data store
+				let dataStoreFunction = ( coloring ) ? "linkColumnWithCategory" : "unlinkColumnWithCategory";
+				this.$store.dispatch(dataStoreFunction, p_clickData.column);
+
+				// 2. Determine if page state should be changed and change it if necessary
+				this.changeToNewState();
+			},
+
+			tableData() {
+
+				return this.$store.getters.pageData.categorization.tableData;
 			}	
 		},		
 	}
 </script>
 
 <!-- Page styles -->
-<style>
+<style scoped>
 
 	.column-paint-default {
 

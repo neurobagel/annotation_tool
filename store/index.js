@@ -33,30 +33,35 @@ export const state = () => ({
 		// index.vue
 		home: {
 
+			// Participants.tsv file data
 			tsvFile: null,
+
+			// Data dictionary file data
 			jsonFile: null
 		},
 
 		// categorization.vue
 		categorization: {
 
-			columnCategorization: {
-
-				current: {
-		
-					bColor: "white",
-					category: "",
-					fColor: "black"
-				},
-				default: {
-		
-					bColor: "white",
-					category: "",
-					fColor: "black"			
-				},
-				dataSet: {},
-				paintedTable: {}
+			// Category paint brushes
+			current: {
+	
+				bColor: "white",
+				category: "",
+				fColor: "black"
 			},
+			default: {
+	
+				bColor: "white",
+				category: "",
+				fColor: "black"			
+			},
+
+			// Stores currently painted items
+			paintingData: {},
+
+			// Stores currently loaded table data
+			tableData: {}
 		},
 
 		// annotation.vue
@@ -75,19 +80,8 @@ export const state = () => ({
 // what component changed state data and when
 export const actions = {
 
-	linkColumnWithCategory(p_context, p_columnName) {
+	// Landing page actions
 
-		// 1. Link this column with the current selected category in the data store
-		let categorizationInfo = p_context.state.columnCategorization;
-		p_context.commit("addColumnCategorization", {
-
-			tsvCategory: categorizationInfo.current.category,
-			sidecarColumn: p_columnName,
-			bColor: categorizationInfo.current.bColor,
-			fColor: categorizationInfo.current.fColor
-		});
-	},	
-	
 	saveTsvFile(p_context, p_tsvLines) {
 
 		// 1. Attempt to convert the tsv lines into a dict for each line if valid data given
@@ -110,32 +104,49 @@ export const actions = {
 		p_context.commit("setJsonFile", newJsonData);
 
 	},
+	
+	// Categorization page actions
+
+	linkColumnWithCategory(p_context, p_columnName) {
+
+		// Link this column with the current selected category in the data store
+		let categorizationInfo = p_context.state.pageData.categorization;
+		p_context.commit("addColumnCategorization", {
+
+			tsvCategory: categorizationInfo.current.category,
+			dataDictionaryColumn: p_columnName,
+			bColor: categorizationInfo.current.bColor,
+			fColor: categorizationInfo.current.fColor
+		});
+	},
 
 	saveCurrentPaintInfo(p_context, p_paintingInfo) {
 
-		// 1. Save the category and paint color for future table painting on
+		// Save the category and paint color for future table painting on
 		// the column categorization page
 		p_context.commit("setCurrentPaintInfo", {
 			category: p_paintingInfo.category,
 			bColor: p_paintingInfo.bColor,
 			fColor: p_paintingInfo.fColor
 		});
-	}
+	},
+
+	saveTableData(p_context, p_newTableData) {
+
+		// Store the given table data
+		p_context.commit("setNewCategorizationTable", p_newTableData);
+	},
+
+	unlinkColumnWithCategory(p_context, p_columnName) {
+
+		p_context.commit("removeColumnCategorization", p_columnName);
+	}	
 }
 
 // Mutations - Change state data, as called by Actions
 export const mutations = {
 
-	// MIGHT CHANGE
-	addColumnCategorization(p_state, p_categorization) {
-
-		// Save the categorization in the store using the column name as a key
-		p_state.columnCategorization.dataSet[p_categorization.sidecarColumn] = {
-			tsvCategory: p_categorization.tsvCategory,
-			bColor: p_categorization.bColor,
-			fColor: p_categorization.fColor
-		}
-	},
+	// Landing page mutations
 
 	setTsvFile(p_state, p_tsvRowDictArray) {
 
@@ -147,18 +158,46 @@ export const mutations = {
 
 		// Save the new json dictionary to state data
 		p_state.pageData.home.jsonFile = p_jsonData;
+	},	
+
+	// Categorization page changes
+
+	addColumnCategorization(p_state, p_categorization) {
+
+		console.log("addColumnCategorization p_categorization: " + JSON.stringify(p_categorization));
+		console.log("paintingData keys: " + Object.keys(p_state.pageData.categorization.paintingData));
+		console.log("dataDictionaryColumn: " + p_categorization.dataDictionaryColumn);
+
+		// Save the categorization in the store using the column name as a key
+		p_state.pageData.categorization.paintingData[p_categorization.dataDictionaryColumn] = {
+			tsvCategory: p_categorization.tsvCategory,
+			bColor: p_categorization.bColor,
+			fColor: p_categorization.fColor
+		}
 	},
 
-	// MIGHT CHANGE
 	setCurrentPaintInfo(p_state, p_newPaintingInfo) {
 
 		// 1. Save the new paint category
-		p_state.columnCategorization.current.category = p_newPaintingInfo.category;
+		p_state.pageData.categorization.current.category = p_newPaintingInfo.category;
 
 		// 2. Save the new background and foreground colors
-		p_state.columnCategorization.current.bColor = p_newPaintingInfo.bColor;
-		p_state.columnCategorization.current.fColor = p_newPaintingInfo.fColor;
-	}
+		p_state.pageData.categorization.current.bColor = p_newPaintingInfo.bColor;
+		p_state.pageData.categorization.current.fColor = p_newPaintingInfo.fColor;
+	},
+
+	setNewCategorizationTable(p_state, p_newTableData) {
+
+		// Store the new table data
+		p_state.pageData.categorization.tableData = p_newTableData;
+	},
+
+	removeColumnCategorization(p_state, p_columnName) {
+
+		if ( p_columnName in p_state.pageData.categorization.paintingData ) {
+			delete p_state.pageData.categorization.paintingData[p_columnName];
+		}
+	}	
 }
 
 // Getters - Give access to state data
@@ -172,14 +211,8 @@ export const getters = {
 		return p_state.pageData;
 	},
 
-	// MIGHT CHANGE
-	currentPainting(p_state) {
-		return p_state.columnCategorization.current;
-	},
-
-	// MIGHT CHANGE
-	columnCategorization(p_state) {
-		return p_state.columnCategorization;
+	paintingData(p_state) {
+		return p_state.pageData.categorization.paintingData;
 	}
 }
 
