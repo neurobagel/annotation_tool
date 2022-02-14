@@ -50,58 +50,6 @@
 
 		methods: {
 
-			colorListGroupItem_Transparency(p_event) {
-
-				// 1. Get the list group item element
-				let clickedListGroupItem = document.getElementById(p_event.target.id);
-				let itemIndex = parseInt(p_event.target.id.split("_")[1])
-				let itemText = clickedListGroupItem.innerText;
-
-				// 2. Determine if clicked list group item will be transparent or opaque
-				let currentOpacity = clickedListGroupItem.style.opacity;
-				let makingOpaque = ( this.defaultOpacity == currentOpacity || 
-									 "" == currentOpacity );
-
-				// NOTE: Blank style string means it is fully opaque.
-				// This occurs because Vue CSS is considered to be an external stylesheet
-				// If needs for more dynamic CSS styling arises, may need to re-address
-
-				// 3. Make all list group items transparent
-				let listGroup = document.getElementById(this.tag + "-listgroup");
-				for ( let index = 0; index < listGroup.children.length; index++ ) {
-					
-					// A. Make the list group item transparent
-					listGroup.children[index].style.opacity = this.defaultOpacity;
-				}
-
-				// 4. Change the opacity of the clicked list group item
-
-				// A. Make the clicked list group item opaque
-				if ( makingOpaque ) {
-
-					// I. Make the item opaque
-					clickedListGroupItem.style.opacity = this.clickedOpacity;
-
-					// II. Tell the parent page column painting has begun
-					this.$emit("opacity-action", {
-						category: itemText,
-						opacity: clickedListGroupItem.style.opacity
-					});
-				}
-				// B. Else, make the clicked list group item transparent
-				else {
-
-					// I. Make the item transparent
-					clickedListGroupItem.style.opacity = this.defaultOpacity;
-
-					// II. Tell the parent page column painting has ended
-					this.$emit("opacity-action", {
-						category: "",
-						opacity: clickedListGroupItem.style.opacity
-					});
-				}
-			},
-
 			colorListGroupItem(p_event) {
 
 				// 1. Get the list group item element
