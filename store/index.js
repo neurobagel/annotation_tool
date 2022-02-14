@@ -164,10 +164,6 @@ export const mutations = {
 
 	addColumnCategorization(p_state, p_categorization) {
 
-		console.log("addColumnCategorization p_categorization: " + JSON.stringify(p_categorization));
-		console.log("paintingData keys: " + Object.keys(p_state.pageData.categorization.paintingData));
-		console.log("dataDictionaryColumn: " + p_categorization.dataDictionaryColumn);
-
 		// Save the categorization in the store using the column name as a key
 		p_state.pageData.categorization.paintingData[p_categorization.dataDictionaryColumn] = {
 			tsvCategory: p_categorization.tsvCategory,

@@ -1,9 +1,10 @@
 <template>
 
-	<div>
+	<div class="card">
 		<b-table
 			bordered hover
 			:fields="fields"
+			head-variant="dark"
 			id="column-paint-table"
 			:items="tableData"
 			primary-key="primary-key"
@@ -12,7 +13,6 @@
 			:tbody-tr-class="paintClass">
 		</b-table>
 
-		<table></table>
 	</div>
 
 </template>

@@ -11,8 +11,8 @@
 					:columnData="recommendedColumns"
 					:defaultPalette="$store.state.pageData.categorization.default"
 					tag="recommended-column"
-					title="Recommended Columns"
-					instructions="Click column type and then corresponding column from tsv file"
+					title="Recommended Categories"
+					instructions="Click category and then corresponding column from tsv file"
 					v-on:paint-action="$store.dispatch('saveCurrentPaintInfo', $event)"
 					>
 				</coloring-listgroup>
@@ -64,6 +64,9 @@
 
 			// Determine page state from data contents and change to that new state
 			this.changeToNewState();
+
+			// Set the default painting color to the colors of the first painting class
+			this.setCurrentPaintClass(0);
 		},		
 
 		data() {
@@ -75,6 +78,7 @@
 
 					{ key: "column" },
 					{ key: "description" }
+					// thStyle: "filedata-table-header
 				],
 
 				// Current state of the page
@@ -170,14 +174,8 @@
 				if ( null == tsvFile && null == jsonFile )
 					return [];
 
-				console.log("Point 1");
-				console.log("tsvFile: " + tsvFile);
-				console.log("jsonFile: " + jsonFile);
-
 				// Uses both tsv and json data
 				if ( null != jsonFile ) {
-
-					console.log("Point 2a");
 
 					// 1. Produce an array of dicts
 					var tsvJsonDictArray = [];
@@ -201,12 +199,8 @@
 							"column": headerField,
 							"description": "",
 							"primary-key": tsvJsonIndex - 1
-							//"bColor": this.$store.state.columnCategorization.default.bColor,
-							//"fColor": this.$store.state.columnCategorization.default.fColor,
 						});
 					}
-
-					console.log("Point 2b");
 
 					// B. and a corresponding "description" column that is (possibly) sourced from the json file
 					for ( let json_column in jsonFile ) {
@@ -239,15 +233,11 @@
 						}
 					}
 
-					console.log("Point 2c");
-
 					// 2. Save the table in this component's data
 					this.$store.dispatch("saveTableData", tsvJsonDictArray);
 				}
 				// Uses just tsv data
 				else {
-
-					console.log("Point 3a");
 
 					// 1. Produce an array of dicts
 					var tsvDictArray = [];
@@ -266,8 +256,6 @@
 						});
 					}
 
-					console.log("Point 3b");
-
 					// 2. Save the table in this component's data
 					this.$store.dispatch("saveTableData", tsvDictArray);
 				}
@@ -279,16 +267,12 @@
 		methods: {
 
 			annotationPageAccess(p_enable) {
-
-				console.log("Annotation page access with p_enable: " + p_enable);
 				
 				// 1. Enable/disable access to the annotation page on the nav bar
 				for ( let index = 0; index < this.navItemsState.length; index++ ) {
 					
 					// A. Look for the annotation nav item
 					if ( this.pageNames.annotation.pageName == this.navItemsState[index].pageInfo.pageName ) {
-
-						console.log("Found annotation pagename");
 						
 						// i. Enable/disable the annotation nav item
 						this.navItemsState[index].enabled = p_enable;
@@ -378,8 +362,6 @@
 					}
 				}
 
-				console.log("Column count: " + columnCount);
-
 				return columnCount;
 			},
 
@@ -406,27 +388,21 @@
 				switch ( tableRowBColor ) {
 
 					case this.recommendedColumns.backgroundColors[0]:
-						console.log("Class zero");
 						paintClass = this.paintClasses.paint0;
 						break;
 					case this.recommendedColumns.backgroundColors[1]:
-						console.log("Class one");
 						paintClass = this.paintClasses.paint1;
 						break;
 					case this.recommendedColumns.backgroundColors[2]:
-						console.log("Class two");
 						paintClass = this.paintClasses.paint2;
 						break;
 					case this.recommendedColumns.backgroundColors[3]:
-						console.log("Class four");
 						paintClass = this.paintClasses.paint3;
 						break;
 					case this.recommendedColumns.backgroundColors[4]:
-						console.log("Class five");
 						paintClass = this.paintClasses.paint4;
 						break;
 					default:
-						console.log("Class default");
 						paintClass = this.paintClasses.paintDefault;
 						break;
 				}
@@ -447,7 +423,18 @@
 				// ID example: column-paint-table__row_0
 
 				return "column-paint-table" + "__row_" + p_primaryKey;
-			},						
+			},
+
+			setCurrentPaintClass(p_index) {
+
+				// Set background color, foreground color, and category from the built in values
+				this.$store.dispatch("saveCurrentPaintInfo", {
+
+					bColor: this.recommendedColumns.backgroundColors[p_index],
+					category: this.recommendedColumns.names[p_index],
+					fColor: this.recommendedColumns.foregroundColors[p_index]
+				});
+			},					
 
 			tableClick(p_clickData) {
 
@@ -484,7 +471,7 @@
 </script>
 
 <!-- Page styles -->
-<style scoped>
+<style>
 
 	.column-paint-default {
 
@@ -494,28 +481,34 @@
 
 	.column-paint-0 {
 
-		background-color: "rgb(164,208,90)";
-		color: "black";
+		background-color: rgb(164,208,90);
+		color: black;
 	}
 	.column-paint-1 {
 		
-		background-color: "rgb(127,23,167)";
-		color: "white";
+		background-color: rgb(127,23,167);
+		color: white;
 	}
 	.column-paint-2 {
 		
-		background-color: "rgb(70,76,174)";
-		color: "white";		
+		background-color: rgb(70,76,174);
+		color: white;		
 	}
 	.column-paint-3 {
 		
-		background-color: "rgb(236,197,50)";
-		color: "black";		
+		background-color: rgb(236,197,50);
+		color: black;		
 	}
 	.column-paint-4 {
 		
-		background-color: "rgb(128,1,1)";
-		color: "white";		
+		background-color: rgb(128,1,1);
+		color: white;		
+	}
+
+	.filedata-table-header {
+
+		background-color: black;
+		color: white;
 	}
 				
 </style>

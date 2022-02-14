@@ -15,6 +15,7 @@
 				<b-list-group-item 
 					v-for="(column, index) in columnData.names"
 					v-on:click="colorListGroupItem"
+					:class="'column-paint-' + index"
 					:id="tag + '_' + index"
 					:key="index">
 					{{ column }}
@@ -38,7 +39,68 @@
 			"b-list-group-item": BListGroupItem
 		},
 
+		data() {
+
+			return {
+
+				clickedOpacity: "1.0",
+				defaultOpacity: "0.5"
+			}
+		},
+
 		methods: {
+
+			colorListGroupItem_Transparency(p_event) {
+
+				// 1. Get the list group item element
+				let clickedListGroupItem = document.getElementById(p_event.target.id);
+				let itemIndex = parseInt(p_event.target.id.split("_")[1])
+				let itemText = clickedListGroupItem.innerText;
+
+				// 2. Determine if clicked list group item will be transparent or opaque
+				let currentOpacity = clickedListGroupItem.style.opacity;
+				let makingOpaque = ( this.defaultOpacity == currentOpacity || 
+									 "" == currentOpacity );
+
+				// NOTE: Blank style string means it is fully opaque.
+				// This occurs because Vue CSS is considered to be an external stylesheet
+				// If needs for more dynamic CSS styling arises, may need to re-address
+
+				// 3. Make all list group items transparent
+				let listGroup = document.getElementById(this.tag + "-listgroup");
+				for ( let index = 0; index < listGroup.children.length; index++ ) {
+					
+					// A. Make the list group item transparent
+					listGroup.children[index].style.opacity = this.defaultOpacity;
+				}
+
+				// 4. Change the opacity of the clicked list group item
+
+				// A. Make the clicked list group item opaque
+				if ( makingOpaque ) {
+
+					// I. Make the item opaque
+					clickedListGroupItem.style.opacity = this.clickedOpacity;
+
+					// II. Tell the parent page column painting has begun
+					this.$emit("opacity-action", {
+						category: itemText,
+						opacity: clickedListGroupItem.style.opacity
+					});
+				}
+				// B. Else, make the clicked list group item transparent
+				else {
+
+					// I. Make the item transparent
+					clickedListGroupItem.style.opacity = this.defaultOpacity;
+
+					// II. Tell the parent page column painting has ended
+					this.$emit("opacity-action", {
+						category: "",
+						opacity: clickedListGroupItem.style.opacity
+					});
+				}
+			},
 
 			colorListGroupItem(p_event) {
 
@@ -61,8 +123,11 @@
 				for ( let index = 0; index < listGroup.children.length; index++ ) {
 					
 					// A. Decolor the list group item
-					listGroup.children[index].style.backgroundColor = this.defaultPalette.bColor;
-					listGroup.children[index].style.color = this.defaultPalette.fColor;
+					// listGroup.children[index].style.backgroundColor = this.defaultPalette.bColor;
+					// listGroup.children[index].style.color = this.defaultPalette.fColor;
+
+					// B. Make the list group item transparent
+					listGroup.children[index].style.opacity = this.defaultOpacity;
 				}
 
 				// 4. Change the background and foreground colors of the clicked list group item
@@ -71,10 +136,13 @@
 				if ( coloringItem ) {
 
 					// I. Color the item
-					clickedListGroupItem.style.backgroundColor = this.columnData.backgroundColors[itemIndex];
-					clickedListGroupItem.style.color = this.columnData.foregroundColors[itemIndex];
+					// clickedListGroupItem.style.backgroundColor = this.columnData.backgroundColors[itemIndex];
+					// clickedListGroupItem.style.color = this.columnData.foregroundColors[itemIndex];
 
-					// II. Tell the parent page column painting has begun
+					// II. Make the item opaque
+					clickedListGroupItem.style.opacity = this.clickedOpacity;
+
+					// III. Tell the parent page column painting has begun
 					this.$emit("paint-action", {
 						category: itemText,
 						bColor:this.columnData.backgroundColors[itemIndex],
@@ -88,7 +156,10 @@
 					clickedListGroupItem.style.backgroundColor = this.defaultPalette.bColor;
 					clickedListGroupItem.style.color = this.defaultPalette.fColor;
 
-					// II. Tell the parent page column painting has ended
+					// II. Make the item transparent
+					clickedListGroupItem.style.opacity = this.defaultOpacity;
+
+					// III. Tell the parent page column painting has ended
 					this.$emit("paint-action", {
 						category:"",
 						bColor:this.defaultPalette.bColor,
@@ -104,6 +175,37 @@
 </script>
 
 <style>
+
+.column-paint-0 {
+
+	background-color: rgb(164,208,90);
+	color: black;
+	opacity: 1.0;
+}
+.column-paint-1 {
+	
+	background-color: rgb(127,23,167);
+	color: white;
+	opacity: 0.5;
+}
+.column-paint-2 {
+	
+	background-color: rgb(70,76,174);
+	color: white;	
+	opacity: 0.5;	
+}
+.column-paint-3 {
+	
+	background-color: rgb(236,197,50);
+	color: black;
+	opacity: 0.5;	
+}
+.column-paint-4 {
+	
+	background-color: rgb(128,1,1);
+	color: white;
+	opacity: 0.5;	
+}
 
 .instructions-text {
 
