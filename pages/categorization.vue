@@ -8,7 +8,7 @@
 
 			<b-col cols="4">
 				<coloring-listgroup
-					:columnData="recommendedColumns"
+					:columnData="recommendedCategories"
 					:defaultPalette="$store.state.pageData.categorization.default"
 					tag="recommended-column"
 					title="Recommended Columns"
@@ -110,7 +110,7 @@
 				possibleStates: {
 
 					STATE_NOCATEGORIES_PAINTED: 0,
-					STATE_ATLEASTONE_CATEGORY_PAINTED: 1 << 1
+					STATE_ATLEASTONE_CATEGORY_PAINTED: 1 << 0
 				},								
 				
 				// Local reference to the page names in the store
@@ -130,7 +130,7 @@
 				readyForNextStepFlag: false,
 
 				// Data for the coloring listgroup
-				recommendedColumns: {
+				recommendedCategories: {
 					
 					names: [
 
@@ -170,14 +170,8 @@
 				if ( null == tsvFile && null == jsonFile )
 					return [];
 
-				console.log("Point 1");
-				console.log("tsvFile: " + tsvFile);
-				console.log("jsonFile: " + jsonFile);
-
 				// Uses both tsv and json data
 				if ( null != jsonFile ) {
-
-					console.log("Point 2a");
 
 					// 1. Produce an array of dicts
 					var tsvJsonDictArray = [];
@@ -201,12 +195,8 @@
 							"column": headerField,
 							"description": "",
 							"primary-key": tsvJsonIndex - 1
-							//"bColor": this.$store.state.columnCategorization.default.bColor,
-							//"fColor": this.$store.state.columnCategorization.default.fColor,
 						});
 					}
-
-					console.log("Point 2b");
 
 					// B. and a corresponding "description" column that is (possibly) sourced from the json file
 					for ( let json_column in jsonFile ) {
@@ -239,15 +229,11 @@
 						}
 					}
 
-					console.log("Point 2c");
-
 					// 2. Save the table in this component's data
 					this.$store.dispatch("saveTableData", tsvJsonDictArray);
 				}
 				// Uses just tsv data
 				else {
-
-					console.log("Point 3a");
 
 					// 1. Produce an array of dicts
 					var tsvDictArray = [];
@@ -266,8 +252,6 @@
 						});
 					}
 
-					console.log("Point 3b");
-
 					// 2. Save the table in this component's data
 					this.$store.dispatch("saveTableData", tsvDictArray);
 				}
@@ -279,16 +263,12 @@
 		methods: {
 
 			annotationPageAccess(p_enable) {
-
-				console.log("Annotation page access with p_enable: " + p_enable);
 				
 				// 1. Enable/disable access to the annotation page on the nav bar
 				for ( let index = 0; index < this.navItemsState.length; index++ ) {
 					
 					// A. Look for the annotation nav item
 					if ( this.pageNames.annotation.pageName == this.navItemsState[index].pageInfo.pageName ) {
-
-						console.log("Found annotation pagename");
 						
 						// i. Enable/disable the annotation nav item
 						this.navItemsState[index].enabled = p_enable;
@@ -378,8 +358,6 @@
 					}
 				}
 
-				console.log("Column count: " + columnCount);
-
 				return columnCount;
 			},
 
@@ -405,28 +383,22 @@
 				// B. Determine new class
 				switch ( tableRowBColor ) {
 
-					case this.recommendedColumns.backgroundColors[0]:
-						console.log("Class zero");
+					case this.recommendedCategories.backgroundColors[0]:
 						paintClass = this.paintClasses.paint0;
 						break;
-					case this.recommendedColumns.backgroundColors[1]:
-						console.log("Class one");
+					case this.recommendedCategories.backgroundColors[1]:
 						paintClass = this.paintClasses.paint1;
 						break;
-					case this.recommendedColumns.backgroundColors[2]:
-						console.log("Class two");
+					case this.recommendedCategories.backgroundColors[2]:
 						paintClass = this.paintClasses.paint2;
 						break;
-					case this.recommendedColumns.backgroundColors[3]:
-						console.log("Class four");
+					case this.recommendedCategories.backgroundColors[3]:
 						paintClass = this.paintClasses.paint3;
 						break;
-					case this.recommendedColumns.backgroundColors[4]:
-						console.log("Class five");
+					case this.recommendedCategories.backgroundColors[4]:
 						paintClass = this.paintClasses.paint4;
 						break;
 					default:
-						console.log("Class default");
 						paintClass = this.paintClasses.paintDefault;
 						break;
 				}
@@ -494,28 +466,28 @@
 
 	.column-paint-0 {
 
-		background-color: "rgb(164,208,90)";
-		color: "black";
+		background-color: rgb(164,208,90);
+		color: black;
 	}
 	.column-paint-1 {
 		
-		background-color: "rgb(127,23,167)";
-		color: "white";
+		background-color: rgb(127,23,167);
+		color: white;
 	}
 	.column-paint-2 {
 		
-		background-color: "rgb(70,76,174)";
-		color: "white";		
+		background-color: rgb(70,76,174);
+		color: white;		
 	}
 	.column-paint-3 {
 		
-		background-color: "rgb(236,197,50)";
-		color: "black";		
+		background-color: rgb(236,197,50);
+		color: black;		
 	}
 	.column-paint-4 {
 		
-		background-color: "rgb(128,1,1)";
-		color: "white";		
+		background-color: rgb(128,1,1);
+		color: white;		
 	}
 				
 </style>

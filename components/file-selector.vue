@@ -8,7 +8,7 @@
 					Choose file
 					<input type="file" :accept="contentType" @change="onFileSelected"/>
 				</label>
-				<span>{{ fileSelectorLabel }}</span>
+				<span>{{ fileName }}</span>
 			</b-form>
 		</b-row>
 
@@ -25,22 +25,25 @@
 		data() {
 
 			return {
+				
+				knownContentTypes: {
 
-				file1: null,
-				file2: null,
+					"json": "application/json",
+					"tsv": "text/tab-separated-values"
+				},
 
-				fileInput: {},
-				fileText: ["File text here..."],
+				fileInput: null
 			}
 		},
 
 		computed: {
 
-			fileSelectorLabel() {
+			fileName() {
 
-				if ( "name" in this.fileInput && this.fileInput.name.length > 0 )
-					return this.fileInput.name;
-				return "";
+				return ( null == this.fileInput ) ? "" : this.fileInput.name;
+				// if ( "name" in this.fileInput && this.fileInput.name.length > 0 )
+				// 	return this.fileInput.name;
+				// return "";
 			}
 		},
 
@@ -60,22 +63,21 @@
 				// 2. Parse the whole file and save the lines
 				
 				// A. TSV file parsing
-				if ( this.fileInput.name.toLowerCase().endsWith(".tsv") ) {			
+				// if ( this.fileInput.name.toLowerCase().endsWith(".tsv") ) {
+				if ( this.knownContentTypes["tsv"] == this.contentType ) {
 
 					Papa.parse(this.fileInput, {
 
 						complete: results => {
 
-							// I. Save the file data
-							this.fileText = results.data;
-
-							// II. Send the file data to the store to be processed and saved
-							this.$emit("file-selected", this.fileText);
+							// I. Send the file data to the store to be processed and saved
+							this.$emit("file-selected", results.data);
 						},
 					});
 				} 
 				// B. JSON file parsing
-				else if ( this.fileInput.name.toLowerCase().endsWith(".json") ) {
+				// else if ( this.fileInput.name.toLowerCase().endsWith(".json") ) {
+				else if ( this.knownContentTypes["json"] == this.contentType ) {
 
 					// I. Reference to this json object in this component's data
 					var myJson;
