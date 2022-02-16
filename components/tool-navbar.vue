@@ -32,33 +32,6 @@
                         :to="navItem.pageInfo.location"
                         :disabled="!navItem.enabled">{{ navItem.pageInfo.fullName }}</b-nav-item>
 
-                    <!-- Search bar -->
-                    <!-- <b-nav-form>
-                        <b-form-input size="sm" class="mr-sm-2" placeholder="Search"></b-form-input>
-                        <b-button size="sm" class="my-2 my-sm-0" type="submit">Search</b-button>
-                    </b-nav-form> -->
-
-                    <!-- Dropdown -->
-                    <!-- <b-nav-item-dropdown text="Lang" right>
-                        <b-dropdown-item href="#">EN</b-dropdown-item>
-                        <b-dropdown-item href="#">ES</b-dropdown-item>
-                        <b-dropdown-item href="#">RU</b-dropdown-item>
-                        <b-dropdown-item href="#">FA</b-dropdown-item>
-                    </b-nav-item-dropdown> -->
-
-                    <!-- Dropdown -->
-                    <!-- <b-nav-item-dropdown right> -->
-
-                        <!-- Using 'button-content' slot -->
-                        <!-- <template #button-content>
-                            <em>User</em>
-                        </template>
-
-                        <b-dropdown-item href="#">Profile</b-dropdown-item>
-                        <b-dropdown-item href="#">Sign Out</b-dropdown-item>
-
-                    </b-nav-item-dropdown> -->
-
                 </b-navbar-nav>
 
             </b-collapse>
@@ -85,20 +58,6 @@
             return {
                 max: 100,
                 value: 45
-            }
-        },
-
-        methods: {
-
-            checkStorePageAccessibility(p_pageName) {
-
-                let stateFields = Object.keys(this.$store.getters.pageAccessibility);
-                let storeHasPageName = ( stateFields.includes(p_pageName) );
-
-                if ( storeHasPageName ) {
-                    return this.$store.getters.pageAccessibility[p_pageName](this.$route.name);
-                }
-                return false;
             }
         },
 

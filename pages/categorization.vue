@@ -8,7 +8,7 @@
 
 			<b-col cols="4">
 				<coloring-listgroup
-					:columnData="recommendedColumns"
+					:columnData="recommendedCategories"
 					:defaultPalette="$store.state.pageData.categorization.default"
 					tag="recommended-column"
 					title="Recommended Categories"
@@ -78,7 +78,6 @@
 
 					{ key: "column" },
 					{ key: "description" }
-					// thStyle: "filedata-table-header
 				],
 
 				// Current state of the page
@@ -114,7 +113,7 @@
 				possibleStates: {
 
 					STATE_NOCATEGORIES_PAINTED: 0,
-					STATE_ATLEASTONE_CATEGORY_PAINTED: 1 << 1
+					STATE_ATLEASTONE_CATEGORY_PAINTED: 1 << 0
 				},								
 				
 				// Local reference to the page names in the store
@@ -134,7 +133,7 @@
 				readyForNextStepFlag: false,
 
 				// Data for the coloring listgroup
-				recommendedColumns: {
+				recommendedCategories: {
 					
 					names: [
 
@@ -175,7 +174,7 @@
 					return [];
 
 				// Uses both tsv and json data
-				if ( null != jsonFile ) {
+				if ( null != jsonFile && null != tsvFile ) {
 
 					// 1. Produce an array of dicts
 					var tsvJsonDictArray = [];
@@ -387,19 +386,19 @@
 				// B. Determine new class
 				switch ( tableRowBColor ) {
 
-					case this.recommendedColumns.backgroundColors[0]:
+					case this.recommendedCategories.backgroundColors[0]:
 						paintClass = this.paintClasses.paint0;
 						break;
-					case this.recommendedColumns.backgroundColors[1]:
+					case this.recommendedCategories.backgroundColors[1]:
 						paintClass = this.paintClasses.paint1;
 						break;
-					case this.recommendedColumns.backgroundColors[2]:
+					case this.recommendedCategories.backgroundColors[2]:
 						paintClass = this.paintClasses.paint2;
 						break;
-					case this.recommendedColumns.backgroundColors[3]:
+					case this.recommendedCategories.backgroundColors[3]:
 						paintClass = this.paintClasses.paint3;
 						break;
-					case this.recommendedColumns.backgroundColors[4]:
+					case this.recommendedCategories.backgroundColors[4]:
 						paintClass = this.paintClasses.paint4;
 						break;
 					default:
@@ -430,9 +429,9 @@
 				// Set background color, foreground color, and category from the built in values
 				this.$store.dispatch("saveCurrentPaintInfo", {
 
-					bColor: this.recommendedColumns.backgroundColors[p_index],
-					category: this.recommendedColumns.names[p_index],
-					fColor: this.recommendedColumns.foregroundColors[p_index]
+					bColor: this.recommendedCategories.backgroundColors[p_index],
+					category: this.recommendedCategories.names[p_index],
+					fColor: this.recommendedCategories.foregroundColors[p_index]
 				});
 			},					
 
@@ -503,12 +502,6 @@
 		
 		background-color: rgb(128,1,1);
 		color: white;		
-	}
-
-	.filedata-table-header {
-
-		background-color: black;
-		color: white;
 	}
 				
 </style>

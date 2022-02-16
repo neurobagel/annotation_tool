@@ -103,9 +103,9 @@
 				possibleStates: {
 
 					STATE_NOFILES_LOADED: 0,
-					STATE_TSVFILE_LOADED: 1 << 1,
-					STATE_JSONFILE_LOADED: 1 << 2,
-					STATE_BOTHFILES_LOADED: (1 << 1) | (1 << 2)
+					STATE_TSVFILE_LOADED: 1 << 0,
+					STATE_JSONFILE_LOADED: 1 << 1,
+					STATE_BOTHFILES_LOADED: (1 << 0) | (1 << 1)
 				},
 
 				// Whether or not page has enabled access to the categorization page
