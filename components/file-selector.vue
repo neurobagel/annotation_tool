@@ -1,14 +1,18 @@
 <template>
 
-	<b-container>
+	<div>
 
-		<b-row>
+		<b-row class="file-selector-row">
 			<b-form>
-				<input type="file" :accept="contentType" @change="onFileSelected">
+				<label class="file-selector-button btn">
+					Choose file
+					<input type="file" :accept="contentType" @change="onFileSelected"/>
+				</label>
+				<span>{{ fileName }}</span>
 			</b-form>
 		</b-row>
 
-	</b-container>
+	</div>
 
 </template>
 
@@ -21,9 +25,25 @@
 		data() {
 
 			return {
+				
+				knownContentTypes: {
 
-				fileInput: {},
-				fileText: ["File text here..."],
+					"json": "application/json",
+					"tsv": "text/tab-separated-values"
+				},
+
+				fileInput: null
+			}
+		},
+
+		computed: {
+
+			fileName() {
+
+				return ( null == this.fileInput ) ? "" : this.fileInput.name;
+				// if ( "name" in this.fileInput && this.fileInput.name.length > 0 )
+				// 	return this.fileInput.name;
+				// return "";
 			}
 		},
 
@@ -43,22 +63,21 @@
 				// 2. Parse the whole file and save the lines
 				
 				// A. TSV file parsing
-				if ( this.fileInput.name.toLowerCase().endsWith(".tsv") ) {			
+				// if ( this.fileInput.name.toLowerCase().endsWith(".tsv") ) {
+				if ( this.knownContentTypes["tsv"] == this.contentType ) {
 
 					Papa.parse(this.fileInput, {
 
 						complete: results => {
 
-							// I. Save the file data
-							this.fileText = results.data;
-
-							// II. Send the file data to the store to be processed and saved
-							this.$emit("file-selected", this.fileText);
+							// I. Send the file data to the store to be processed and saved
+							this.$emit("file-selected", results.data);
 						},
 					});
 				} 
 				// B. JSON file parsing
-				else if ( this.fileInput.name.toLowerCase().endsWith(".json") ) {
+				// else if ( this.fileInput.name.toLowerCase().endsWith(".json") ) {
+				else if ( this.knownContentTypes["json"] == this.contentType ) {
 
 					// I. Reference to this json object in this component's data
 					var myJson;
@@ -87,3 +106,52 @@
 	}
 
 </script>
+
+<style>
+
+input[type="file"] {
+
+	display: none;
+}
+
+/*.btn:hover {
+	
+	color: white;
+}*/
+
+.custom-file-upload {
+
+	border: 1px solid #ccc;
+	display: inline-block;
+	padding: 6px 12px;
+	cursor: pointer;
+}
+
+.file-selector-button {
+
+	background-color: #28a745;
+	border-color: #28a745;
+	border-radius: 5px;
+	color: white;
+	padding: 0.5em 0.75em 0.5em 0.75em;
+}
+.file-selector-button:hover {
+	
+	border-color: green;
+	background-color: green;
+	color: white;
+}
+.file-selector-button:active {
+  background: #e5e5e5;
+  -webkit-box-shadow: inset 0px 0px 5px #c1c1c1;
+     -moz-box-shadow: inset 0px 0px 5px #c1c1c1;
+          box-shadow: inset 0px 0px 5px #c1c1c1;
+   outline: none;
+}
+
+.file-selector-row {
+
+	margin-left: 0 !important;
+	padding-left: 0 !important;
+}
+</style>

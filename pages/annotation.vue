@@ -1,10 +1,9 @@
 <template>
 
-    <b-container>
+    <b-container fluid>
 
-        <b-row>
-            <h1>Column Annotation</h1>
-        </b-row>
+		<!-- Navigation bar -->
+		<tool-navbar :navItemsState="navItemsState" :pageName="fullName"></tool-navbar>
 
         <b-row>
             <b-col cols="4"></b-col>
@@ -15,7 +14,7 @@
                      :height="mockupImage.height"/>
             </b-col>
             <b-col cols="4"></b-col>
-        </b-row>
+        </b-row>        
 
     </b-container>
 
@@ -29,22 +28,42 @@
 
             return {
 
-                mockupImage: {
+                // Full text name of this page
+				fullName: this.$store.getters.pageNames.categorization.fullName, 
 
+                // Image for temporary annotation page mockup
+                mockupImage: {
                     filename: "annotation_mockup.jpg",
                     height: 956,
                     width: 1045
-                }
+                },
+
+                // Initial status of the navbar items for other pages
+                navItemsState: [
+
+                    { 
+                        enabled: true,
+                        pageInfo: this.$store.state.pageNames.home,
+                    },
+					{
+                        enabled: true,
+                        pageInfo: this.$store.state.pageNames.categorization
+                    },
+					{
+                        enabled: false,
+                        pageInfo: this.$store.state.pageNames.download
+                    }
+				]
             }
         }
+        
     }
 
 </script>
 
-<style>
+<style scoped>
 
 .vertical-center-mockup {
-
     margin: 0;
     position: absolute;
     top: 50%;
