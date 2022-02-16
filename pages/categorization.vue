@@ -171,7 +171,7 @@
 					return [];
 
 				// Uses both tsv and json data
-				if ( null != jsonFile ) {
+				if ( null != jsonFile && null != tsvFile ) {
 
 					// 1. Produce an array of dicts
 					var tsvJsonDictArray = [];
