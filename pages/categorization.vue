@@ -4,13 +4,6 @@
 
 		<tool-navbar :navItemsState="navItemsState" :pageName="fullName"></tool-navbar>
 
-		<!-- Divs used to programmatically retrieve color palette -->
-		<div id="mockDiv0" :class="paintClasses[0]"></div>
-		<div id="mockDiv1" :class="paintClasses[1]"></div>
-		<div id="mockDiv2" :class="paintClasses[2]"></div>
-		<div id="mockDiv3" :class="paintClasses[3]"></div>
-		<div id="mockDiv4" :class="paintClasses[4]"></div>
-
 		<b-row>
 
 			<b-col cols="4">
@@ -32,6 +25,7 @@
 					:currentPalette="$store.state.pageData.categorization.current"
 					:defaultPalette="$store.state.pageData.categorization.default"
 					:tableData="tableDataFromTsvAndOrJson"
+					:tableID="tableID"
 					v-on:column-name-selected="tableClick($event)">
 				</filedata-table>
 			</b-col>
@@ -158,7 +152,9 @@
 						"Diagnosis",
 						"Assessment Tool"
 					]
-				}
+				},
+
+				tableID: "category-painting-table"
 			}
 		},
 

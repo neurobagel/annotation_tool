@@ -211,10 +211,6 @@ export const getters = {
 
 	paintingData(p_state) {
 		return p_state.pageData.categorization.paintingData;
-	},
-
-	categorizationTableData(p_state) {
-		return p_state.pageData.categorization.tableData;
 	}
 }
 

@@ -21,14 +21,6 @@
 
 	export default {
 
-		data() {
-
-			return {
-
-				tableID: "category-painting-table"
-			}
-		},
-
 		methods: {	
 
 			tableRowClick(p_item, p_index) {
@@ -52,7 +44,7 @@
 			}
 		},
 
-		props: ["currentPalette", "defaultPalette", "fields", "paintClass", "tableData"]
+		props: ["currentPalette", "defaultPalette", "fields", "paintClass", "tableData", "tableID"]
 	}
 
 </script>
