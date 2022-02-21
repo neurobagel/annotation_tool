@@ -5,7 +5,7 @@
 			bordered hover
 			:fields="fields"
 			head-variant="dark"
-			id="column-paint-table"
+			:id="tableID"
 			:items="tableData"
 			primary-key="primary-key"
 			@row-clicked="tableRowClick"
@@ -21,12 +21,20 @@
 
 	export default {
 
+		data() {
+
+			return {
+
+				tableID: "category-painting-table"
+			}
+		},
+
 		methods: {	
 
 			tableRowClick(p_item, p_index) {
 
 				// 0. Get this element
-				let itemID = "column-paint-table" + "__row_" + p_item["primary-key"];
+				let itemID = this.tableID + "__row_" + p_item["primary-key"];
 				let tableRow = document.getElementById(itemID);
 
 				// 1. Determine if this item is to be colored or uncolored

@@ -13,9 +13,9 @@
 		<b-row>
 			<b-list-group :id="tag + '-listgroup'">
 				<b-list-group-item 
-					v-for="(column, index) in columnData.names"
+					v-for="(column, index) in categoryData.names"
 					v-on:click="colorListGroupItem"
-					:class="'column-paint-' + index"
+					:class="['category-style-' + index, 'coloring-listgroup-item']"
 					:id="tag + '_' + index"
 					:key="index">
 					{{ column }}
@@ -57,10 +57,10 @@
 				let itemIndex = parseInt(p_event.target.id.split("_")[1])
 				let itemText = clickedListGroupItem.innerText;
 
-				// 2. Determine if clicked list group item will be colored or decolored
-				let currentBackgroundColor = clickedListGroupItem.style.backgroundColor;
-				let coloringItem = ( this.defaultPalette.bColor == currentBackgroundColor || 
-									 "" == currentBackgroundColor );
+				// 2. Determine if clicked list group item will be opaque or transparent
+				let currentOpacity = clickedListGroupItem.style.opacity;
+				let makingItemOpaque = ( this.defaultOpacity == currentOpacity || 
+									 "" == currentOpacity );
 
 				// NOTE: Blank style string means it is uncolored.
 				// This occurs because Vue CSS is considered to be an external stylesheet
@@ -70,44 +70,32 @@
 				let listGroup = document.getElementById(this.tag + "-listgroup");
 				for ( let index = 0; index < listGroup.children.length; index++ ) {
 					
-					// A. Decolor the list group item
-					// listGroup.children[index].style.backgroundColor = this.defaultPalette.bColor;
-					// listGroup.children[index].style.color = this.defaultPalette.fColor;
-
-					// B. Make the list group item transparent
+					// A. Make the list group item transparent
 					listGroup.children[index].style.opacity = this.defaultOpacity;
 				}
 
 				// 4. Change the background and foreground colors of the clicked list group item
 								
 				// A. Color the clicked list group item
-				if ( coloringItem ) {
+				if ( makingItemOpaque ) {
 
-					// I. Color the item
-					// clickedListGroupItem.style.backgroundColor = this.columnData.backgroundColors[itemIndex];
-					// clickedListGroupItem.style.color = this.columnData.foregroundColors[itemIndex];
-
-					// II. Make the item opaque
+					// I. Make the item opaque
 					clickedListGroupItem.style.opacity = this.clickedOpacity;
 
-					// III. Tell the parent page column painting has begun
+					// II. Tell the parent page column painting has begun
 					this.$emit("paint-action", {
 						category: itemText,
-						bColor:this.columnData.backgroundColors[itemIndex],
-						fColor:this.columnData.foregroundColors[itemIndex]
+						bColor:this.categoryData.backgroundColors[itemIndex],
+						fColor:this.categoryData.foregroundColors[itemIndex]
 					});
 				} 
 				// B. Else, decolor the clicked list group item
 				else {
 
-					// I. Uncolor the item
-					clickedListGroupItem.style.backgroundColor = this.defaultPalette.bColor;
-					clickedListGroupItem.style.color = this.defaultPalette.fColor;
-
-					// II. Make the item transparent
+					// I. Make the item transparent
 					clickedListGroupItem.style.opacity = this.defaultOpacity;
 
-					// III. Tell the parent page column painting has ended
+					// II. Tell the parent page column painting has ended
 					this.$emit("paint-action", {
 						category:"",
 						bColor:this.defaultPalette.bColor,
@@ -117,43 +105,12 @@
 			}
 		},
 
-		props: ["columnData", "defaultPalette", "instructions", "title", "tag"]
+		props: ["categoryData", "defaultPalette", "instructions", "title", "tag"]
 	}
 
 </script>
 
 <style>
-
-.column-paint-0 {
-
-	background-color: rgb(164,208,90);
-	color: black;
-	opacity: 1.0;
-}
-.column-paint-1 {
-	
-	background-color: rgb(127,23,167);
-	color: white;
-	opacity: 0.5;
-}
-.column-paint-2 {
-	
-	background-color: rgb(70,76,174);
-	color: white;	
-	opacity: 0.5;	
-}
-.column-paint-3 {
-	
-	background-color: rgb(236,197,50);
-	color: black;
-	opacity: 0.5;	
-}
-.column-paint-4 {
-	
-	background-color: rgb(128,1,1);
-	color: white;
-	opacity: 0.5;	
-}
 
 .instructions-text {
 
