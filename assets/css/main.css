@@ -1,0 +1,33 @@
+/* Palette for categories on the categorization page
+   and other interface items in the tool */
+
+.category-style-0 {
+
+	background-color: rgb(164,208,90);
+	color: black;
+	opacity: 1.0;
+}
+.category-style-1 {
+	
+	background-color: rgb(127,23,167);
+	color: white;
+	opacity: 0.5;
+}
+.category-style-2 {
+	
+	background-color: rgb(70,76,174);
+	color: white;	
+	opacity: 0.5;	
+}
+.category-style-3 {
+	
+	background-color: rgb(236,197,50);
+	color: black;
+	opacity: 0.5;	
+}
+.category-style-4 {
+	
+	background-color: rgb(128,1,1);
+	color: white;
+	opacity: 0.5;	
+}

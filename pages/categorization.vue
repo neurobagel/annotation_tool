@@ -64,16 +64,26 @@
 		created() {
 
 			// Determine page state from data contents and change to that new state
-			this.changeToNewState();
+			// this.changeToNewState();
 		},
 
 		mounted() {
 
+			// NOTE: 'document' and 'window' are not yet defined until this hook.
+			// This is why any piece of functionality that requires either must be placed
+			// at this later stage of the Vue hook lifecycle
+			
+			// 1. Retrieve the painting palette by looking at the style for the coloring listgroup items
+			this.retrievePaletteFromListgroupStyle();
+			
 			// 1. Pull background and foreground colors from paint classes in the global stylesheet
-			this.retrievePaletteFromGlobalStyle();
+			// this.retrievePaletteFromGlobalStyle();
 
-			// 2. Set the default painting color to the colors of the first painting class
+			// 3. Set the default painting color to the colors of the first painting class
 			this.setCurrentPaintClass(0);
+
+			// 4. Determine page state from data contents and change to that new state
+			this.changeToNewState();
 		},
 
 		data() {
@@ -472,6 +482,48 @@
 							}
 						}
 					}
+				}
+			},
+
+			retrievePaletteFromListgroupStyle() {
+
+				// 0. Get the coloring listgroup component's list items
+				let listGroupItems = document.getElementsByClassName("coloring-listgroup-item");
+
+				// 1. Determine the painting palette via the palette classes used in the coloring listgroup component's items
+				let tempPaintClassDict = { bColor: {}, fColor: {} };
+				let classKey = "category-style"
+				for ( let index = 0; index < listGroupItems.length; index++ ) {
+
+					// A. Get the computed style of the listgroup item
+					let styleObject = window.getComputedStyle(listGroupItems[index]);
+
+					// B. Get the item's background color and text color
+					let bColor = styleObject.getPropertyValue("background-color");
+					let fColor = styleObject.getPropertyValue("color");
+
+					// C. Determine the number of the category style class and save it in a temporary dictionary
+					let classList = listGroupItems[index].classList.value.split(" ");
+					for ( let index2 = 0; index2 < classList.length; index2++ ) {
+
+						// I. Find the category style class in the class list for this item
+						if ( -1 != classList[index2].indexOf(classKey) ) {
+
+							// a. Determine the single digit category number
+							let categoryNumber = classList[index2][classList[index2].length - 1];
+
+							// b. Match the background and text color to this category number in the temp dictionary
+							tempPaintClassDict.bColor[categoryNumber] = bColor;
+							tempPaintClassDict.fColor[categoryNumber] = fColor;
+						}
+					}
+				}
+
+				// 2. Fill out the background and foreground colors in the palette in numeric order
+				for ( let index = 0; index < listGroupItems.length; index++ ) {
+
+					this.recommendedCategories.backgroundColors.push(tempPaintClassDict.bColor[index.toString()]);
+					this.recommendedCategories.foregroundColors.push(tempPaintClassDict.fColor[index.toString()]);
 				}
 			},
 

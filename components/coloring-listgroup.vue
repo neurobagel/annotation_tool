@@ -57,16 +57,21 @@
 				let itemIndex = parseInt(p_event.target.id.split("_")[1])
 				let itemText = clickedListGroupItem.innerText;
 
+				let styleObject = window.getComputedStyle(clickedListGroupItem);
+				console.log("Computed background color for clicked list group item: " + styleObject.getPropertyValue('background-color'));
+				console.log("Computed color for clicked list group item: " + styleObject.getPropertyValue('color'));
+				
+
 				// 2. Determine if clicked list group item will be opaque or transparent
 				let currentOpacity = clickedListGroupItem.style.opacity;
 				let makingItemOpaque = ( this.defaultOpacity == currentOpacity || 
 									 "" == currentOpacity );
 
-				// NOTE: Blank style string means it is uncolored.
+				// NOTE: Blank style string means it is unstyled.
 				// This occurs because Vue CSS is considered to be an external stylesheet
 				// If needs for more dynamic CSS styling arises, may need to re-address
 
-				// 3. Decolor all list group items
+				// 3. Make all list group items transparent
 				let listGroup = document.getElementById(this.tag + "-listgroup");
 				for ( let index = 0; index < listGroup.children.length; index++ ) {
 					
@@ -74,9 +79,9 @@
 					listGroup.children[index].style.opacity = this.defaultOpacity;
 				}
 
-				// 4. Change the background and foreground colors of the clicked list group item
+				// 4. Make the clicked list group item opaque or transparent
 								
-				// A. Color the clicked list group item
+				// A. Make the clicked list group item opaque
 				if ( makingItemOpaque ) {
 
 					// I. Make the item opaque
@@ -84,12 +89,13 @@
 
 					// II. Tell the parent page column painting has begun
 					this.$emit("paint-action", {
+
 						category: itemText,
 						bColor:this.categoryData.backgroundColors[itemIndex],
 						fColor:this.categoryData.foregroundColors[itemIndex]
 					});
 				} 
-				// B. Else, decolor the clicked list group item
+				// B. Else, make the clicked list group item transparent
 				else {
 
 					// I. Make the item transparent
@@ -97,9 +103,10 @@
 
 					// II. Tell the parent page column painting has ended
 					this.$emit("paint-action", {
-						category:"",
-						bColor:this.defaultPalette.bColor,
-						fColor:this.defaultPalette.fColor
+
+						category: "",
+						bColor: this.defaultPalette.bColor,
+						fColor: this.defaultPalette.fColor
 					});
 				}
 			}
