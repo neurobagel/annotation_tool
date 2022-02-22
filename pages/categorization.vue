@@ -8,11 +8,11 @@
 
 			<b-col cols="4">
 				<coloring-listgroup
-					:columnData="recommendedCategories"
+					:categoryData="recommendedCategories"
 					:defaultPalette="$store.state.pageData.categorization.default"
 					tag="recommended-column"
-					title="Recommended Columns"
-					instructions="Click column type and then corresponding column from tsv file"
+					title="Recommended Categories"
+					instructions="Click category and then corresponding column from tsv file"
 					v-on:paint-action="$store.dispatch('saveCurrentPaintInfo', $event)"
 					>
 				</coloring-listgroup>
@@ -25,6 +25,7 @@
 					:currentPalette="$store.state.pageData.categorization.current"
 					:defaultPalette="$store.state.pageData.categorization.default"
 					:tableData="tableDataFromTsvAndOrJson"
+					:tableID="tableID"
 					v-on:column-name-selected="tableClick($event)">
 				</filedata-table>
 			</b-col>
@@ -63,8 +64,27 @@
 		created() {
 
 			// Determine page state from data contents and change to that new state
+			// this.changeToNewState();
+		},
+
+		mounted() {
+
+			// NOTE: 'document' and 'window' are not yet defined until this hook.
+			// This is why any piece of functionality that requires either must be placed
+			// at this later stage of the Vue hook lifecycle
+			
+			// 1. Retrieve the painting palette by looking at the style for the coloring listgroup items
+			this.retrievePaletteFromListgroupStyle();
+			
+			// 1. Pull background and foreground colors from paint classes in the global stylesheet
+			// this.retrievePaletteFromGlobalStyle();
+
+			// 3. Set the default painting color to the colors of the first painting class
+			this.setCurrentPaintClass(0);
+
+			// 4. Determine page state from data contents and change to that new state
 			this.changeToNewState();
-		},		
+		},
 
 		data() {
 
@@ -118,12 +138,11 @@
 
 				paintClasses: {
 
-					paint0: "column-paint-0",
-					paint1: "column-paint-1",
-					paint2: "column-paint-2",
-					paint3: "column-paint-3",
-					paint4: "column-paint-4",
-					paintDefault: "column-paint-default"
+					paint0: "category-style-0",
+					paint1: "category-style-1",
+					paint2: "category-style-2",
+					paint3: "category-style-3",
+					paint4: "category-style-4"
 				},
 
 				// Whether or not page has enabled access to the annotation page
@@ -132,6 +151,9 @@
 				// Data for the coloring listgroup
 				recommendedCategories: {
 					
+					backgroundColors: [],
+					foregroundColors: [],
+
 					names: [
 
 						"Subject ID",
@@ -139,24 +161,10 @@
 						"Sex",
 						"Diagnosis",
 						"Assessment Tool"
-					],
-					backgroundColors: [
-
-						"rgb(164,208,90)",
-						"rgb(127,23,167)",
-						"rgb(70,76,174)",
-						"rgb(236,197,50)",
-						"rgb(128,1,1)"
-					],
-					foregroundColors: [
-
-						"black",
-						"white",
-						"white",
-						"black",
-						"white"
 					]
-				}
+				},
+
+				tableID: "category-painting-table"
 			}
 		},
 
@@ -260,7 +268,7 @@
 			}
 		},
 
-		methods: {
+		methods: {	
 
 			annotationPageAccess(p_enable) {
 				
@@ -361,6 +369,12 @@
 				return columnCount;
 			},
 
+			getCssValue(p_cssObject, p_cssKey) {
+				
+				// Return the CSS value of the given key if it exists, otherwise blank string
+				return ( p_cssKey in p_cssObject ) ? p_cssObject[p_cssKey] : "";
+			},
+
 			getPaintClass(p_item, p_type) {
 
 				// 0. Get reference to this row element
@@ -416,10 +430,113 @@
 				// unique ID of the <b-table> and {primary-key-value} is the value
 				// of the item's field value for the field specified by primary-key.
 				//
-				// ID example: column-paint-table__row_0
+				// ID example: category-style-table__row_0
 
-				return "column-paint-table" + "__row_" + p_primaryKey;
-			},						
+				return "category-style-table" + "__row_" + p_primaryKey;
+			},
+
+			parseCssString(p_cssString) {
+
+				// Produce object based on the CSS string via regular expression parsing
+				let regex = /([\w-]*)\s*:\s*([^;]*)/g;
+				let match, cssProperties={};
+				while ( match = regex.exec(p_cssString) ) {
+
+					cssProperties[match[1]] = match[2].trim();
+				}
+
+				return cssProperties;
+			},
+
+			retrievePaletteFromGlobalStyle() {
+
+				// 1. Go through stylesheets until we find the paintClasses
+				for ( let sheetID in document.styleSheets ) {
+
+					for ( let ruleID in document.styleSheets[sheetID].cssRules ) {
+
+						for ( let paintClass in this.paintClasses ) {
+
+							// A. Make sure the CSS ruleset is an object containing a CSS string with the desired paint class
+							if ( typeof (document.styleSheets[sheetID].cssRules[ruleID]) === "object" &&
+								 "cssText" in document.styleSheets[sheetID].cssRules[ruleID] &&
+								 -1 != document.styleSheets[sheetID].cssRules[ruleID].cssText.indexOf(this.paintClasses[paintClass]) ) {
+
+								// I. Parse the CSS string for this class into an object
+								let cssProperties = this.parseCssString(
+									document.styleSheets[sheetID].cssRules[ruleID].cssText);
+
+								// II. Retrieve the background-color and color from the css object
+								let backgroundColor = this.getCssValue(
+									cssProperties,
+									"background-color"
+								);
+								let foregroundColor = this.getCssValue(
+									cssProperties,
+									"color"
+								);
+
+								// III. Save the background and foreground colors
+								this.recommendedCategories.backgroundColors.push(backgroundColor);
+								this.recommendedCategories.foregroundColors.push(foregroundColor);
+							}
+						}
+					}
+				}
+			},
+
+			retrievePaletteFromListgroupStyle() {
+
+				// 0. Get the coloring listgroup component's list items
+				let listGroupItems = document.getElementsByClassName("coloring-listgroup-item");
+
+				// 1. Determine the painting palette via the palette classes used in the coloring listgroup component's items
+				let tempPaintClassDict = { bColor: {}, fColor: {} };
+				let classKey = "category-style"
+				for ( let index = 0; index < listGroupItems.length; index++ ) {
+
+					// A. Get the computed style of the listgroup item
+					let styleObject = window.getComputedStyle(listGroupItems[index]);
+
+					// B. Get the item's background color and text color
+					let bColor = styleObject.getPropertyValue("background-color");
+					let fColor = styleObject.getPropertyValue("color");
+
+					// C. Determine the number of the category style class and save it in a temporary dictionary
+					let classList = listGroupItems[index].classList.value.split(" ");
+					for ( let index2 = 0; index2 < classList.length; index2++ ) {
+
+						// I. Find the category style class in the class list for this item
+						if ( -1 != classList[index2].indexOf(classKey) ) {
+
+							// a. Determine the single digit category number
+							let categoryNumber = classList[index2][classList[index2].length - 1];
+
+							// b. Match the background and text color to this category number in the temp dictionary
+							tempPaintClassDict.bColor[categoryNumber] = bColor;
+							tempPaintClassDict.fColor[categoryNumber] = fColor;
+						}
+					}
+				}
+
+				// 2. Fill out the background and foreground colors in the palette in numeric order
+				for ( let index = 0; index < listGroupItems.length; index++ ) {
+
+					this.recommendedCategories.backgroundColors.push(tempPaintClassDict.bColor[index.toString()]);
+					this.recommendedCategories.foregroundColors.push(tempPaintClassDict.fColor[index.toString()]);
+				}
+			},
+
+			setCurrentPaintClass(p_index) {
+
+				// Set background color, foreground color, and category from the built in values
+				this.$store.dispatch("saveCurrentPaintInfo", {
+
+					bColor: this.recommendedCategories.backgroundColors[p_index],
+					category: this.recommendedCategories.names[p_index],
+					fColor: this.recommendedCategories.foregroundColors[p_index]
+				});
+			},					
 
 			tableClick(p_clickData) {
 
@@ -454,40 +571,3 @@
 		},		
 	}
 </script>
-
-<!-- Page styles -->
-<style scoped>
-
-	.column-paint-default {
-
-		background-color: white;
-		color: black;
-	}
-
-	.column-paint-0 {
-
-		background-color: rgb(164,208,90);
-		color: black;
-	}
-	.column-paint-1 {
-		
-		background-color: rgb(127,23,167);
-		color: white;
-	}
-	.column-paint-2 {
-		
-		background-color: rgb(70,76,174);
-		color: white;		
-	}
-	.column-paint-3 {
-		
-		background-color: rgb(236,197,50);
-		color: black;		
-	}
-	.column-paint-4 {
-		
-		background-color: rgb(128,1,1);
-		color: white;		
-	}
-				
-</style>

@@ -109,14 +109,16 @@ export const actions = {
 
 	linkColumnWithCategory(p_context, p_columnName) {
 
-		// Link this column with the current selected category in the data store
+		// 1. Link this column with the current selected category in the data store
 		let categorizationInfo = p_context.state.pageData.categorization;
+
+		// 2. Commit the new data to the store
 		p_context.commit("addColumnCategorization", {
 
-			tsvCategory: categorizationInfo.current.category,
-			dataDictionaryColumn: p_columnName,
 			bColor: categorizationInfo.current.bColor,
-			fColor: categorizationInfo.current.fColor
+			dataDictionaryColumn: p_columnName,
+			fColor: categorizationInfo.current.fColor,
+			tsvCategory: categorizationInfo.current.category
 		});
 	},
 
@@ -163,10 +165,6 @@ export const mutations = {
 	// Categorization page changes
 
 	addColumnCategorization(p_state, p_categorization) {
-
-		console.log("addColumnCategorization p_categorization: " + JSON.stringify(p_categorization));
-		console.log("paintingData keys: " + Object.keys(p_state.pageData.categorization.paintingData));
-		console.log("dataDictionaryColumn: " + p_categorization.dataDictionaryColumn);
 
 		// Save the categorization in the store using the column name as a key
 		p_state.pageData.categorization.paintingData[p_categorization.dataDictionaryColumn] = {

@@ -1,10 +1,11 @@
 <template>
 
-	<div>
+	<div class="card">
 		<b-table
 			bordered hover
 			:fields="fields"
-			id="column-paint-table"
+			head-variant="dark"
+			:id="tableID"
 			:items="tableData"
 			primary-key="primary-key"
 			@row-clicked="tableRowClick"
@@ -12,7 +13,6 @@
 			:tbody-tr-class="paintClass">
 		</b-table>
 
-		<table></table>
 	</div>
 
 </template>
@@ -26,7 +26,7 @@
 			tableRowClick(p_item, p_index) {
 
 				// 0. Get this element
-				let itemID = "column-paint-table" + "__row_" + p_item["primary-key"];
+				let itemID = this.tableID + "__row_" + p_item["primary-key"];
 				let tableRow = document.getElementById(itemID);
 
 				// 1. Determine if this item is to be colored or uncolored
@@ -44,7 +44,7 @@
 			}
 		},
 
-		props: ["currentPalette", "defaultPalette", "fields", "paintClass", "tableData"]
+		props: ["currentPalette", "defaultPalette", "fields", "paintClass", "tableData", "tableID"]
 	}
 
 </script>

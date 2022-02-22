@@ -41,9 +41,6 @@
 			fileName() {
 
 				return ( null == this.fileInput ) ? "" : this.fileInput.name;
-				// if ( "name" in this.fileInput && this.fileInput.name.length > 0 )
-				// 	return this.fileInput.name;
-				// return "";
 			}
 		},
 
@@ -63,7 +60,6 @@
 				// 2. Parse the whole file and save the lines
 				
 				// A. TSV file parsing
-				// if ( this.fileInput.name.toLowerCase().endsWith(".tsv") ) {
 				if ( this.knownContentTypes["tsv"] == this.contentType ) {
 
 					Papa.parse(this.fileInput, {
@@ -76,7 +72,6 @@
 					});
 				} 
 				// B. JSON file parsing
-				// else if ( this.fileInput.name.toLowerCase().endsWith(".json") ) {
 				else if ( this.knownContentTypes["json"] == this.contentType ) {
 
 					// I. Reference to this json object in this component's data
