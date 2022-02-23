@@ -1,6 +1,6 @@
 <template>
 
-	<div class="card">
+	<div id="filedata-table" class="card">
 		<b-table
 			bordered hover
 			:fields="fields"
@@ -9,8 +9,7 @@
 			:items="tableData"
 			primary-key="primary-key"
 			@row-clicked="tableRowClick"
-			select-mode="multi"
-			:tbody-tr-class="paintClass">
+			select-mode="multi">
 		</b-table>
 
 	</div>
@@ -44,7 +43,7 @@
 			}
 		},
 
-		props: ["currentPalette", "defaultPalette", "fields", "paintClass", "tableData", "tableID"]
+		props: ["currentPalette", "defaultPalette", "fields", "tableData", "tableID"]
 	}
 
 </script>

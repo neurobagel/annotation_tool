@@ -13,12 +13,12 @@
 		<b-row>
 			<b-list-group :id="tag + '-listgroup'">
 				<b-list-group-item 
-					v-for="(column, index) in categoryData.names"
-					v-on:click="colorListGroupItem"
+					v-for="(category, index) in categories"
+					v-on:click="changeListGroupItemOpacity"
 					:class="['category-style-' + index, 'coloring-listgroup-item']"
 					:id="tag + '_' + index"
 					:key="index">
-					{{ column }}
+					{{ category }}
 				</b-list-group-item>
 			</b-list-group>
 		</b-row>
@@ -50,17 +50,12 @@
 
 		methods: {
 
-			colorListGroupItem(p_event) {
+			changeListGroupItemOpacity(p_event) {
 
 				// 1. Get the list group item element
 				let clickedListGroupItem = document.getElementById(p_event.target.id);
 				let itemIndex = parseInt(p_event.target.id.split("_")[1])
 				let itemText = clickedListGroupItem.innerText;
-
-				let styleObject = window.getComputedStyle(clickedListGroupItem);
-				console.log("Computed background color for clicked list group item: " + styleObject.getPropertyValue('background-color'));
-				console.log("Computed color for clicked list group item: " + styleObject.getPropertyValue('color'));
-				
 
 				// 2. Determine if clicked list group item will be opaque or transparent
 				let currentOpacity = clickedListGroupItem.style.opacity;
@@ -91,8 +86,8 @@
 					this.$emit("paint-action", {
 
 						category: itemText,
-						bColor:this.categoryData.backgroundColors[itemIndex],
-						fColor:this.categoryData.foregroundColors[itemIndex]
+						bColor:this.$store.getters.palette.backgroundColors[itemIndex],
+						fColor:this.$store.getters.palette.foregroundColors[itemIndex]
 					});
 				} 
 				// B. Else, make the clicked list group item transparent
@@ -112,12 +107,12 @@
 			}
 		},
 
-		props: ["categoryData", "defaultPalette", "instructions", "title", "tag"]
+		props: ["categories", "defaultPalette", "instructions", "title", "tag"]
 	}
 
 </script>
 
-<style>
+<style scoped>
 
 .instructions-text {
 

@@ -10,7 +10,7 @@
 			<h2>TSV File</h2>
 
 			<!-- Debug component - shows file contents -->			
-			<textarea rows="5" cols="200" v-model="stringifiedTsvFile" :key="currentState"></textarea>
+			<textarea rows="5" cols="200" v-model="stringifiedTsvFile"></textarea>
 			
 			<!-- Selects participant.tsv file -->
 			<file-selector 
@@ -24,7 +24,7 @@
 			<h2>Data dictionary</h2>
 
 			<!-- Debug component - shows file contents -->			
-			<textarea rows="5" cols="200" v-model="stringifiedJsonFile" :key="currentState"></textarea>
+			<textarea rows="5" cols="200" v-model="stringifiedJsonFile"></textarea>
 
 			<!-- Selects participant.json file -->
 			<file-selector 
@@ -59,19 +59,20 @@
 	export default {
 		
 		name: "IndexPage",
+		
+		mounted() {
 
-		created() {
+			// 1. Check to see if the palette has been retrieved from the stylesheet
+			if ( !this.$store.getters.hasPalette )
+				this.$store.dispatch("retrievePalette");
 
-			// Determine page state from data contents and change to that new state
+			// 2. Determine page state from data contents and change to that new state
 			this.changeToNewState();
 		},
 
 		data() {
 
 			return {
-
-				// Current state of the page
-				currentState: 0,
 
 				// Full text name of this page
 				fullName: this.$store.getters.pageNames.home.fullName, 
@@ -276,19 +277,3 @@
 		}
 	}
 </script>
-
-<!-- App styles -->
-<style>
-
-	.container-fluid {
-		
-		padding: 0;
-	}
-
-	.row {
-	
-		margin: 1em;
-		padding-left: 2em;
-		padding-right: 2em;
-	}
-</style>

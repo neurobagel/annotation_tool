@@ -31,3 +31,17 @@
 	color: white;
 	opacity: 0.5;	
 }
+
+/* Bootstrap styles */
+
+.container-fluid {
+		
+	padding: 0;
+}
+
+.row {
+
+	margin: 1em;
+	padding-left: 2em;
+	padding-right: 2em;
+}
