@@ -73,6 +73,23 @@ export const state = () => ({
 		download: {
 
 		}
+	},
+
+	painting: {
+		
+		classes: {
+
+			paint0: "category-style-0",
+			paint1: "category-style-1",
+			paint2: "category-style-2",
+			paint3: "category-style-3",
+			paint4: "category-style-4"
+		},
+
+		palette: {
+			backgroundColors: [],
+			foregroundColors: []
+		}
 	}
 })
   
@@ -107,7 +124,7 @@ export const actions = {
 	
 	// Categorization page actions
 
-	linkColumnWithCategory(p_context, p_columnName) {
+	linkColumnWithCategory(p_context, p_clickData) {
 
 		// 1. Link this column with the current selected category in the data store
 		let categorizationInfo = p_context.state.pageData.categorization;
@@ -116,11 +133,63 @@ export const actions = {
 		p_context.commit("addColumnCategorization", {
 
 			bColor: categorizationInfo.current.bColor,
-			dataDictionaryColumn: p_columnName,
+			dataDictionaryColumn: p_clickData.column,
 			fColor: categorizationInfo.current.fColor,
+			primaryKey: p_clickData["primary-key"],
 			tsvCategory: categorizationInfo.current.category
 		});
 	},
+
+	retrievePalette(p_context) {
+
+		// 0. New color lists
+		let backgroundColors = [];
+		let foregroundColors = [];
+
+		// 1. Wipe the palette
+		p_context.commit("clearPalette");
+
+		// 2. Go through global stylesheets until we find the paintClasses
+		for ( let sheetID in document.styleSheets ) {
+
+			for ( let ruleID in document.styleSheets[sheetID].cssRules ) {
+
+				let paintClasses = p_context.state.painting.classes;
+				for ( let paintClass in paintClasses ) {
+
+					// A. Make sure the CSS ruleset is an object containing a CSS string with the desired paint class
+					if ( typeof (document.styleSheets[sheetID].cssRules[ruleID]) === "object" &&
+						 "cssText" in document.styleSheets[sheetID].cssRules[ruleID] &&
+						 -1 != document.styleSheets[sheetID].cssRules[ruleID].cssText.indexOf(paintClasses[paintClass]) ) {
+
+						// I. Parse the CSS string for this class into an object
+						let cssProperties = parseCssString(
+							document.styleSheets[sheetID].cssRules[ruleID].cssText);
+
+						// II. Retrieve the background-color and color from the css object
+						let backgroundColor = getCssValue(
+							cssProperties,
+							"background-color"
+						);
+						let foregroundColor = getCssValue(
+							cssProperties,
+							"color"
+						);
+
+						// III. Save the background and foreground colors
+						backgroundColors.push(backgroundColor);
+						foregroundColors.push(foregroundColor);
+					}
+				}
+			}
+		}
+
+		// 3. Set the new palette
+		p_context.commit("setPalette", {
+			backgroundColors: backgroundColors,
+			foregroundColors: foregroundColors
+		});
+	},	
 
 	saveCurrentPaintInfo(p_context, p_paintingInfo) {
 
@@ -139,14 +208,30 @@ export const actions = {
 		p_context.commit("setNewCategorizationTable", p_newTableData);
 	},
 
-	unlinkColumnWithCategory(p_context, p_columnName) {
+	unlinkColumnWithCategory(p_context, p_clickData) {
 
-		p_context.commit("removeColumnCategorization", p_columnName);
+		p_context.commit("removeColumnCategorization", p_clickData.column);
 	}	
 }
 
 // Mutations - Change state data, as called by Actions
 export const mutations = {
+
+	// General mutations
+
+	clearPalette(p_state) {
+
+		// Wipe the background and foreground color lists of the palette
+		p_state.painting.palette.backgroundColors = [];
+		p_state.painting.palette.foregroundColors = [];
+
+	},
+
+	setPalette(p_state, p_newPalette) {
+		
+		// Save the new background and foreground colors of the palette
+		p_state.painting.palette = p_newPalette;
+	},
 
 	// Landing page mutations
 
@@ -170,7 +255,8 @@ export const mutations = {
 		p_state.pageData.categorization.paintingData[p_categorization.dataDictionaryColumn] = {
 			tsvCategory: p_categorization.tsvCategory,
 			bColor: p_categorization.bColor,
-			fColor: p_categorization.fColor
+			fColor: p_categorization.fColor,
+			primaryKey: p_categorization.primaryKey
 		}
 	},
 
@@ -201,6 +287,19 @@ export const mutations = {
 // Getters - Give access to state data
 export const getters = {
 
+	currentPaintBrush(p_state) {
+		return p_state.pageData.categorization.current;
+	},
+
+	defaultPaintBrush(p_state) {
+		return p_state.pageData.categorization.default;
+	},
+	
+	hasPalette(p_state) {
+
+		return ( p_state.painting.palette.backgroundColors.length > 0 );
+	},
+
 	pageNames(p_state) {
 		return p_state.pageNames;
 	},
@@ -211,6 +310,10 @@ export const getters = {
 
 	paintingData(p_state) {
 		return p_state.pageData.categorization.paintingData;
+	},
+
+	palette(p_state) {
+		return p_state.painting.palette;
 	}
 }
 
@@ -260,4 +363,23 @@ function convertTsvLinesToDict(p_tsvLines){
 	}
 
 	return tsvRowDictArray;
+}
+
+function getCssValue(p_cssObject, p_cssKey) {
+				
+	// Return the CSS value of the given key if it exists, otherwise blank string
+	return ( p_cssKey in p_cssObject ) ? p_cssObject[p_cssKey] : "";
+}
+
+function parseCssString(p_cssString) {
+
+	// Produce object based on the CSS string via regular expression parsing
+	let regex = /([\w-]*)\s*:\s*([^;]*)/g;
+	let match, cssProperties={};
+	while ( match = regex.exec(p_cssString) ) {
+
+		cssProperties[match[1]] = match[2].trim();
+	}
+
+	return cssProperties;
 }

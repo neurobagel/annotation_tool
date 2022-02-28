@@ -8,7 +8,7 @@
 
 			<b-col cols="4">
 				<coloring-listgroup
-					:categoryData="recommendedCategories"
+					:categories="recommendedCategories"
 					:defaultPalette="$store.state.pageData.categorization.default"
 					tag="recommended-column"
 					title="Recommended Categories"
@@ -21,9 +21,8 @@
 			<b-col cols="8">
 				<filedata-table
 					:fields="columnMatchTableFields"
-					:paintClass="getPaintClass"
-					:currentPalette="$store.state.pageData.categorization.current"
-					:defaultPalette="$store.state.pageData.categorization.default"
+					:currentPalette="$store.getters.currentPaintBrush"
+					:defaultPalette="$store.getters.defaultPaintBrush"
 					:tableData="tableDataFromTsvAndOrJson"
 					:tableID="tableID"
 					v-on:column-name-selected="tableClick($event)">
@@ -61,28 +60,20 @@
 
 		name: "CategorizationPage",
 
-		created() {
-
-			// Determine page state from data contents and change to that new state
-			// this.changeToNewState();
-		},
-
 		mounted() {
 
 			// NOTE: 'document' and 'window' are not yet defined until this hook.
 			// This is why any piece of functionality that requires either must be placed
 			// at this later stage of the Vue hook lifecycle
-			
-			// 1. Retrieve the painting palette by looking at the style for the coloring listgroup items
-			this.retrievePaletteFromListgroupStyle();
-			
-			// 1. Pull background and foreground colors from paint classes in the global stylesheet
-			// this.retrievePaletteFromGlobalStyle();
 
-			// 3. Set the default painting color to the colors of the first painting class
+			// 1. Check to see if the palette has been retrieved from the stylesheet
+			if ( !this.$store.getters.hasPalette )
+				this.$store.dispatch("retrievePalette");			
+			
+			// 2. Set the default painting color to the colors of the first painting class
 			this.setCurrentPaintClass(0);
 
-			// 4. Determine page state from data contents and change to that new state
+			// 3. Determine page state from data contents and change to that new state
 			this.changeToNewState();
 		},
 
@@ -97,11 +88,9 @@
 					{ key: "description" }
 				],
 
-				// Current state of the page
-				currentState: 0,
-
-				// Default table background color
-				defaultBackgroundColor: this.$store.getters.pageData.categorization.default.bColor,
+				// Default table background and foreground color
+				defaultBackgroundColor: this.$store.getters.defaultPaintBrush.bColor,
+				defaultForegroundColor: this.$store.getters.defaultPaintBrush.fColor,
 
 				// Full text name of this page
 				fullName: this.$store.getters.pageNames.categorization.fullName, 
@@ -136,33 +125,18 @@
 				// Local reference to the page names in the store
 				pageNames: this.$store.getters.pageNames,
 
-				paintClasses: {
-
-					paint0: "category-style-0",
-					paint1: "category-style-1",
-					paint2: "category-style-2",
-					paint3: "category-style-3",
-					paint4: "category-style-4"
-				},
-
 				// Whether or not page has enabled access to the annotation page
 				readyForNextStepFlag: false,
 
 				// Data for the coloring listgroup
-				recommendedCategories: {
-					
-					backgroundColors: [],
-					foregroundColors: [],
+				recommendedCategories: [
 
-					names: [
-
-						"Subject ID",
-						"Age",
-						"Sex",
-						"Diagnosis",
-						"Assessment Tool"
-					]
-				},
+					"Subject ID",
+					"Age",
+					"Sex",
+					"Diagnosis",
+					"Assessment Tool"
+				],
 
 				tableID: "category-painting-table"
 			}
@@ -335,6 +309,9 @@
 
 			changeState_AtLeastOneCategoryPainted() {
 
+				// 1. Paint the table with previously painted rows documented in the store
+				this.paintTable();
+
 				// Enable access to the annotation page
 				this.annotationPageAccess(true);
 			},
@@ -350,17 +327,13 @@
 				// 0. Save a reference to the store table data set
 				let paintingData = this.$store.getters.paintingData;
 
-				// 0. Default row colors
-				let defaultBackgroundColor = this.$store.state.pageData.categorization.default.bColor;
-				let defaultForegroundColor = this.$store.state.pageData.categorization.default.fColor;
-
 				// 0. Counts number of painted columns
 				let columnCount = 0;
 
 				for ( let columnName in paintingData ) {
 
-					if ( defaultBackgroundColor != paintingData[columnName].bColor || 
-						 defaultForegroundColor != paintingData[columnName].fColor ) {
+					if ( this.defaultBackgroundColor != paintingData[columnName].bColor || 
+						 this.defaultForegroundColor != paintingData[columnName].fColor ) {
 
 						columnCount += 1;
 					}
@@ -369,161 +342,24 @@
 				return columnCount;
 			},
 
-			getCssValue(p_cssObject, p_cssKey) {
-				
-				// Return the CSS value of the given key if it exists, otherwise blank string
-				return ( p_cssKey in p_cssObject ) ? p_cssObject[p_cssKey] : "";
-			},
+			paintTable() {
 
-			getPaintClass(p_item, p_type) {
+				// 1. Attempt to repaint all the table rows that have been previously painted
+				let paintingData = this.$store.getters.paintingData;
+				for ( let columnID in paintingData ) {
 
-				// 0. Get reference to this row element
-				let itemID = this.paintTableKey(p_item["primary-key"]);
-				let tableRow = document.getElementById(itemID);	
+					// A. Look for records indicating a table row has been painted
+					if ( paintingData[columnID].bColor != 
+						 this.$store.getters.defaultPaintBrush.bColor ) {
 
-				// 0. If table row doesn't exist, it means the element has not yet been created
-				// and the default style should be used
-				if ( !tableRow )
-					return this.paintClasses.paintDefault;
-
-				// 1. Determine the new class based on the table row's current background color
-				let paintClass = "";
-				
-				// A. Check for current background color on item
-				let tableRowBColor = this.defaultBackgroundColor;
-				if ( "style" in tableRow )
-					tableRowBColor = tableRow.style.backgroundColor;
-
-				// B. Determine new class
-				switch ( tableRowBColor ) {
-
-					case this.recommendedCategories.backgroundColors[0]:
-						paintClass = this.paintClasses.paint0;
-						break;
-					case this.recommendedCategories.backgroundColors[1]:
-						paintClass = this.paintClasses.paint1;
-						break;
-					case this.recommendedCategories.backgroundColors[2]:
-						paintClass = this.paintClasses.paint2;
-						break;
-					case this.recommendedCategories.backgroundColors[3]:
-						paintClass = this.paintClasses.paint3;
-						break;
-					case this.recommendedCategories.backgroundColors[4]:
-						paintClass = this.paintClasses.paint4;
-						break;
-					default:
-						paintClass = this.paintClasses.paintDefault;
-						break;
-				}
-
-				return paintClass;
-			},
-
-			paintTableKey(p_primaryKey) {
-
-				// Table row ID generation
-				//
-				// When provided, the primary-key will generate a unique ID for
-				// each item row <tr> element. The ID will be in the format of
-				// {table-id}__row_{primary-key-value}, where {table-id} is the
-				// unique ID of the <b-table> and {primary-key-value} is the value
-				// of the item's field value for the field specified by primary-key.
-				//
-				// ID example: category-style-table__row_0
-
-				return "category-style-table" + "__row_" + p_primaryKey;
-			},
-
-			parseCssString(p_cssString) {
-
-				// Produce object based on the CSS string via regular expression parsing
-				let regex = /([\w-]*)\s*:\s*([^;]*)/g;
-				let match, cssProperties={};
-				while ( match = regex.exec(p_cssString) ) {
-
-					cssProperties[match[1]] = match[2].trim();
-				}
-
-				return cssProperties;
-			},
-
-			retrievePaletteFromGlobalStyle() {
-
-				// 1. Go through stylesheets until we find the paintClasses
-				for ( let sheetID in document.styleSheets ) {
-
-					for ( let ruleID in document.styleSheets[sheetID].cssRules ) {
-
-						for ( let paintClass in this.paintClasses ) {
-
-							// A. Make sure the CSS ruleset is an object containing a CSS string with the desired paint class
-							if ( typeof (document.styleSheets[sheetID].cssRules[ruleID]) === "object" &&
-								 "cssText" in document.styleSheets[sheetID].cssRules[ruleID] &&
-								 -1 != document.styleSheets[sheetID].cssRules[ruleID].cssText.indexOf(this.paintClasses[paintClass]) ) {
-
-								// I. Parse the CSS string for this class into an object
-								let cssProperties = this.parseCssString(
-									document.styleSheets[sheetID].cssRules[ruleID].cssText);
-
-								// II. Retrieve the background-color and color from the css object
-								let backgroundColor = this.getCssValue(
-									cssProperties,
-									"background-color"
-								);
-								let foregroundColor = this.getCssValue(
-									cssProperties,
-									"color"
-								);
-
-								// III. Save the background and foreground colors
-								this.recommendedCategories.backgroundColors.push(backgroundColor);
-								this.recommendedCategories.foregroundColors.push(foregroundColor);
-							}
-						}
+						// I. Retrieve the row from a reconstructed key
+						let rowKey = this.tableID + "__row_" + paintingData[columnID].primaryKey;
+						let row = document.getElementById(rowKey);
+						
+						// II. Repaint the row the corresponding colors
+						row.style.backgroundColor = paintingData[columnID].bColor;
+						row.style.color = paintingData[columnID].fColor;
 					}
-				}
-			},
-
-			retrievePaletteFromListgroupStyle() {
-
-				// 0. Get the coloring listgroup component's list items
-				let listGroupItems = document.getElementsByClassName("coloring-listgroup-item");
-
-				// 1. Determine the painting palette via the palette classes used in the coloring listgroup component's items
-				let tempPaintClassDict = { bColor: {}, fColor: {} };
-				let classKey = "category-style"
-				for ( let index = 0; index < listGroupItems.length; index++ ) {
-
-					// A. Get the computed style of the listgroup item
-					let styleObject = window.getComputedStyle(listGroupItems[index]);
-
-					// B. Get the item's background color and text color
-					let bColor = styleObject.getPropertyValue("background-color");
-					let fColor = styleObject.getPropertyValue("color");
-
-					// C. Determine the number of the category style class and save it in a temporary dictionary
-					let classList = listGroupItems[index].classList.value.split(" ");
-					for ( let index2 = 0; index2 < classList.length; index2++ ) {
-
-						// I. Find the category style class in the class list for this item
-						if ( -1 != classList[index2].indexOf(classKey) ) {
-
-							// a. Determine the single digit category number
-							let categoryNumber = classList[index2][classList[index2].length - 1];
-
-							// b. Match the background and text color to this category number in the temp dictionary
-							tempPaintClassDict.bColor[categoryNumber] = bColor;
-							tempPaintClassDict.fColor[categoryNumber] = fColor;
-						}
-					}
-				}
-
-				// 2. Fill out the background and foreground colors in the palette in numeric order
-				for ( let index = 0; index < listGroupItems.length; index++ ) {
-
-					this.recommendedCategories.backgroundColors.push(tempPaintClassDict.bColor[index.toString()]);
-					this.recommendedCategories.foregroundColors.push(tempPaintClassDict.fColor[index.toString()]);
 				}
 			},
 
@@ -532,9 +368,9 @@
 				// Set background color, foreground color, and category from the built in values
 				this.$store.dispatch("saveCurrentPaintInfo", {
 
-					bColor: this.recommendedCategories.backgroundColors[p_index],
-					category: this.recommendedCategories.names[p_index],
-					fColor: this.recommendedCategories.foregroundColors[p_index]
+					bColor: this.$store.getters.palette.backgroundColors[p_index],
+					category: this.recommendedCategories[p_index],
+					fColor: this.$store.getters.palette.foregroundColors[p_index]
 				});
 			},					
 
@@ -558,7 +394,7 @@
 
 				// B. Record the color/uncolor in the data store
 				let dataStoreFunction = ( coloring ) ? "linkColumnWithCategory" : "unlinkColumnWithCategory";
-				this.$store.dispatch(dataStoreFunction, p_clickData.column);
+				this.$store.dispatch(dataStoreFunction, p_clickData);
 
 				// 2. Determine if page state should be changed and change it if necessary
 				this.changeToNewState();
@@ -567,7 +403,7 @@
 			tableData() {
 
 				return this.$store.getters.pageData.categorization.tableData;
-			}	
+			}
 		},		
 	}
 </script>
