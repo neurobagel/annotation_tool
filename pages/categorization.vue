@@ -8,24 +8,23 @@
 
 			<b-col cols="4">
 				<coloring-listgroup
-					:categories="recommendedCategories"
-					:defaultPalette="$store.state.pageData.categorization.default"
+					:categories="$store.getters.categories"
 					tag="recommended-column"
 					title="Recommended Categories"
 					instructions="Click category and then corresponding column from tsv file"
-					v-on:paint-action="$store.dispatch('saveCurrentPaintInfo', $event)"
-					>
+					v-on:category-select="setCurrentCategory($event)">
 				</coloring-listgroup>
 			</b-col>
 
 			<b-col cols="8">
 				<filedata-table
 					:fields="columnMatchTableFields"
-					:currentPalette="$store.getters.currentPaintBrush"
-					:defaultPalette="$store.getters.defaultPaintBrush"
+					:currentStyleClass="$store.getters.getStyleClass[$store.getters.categoryToColorMap[categorySelection.current]]"
+					:defaultStyleClass="$store.getters.getStyleClass[$store.getters.categoryToColorMap[categorySelection.default]]"
 					:tableData="tableDataFromTsvAndOrJson"
 					:tableID="tableID"
-					v-on:column-name-selected="tableClick($event)">
+					v-on:column-name-selected="tableClick($event)"
+					ref="table">
 				</filedata-table>
 			</b-col>
 
@@ -40,7 +39,7 @@
 				<b-button
 					class="float-right"
 					:disabled="!readyForNextStepFlag"
-					:to="'/' + pageNames.annotation.location"
+					:to="'/' + pageData.annotation.location"
 					:variant="nextPageButtonColor">
 					Next step: Annotate columns
 				</b-button>
@@ -62,24 +61,26 @@
 
 		mounted() {
 
+			//
+
 			// NOTE: 'document' and 'window' are not yet defined until this hook.
 			// This is why any piece of functionality that requires either must be placed
-			// at this later stage of the Vue hook lifecycle
+			// at this later stage of the Vue hook lifecycle			
 
-			// 1. Check to see if the palette has been retrieved from the stylesheet
-			if ( !this.$store.getters.hasPalette )
-				this.$store.dispatch("retrievePalette");			
-			
-			// 2. Set the default painting color to the colors of the first painting class
-			this.setCurrentPaintClass(0);
-
-			// 3. Determine page state from data contents and change to that new state
+			// Determine page state from data contents and change to that new state
 			this.changeToNewState();
 		},
 
 		data() {
 
 			return {
+
+				// Category selection (default is index 0, no selection is -1)
+				categorySelection: {
+
+					current: 0,
+					default: -1
+				},
 
 				// Columns for file data table	
 				columnMatchTableFields: [
@@ -88,27 +89,23 @@
 					{ key: "description" }
 				],
 
-				// Default table background and foreground color
-				defaultBackgroundColor: this.$store.getters.defaultPaintBrush.bColor,
-				defaultForegroundColor: this.$store.getters.defaultPaintBrush.fColor,
-
 				// Full text name of this page
-				fullName: this.$store.getters.pageNames.categorization.fullName, 
+				fullName: this.$store.getters.pageData.categorization.fullName, 
 
 				// Status of the navbar item links for other pages
 				navItemsState: [
 					
 					{
 						enabled: true,
-						pageInfo: this.$store.state.pageNames.home
+						pageInfo: this.$store.getters.pageData.home
 					},
 					{
 						enabled: false,
-						pageInfo: this.$store.state.pageNames.annotation
+						pageInfo: this.$store.getters.pageData.annotation
 					},
 					{
 						enabled: false,
-						pageInfo: this.$store.state.pageNames.download
+						pageInfo: this.$store.getters.pageData.download
 					}
 				],
 
@@ -123,7 +120,7 @@
 				},								
 				
 				// Local reference to the page names in the store
-				pageNames: this.$store.getters.pageNames,
+				pageData: this.$store.getters.pageData,
 
 				// Whether or not page has enabled access to the annotation page
 				readyForNextStepFlag: false,
@@ -147,8 +144,8 @@
 			tableDataFromTsvAndOrJson() {
 
 				// 0. Check that there is tsv and json data in the data store
-				let tsvFile = this.$store.state.pageData.home.tsvFile;
-				let jsonFile = this.$store.state.pageData.home.jsonFile;
+				let tsvFile = this.$store.state.tsvDataOriginal;
+				let jsonFile = this.$store.state.dataDictionaryOriginal;
 				if ( null == tsvFile && null == jsonFile )
 					return [];
 
@@ -242,7 +239,7 @@
 			}
 		},
 
-		methods: {	
+		methods: {
 
 			annotationPageAccess(p_enable) {
 				
@@ -250,7 +247,7 @@
 				for ( let index = 0; index < this.navItemsState.length; index++ ) {
 					
 					// A. Look for the annotation nav item
-					if ( this.pageNames.annotation.pageName == this.navItemsState[index].pageInfo.pageName ) {
+					if ( this.pageData.annotation.pageName == this.navItemsState[index].pageInfo.pageName ) {
 						
 						// i. Enable/disable the annotation nav item
 						this.navItemsState[index].enabled = p_enable;
@@ -281,7 +278,7 @@
 				let newState = this.possibleStates.STATE_NOCATEGORIES_PAINTED;
 
 				// 2. Count the number of painted rows in the table
-				let paintedRowsCount = this.countPaintedColumns();
+				let paintedRowsCount = this.countLinkedColumns();
 
 				// 3. Add appropriate state flags based on data contents
 				if ( paintedRowsCount > 0 )
@@ -310,7 +307,7 @@
 			changeState_AtLeastOneCategoryPainted() {
 
 				// 1. Paint the table with previously painted rows documented in the store
-				this.paintTable();
+				this.styleTable();
 
 				// Enable access to the annotation page
 				this.annotationPageAccess(true);
@@ -318,83 +315,58 @@
 
 			changeState_NoCategoriesPainted() {
 
+				// 1. Paint the table with previously painted rows documented in the store
+				this.styleTable();				
+
 				// Disable access to the annotation page
 				this.annotationPageAccess(false);
 			},
 
-			countPaintedColumns() {
+			countLinkedColumns() {
 
-				// 0. Save a reference to the store table data set
-				let paintingData = this.$store.getters.paintingData;
-
-				// 0. Counts number of painted columns
-				let columnCount = 0;
-
-				for ( let columnName in paintingData ) {
-
-					if ( this.defaultBackgroundColor != paintingData[columnName].bColor || 
-						 this.defaultForegroundColor != paintingData[columnName].fColor ) {
-
-						columnCount += 1;
-					}
-				}
-
-				return columnCount;
+				return Object.keys(this.$store.getters.categoryColumnMap).length;
 			},
 
-			paintTable() {
+			setCurrentCategory(p_clickData) {
 
-				// 1. Attempt to repaint all the table rows that have been previously painted
-				let paintingData = this.$store.getters.paintingData;
-				for ( let columnID in paintingData ) {
-
-					// A. Look for records indicating a table row has been painted
-					if ( paintingData[columnID].bColor != 
-						 this.$store.getters.defaultPaintBrush.bColor ) {
-
-						// I. Retrieve the row from a reconstructed key
-						let rowKey = this.tableID + "__row_" + paintingData[columnID].primaryKey;
-						let row = document.getElementById(rowKey);
-						
-						// II. Repaint the row the corresponding colors
-						row.style.backgroundColor = paintingData[columnID].bColor;
-						row.style.color = paintingData[columnID].fColor;
-					}
-				}
+				// Save the listgroup item index of what has been clicked
+				this.categorySelection.current = p_clickData.categoryIndex;
 			},
 
-			setCurrentPaintClass(p_index) {
+			styleTable() {
 
-				// Set background color, foreground color, and category from the built in values
-				this.$store.dispatch("saveCurrentPaintInfo", {
-
-					bColor: this.$store.getters.palette.backgroundColors[p_index],
-					category: this.recommendedCategories[p_index],
-					fColor: this.$store.getters.palette.foregroundColors[p_index]
-				});
+				// Table styling should occur on page state change, but child table component should handle the styling
+				this.$refs.table.styleTable();
 			},					
 
 			tableClick(p_clickData) {
 
 				// 0. Coloring will be determined by previously defined category-column linkage in store
 				let columnName = p_clickData.column;
-				let paintingData = this.$store.getters.paintingData;
+				let categoryColumnMap = this.$store.getters.categoryColumnMap;
 
-				// 1. Color or uncolor table row
+				// 1. Style or unstyle table row
 
-				// A. Determine if coloring or uncoloring has occurred
+				// A. Determine if category-column linking or unlinking has occurred
 
-				// I. Unclicked columns will be colored by default
-				let coloring = !( columnName in paintingData );
+				// I. Unclicked columns will not be in the category column map
+				let linking = !( columnName in categoryColumnMap );
 
-				// II. Look for the column in the painting data to decide
-				if ( columnName in paintingData ) {
-					coloring = ( this.defaultBackgroundColor == paintingData[columnName].bColor );
+				// B. Record the linking/unlinking in the data store
+				let dataStoreFunction = ( linking ) ? "linkColumnWithCategory" : "unlinkColumnWithCategory";
+
+				// I. Build a new object for passing to the store for category-column linking
+				let dataForStore = {
+					
+					column: p_clickData["column"],
+					primaryKey: p_clickData["primary-key"]
+				};
+				if ( linking ) {
+					dataForStore.tsvCategory = this.categorySelection.current;
 				}
 
-				// B. Record the color/uncolor in the data store
-				let dataStoreFunction = ( coloring ) ? "linkColumnWithCategory" : "unlinkColumnWithCategory";
-				this.$store.dispatch(dataStoreFunction, p_clickData);
+				// II. Link or unlink the currently-selected category and the clicked column
+				this.$store.dispatch(dataStoreFunction, dataForStore);
 
 				// 2. Determine if page state should be changed and change it if necessary
 				this.changeToNewState();
@@ -402,8 +374,17 @@
 
 			tableData() {
 
-				return this.$store.getters.pageData.categorization.tableData;
+				return this.$store.getters.tsvDataTableFormatted;
 			}
-		},		
+		}		
 	}
 </script>
+
+<style scoped>
+
+#category-painting-table {
+
+	margin-bottom: 0;
+}
+
+</style>

@@ -29,7 +29,7 @@
             return {
 
                 // Full text name of this page
-				fullName: this.$store.getters.pageNames.categorization.fullName, 
+				fullName: this.$store.getters.pageData.categorization.fullName, 
 
                 // Image for temporary annotation page mockup
                 mockupImage: {
@@ -43,15 +43,15 @@
 
                     { 
                         enabled: true,
-                        pageInfo: this.$store.state.pageNames.home,
+                        pageInfo: this.$store.getters.pageData.home,
                     },
 					{
                         enabled: true,
-                        pageInfo: this.$store.state.pageNames.categorization
+                        pageInfo: this.$store.getters.pageData.categorization
                     },
 					{
                         enabled: false,
-                        pageInfo: this.$store.state.pageNames.download
+                        pageInfo: this.$store.getters.pageData.download
                     }
 				]
             }

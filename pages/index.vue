@@ -42,7 +42,7 @@
 				<b-button 
 					class="float-right"
 					:disabled="!readyForNextStepFlag"
-					:to="'/' + pageNames.categorization.location"
+					:to="'/' + pageData.categorization.location"
 					:variant="nextPageButtonColor">
 					Next step: Categorize columns
 				</b-button>
@@ -62,11 +62,7 @@
 		
 		mounted() {
 
-			// 1. Check to see if the palette has been retrieved from the stylesheet
-			if ( !this.$store.getters.hasPalette )
-				this.$store.dispatch("retrievePalette");
-
-			// 2. Determine page state from data contents and change to that new state
+			// Determine page state from data contents and change to that new state
 			this.changeToNewState();
 		},
 
@@ -75,22 +71,22 @@
 			return {
 
 				// Full text name of this page
-				fullName: this.$store.getters.pageNames.home.fullName, 
+				fullName: this.$store.getters.pageData.home.fullName, 
 
 				// Status of the navbar item links for other pages
 				navItemsState: [
 
 					{
 						enabled: false,
-						pageInfo: this.$store.getters.pageNames.categorization,
+						pageInfo: this.$store.getters.pageData.categorization,
 					},
 					{ 
 						enabled: false,
-						pageInfo: this.$store.getters.pageNames.annotation,
+						pageInfo: this.$store.getters.pageData.annotation,
 					},
 					{
 						enabled: false,
-						pageInfo: this.$store.getters.pageNames.download,
+						pageInfo: this.$store.getters.pageData.download,
 					}
 				],
 
@@ -98,7 +94,7 @@
 				nextPageButtonColor: "secondary",
 
 				// Local reference to the page names in the store
-				pageNames: this.$store.getters.pageNames,
+				pageData: this.$store.getters.pageData,
 
 				// Possible states of this page
 				possibleStates: {
@@ -119,7 +115,7 @@
 			stringifiedJsonFile() {
 
 				// 0. Return a blank string if there is no loaded json file
-				if ( null == this.$store.state.pageData.home.jsonFile ) {
+				if ( null == this.$store.state.dataDictionaryOriginal ) {
 					return "";
 				}
 
@@ -130,7 +126,7 @@
 			stringifiedTsvFile() {
 
 				// 0. Return a blank string is there is no loaded tsv file
-				if ( null == this.$store.state.pageData.home.tsvFile ) {
+				if ( null == this.$store.getters.tsvDataOriginal ) {
 					return "";
 				}
 
@@ -154,7 +150,7 @@
 				for ( let index = 0; index < this.navItemsState.length; index++ ) {
 
 					// A. Look for the categorization nav item
-					if ( this.pageNames.categorization.pageName == this.navItemsState[index].pageInfo.pageName ) {
+					if ( this.pageData.categorization.pageName == this.navItemsState[index].pageInfo.pageName ) {
 
 						// i. Enable/disable the categorization nav item
 						this.navItemsState[index].enabled = p_enable;
@@ -230,13 +226,13 @@
 			jsonFile() {
 
 				// Return the object currently saved as the json file in the data store
-				return this.$store.getters.pageData.home.jsonFile;
+				return this.$store.getters.dataDictionaryOriginal;
 			},
 
 			jsonFileLoaded() {
 
 				// Return whether or not a json file has been loaded in the data store
-				return ( null != this.$store.getters.pageData.home.jsonFile );
+				return ( null != this.$store.getters.dataDictionaryOriginal );
 			},				
 
 			saveTsvFileData(p_fileData) {
@@ -266,13 +262,13 @@
 			tsvFile() {
 
 				// Return the list currently saved as the tsv file in the data store
-				return this.$store.getters.pageData.home.tsvFile;
+				return this.$store.getters.tsvDataOriginal;
 			},
 
 			tsvFileLoaded() {
 
 				// Return whether or not a tsv file has been loaded in the data store
-				return ( null != this.$store.getters.pageData.home.tsvFile );
+				return ( null != this.$store.getters.tsvDataOriginal );
 			},						
 		}
 	}

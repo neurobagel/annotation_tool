@@ -15,9 +15,13 @@
 				<b-list-group-item 
 					v-for="(category, index) in categories"
 					v-on:click="changeListGroupItemOpacity"
-					:class="['category-style-' + index, 'coloring-listgroup-item']"
+					:class="[
+						$store.getters.cssStylePrefix + index,
+						listGroupItemClass,
+						( 0 == index ) ? 'opaque' : 'transparent']"
 					:id="tag + '_' + index"
-					:key="index">
+					:key="index"
+					:ref="tag + '_' + index">
 					{{ category }}
 				</b-list-group-item>
 			</b-list-group>
@@ -29,22 +33,24 @@
 
 <script>
 
-	import { BListGroup, BListGroupItem } from "bootstrap-vue";
-
 	export default {
-
-		components: {
-
-			"b-list-group": BListGroup,
-			"b-list-group-item": BListGroupItem
-		},
 
 		data() {
 
 			return {
 
-				clickedOpacity: "1.0",
-				defaultOpacity: "0.5"
+				listGroupItemClass: "coloring-listgroup-item",
+
+				// Preset opacity values for swapping opacities on click
+				// Default opacities are set via initial class
+				opacities: {
+
+					clicked: "1.0",
+					default: "0.5"
+				},
+
+				// Index of most recently clicked list group item
+				clickedIndex: 0
 			}
 		},
 
@@ -55,12 +61,18 @@
 				// 1. Get the list group item element
 				let clickedListGroupItem = document.getElementById(p_event.target.id);
 				let itemIndex = parseInt(p_event.target.id.split("_")[1])
-				let itemText = clickedListGroupItem.innerText;
+
+				// A. Short-circuit out of clicking on the same category
+				if ( itemIndex == this.clickedIndex )
+					return;
+			
+				// B. Save the row index of this, the most recently clicked category
+				this.clickedIndex = itemIndex;
 
 				// 2. Determine if clicked list group item will be opaque or transparent
 				let currentOpacity = clickedListGroupItem.style.opacity;
-				let makingItemOpaque = ( this.defaultOpacity == currentOpacity || 
-									 "" == currentOpacity );
+				let makingItemOpaque = ( this.opacities.default == currentOpacity || 
+									 	 "" == currentOpacity );
 
 				// NOTE: Blank style string means it is unstyled.
 				// This occurs because Vue CSS is considered to be an external stylesheet
@@ -68,10 +80,11 @@
 
 				// 3. Make all list group items transparent
 				let listGroup = document.getElementById(this.tag + "-listgroup");
+				//let listGroup = this.$refs["tag + '-listgroup'"].$el;
 				for ( let index = 0; index < listGroup.children.length; index++ ) {
 					
 					// A. Make the list group item transparent
-					listGroup.children[index].style.opacity = this.defaultOpacity;
+					listGroup.children[index].style.opacity = this.opacities.default;
 				}
 
 				// 4. Make the clicked list group item opaque or transparent
@@ -80,34 +93,18 @@
 				if ( makingItemOpaque ) {
 
 					// I. Make the item opaque
-					clickedListGroupItem.style.opacity = this.clickedOpacity;
+					clickedListGroupItem.style.opacity = this.opacities.clicked;
 
 					// II. Tell the parent page column painting has begun
-					this.$emit("paint-action", {
+					this.$emit("category-select", {
 
-						category: itemText,
-						bColor:this.$store.getters.palette.backgroundColors[itemIndex],
-						fColor:this.$store.getters.palette.foregroundColors[itemIndex]
-					});
-				} 
-				// B. Else, make the clicked list group item transparent
-				else {
-
-					// I. Make the item transparent
-					clickedListGroupItem.style.opacity = this.defaultOpacity;
-
-					// II. Tell the parent page column painting has ended
-					this.$emit("paint-action", {
-
-						category: "",
-						bColor: this.defaultPalette.bColor,
-						fColor: this.defaultPalette.fColor
+						categoryIndex: itemIndex,
 					});
 				}
 			}
 		},
 
-		props: ["categories", "defaultPalette", "instructions", "title", "tag"]
+		props: ["categories", "instructions", "title", "tag"]
 	}
 
 </script>
