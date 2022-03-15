@@ -3,33 +3,37 @@
 	<b-container fluid>
 
 		<!-- Navigation bar -->
-		<tool-navbar :navItemsState="navItemsState" :pageName="fullName"></tool-navbar>
+		<tool-navbar 
+			:navItems="pageData"
+			:navOrder="pageOrder"
+			:pageName="pageData.home.fullName">
+		</tool-navbar>
 
-		<!-- TSV file loading area -->
+		<!-- Data table file loading area -->
 		<b-row>
-			<h2>TSV File</h2>
+			<h2>Data table</h2>
 
 			<!-- Debug component - shows file contents -->			
-			<textarea rows="5" cols="200" v-model="stringifiedTsvFile"></textarea>
+			<textarea :rows="textArea.width" :cols="textArea.height" v-model="stringifiedDataTable"></textarea>
 			
-			<!-- Selects participant.tsv file -->
+			<!-- Selects data table file (i.e. participants.tsv) -->
 			<file-selector 
-				content-type="text/tab-separated-values"
-				v-on:file-selected="saveTsvFileData($event)">
+				:content-type="contentTypes.dataTable"
+				v-on:file-selected="saveDataTable($event)">
 			</file-selector>			
 		</b-row>		
 
-		<!-- JSON file loading area -->
+		<!-- Data dictionary file loading area -->
 		<b-row>
 			<h2>Data dictionary</h2>
 
 			<!-- Debug component - shows file contents -->			
-			<textarea rows="5" cols="200" v-model="stringifiedJsonFile"></textarea>
+			<textarea :rows="textArea.width" :cols="textArea.height" v-model="stringifiedDataDictionary"></textarea>
 
-			<!-- Selects participant.json file -->
+			<!-- Selects data dictionary file (i.e. participants.json) -->
 			<file-selector 
-				content-type="application/json"
-				v-on:file-selected="saveJsonFileData($event)">
+				:content-type="contentTypes.dataDictionary"
+				v-on:file-selected="saveDataDictionary($event)">
 			</file-selector>			
 		</b-row>
 		
@@ -37,11 +41,12 @@
 			
 			<b-col cols="9"></b-col>
 			
+			<!-- Button to proceed to the next page -->
+			<!-- Only enabled when file content has been loaded -->
 			<b-col cols="3">
-				<!-- Only enabled when file content has been loaded -->
 				<b-button 
 					class="float-right"
-					:disabled="!readyForNextStepFlag"
+					:disabled="!pageData.categorization.accessible"
 					:to="'/' + pageData.categorization.location"
 					:variant="nextPageButtonColor">
 					Next step: Categorize columns
@@ -55,6 +60,9 @@
 </template>
 
 <script>
+
+	// Allows for reference to store data by creating simple, implicit getters
+	import { mapState } from "vuex";
 
 	export default {
 		
@@ -70,31 +78,15 @@
 
 			return {
 
-				// Full text name of this page
-				fullName: this.$store.getters.pageData.home.fullName, 
+				// Content types that are expected for the file selectors
+				contentTypes: {
 
-				// Status of the navbar item links for other pages
-				navItemsState: [
-
-					{
-						enabled: false,
-						pageInfo: this.$store.getters.pageData.categorization,
-					},
-					{ 
-						enabled: false,
-						pageInfo: this.$store.getters.pageData.annotation,
-					},
-					{
-						enabled: false,
-						pageInfo: this.$store.getters.pageData.download,
-					}
-				],
+					dataDictionary: "application/json",
+					dataTable: "text/tab-separated-values"
+				},
 
 				// Bootstrap variant color of the button leading to the categorization page
 				nextPageButtonColor: "secondary",
-
-				// Local reference to the page names in the store
-				pageData: this.$store.getters.pageData,
 
 				// Possible states of this page
 				possibleStates: {
@@ -105,36 +97,49 @@
 					STATE_BOTHFILES_LOADED: (1 << 0) | (1 << 1)
 				},
 
-				// Whether or not page has enabled access to the categorization page
-				readyForNextStepFlag: false,
+				// Size of the file display textboxes
+				textArea: {
+					
+					width: 5,
+					height: 200
+				}
 			}
 		},
 
 		computed: {
 
-			stringifiedJsonFile() {
+			...mapState([
 
-				// 0. Return a blank string if there is no loaded json file
-				if ( null == this.$store.state.dataDictionaryOriginal ) {
+				"dataDictionary",
+				"dataTable",
+				"pageData",
+				"pageOrder"
+			]),
+
+			stringifiedDataDictionary() {
+
+				// 0. Return a blank string if there is no loaded data dictionary file
+				if ( !this.$store.getters.isDataDictionaryLoaded ) {
 					return "";
 				}
 
-				// 1. Return a string version of the json file
-				return JSON.stringify(this.jsonFile(), null, 4);
+				// 1. Return a string version of the data dictionary file
+				// NOTE: Defaults to json for now
+				return JSON.stringify(this.dataDictionary.original, null, 4);
 			},
 
-			stringifiedTsvFile() {
+			stringifiedDataTable() {
 
-				// 0. Return a blank string is there is no loaded tsv file
-				if ( null == this.$store.getters.tsvDataOriginal ) {
+				// 0. Return a blank string is there is no loaded data table
+				if ( !this.$store.getters.isDataTableLoaded ) {
 					return "";
 				}
 
 				// 1. Convert the tsv file data into a list of strings
-				let storeTsv = this.tsvFile();
-				let textAreaArray = [Object.keys(storeTsv[0]).join("\t")];
-				for ( let index = 0; index < storeTsv.length; index++ ) {
-					textAreaArray.push(Object.values(storeTsv[index]).join("\t"));
+				// NOTE: Defaults to tsv for now
+				let textAreaArray = [Object.keys(this.dataTable.original[0]).join("\t")];
+				for ( let index = 0; index < Object.keys(this.dataTable.original[0]).length; index++ ) {
+					textAreaArray.push(Object.values(this.dataTable.original[index]).join("\t"));
 				}
 
 				// 2. Return the tsv file data joined as one string
@@ -142,29 +147,7 @@
 			}
 		},
 
-		methods: {		
-
-			categorizationPageAccess(p_enable) {
-				
-				// 1. Enable/disable access to the categorization page
-				for ( let index = 0; index < this.navItemsState.length; index++ ) {
-
-					// A. Look for the categorization nav item
-					if ( this.pageData.categorization.pageName == this.navItemsState[index].pageInfo.pageName ) {
-
-						// i. Enable/disable the categorization nav item
-						this.navItemsState[index].enabled = p_enable;
-
-						break;
-					}
-				}
-
-				// 2. Enable/disable the next step button
-				this.readyForNextStepFlag = p_enable;
-
-				// 3. Change the next step button's color
-				this.nextPageButtonColor = ( p_enable ) ? "success" : "secondary";
-			},			
+		methods: {				
 
 			changeState(p_state) {
 
@@ -191,13 +174,13 @@
 			changeState_NoFilesLoaded() {
 
 				// Disable access to the categorization page
-				this.categorizationPageAccess(false);
+				this.nextPageAccess(false);
 			},
 
 			changeState_TsvFileLoaded(p_data) {
 
 				// Enable access to the categorization page
-				this.categorizationPageAccess(true);
+				this.nextPageAccess(true);
 			},
 
 			changeToNewState() {
@@ -215,61 +198,64 @@
 				let newState = this.possibleStates.STATE_NOFILES_LOADED;
 
 				// 2. Add appropriate state flags based on data contents
-				if ( this.tsvFileLoaded() )
+				if ( this.$store.getters.isDataTableLoaded )
 					newState |= this.possibleStates.STATE_TSVFILE_LOADED;
-				if ( this.jsonFileLoaded() )
+				if ( this.$store.getters.isDataDictionaryLoaded )
 					newState |= this.possibleStates.STATE_JSONFILE_LOADED;
 
 				return newState;
+			},			
+
+			nextPageAccess(p_enable) {
+				
+				// 1. Enable/disable access to the categorization page
+
+				// A. Enable the nav item
+				this.$store.dispatch("enablePageNavigation", { 
+					pageName: "categorization",
+					enable: p_enable
+				});
+
+				// B. Change the next step button's color
+				this.nextPageButtonColor = ( p_enable ) ? "success" : "secondary";
+
+				// 3. Create the new annotated table for categorization if access is enabled
+				this.$store.dispatch("createAnnotatedDataTable");
 			},
 
-			jsonFile() {
+			saveDataTable(p_fileData) {
 
-				// Return the object currently saved as the json file in the data store
-				return this.$store.getters.dataDictionaryOriginal;
-			},
-
-			jsonFileLoaded() {
-
-				// Return whether or not a json file has been loaded in the data store
-				return ( null != this.$store.getters.dataDictionaryOriginal );
-			},				
-
-			saveTsvFileData(p_fileData) {
-
-				// 0. Determine if a tsv file has been selected
-				let newFileData = ( null == p_fileData || 0 == p_fileData.length ) ? null : p_fileData;
+				// 0. Determine if a data dictionary file has been selected
+				// NOTE: Defaults to tsv for now
+				let newFileData = {
+					
+					data: ( null == p_fileData || 0 == p_fileData.length ) ? null : p_fileData,
+					fileType: "tsv"
+				};
 
 				// 1. Update the store with tsv file data
-				this.$store.dispatch("saveTsvFile", newFileData);
+				this.$store.dispatch("saveDataTable", newFileData);
 
 				// 2. Determine page state from the new data contents and change to that new state
 				this.changeToNewState();
 			},
 
-			saveJsonFileData(p_fileData) {
+			saveDataDictionary(p_fileData) {
 
-				// 0. Determine if a json file has been selected
-				let newFileData = ( "none" == p_fileData ) ? null : p_fileData;
+				// 0. Determine if a data dictionary file has been selected
+				// NOTE: Defaults to json for now
+				let newFileData = {
+
+					data: ( "none" == p_fileData ) ? null : p_fileData,
+					fileType: "json"
+				};
 
 				// 1. Update the store with json file data
-				this.$store.dispatch("saveJsonFile", newFileData);
+				this.$store.dispatch("saveDataDictionary", newFileData);
 
 				// 2. Determine page state from the new data contents and change to that new state
 				this.changeToNewState();
-			},
-
-			tsvFile() {
-
-				// Return the list currently saved as the tsv file in the data store
-				return this.$store.getters.tsvDataOriginal;
-			},
-
-			tsvFileLoaded() {
-
-				// Return whether or not a tsv file has been loaded in the data store
-				return ( null != this.$store.getters.tsvDataOriginal );
-			},						
+			},					
 		}
 	}
 </script>

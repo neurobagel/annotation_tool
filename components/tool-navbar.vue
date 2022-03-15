@@ -7,7 +7,7 @@
 
             <!-- Brand -->
             <b-navbar-brand class="brand-styling">
-                Origami Annotation Tool - <span class="page-name">{{ pageName }}</span>
+                <h1>{{ toolName }}</h1>
             </b-navbar-brand>
 
             <!-- Collapse toggle -->
@@ -16,21 +16,18 @@
             <!-- All these children are collapsible -->
             <b-collapse id="nav-collapse" is-nav>
 
-                <!-- Nav items -->
-                <!-- <b-navbar-nav>
-                    <b-progress class="mt-2" :max="max" show-value show-progress animated>
-                        <b-progress-bar :value="value * (6 / 10)" variant="success"></b-progress-bar>
-                        <b-progress-bar :value="value * (2.5 / 10)" variant="warning"></b-progress-bar>
-                        <b-progress-bar :value="value * (1.5 / 10)" variant="danger"></b-progress-bar>
-                    </b-progress>
-                </b-navbar-nav> -->
-
                 <!-- Right aligned nav items -->
                 <b-navbar-nav class="ml-auto" id="right-nav">
 
-                    <b-nav-item v-for="navItem in navItemsState" :key="navItem.pageInfo.pageName"
-                        :to="navItem.pageInfo.location"
-                        :disabled="!navItem.enabled">{{ navItem.pageInfo.fullName }}</b-nav-item>
+                    <b-nav-item
+                        v-for="(navItem, key) in navItems"
+                        :active="pageName == navItem.fullName"
+                        :disabled="!navItem.accessible"
+                        :key="navItem.pageName"
+                        :to="navItem.location"
+                        :class="determineNavItemColor(navItem)">
+                        {{ navItem.fullName }}
+                    </b-nav-item>
 
                 </b-navbar-nav>
 
@@ -43,25 +40,36 @@
 
 <script>
 
-    import { BProgress, BProgressBar } from "bootstrap-vue";
-
     export default {
-
-		components: {
-
-			"b-progress": BProgress,
-			"b-progress-bar": BProgressBar
-		},
 
         data() {
 
             return {
-                max: 100,
-                value: 45
+                
+                toolName: "Origami Annotation Tool"
             }
         },
 
-        props: ["navItemsState", "pageName"]
+        methods: {
+
+            determineNavItemColor(p_navItemData) {
+
+                let variant = "secondary";
+
+                // The nav item for this page
+                if ( this.pageName == p_navItemData.fullName ) {
+                    variant = "dark";
+                }
+                // Else, if the page is accessible
+                else if ( p_navItemData.accessible  ) {
+                    variant = "success";
+                }
+
+                return variant;
+            }
+        },
+
+        props: ["navItems", "pageName"]
 
     }
 </script>
@@ -87,20 +95,23 @@
     padding-left: 1em;
 }
 
-
-.currentPageNavPill a {
-
-    color: white !important;
-    background-color: #28a745 !important;
-}
-
 .navbar {
     background-color: white !important;
 }
 
-.page-name {
-    
-    color: #28a745;
+.nav-item.dark a {
+
+    color: #000 !important;
+}
+
+.nav-item.secondary a {
+
+    color: #adb5bd !important;
+}
+
+.nav-item.success a {
+
+    color: #28a745 !important;
 }
 
 #right-nav {

@@ -2,30 +2,37 @@
 
 	<b-container fluid>
 
-		<tool-navbar :navItemsState="navItemsState" :pageName="fullName"></tool-navbar>
+		<!-- Navigation bar -->
+		<tool-navbar 
+			:navItems="pageData"
+			:navOrder="pageOrder"
+			:pageName="pageData.categorization.fullName">
+		</tool-navbar>
 
 		<b-row>
 
+			<!-- Category selection table -->
 			<b-col cols="4">
-				<coloring-listgroup
-					:categories="$store.getters.categories"
-					tag="recommended-column"
-					title="Recommended Categories"
-					instructions="Click category and then corresponding column from tsv file"
-					v-on:category-select="setCurrentCategory($event)">
-				</coloring-listgroup>
+				<category-select-table
+					:categories="categories"
+					:categoryClasses="categoryClasses"
+					:instructions="categorySelectText.instructions"
+					:title="categorySelectText.title"
+					v-on:category-select="setSelectedCategory($event)">
+				</category-select-table>
 			</b-col>
 
+			<!-- Category to column linking table -->
 			<b-col cols="8">
-				<filedata-table
-					:fields="columnMatchTableFields"
-					:currentStyleClass="$store.getters.getStyleClass[$store.getters.categoryToColorMap[categorySelection.current]]"
-					:defaultStyleClass="$store.getters.getStyleClass[$store.getters.categoryToColorMap[categorySelection.default]]"
-					:tableData="tableDataFromTsvAndOrJson"
-					:tableID="tableID"
+				<column-linking-table
+					:categoryClasses="categoryClasses"
+					:fields="columnLinkingTable.fields"
+					:needsRefresh="columnLinkingTable.needsRefresh"
+					:selectedCategory="selectedCategory"
+					:tableData="dataTable.annotated"
 					v-on:column-name-selected="tableClick($event)"
-					ref="table">
-				</filedata-table>
+					v-on:done-redraw="resetTableRefresh()">
+				</column-linking-table>
 			</b-col>
 
 		</b-row>
@@ -34,11 +41,12 @@
 			
 			<b-col cols="9"></b-col>
 			
+			<!-- Button to proceed to the next page -->
+			<!-- Only enabled when at least one column has been categorized -->
 			<b-col cols="3">
-				<!-- Only enabled when at least one column has been categorized -->
 				<b-button
 					class="float-right"
-					:disabled="!readyForNextStepFlag"
+					:disabled="!pageData.annotation.accessible"
 					:to="'/' + pageData.annotation.location"
 					:variant="nextPageButtonColor">
 					Next step: Annotate columns
@@ -53,7 +61,11 @@
 
 <script>
 
-	// String literals
+	// Allows for simple reference to getters in the store
+	import { mapGetters } from "vuex";
+
+	// Allows for reference to store data by creating simple, implicit getters
+	import { mapState } from "vuex";
 
 	export default {
 
@@ -61,13 +73,10 @@
 
 		mounted() {
 
-			//
+			// 1. Try to create the data table for annotation
+			this.$store.dispatch("createAnnotatedDataTable");
 
-			// NOTE: 'document' and 'window' are not yet defined until this hook.
-			// This is why any piece of functionality that requires either must be placed
-			// at this later stage of the Vue hook lifecycle			
-
-			// Determine page state from data contents and change to that new state
+			// 2. Determine page state from data contents and change to that new state
 			this.changeToNewState();
 		},
 
@@ -75,39 +84,23 @@
 
 			return {
 
-				// Category selection (default is index 0, no selection is -1)
-				categorySelection: {
+                categorySelectText: {
 
-					current: 0,
-					default: -1
-				},
+                    instructions: "Click category and then corresponding column from tsv file",
+                    title: "Recommended Categories"
+                },
 
 				// Columns for file data table	
-				columnMatchTableFields: [
-
-					{ key: "column" },
-					{ key: "description" }
-				],
-
-				// Full text name of this page
-				fullName: this.$store.getters.pageData.categorization.fullName, 
-
-				// Status of the navbar item links for other pages
-				navItemsState: [
+				columnLinkingTable: {
 					
-					{
-						enabled: true,
-						pageInfo: this.$store.getters.pageData.home
-					},
-					{
-						enabled: false,
-						pageInfo: this.$store.getters.pageData.annotation
-					},
-					{
-						enabled: false,
-						pageInfo: this.$store.getters.pageData.download
-					}
-				],
+					fields: [
+
+						{ key: "column" },
+						{ key: "description" }
+					],
+
+					needsRefresh: false
+				},
 
 				// Bootstrap variant color of the button leading to the categorization page
 				nextPageButtonColor: "secondary",
@@ -117,175 +110,30 @@
 
 					STATE_NOCATEGORIES_PAINTED: 0,
 					STATE_ATLEASTONE_CATEGORY_PAINTED: 1 << 0
-				},								
-				
-				// Local reference to the page names in the store
-				pageData: this.$store.getters.pageData,
+				},
 
-				// Whether or not page has enabled access to the annotation page
-				readyForNextStepFlag: false,
-
-				// Data for the coloring listgroup
-				recommendedCategories: [
-
-					"Subject ID",
-					"Age",
-					"Sex",
-					"Diagnosis",
-					"Assessment Tool"
-				],
-
-				tableID: "category-painting-table"
+				// Category selection (default is index 0, no selection is -1)
+				selectedCategory: this.$store.getters.categories[0]
 			}
 		},
 
-		computed: {	
+		computed: {
 
-			tableDataFromTsvAndOrJson() {
+			...mapGetters([
 
-				// 0. Check that there is tsv and json data in the data store
-				let tsvFile = this.$store.state.tsvDataOriginal;
-				let jsonFile = this.$store.state.dataDictionaryOriginal;
-				if ( null == tsvFile && null == jsonFile )
-					return [];
+				"categoryClasses"
+			]),
+    		
+			...mapState([
 
-				// Uses both tsv and json data
-				if ( null != jsonFile && null != tsvFile ) {
+				"categories",
+				"dataTable",
+				"pageData",
+				"pageOrder"
+    		])
+  		},
 
-					// 1. Produce an array of dicts
-					var tsvJsonDictArray = [];
-
-					// A. Each dict has a header entry from the tsv file
-					let headerFields = [];
-					let tsvJsonIndex = 0;
-					let tsvJsonIndexMap = {};
-					for ( let headerField in tsvFile[0] ) {
-
-						// I. Save the header field in a list
-						headerFields.push(headerField);
-
-						// II. Save an index map for quick location of column and description
-						tsvJsonIndexMap.headerField = tsvJsonIndex;
-						tsvJsonIndex += 1;
-
-						// III. Save a new dict for this column and description
-						tsvJsonDictArray.push({
-
-							"column": headerField,
-							"description": "",
-							"primary-key": tsvJsonIndex - 1
-						});
-					}
-
-					// B. and a corresponding "description" column that is (possibly) sourced from the json file
-					for ( let json_column in jsonFile ) {
-
-						// I. Save a lowercase version of the current json key
-						let jsonColumnLowercase = json_column.toLowerCase();
-
-						// II. Try to match the json key with one in the tsv file
-						if ( headerFields.includes(jsonColumnLowercase) ) {
-
-							for ( let index = 0; index < tsvJsonDictArray.length; index++ ) {
-
-								// NOTE: Advanced column name matching here between tsv and json? J. Armoza 01/26/22
-								if ( jsonColumnLowercase == tsvJsonDictArray[index].column.toLowerCase() ) {
-
-									// a. Determine the description string for this json file column entry
-									let descriptionStr = "";
-									for ( let subkey in jsonFile[json_column] ) {
-
-										if ( "description" == subkey.toLowerCase() ) {
-											descriptionStr = jsonFile[json_column][subkey];
-											break;
-										}
-									}	
-								
-									// b. Save the description from the json file colum entry
-									tsvJsonDictArray[index].description = descriptionStr;
-								}
-							}
-						}
-					}
-
-					// 2. Save the table in this component's data
-					this.$store.dispatch("saveTableData", tsvJsonDictArray);
-				}
-				// Uses just tsv data
-				else {
-
-					// 1. Produce an array of dicts
-					var tsvDictArray = [];
-
-					// A. Each dict has a header entry from the tsv file
-					let tsvIndex = 0;
-					for ( let headerField in tsvFile[0] ) {
-
-						tsvIndex += 1;
-
-						// I. Save a new dict for this column and description
-						tsvDictArray.push({
-							"column": headerField,
-							"description": "",
-							"primary-key": tsvIndex - 1
-						});
-					}
-
-					// 2. Save the table in this component's data
-					this.$store.dispatch("saveTableData", tsvDictArray);
-				}
-
-				return this.tableData();
-			}
-		},
-
-		methods: {
-
-			annotationPageAccess(p_enable) {
-				
-				// 1. Enable/disable access to the annotation page on the nav bar
-				for ( let index = 0; index < this.navItemsState.length; index++ ) {
-					
-					// A. Look for the annotation nav item
-					if ( this.pageData.annotation.pageName == this.navItemsState[index].pageInfo.pageName ) {
-						
-						// i. Enable/disable the annotation nav item
-						this.navItemsState[index].enabled = p_enable;
-						
-						break;
-					}
-				}
-
-				// 2. Enable/disable the next step button
-				this.readyForNextStepFlag = p_enable;
-
-				// 3. Change the next step button's color
-				this.nextPageButtonColor = ( p_enable ) ? "success" : "secondary";
-			},			
-
-			changeToNewState() {
-
-				// 1. Determine page state from data contents
-				let newState = this.determineState();
-
-				// 2. Change the page to the determined state
-				this.changeState(newState);
-			},
-
-			determineState() {
-
-				// 1. Reset the state to default
-				let newState = this.possibleStates.STATE_NOCATEGORIES_PAINTED;
-
-				// 2. Count the number of painted rows in the table
-				let paintedRowsCount = this.countLinkedColumns();
-
-				// 3. Add appropriate state flags based on data contents
-				if ( paintedRowsCount > 0 )
-					newState |= this.possibleStates.STATE_ATLEASTONE_CATEGORY_PAINTED;
-
-				return newState;
-			},
+		methods: {			
 
 			changeState(p_state) {
 
@@ -307,62 +155,100 @@
 			changeState_AtLeastOneCategoryPainted() {
 
 				// 1. Paint the table with previously painted rows documented in the store
-				this.styleTable();
+				this.columnLinkingTable.needsRefresh = true;
 
 				// Enable access to the annotation page
-				this.annotationPageAccess(true);
+				this.nextPageAccess(true);
 			},
 
 			changeState_NoCategoriesPainted() {
 
 				// 1. Paint the table with previously painted rows documented in the store
-				this.styleTable();				
+				this.columnLinkingTable.needsRefresh = true;
+				// this.$refs.table.$forceUpdate();
 
 				// Disable access to the annotation page
-				this.annotationPageAccess(false);
+				this.nextPageAccess(false);
+			},
+
+			changeToNewState() {
+
+				// 1. Determine page state from data contents
+				let newState = this.determineState();
+
+				// 2. Change the page to the determined state
+				this.changeState(newState);
 			},
 
 			countLinkedColumns() {
 
-				return Object.keys(this.$store.getters.categoryColumnMap).length;
+				// Count the number of columns that have had categories linked to them
+				let links = 0;
+				for ( let index = 0; index < this.dataTable.annotated.length; index++ ) {
+					if ( null != this.dataTable.annotated[index].category )
+						links += 1;
+				}
+
+				return links;
 			},
 
-			setCurrentCategory(p_clickData) {
+			determineState() {
 
-				// Save the listgroup item index of what has been clicked
-				this.categorySelection.current = p_clickData.categoryIndex;
+				// 1. Reset the state to default
+				let newState = this.possibleStates.STATE_NOCATEGORIES_PAINTED;
+
+				// 2. Count the number of painted rows in the table
+				let paintedRowsCount = this.countLinkedColumns();
+
+				// 3. Add appropriate state flags based on data contents
+				if ( paintedRowsCount > 0 )
+					newState |= this.possibleStates.STATE_ATLEASTONE_CATEGORY_PAINTED;
+
+				return newState;
+			},			
+
+			nextPageAccess(p_enable) {
+				
+				// 1. Enable/disable access to the annotation page on the nav bar
+
+				// A. Enable the nav item
+				this.$store.dispatch("enablePageNavigation", { 
+					pageName: "annotation",
+					enable: p_enable
+				});
+
+				// B. Change the next step button's color
+				this.nextPageButtonColor = ( p_enable ) ? "success" : "secondary";
+			},			
+
+			resetTableRefresh() {
+
+				this.needsRefresh = false;
 			},
 
-			styleTable() {
+			setSelectedCategory(p_clickData) {
 
-				// Table styling should occur on page state change, but child table component should handle the styling
-				this.$refs.table.styleTable();
+				// Save the name of the selected category
+				this.selectedCategory = p_clickData.category;
 			},					
 
 			tableClick(p_clickData) {
 
-				// 0. Coloring will be determined by previously defined category-column linkage in store
-				let columnName = p_clickData.column;
-				let categoryColumnMap = this.$store.getters.categoryColumnMap;
-
 				// 1. Style or unstyle table row
 
 				// A. Determine if category-column linking or unlinking has occurred
-
-				// I. Unclicked columns will not be in the category column map
-				let linking = !( columnName in categoryColumnMap );
+				let linking = !this.$store.getters.isColumnLinkedToCategory({
+					column: p_clickData.column,
+					category: this.selectedCategory
+				});
 
 				// B. Record the linking/unlinking in the data store
 				let dataStoreFunction = ( linking ) ? "linkColumnWithCategory" : "unlinkColumnWithCategory";
 
 				// I. Build a new object for passing to the store for category-column linking
-				let dataForStore = {
-					
-					column: p_clickData["column"],
-					primaryKey: p_clickData["primary-key"]
-				};
+				let dataForStore = { column: p_clickData["column"] };
 				if ( linking ) {
-					dataForStore.tsvCategory = this.categorySelection.current;
+					dataForStore.category = this.selectedCategory;
 				}
 
 				// II. Link or unlink the currently-selected category and the clicked column
@@ -370,21 +256,7 @@
 
 				// 2. Determine if page state should be changed and change it if necessary
 				this.changeToNewState();
-			},
-
-			tableData() {
-
-				return this.$store.getters.tsvDataTableFormatted;
 			}
 		}		
 	}
 </script>
-
-<style scoped>
-
-#category-painting-table {
-
-	margin-bottom: 0;
-}
-
-</style>

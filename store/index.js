@@ -7,7 +7,7 @@ export const state = () => ({
 
         home: {
             
-            accessibility: true,
+            accessible: true,
             fullName: "Home",
             location: "/",
             pageName: "index",
@@ -15,7 +15,7 @@ export const state = () => ({
 
         categorization: {
             
-            accessibility: false,
+            accessible: false,
             fullName: "Categorization",
             location: "categorization",
             pageName: "categorization"
@@ -23,7 +23,7 @@ export const state = () => ({
 
         annotation: {
             
-            accessibility: false,
+            accessible: false,
             fullName: "Annotation",
             location: "annotation",
             pageName: "annotation"
@@ -31,55 +31,72 @@ export const state = () => ({
 
         download: {
             
-            accessibility: false,
+            accessible: false,
             fullName: "Download",
             location: "download",
             pageName: "download"
         }
     },
 
-    // TSV file
+	pageOrder: [
 
-    // Participants.tsv file data
-    // For format see 'convertTsvLinesToDict' in index.js
-    tsvDataOriginal: null,
+		"home",
+		"categorization",
+		"annotation",
+		"download"
+	],
 
-    // Stores table data in format ready for Bootstrap table
-    // This is an array of objects. See 'tableDataFromTsvAndOrJson' in
-    // categorization.vue for exact format
-    tsvDataTableFormatted: [],
+    // Data table (i.e. participants.tsv file)
 
-    // Data dictionary
+	dataTable: {
 
-    // Original data dictionary file data
-    // (formerly home.jsonFile)
-    dataDictionaryOriginal: null,
+		// File type of the original data table file
+		fileType: "",
 
-    // User-amended data dictionary file data
-    dataDictionaryAmended: {},	
+		 // Participants.tsv file data
+    	// For format see 'convertTsvLinesToDict' in index.js
+		original: null,
+
+		// Stores table data in format ready for Bootstrap table
+    	// This is an array of objects. See the mutation
+		// 'setupAnnotatedDataTable' for exact format
+		annotated: null
+	},
+
+    // Data dictionary (i.e. participants.json)
+
+	dataDictionary: {
+
+		// File type of the original data dictionary file
+		fileType: "",		
+
+		// Original data dictionary file data
+		original: null,
+
+		// User-amended data dictionary file data
+		amended: {},	
+	},
 
     // Hardcoded list of categories used on the categorization page
     // and possibly elsewhere in the tool
-    // formerly (categorization page's recommendedCategories)
-    categoryList: [
+    categories: [
 
         "Subject ID",
         "Age",
         "Sex",
         "Diagnosis",
         "Assessment Tool"
-    ],	
+    ],
+	
+	// This is a computed direct map between current categories and CSS classes
+	// See getter 'categoryClasses'
+	categoryClasses: null,
 
-    // Mapping showing user-applied mappings between our categories
-    // and the columns in their tsv/data dictionary file(s)
-    // Keyed on column. If a column is not a key, it has not yet been linked to
-    // a category by the user
-    // (formerly categorization.paintingData)
-    categoryColumnMap: {},
+	// The following fields are only accessed by store methods
 
-    // Maps our categories in 'categoryList' to colors in 'toolColorPalette'
+    // Maps our categories in 'categories' to colors in 'toolColorPalette'
     // (Final class names pending). This way colors can be swappable and
-    // rearrangeable for categories
+    // rearrangeable for categories.
     categoryToColorMap: {
 
         "0": "color1",
@@ -89,8 +106,6 @@ export const state = () => ({
         "4": "color5",
 		"-1": "colorDefault"
     },
-
-	cssStylePrefix: "category-style-",
 
     // Map of the tools colors to CSS classes containing color (and possibly
     // other style) values. More palettes could be defined here, either out of
@@ -110,49 +125,55 @@ export const state = () => ({
 // what component changed state data and when
 export const actions = {
 
+	// Tool navigation
+	enablePageNavigation(p_context, p_navData) {
+
+		p_context.commit("setPageNavigation", p_navData);
+	},
+
 	// Landing page actions
 	
-	saveJsonFile(p_context, p_jsonStringData) {
+	saveDataDictionary(p_context, p_newFileData) {
 
 		// 1. Attempt to transform the string data into JSON if valid data given
-		let newJsonData = {};
-		if ( null != p_jsonStringData )
-			newJsonData = JSON.parse(p_jsonStringData);
+		if ( "json" == p_newFileData.fileType ) {
+
+			if ( null != p_newFileData.data )
+				p_newFileData.formattedData = JSON.parse(p_newFileData.data);
+		}
 
 		// 2. Save either an empty object or the JSON dict to state data
-		p_context.commit("setJsonFile", newJsonData);
-
+		p_context.commit("setDataDictionary", p_newFileData);
 	},
 
-	saveTsvFile(p_context, p_tsvLines) {
+	saveDataTable(p_context, p_newFileData) {
 
 		// 1. Attempt to convert the tsv lines into a dict for each line if valid data given
-		let newTsvData = [];
-		if ( null != p_tsvLines ) 
-			newTsvData = convertTsvLinesToDict(p_tsvLines);
+		if ( "tsv"  == p_newFileData.fileType ) {
+		
+			if ( null != p_newFileData.data ) 
+				p_newFileData.formattedData = convertTsvLinesToDict(p_newFileData.data);
+		}
 
 		// 2. Save either an empty array or array of tsv dictionaries to state data
-		p_context.commit("setTsvFile", newTsvData);
+		p_context.commit("setDataTable", p_newFileData);
 	},
 
-	
 	// Categorization page actions
+
+	createAnnotatedDataTable(p_context) {
+
+		p_context.commit("setupAnnotatedDataTable");
+	},
 
 	linkColumnWithCategory(p_context, p_linkingData) {
 
 		// Commit the new data to the store
 		p_context.commit("addColumnCategorization", {
 
-			dataDictionaryColumn: p_linkingData.column,
-			primaryKey: p_linkingData.primaryKey,
-			tsvCategory: p_linkingData.tsvCategory
+			column: p_linkingData.column,
+			category: p_linkingData.category
 		});
-	},	
-
-	saveTableData(p_context, p_newTableData) {
-
-		// Store the given table data
-		p_context.commit("setNewCategorizationTable", p_newTableData);
 	},
 
 	unlinkColumnWithCategory(p_context, p_linkingData) {
@@ -164,44 +185,149 @@ export const actions = {
 // Mutations - Change state data, as called by Actions
 export const mutations = {
 
-	// Landing page mutations
+	// Tool navigation
 
-	setTsvFile(p_state, p_tsvRowDictArray) {
+	setPageNavigation(p_state, p_navData) {
 
-		// Save the new tsv row dictionary list to state data
-		p_state.tsvDataOriginal = p_tsvRowDictArray;
+		// Enable or disable access to this page
+		p_state.pageData[p_navData.pageName].accessible = p_navData.enable;
 	},
 
-	setJsonFile(p_state, p_jsonData) {
+	// Landing page mutations
 
-		// Save the new json dictionary to state data
-		p_state.dataDictionaryOriginal = p_jsonData;
+	setDataTable(p_state, p_newFileData) {
+
+		// 1. Save the new tsv row dictionary list to state data
+		p_state.dataTable.original = p_newFileData.formattedData;
+
+		// 2. Save the file type of the new data table
+		p_state.dataTable.fileType = p_newFileData.fileType;
+	},
+
+	setDataDictionary(p_state, p_newFileData) {
+
+		// 1. Save the new data dictionary to state data
+		p_state.dataDictionary.original = p_newFileData.formattedData;
+
+		// 2. Save the file type of the new data dictionary
+		p_state.dataDictionary.fileType = p_newFileData.fileType;
 	},	
 
 	// Categorization page changes
 
 	addColumnCategorization(p_state, p_data) {
 
-		// Save the categorization in the store using the column name as a key
-		p_state.categoryColumnMap[p_data.dataDictionaryColumn] = {
+		// Save the categorization-column link in the annotated table
+		let dataTable = p_state.dataTable.annotated;
+		for ( let index = 0; index < dataTable.length; index++ ) {
+			if ( dataTable[index].column == p_data.column ) {
+				dataTable[index].category = p_data.category;
+				break;
+			}
+		}
+	},
 
-			primaryKey: p_data.primaryKey,
-			tsvCategory: p_data.tsvCategory,
+	setupAnnotatedDataTable(p_state) {
+
+		// 0. Do not recreate the annotated table if already setup
+		if ( null !== p_state.dataTable.annotated )
+			return;
+
+		// 0. Check that there is a data table and data dictionary in the data store
+		let dataTable = p_state.dataTable.original;
+		let dataDictionary = p_state.dataDictionary.original;
+		if ( null == dataTable && null == dataDictionary )
+			return;
+
+		// Uses both data table and data dictionary
+		if ( null != dataDictionary && null != dataTable ) {
+
+			// 1. Produce an array of dicts
+			p_state.dataTable.annotated = [];
+
+			// A. Each dict has a header entry from the data table file
+			let headerFields = [];
+			let tsvJsonIndex = 0;
+			let tsvJsonIndexMap = {};
+			for ( let headerField in dataTable[0] ) {
+
+				// I. Save the header field in a list
+				headerFields.push(headerField);
+
+				// II. Save an index map for quick location of column and description
+				tsvJsonIndexMap.headerField = tsvJsonIndex;
+				tsvJsonIndex += 1;
+
+				// III. Save a new dict for this column and description
+				p_state.dataTable.annotated.push({
+
+					"category": null,
+					"column": headerField,
+					"description": ""
+				});
+			}
+
+			// B. and a corresponding "description" column that is (possibly) sourced from the json file
+			for ( let column in dataDictionary ) {
+
+				// I. Save a lowercase version of the current json key
+				let columnLowercase = column.toLowerCase();
+
+				// II. Try to match the json key with one in the tsv file
+				if ( headerFields.includes(columnLowercase) ) {
+
+					for ( let index = 0; index < p_state.dataTable.annotated.length; index++ ) {
+
+						// NOTE: Advanced column name matching here between tsv and json? J. Armoza 01/26/22
+						if ( columnLowercase == p_state.dataTable.annotated[index].column.toLowerCase() ) {
+
+							// a. Determine the description string for this json file column entry
+							let descriptionStr = "";
+							for ( let subkey in dataDictionary[column] ) {
+
+								if ( "description" == subkey.toLowerCase() ) {
+									descriptionStr = dataDictionary[column][subkey];
+									break;
+								}
+							}	
+						
+							// b. Save the description from the json file colum entry
+							p_state.dataTable.annotated[index].description = descriptionStr;
+						}
+					}
+				}
+			}
+		}
+		// Uses just data table data
+		else {
+
+			// 1. Produce an array of dicts
+			p_state.dataTable.annotated = [];
+
+			// A. Each dict has a header entry from the data table file
+			for ( let headerField in dataTable[0] ) {
+
+				// I. Save a new dict for this column and description
+				p_state.dataTable.annotated.push({
+
+					"category": null,
+					"column": headerField,
+					"description": ""
+				});
+			}
 		}
 	},
 
 	removeColumnCategorization(p_state, p_columnName) {
 
-		if ( p_columnName in p_state.categoryColumnMap ) {
-			
-			delete p_state.categoryColumnMap[p_columnName];
+		// Disassociate the column with the category in the annotated table
+		let dataTable = p_state.dataTable.annotated;
+		for ( let index = 0; index < dataTable.length; index++ ) {
+			if ( dataTable[index].column == p_columnName ) {
+				dataTable[index].category = null;
+				break;
+			}
 		}
-	},	
-
-	setNewCategorizationTable(p_state, p_newTableData) {
-
-		// Store the new table data
-		p_state.tsvDataTableFormatted = p_newTableData;
 	}
 }
 
@@ -210,42 +336,52 @@ export const getters = {
 
 	categories(p_state) {
 
-		return p_state.categoryList;
+		return p_state.categories;
 	},
 
-	categoryColumnMap(p_state) {
+	categoryClasses(p_state) {
 
-		return p_state.categoryColumnMap;
+		// NOTE: categoryClasses should be computed when an annotation type
+		// is selected by future feature implementation on landing/instruction page
+
+		// 1. Create a map between category names and color classes
+		let mapArray = [];
+		for ( let index = 0; index < p_state.categories.length; index++ ) {
+
+			const category = p_state.categories[index];
+			const colorID = p_state.categoryToColorMap[index.toString()];
+			const colorClass = p_state.toolColorPalette[colorID];
+			
+			mapArray.push([category, colorClass]);
+		}
+
+		// 2. Return the new object
+		return Object.fromEntries(mapArray);
 	},
 
-	categoryToColorMap(p_state) {
-		
-		return p_state.categoryToColorMap;
+	isColumnLinkedToCategory: (p_state) => (p_matchData) => {
+
+		// Check to see if the given column has been linked to the given category
+		let dataTable = p_state.dataTable.annotated;
+		let hasLink = false;
+		for ( let index = 0; index < dataTable.length; index++ ) {
+			if ( p_matchData.column == dataTable[index].column ) {
+				hasLink = ( p_matchData.category == dataTable[index].category );
+				break;
+			}
+		}
+
+		return hasLink;
 	},
 
-	cssStylePrefix(p_state) {
-		
-		return p_state.cssStylePrefix;
+	isDataDictionaryLoaded(p_state) {
+
+		return ( null != p_state.dataDictionary.original );
 	},
 
-	getStyleClass(p_state) {
+	isDataTableLoaded(p_state) {
 
-		return p_state.toolColorPalette;
-	},
-
-	pageData(p_state) {
-
-		return p_state.pageData;
-	},	
-
-	tsvDataOriginal(p_state) {
-		
-		return p_state.tsvDataOriginal;
-	},
-
-	tsvDataTableFormatted(p_state) {
-
-		return p_state.tsvDataTableFormatted;
+		return ( null != p_state.dataTable.original );
 	}
 }
 

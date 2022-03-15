@@ -1,3 +1,10 @@
+/* General styles */
+
+.hidden {
+
+	display: none;
+}
+
 /* Palette for categories on the categorization page
    and other interface items in the tool */
 
@@ -45,14 +52,4 @@
 	margin: 1em;
 	padding-left: 2em;
 	padding-right: 2em;
-}
-
-.transparent {
-
-	opacity: 0.5;
-}
-
-.opaque {
-
-	opacity: 1.0;
 }
