@@ -242,7 +242,20 @@ export const mutations = {
 		}
 
 		// 4. Set up the category to CSS class map
-		p_state.categoryClasses = createCategoryClassMap(p_state);
+
+		// A. Create a map between category names and color classes
+		let mapArray = [];
+		for ( let index = 0; index < p_state.categories.length; index++ ) {
+
+			const category = p_state.categories[index];
+			const colorID = p_state.categoryToColorMap[category];
+			const colorClass = p_state.toolColorPalette[colorID];
+			
+			mapArray.push([category, colorClass]);
+		}
+
+		// B. Save the new category to class map
+		p_state.categoryClasses = Object.fromEntries(mapArray);
 	},
 
 	setupColumnToCategoryMap(p_state) {
@@ -312,11 +325,6 @@ export const getters = {
 		return p_state.categories;
 	},
 
-	categoryClasses(p_state) {
-
-		return createCategoryClassMap(p_state);
-	},
-
 	isColumnLinkedToCategory: (p_state) => (p_matchData) => {
 
 		// Check to see if the given column has been linked to the given category
@@ -380,22 +388,4 @@ function convertTsvLinesToDict(p_tsvLines){
 	}
 
 	return tsvRowDictArray;
-}
-
-// Mutation helpers
-function createCategoryClassMap(p_state) {
-
-	// 1. Create a map between category names and color classes
-	let mapArray = [];
-	for ( let index = 0; index < p_state.categories.length; index++ ) {
-
-		const category = p_state.categories[index];
-		const colorID = p_state.categoryToColorMap[category];
-		const colorClass = p_state.toolColorPalette[colorID];
-		
-		mapArray.push([category, colorClass]);
-	}
-
-	// 2. Return the new object
-	return Object.fromEntries(mapArray);
 }
