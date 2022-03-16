@@ -219,8 +219,8 @@
 				// B. Change the next step button's color
 				this.nextPageButtonColor = ( p_enable ) ? "success" : "secondary";
 
-				// 3. Create the new annotated table for categorization if access is enabled
-				this.$store.dispatch("createAnnotatedDataTable");
+				// 2. Create the new annotated table for categorization if access is enabled
+				this.$store.dispatch("createColumnToCategoryMap");
 			},
 
 			saveDataTable(p_fileData) {

@@ -50,16 +50,17 @@ export const state = () => ({
 
 	dataTable: {
 
+		// List of data table's columns
+		columns: [],
+
 		// File type of the original data table file
 		fileType: "",
 
-		 // Participants.tsv file data
+		// Participants.tsv file data
     	// For format see 'convertTsvLinesToDict' in index.js
 		original: null,
 
-		// Stores table data in format ready for Bootstrap table
-    	// This is an array of objects. See the mutation
-		// 'setupAnnotatedDataTable' for exact format
+		// Version of table data for annotation page 
 		annotated: null
 	},
 
@@ -77,16 +78,16 @@ export const state = () => ({
 		amended: {},	
 	},
 
+	// Stores table data in format ready for Bootstrap table
+	// This is an array of objects. See the mutation
+	// 'setupColumnToCategoryTable' for exact format
+	columnToCategoryMap: {
+
+	},
+
     // Hardcoded list of categories used on the categorization page
     // and possibly elsewhere in the tool
-    categories: [
-
-        "Subject ID",
-        "Age",
-        "Sex",
-        "Diagnosis",
-        "Assessment Tool"
-    ],
+    categories: [],
 	
 	// This is a computed direct map between current categories and CSS classes
 	// See getter 'categoryClasses'
@@ -97,15 +98,7 @@ export const state = () => ({
     // Maps our categories in 'categories' to colors in 'toolColorPalette'
     // (Final class names pending). This way colors can be swappable and
     // rearrangeable for categories.
-    categoryToColorMap: {
-
-        "0": "color1",
-        "1": "color2",
-        "2": "color3",
-        "3": "color4",
-        "4": "color5",
-		"-1": "colorDefault"
-    },
+    categoryToColorMap: {},
 
     // Map of the tools colors to CSS classes containing color (and possibly
     // other style) values. More palettes could be defined here, either out of
@@ -125,7 +118,40 @@ export const state = () => ({
 // what component changed state data and when
 export const actions = {
 
+	// Initializations
+
+	createColumnToCategoryMap(p_context) {
+
+		p_context.commit("setupColumnToCategoryMap");
+	},
+
+	initializeCategories(p_context, p_categories) {
+
+		p_context.commit("setupCategories", p_categories);
+	},
+
+	nuxtServerInit({ commit }) {
+
+		// This function is called on Nuxt server startup
+		
+		// 0. This list is default but we can swap out and reinitialize category
+		// data structures by calling store action 'initializeCategories' with
+		// a new list of categories
+		let categories = [
+
+			"Subject ID",
+        	"Age",
+        	"Sex",
+        	"Diagnosis",
+        	"Assessment Tool"
+		];
+
+		// 1. Setup category-related data structures based on the given categories
+		commit("setupCategories", categories);
+	},
+
 	// Tool navigation
+	
 	enablePageNavigation(p_context, p_navData) {
 
 		p_context.commit("setPageNavigation", p_navData);
@@ -151,8 +177,13 @@ export const actions = {
 		// 1. Attempt to convert the tsv lines into a dict for each line if valid data given
 		if ( "tsv"  == p_newFileData.fileType ) {
 		
+			// 1. Save new table data, formatted for the Vue table element
 			if ( null != p_newFileData.data ) 
 				p_newFileData.formattedData = convertTsvLinesToDict(p_newFileData.data);
+
+			// 2. Save a list of the columns of this new table data
+			if ( p_newFileData.formattedData.length > 0 )
+				p_newFileData.columns = Object.keys(p_newFileData.formattedData[0]);
 		}
 
 		// 2. Save either an empty array or array of tsv dictionaries to state data
@@ -160,11 +191,6 @@ export const actions = {
 	},
 
 	// Categorization page actions
-
-	createAnnotatedDataTable(p_context) {
-
-		p_context.commit("setupAnnotatedDataTable");
-	},
 
 	linkColumnWithCategory(p_context, p_linkingData) {
 
@@ -179,11 +205,58 @@ export const actions = {
 	unlinkColumnWithCategory(p_context, p_linkingData) {
 
 		p_context.commit("removeColumnCategorization", p_linkingData.column);
-	}	
+	}
 }
 
 // Mutations - Change state data, as called by Actions
 export const mutations = {
+
+	// Initialization
+
+	setupCategories(p_state, p_categories) {
+
+		// 1. Save the given category list
+		p_state.categories = p_categories;
+
+		// 2. Get color keys from tool color palette
+		let colorKeys = Object.keys(p_state.toolColorPalette);
+		
+		// 3. Create the category to color map
+		let assignedCategories = 0;
+		for ( let index = 0; index < p_categories.length &&
+				index < colorKeys.length; index++ ) {
+
+			// A. Stop when the default color key has been reached
+			if ( "colorDefault" === colorKeys[index] )
+				break;
+
+			// B. Map this category to color key
+			p_state.categoryToColorMap[p_categories[index]] = colorKeys[index];
+
+			// C. Keep track of how many categories have been assigned color keys
+			assignedCategories += 1;
+		}
+		// D. Issue warning if there are not enough color keys for the given category set
+		if ( p_categories.length > assignedCategories ) {
+			console.log("WARNING: Not all categories have been assigned color keys!");
+		}
+
+		// 4. Set up the category to CSS class map
+		p_state.categoryClasses = createCategoryClassMap(p_state);
+	},
+
+	setupColumnToCategoryMap(p_state) {
+
+		// NOTE: Map will be wiped if ever category data structures are re-initialized
+
+		// Only proceed if map is not yet created.
+		if ( Object.keys(p_state.columnToCategoryMap).length != 0 )
+			return;
+
+		// Column to category map lists all columns as keys with default value of null
+		p_state.columnToCategoryMap = 
+			Object.fromEntries(p_state.dataTable.columns.map((columnName) => [columnName, null]));
+	},
 
 	// Tool navigation
 
@@ -193,7 +266,7 @@ export const mutations = {
 		p_state.pageData[p_navData.pageName].accessible = p_navData.enable;
 	},
 
-	// Landing page mutations
+	// Landing page
 
 	setDataTable(p_state, p_newFileData) {
 
@@ -202,6 +275,9 @@ export const mutations = {
 
 		// 2. Save the file type of the new data table
 		p_state.dataTable.fileType = p_newFileData.fileType;
+
+		// 3. Save a list of the columns of this data table
+		p_state.dataTable.columns = p_newFileData.columns;
 	},
 
 	setDataDictionary(p_state, p_newFileData) {
@@ -218,116 +294,13 @@ export const mutations = {
 	addColumnCategorization(p_state, p_data) {
 
 		// Save the categorization-column link in the annotated table
-		let dataTable = p_state.dataTable.annotated;
-		for ( let index = 0; index < dataTable.length; index++ ) {
-			if ( dataTable[index].column == p_data.column ) {
-				dataTable[index].category = p_data.category;
-				break;
-			}
-		}
-	},
-
-	setupAnnotatedDataTable(p_state) {
-
-		// 0. Do not recreate the annotated table if already setup
-		if ( null !== p_state.dataTable.annotated )
-			return;
-
-		// 0. Check that there is a data table and data dictionary in the data store
-		let dataTable = p_state.dataTable.original;
-		let dataDictionary = p_state.dataDictionary.original;
-		if ( null == dataTable && null == dataDictionary )
-			return;
-
-		// Uses both data table and data dictionary
-		if ( null != dataDictionary && null != dataTable ) {
-
-			// 1. Produce an array of dicts
-			p_state.dataTable.annotated = [];
-
-			// A. Each dict has a header entry from the data table file
-			let headerFields = [];
-			let tsvJsonIndex = 0;
-			let tsvJsonIndexMap = {};
-			for ( let headerField in dataTable[0] ) {
-
-				// I. Save the header field in a list
-				headerFields.push(headerField);
-
-				// II. Save an index map for quick location of column and description
-				tsvJsonIndexMap.headerField = tsvJsonIndex;
-				tsvJsonIndex += 1;
-
-				// III. Save a new dict for this column and description
-				p_state.dataTable.annotated.push({
-
-					"category": null,
-					"column": headerField,
-					"description": ""
-				});
-			}
-
-			// B. and a corresponding "description" column that is (possibly) sourced from the json file
-			for ( let column in dataDictionary ) {
-
-				// I. Save a lowercase version of the current json key
-				let columnLowercase = column.toLowerCase();
-
-				// II. Try to match the json key with one in the tsv file
-				if ( headerFields.includes(columnLowercase) ) {
-
-					for ( let index = 0; index < p_state.dataTable.annotated.length; index++ ) {
-
-						// NOTE: Advanced column name matching here between tsv and json? J. Armoza 01/26/22
-						if ( columnLowercase == p_state.dataTable.annotated[index].column.toLowerCase() ) {
-
-							// a. Determine the description string for this json file column entry
-							let descriptionStr = "";
-							for ( let subkey in dataDictionary[column] ) {
-
-								if ( "description" == subkey.toLowerCase() ) {
-									descriptionStr = dataDictionary[column][subkey];
-									break;
-								}
-							}	
-						
-							// b. Save the description from the json file colum entry
-							p_state.dataTable.annotated[index].description = descriptionStr;
-						}
-					}
-				}
-			}
-		}
-		// Uses just data table data
-		else {
-
-			// 1. Produce an array of dicts
-			p_state.dataTable.annotated = [];
-
-			// A. Each dict has a header entry from the data table file
-			for ( let headerField in dataTable[0] ) {
-
-				// I. Save a new dict for this column and description
-				p_state.dataTable.annotated.push({
-
-					"category": null,
-					"column": headerField,
-					"description": ""
-				});
-			}
-		}
+		p_state.columnToCategoryMap[p_data.column] = p_data.category;
 	},
 
 	removeColumnCategorization(p_state, p_columnName) {
 
-		// Disassociate the column with the category in the annotated table
-		let dataTable = p_state.dataTable.annotated;
-		for ( let index = 0; index < dataTable.length; index++ ) {
-			if ( dataTable[index].column == p_columnName ) {
-				dataTable[index].category = null;
-				break;
-			}
-		}
+		// Disassociate the column with this category it was linked to
+		p_state.columnToCategoryMap[p_columnName] = null;
 	}
 }
 
@@ -341,37 +314,13 @@ export const getters = {
 
 	categoryClasses(p_state) {
 
-		// NOTE: categoryClasses should be computed when an annotation type
-		// is selected by future feature implementation on landing/instruction page
-
-		// 1. Create a map between category names and color classes
-		let mapArray = [];
-		for ( let index = 0; index < p_state.categories.length; index++ ) {
-
-			const category = p_state.categories[index];
-			const colorID = p_state.categoryToColorMap[index.toString()];
-			const colorClass = p_state.toolColorPalette[colorID];
-			
-			mapArray.push([category, colorClass]);
-		}
-
-		// 2. Return the new object
-		return Object.fromEntries(mapArray);
+		return createCategoryClassMap(p_state);
 	},
 
 	isColumnLinkedToCategory: (p_state) => (p_matchData) => {
 
 		// Check to see if the given column has been linked to the given category
-		let dataTable = p_state.dataTable.annotated;
-		let hasLink = false;
-		for ( let index = 0; index < dataTable.length; index++ ) {
-			if ( p_matchData.column == dataTable[index].column ) {
-				hasLink = ( p_matchData.category == dataTable[index].category );
-				break;
-			}
-		}
-
-		return hasLink;
+		return ( p_matchData.category === p_state.columnToCategoryMap[p_matchData.column] );
 	},
 
 	isDataDictionaryLoaded(p_state) {
@@ -404,7 +353,7 @@ function convertTsvLinesToDict(p_tsvLines){
 	// 2. Create dictionaries for each tsv row keyed on the column headers 
 	for ( let index = 1; index < p_tsvLines.length; index++ ){
 
-		let tsvRowDict = {}
+		let tsvRowDict = {};
 
 		// A. Loop through the tsv row, matching entries with the tsv column headers
 		for ( let index2 = 0; index2 < columnHeaders.length; index2++ ) {
@@ -431,4 +380,22 @@ function convertTsvLinesToDict(p_tsvLines){
 	}
 
 	return tsvRowDictArray;
+}
+
+// Mutation helpers
+function createCategoryClassMap(p_state) {
+
+	// 1. Create a map between category names and color classes
+	let mapArray = [];
+	for ( let index = 0; index < p_state.categories.length; index++ ) {
+
+		const category = p_state.categories[index];
+		const colorID = p_state.categoryToColorMap[category];
+		const colorClass = p_state.toolColorPalette[colorID];
+		
+		mapArray.push([category, colorClass]);
+	}
+
+	// 2. Return the new object
+	return Object.fromEntries(mapArray);
 }

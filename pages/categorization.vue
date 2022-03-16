@@ -26,10 +26,11 @@
 			<b-col cols="8">
 				<column-linking-table
 					:categoryClasses="categoryClasses"
+					:columnToCategoryMap="columnToCategoryMap"
 					:fields="columnLinkingTable.fields"
 					:needsRefresh="columnLinkingTable.needsRefresh"
 					:selectedCategory="selectedCategory"
-					:tableData="dataTable.annotated"
+					:tableData="columnToCategoryTable"
 					v-on:column-name-selected="tableClick($event)"
 					v-on:done-redraw="resetTableRefresh()">
 				</column-linking-table>
@@ -73,8 +74,8 @@
 
 		mounted() {
 
-			// 1. Try to create the data table for annotation
-			this.$store.dispatch("createAnnotatedDataTable");
+			// 1. Create the data structure for the category to column linking table
+			this.setupColumnToCategoryTable();
 
 			// 2. Determine page state from data contents and change to that new state
 			this.changeToNewState();
@@ -102,6 +103,8 @@
 					needsRefresh: false
 				},
 
+				columnToCategoryTable: [],
+
 				// Bootstrap variant color of the button leading to the categorization page
 				nextPageButtonColor: "secondary",
 
@@ -127,7 +130,9 @@
 			...mapState([
 
 				"categories",
+				"columnToCategoryMap",
 				"dataTable",
+				"dataDictionary",
 				"pageData",
 				"pageOrder"
     		])
@@ -184,8 +189,8 @@
 
 				// Count the number of columns that have had categories linked to them
 				let links = 0;
-				for ( let index = 0; index < this.dataTable.annotated.length; index++ ) {
-					if ( null != this.dataTable.annotated[index].category )
+				for ( let column in this.columnToCategoryMap ) {
+					if ( null != this.columnToCategoryMap[column] )
 						links += 1;
 				}
 
@@ -230,17 +235,99 @@
 
 				// Save the name of the selected category
 				this.selectedCategory = p_clickData.category;
-			},					
+			},
+			
+			setupColumnToCategoryTable() {
+
+				// 0. Check that there is a data table and data dictionary in the data store
+				if ( null == this.dataTable.original && null == this.dataDictionary )
+					return;
+
+				// Uses both data table and data dictionary
+				if ( null != this.dataDictionary && null != this.dataTable.original ) {
+
+					// 1. Produce an array of dicts
+					this.columnToCategoryTable = [];
+
+					// A. Each dict has a header entry from the data table file
+					let headerFields = [];
+					let tsvJsonIndex = 0;
+					let tsvJsonIndexMap = {};
+					for ( let headerField in this.dataTable.original[0] ) {
+
+						// I. Save the header field in a list
+						headerFields.push(headerField);
+
+						// II. Save an index map for quick location of column and description
+						tsvJsonIndexMap.headerField = tsvJsonIndex;
+						tsvJsonIndex += 1;
+
+						// III. Save a new dict for this column and description
+						this.columnToCategoryTable.push({
+
+							"category": null,
+							"column": headerField,
+							"description": ""
+						});
+					}
+
+					// B. and a corresponding "description" column that is (possibly) sourced from the json file
+					for ( let column in this.dataDictionary ) {
+
+						// I. Save a lowercase version of the current json key
+						let columnLowercase = column.toLowerCase();
+
+						// II. Try to match the json key with one in the tsv file
+						if ( headerFields.includes(columnLowercase) ) {
+
+							for ( let index = 0; index < this.columnToCategoryTable.length; index++ ) {
+
+								// NOTE: Advanced column name matching here between tsv and json? J. Armoza 01/26/22
+								if ( columnLowercase == this.columnToCategoryTable[index].column.toLowerCase() ) {
+
+									// a. Determine the description string for this json file column entry
+									let descriptionStr = "";
+									for ( let subkey in this.dataDictionary[column] ) {
+
+										if ( "description" == subkey.toLowerCase() ) {
+											descriptionStr = this.dataDictionary[column][subkey];
+											break;
+										}
+									}	
+								
+									// b. Save the description from the json file colum entry
+									this.columnToCategoryTable[index].description = descriptionStr;
+								}
+							}
+						}
+					}
+				}
+				// Uses just data table data
+				else {
+
+					// 1. Produce an array of dicts
+					this.columnToCategoryTable = [];
+
+					// A. Each dict has a header entry from the data table file
+					for ( let headerField in this.dataTable.original[0] ) {
+
+						// I. Save a new dict for this column and description
+						this.columnToCategoryTable.push({
+
+							"category": null,
+							"column": headerField,
+							"description": ""
+						});
+					}
+				}
+			},
 
 			tableClick(p_clickData) {
 
 				// 1. Style or unstyle table row
 
 				// A. Determine if category-column linking or unlinking has occurred
-				let linking = !this.$store.getters.isColumnLinkedToCategory({
-					column: p_clickData.column,
-					category: this.selectedCategory
-				});
+				let linking = !( this.selectedCategory == this.columnToCategoryMap[p_clickData.column] );
 
 				// B. Record the linking/unlinking in the data store
 				let dataStoreFunction = ( linking ) ? "linkColumnWithCategory" : "unlinkColumnWithCategory";

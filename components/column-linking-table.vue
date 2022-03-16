@@ -32,19 +32,21 @@
             styleTableRow(p_row, p_rowType) {
 
                 // Check to see what category has been assigned to this row's column, if any
-                let tableClass = "";
-                for ( let index = 0; index < this.tableData.length; index++ ) {
-                    if ( p_row.column == this.tableData[index].column ) {
-                        tableClass = this.categoryClasses[this.tableData[index].category];
-                        break;
-                    }
-                }
+                let assignedCategory = this.columnToCategoryMap[p_row.column];
 
-                return tableClass;
+                return ( null === assignedCategory ) ? "" : this.categoryClasses[assignedCategory];
             }
         },
 
-        props: ["categoryClasses", "fields", "needsRefresh", "selectedCategory", "tableData"],
+        props: [
+
+            "categoryClasses",
+            "columnToCategoryMap",
+            "fields",
+            "needsRefresh",
+            "selectedCategory",
+            "tableData"
+        ],
 
         watch: {
 
@@ -57,7 +59,7 @@
                     this.$forceUpdate();
 
                     // B. Tell parent page that drawing request has been made
-				    this.$emit("done-redraw");
+                    this.$emit("done-redraw");
                 }
             }
         }
