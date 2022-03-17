@@ -178,141 +178,48 @@
 				this.changeState(newState);
 			},
 
-			countLinkedColumns() {
+    columnToCategoryTable() {
+      // 0. Check that there is a data table and data dictionary in the data store
+      if (null == this.dataTable.original && null === this.dataDictionary.original )
+        return
 
-				// Count the number of columns that have had categories linked to them
-				let links = 0;
-				for ( let column in this.columnToCategoryMap ) {
-					if ( null != this.columnToCategoryMap[column] )
-						links += 1;
-				}
+      // Take the first row ot the datatable to extract the column names
+      let columnTable = Object.keys(this.dataTable.original[0]).map(columnName => ({
+        "column": columnName,
+        "description": ""
+      }))
 
-				return links;
-			},
+      // If a data dictionary was provided, try to use it to add descriptions for each row
+      if (this.dataDictionary.original !== null) {
 
-			determineState() {
+        columnTable = columnTable.map(row => {
 
-				// 1. Reset the state to default
-				let newState = this.possibleStates.STATE_NOCATEGORIES_PAINTED;
+          let description = ""
+          for (const dictColumn of Object.keys(this.dataDictionary.original)) {
 
-				// 2. Count the number of painted rows in the table
-				let paintedRowsCount = this.countLinkedColumns();
+            // We don't know if the columns are the same case inside the data dictionary so we match case insensitive
+            if ( dictColumn.toLowerCase() === row.column.toLowerCase() ) {
 
-				// 3. Add appropriate state flags based on data contents
-				if ( paintedRowsCount > 0 )
-					newState |= this.possibleStates.STATE_ATLEASTONE_CATEGORY_PAINTED;
+              const columnDict = this.dataDictionary.original[dictColumn]
+              // We assign the description with case insensitive keys if it exists, otherwise this will be "undefined"
+              description = columnDict[Object.keys(columnDict).find(key => key.toLowerCase() === "description")]
+              break
+            }
+          }
 
-				return newState;
-			},			
+          return ({
+            "column": row.column,
+            "description": description !== undefined ? description : "" // make sure we are not passing undefined here
+          })
+        })
+      }
+      return columnTable
+    },
+  },
+  methods: {
 
-			nextPageAccess(p_enable) {
-				
-				// 1. Enable/disable access to the annotation page on the nav bar
-
-				// A. Enable the nav item
-				this.$store.dispatch("enablePageNavigation", { 
-					pageName: "annotation",
-					enable: p_enable
-				});
-
-				// B. Change the next step button's color
-				this.nextPageButtonColor = ( p_enable ) ? "success" : "secondary";
-			},			
-
-			resetTableRefresh() {
-
-				this.needsRefresh = false;
-			},
-
-			setSelectedCategory(p_clickData) {
-
-				// Save the name of the selected category
-				this.selectedCategory = p_clickData.category;
-			},
-			
-			setupColumnToCategoryTable() {
-
-				// 0. Check that there is a data table and data dictionary in the data store
-				if ( null == this.dataTable.original && null == this.dataDictionary )
-					return;
-
-				// Uses both data table and data dictionary
-				if ( null != this.dataDictionary.original && null != this.dataTable.original ) {
-
-					// 1. Produce an array of dicts
-					this.columnToCategoryTable = [];
-
-					// A. Each dict has a header entry from the data table file
-					let headerFields = [];
-					let tsvJsonIndex = 0;
-					let tsvJsonIndexMap = {};
-					for ( let headerField in this.dataTable.original[0] ) {
-
-						// I. Save the header field in a list
-						headerFields.push(headerField);
-
-						// II. Save an index map for quick location of column and description
-						tsvJsonIndexMap.headerField = tsvJsonIndex;
-						tsvJsonIndex += 1;
-
-						// III. Save a new dict for this column and description
-						this.columnToCategoryTable.push({
-
-							"category": null,
-							"column": headerField,
-							"description": ""
-						});
-					}
-
-					// B. and a corresponding "description" column that is (possibly) sourced from the json file
-					for ( let column in this.dataDictionary.original ) {
-
-						// I. Save a lowercase version of the current json key
-						let columnLowercase = column.toLowerCase();
-
-						// II. Try to match the json key with one in the tsv file
-						if ( headerFields.includes(columnLowercase) ) {
-
-							for ( let index = 0; index < this.columnToCategoryTable.length; index++ ) {
-
-								// NOTE: Advanced column name matching here between tsv and json? J. Armoza 01/26/22
-								if ( columnLowercase == this.columnToCategoryTable[index].column.toLowerCase() ) {
-
-									// a. Determine the description string for this json file column entry
-									let descriptionStr = "";
-									for ( let subkey in this.dataDictionary.original[column] ) {
-
-										if ( "description" == subkey.toLowerCase() ) {
-											descriptionStr = this.dataDictionary.original[column][subkey];
-											break;
-										}
-									}	
-								
-									// b. Save the description from the json file colum entry
-									this.columnToCategoryTable[index].description = descriptionStr;
-								}
-							}
-						}
-					}
-				}
-				// Uses just data table data
-				else {
-
-					// 1. Produce an array of dicts
-					this.columnToCategoryTable = [];
-
-					// A. Each dict has a header entry from the data table file
-					for ( let headerField in this.dataTable.original[0] ) {
-
-						// I. Save a new dict for this column and description
-						this.columnToCategoryTable.push({
-
-							"category": null,
-							"column": headerField,
-							"description": ""
-						});
-					}
-				}
+          })
+        }
 			},
 
 			tableClick(p_clickData) {
