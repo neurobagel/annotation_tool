@@ -62,9 +62,6 @@
 
 <script>
 
-	// Allows for simple reference to getters in the store
-	import { mapGetters } from "vuex";
-
 	// Allows for reference to store data by creating simple, implicit getters
 	import { mapState } from "vuex";
 
@@ -121,15 +118,11 @@
 		},
 
 		computed: {
-
-			...mapGetters([
-
-				"categoryClasses"
-			]),
     		
 			...mapState([
 
 				"categories",
+				"categoryClasses",
 				"columnToCategoryMap",
 				"dataTable",
 				"dataDictionary",
