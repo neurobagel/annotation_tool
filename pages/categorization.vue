@@ -237,7 +237,7 @@
 					return;
 
 				// Uses both data table and data dictionary
-				if ( null != this.dataDictionary && null != this.dataTable.original ) {
+				if ( null != this.dataDictionary.original && null != this.dataTable.original ) {
 
 					// 1. Produce an array of dicts
 					this.columnToCategoryTable = [];
@@ -265,7 +265,7 @@
 					}
 
 					// B. and a corresponding "description" column that is (possibly) sourced from the json file
-					for ( let column in this.dataDictionary ) {
+					for ( let column in this.dataDictionary.original ) {
 
 						// I. Save a lowercase version of the current json key
 						let columnLowercase = column.toLowerCase();
@@ -280,10 +280,10 @@
 
 									// a. Determine the description string for this json file column entry
 									let descriptionStr = "";
-									for ( let subkey in this.dataDictionary[column] ) {
+									for ( let subkey in this.dataDictionary.original[column] ) {
 
 										if ( "description" == subkey.toLowerCase() ) {
-											descriptionStr = this.dataDictionary[column][subkey];
+											descriptionStr = this.dataDictionary.original[column][subkey];
 											break;
 										}
 									}	
