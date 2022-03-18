@@ -1,182 +1,120 @@
 <template>
 
-	<b-container fluid>
+  <b-container fluid>
 
-		<!-- Navigation bar -->
-		<tool-navbar 
-			:navItems="pageData"
-			:navOrder="pageOrder"
-			:pageName="pageData.categorization.fullName">
-		</tool-navbar>
+    <!-- Navigation bar -->
+    <tool-navbar
+      :navItems="pageData"
+      :navOrder="pageOrder"
+      :pageName="pageData.categorization.fullName">
+    </tool-navbar>
 
-		<b-row>
+    <b-row>
 
-			<!-- Category selection table -->
-			<b-col cols="4">
-				<category-select-table
-					:categories="categories"
-					:categoryClasses="categoryClasses"
-					:instructions="categorySelectText.instructions"
-					:title="categorySelectText.title"
-					v-on:category-select="setSelectedCategory($event)">
-				</category-select-table>
-			</b-col>
+      <!-- Category selection table -->
+      <b-col cols="4">
+        <category-select-table
+          :categories="categories"
+          :categoryClasses="categoryClasses"
+          :instructions="categorySelectText.instructions"
+          :title="categorySelectText.title"
+          v-on:category-select="setSelectedCategory($event)">
+        </category-select-table>
+      </b-col>
 
-			<!-- Category to column linking table -->
-			<b-col cols="8">
-				<column-linking-table
-					:categoryClasses="categoryClasses"
-					:columnToCategoryMap="columnToCategoryMap"
-					:fields="columnLinkingTable.fields"
-					:needsRefresh="columnLinkingTable.needsRefresh"
-					:selectedCategory="selectedCategory"
-					:tableData="columnToCategoryTable"
-					v-on:column-name-selected="tableClick($event)"
-					v-on:done-redraw="resetTableRefresh()">
-				</column-linking-table>
-			</b-col>
+      <!-- Category to column linking table -->
+      <b-col cols="8">
+        <column-linking-table
+          :categoryClasses="categoryClasses"
+          :columnToCategoryMap="columnToCategoryMap"
+          :fields="columnLinkingTable.fields"
+          :needsRefresh="columnLinkingTable.needsRefresh"
+          :selectedCategory="selectedCategory"
+          :tableData="columnToCategoryTable"
+          v-on:column-name-selected="tableClick($event)"
+          v-on:done-redraw="resetTableRefresh()">
+        </column-linking-table>
+      </b-col>
 
-		</b-row>
+    </b-row>
 
-		<b-row>
-			
-			<b-col cols="9"></b-col>
-			
-			<!-- Button to proceed to the next page -->
-			<!-- Only enabled when at least one column has been categorized -->
-			<b-col cols="3">
-				<b-button
-					class="float-right"
-					:disabled="!pageData.annotation.accessible"
-					:to="'/' + pageData.annotation.location"
-					:variant="nextPageButtonColor">
-					Next step: Annotate columns
-				</b-button>
-			</b-col>
-			
-		</b-row>		
+    <b-row>
 
-	</b-container>
+      <b-col cols="9"></b-col>
+
+      <!-- Button to proceed to the next page -->
+      <!-- Only enabled when at least one column has been categorized -->
+      <b-col cols="3">
+        <b-button
+          class="float-right"
+          :disabled="!pageData.annotation.accessible"
+          :to="'/' + pageData.annotation.location"
+          :variant="nextPageButtonColor">
+          Next step: Annotate columns
+        </b-button>
+      </b-col>
+
+    </b-row>
+
+  </b-container>
 
 </template>
 
 <script>
 
-	// Allows for reference to store data by creating simple, implicit getters
-	import { mapState } from "vuex";
+// Allows for reference to store data by creating simple, implicit getters
+import {mapState} from "vuex";
 
-	export default {
+export default {
 
-		name: "CategorizationPage",
+  name: "CategorizationPage",
 
 		mounted() {
 
-			// 1. Create the data structure for the category to column linking table
-			this.setupColumnToCategoryTable();
-
-			// 2. Determine page state from data contents and change to that new state
-			this.changeToNewState();
 		},
 
 		data() {
 
-			return {
+    return {
 
-                categorySelectText: {
+      categorySelectText: {
 
-                    instructions: "Click category and then corresponding column from tsv file",
-                    title: "Recommended Categories"
-                },
+        instructions: "Click category and then corresponding column from tsv file",
+        title: "Recommended Categories"
+      },
 
-				// Columns for file data table	
-				columnLinkingTable: {
-					
-					fields: [
+      // Columns for file data table
+      columnLinkingTable: {
 
-						{ key: "column" },
-						{ key: "description" }
-					],
+        fields: [
 
-					needsRefresh: false
-				},
+          {key: "column"},
+          {key: "description"}
+        ],
+      },
 
-				columnToCategoryTable: [],
+      // Category selection (default is index 0, no selection is -1)
+      selectedCategory: this.$store.getters.categories[0]
+    }
+  },
 
-				// Bootstrap variant color of the button leading to the categorization page
-				nextPageButtonColor: "secondary",
+  computed: {
 
-				// Possible states of this page
-				possibleStates: {
+    ...mapState([
 
-					STATE_NOCATEGORIES_PAINTED: 0,
-					STATE_ATLEASTONE_CATEGORY_PAINTED: 1 << 0
-				},
+      "categories",
+      "categoryClasses",
+      "columnToCategoryMap",
+      "dataTable",
+      "dataDictionary",
+      "pageData",
+      "pageOrder"
+    ]),
 
-				// Category selection (default is index 0, no selection is -1)
-				selectedCategory: this.$store.getters.categories[0]
-			}
-		},
-
-		computed: {
-    		
-			...mapState([
-
-				"categories",
-				"categoryClasses",
-				"columnToCategoryMap",
-				"dataTable",
-				"dataDictionary",
-				"pageData",
-				"pageOrder"
-    		])
-  		},
-
-		methods: {			
-
-			changeState(p_state) {
-
-				// 1. Trigger the behavior for the requested state change
-				switch ( p_state ) {
-
-					// A. Handle changes for when at least one category is painted
-					case this.possibleStates.STATE_ATLEASTONE_CATEGORY_PAINTED:
-						this.changeState_AtLeastOneCategoryPainted();
-						break;
-
-					// B. Handle changes for no categories are painted
-					default:
-						this.changeState_NoCategoriesPainted();
-						break;
-				}
-			},
-
-			changeState_AtLeastOneCategoryPainted() {
-
-				// 1. Paint the table with previously painted rows documented in the store
-				this.columnLinkingTable.needsRefresh = true;
-
-				// Enable access to the annotation page
-				this.nextPageAccess(true);
-			},
-
-			changeState_NoCategoriesPainted() {
-
-				// 1. Paint the table with previously painted rows documented in the store
-				this.columnLinkingTable.needsRefresh = true;
-				// this.$refs.table.$forceUpdate();
-
-				// Disable access to the annotation page
-				this.nextPageAccess(false);
-			},
-
-			changeToNewState() {
-
-				// 1. Determine page state from data contents
-				let newState = this.determineState();
-
-				// 2. Change the page to the determined state
-				this.changeState(newState);
-			},
+    nextPageButtonColor() {
+      // Bootstrap variant color of the button leading to the annotation page
+      return this.pageData.annotation.accessible ? "success" : "secondary"
+    },
 
     columnToCategoryTable() {
       // 0. Check that there is a data table and data dictionary in the data store
@@ -218,32 +156,44 @@
   },
   methods: {
 
-          })
-        }
-			},
+    determineNavigationAccess() {
+      let annotationPageEnabled = false
+      if ( Object.values(this.columnToCategoryMap).filter(value => value !== null).length > 0 ) {
+        annotationPageEnabled = true
+      }
+      // Store the current page accessibility
+      this.$store.dispatch("enablePageNavigation", {
+        pageName: "annotation",
+        enable: annotationPageEnabled
+      })
+    },
 
-			tableClick(p_clickData) {
+    setSelectedCategory(p_clickData) {
+      // Save the name of the selected category
+      this.selectedCategory = p_clickData.category;
+    },
 
-				// 1. Style or unstyle table row
+    tableClick(p_clickData) {
+      // 1. Style or unstyle table row
 
-				// A. Determine if category-column linking or unlinking has occurred
-				let linking = !( this.selectedCategory == this.columnToCategoryMap[p_clickData.column] );
+      // A. Determine if category-column linking or unlinking has occurred
+      let linking = !(this.selectedCategory === this.columnToCategoryMap[p_clickData.column]);
 
-				// B. Record the linking/unlinking in the data store
-				let dataStoreFunction = ( linking ) ? "linkColumnWithCategory" : "unlinkColumnWithCategory";
+      // B. Record the linking/unlinking in the data store
+      let dataStoreFunction = (linking) ? "linkColumnWithCategory" : "unlinkColumnWithCategory";
 
-				// I. Build a new object for passing to the store for category-column linking
-				let dataForStore = { column: p_clickData["column"] };
-				if ( linking ) {
-					dataForStore.category = this.selectedCategory;
-				}
+      // I. Build a new object for passing to the store for category-column linking
+      let dataForStore = {column: p_clickData["column"]};
+      if (linking) {
+        dataForStore.category = this.selectedCategory;
+      }
 
-				// II. Link or unlink the currently-selected category and the clicked column
-				this.$store.dispatch(dataStoreFunction, dataForStore);
+      // II. Link or unlink the currently-selected category and the clicked column
+      this.$store.dispatch(dataStoreFunction, dataForStore);
 
-				// 2. Determine if page state should be changed and change it if necessary
-				this.changeToNewState();
-			}
-		}		
-	}
+      // 2. Determine if any columns are mapped to categories and the annotation page should be accessible
+      this.determineNavigationAccess()
+    }
+  }
+}
 </script>
