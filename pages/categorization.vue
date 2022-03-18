@@ -64,9 +64,9 @@
 	// Fields listed in mapState below can be found in the store (index.js)
 	import { mapState } from "vuex";
 
-	export default {
+export default {
 
-		name: "CategorizationPage",
+  name: "CategorizationPage",
 
 		mounted() {
 
