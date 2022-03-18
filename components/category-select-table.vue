@@ -57,7 +57,7 @@
             selectCategory(p_row) {
 
                 // If a new category was selected...
-                if ( p_row.length ) {
+                if ( 0 !== p_row.length ) {
 
                     // 1. Save the newly selected category, if given    
                     this.selectedCategory = p_row[0].category;

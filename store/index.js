@@ -342,13 +342,6 @@ export const getters = {
 	}
 }
 
-function printArray(p_array, p_arrayName, p_stringify=false) {
-
-	for ( let index = 0; index < p_array.length; index++ ) {
-		console.log(p_arrayName + "[" + parseInt(index) + "]: " + ((p_stringify) ? JSON.stringify(p_array[index]): p_array[index]));
-	}
-}
-
 // Action helpers
 function convertTsvLinesToDict(p_tsvLines){
 

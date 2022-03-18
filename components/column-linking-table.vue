@@ -43,25 +43,8 @@
             "categoryClasses",
             "columnToCategoryMap",
             "fields",
-            "needsRefresh",
             "selectedCategory",
             "tableData"
-        ],
-
-        watch: {
-
-            needsRefresh() {
-
-                // 1. Force a redraw if requested by the parent page.
-                if ( this.needsRefresh ) {
-                    
-                    // A. Force redraw
-                    this.$forceUpdate();
-
-                    // B. Tell parent page that drawing request has been made
-                    this.$emit("done-redraw");
-                }
-            }
-        }
+        ]
     }
 </script>

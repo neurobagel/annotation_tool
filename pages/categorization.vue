@@ -18,7 +18,7 @@
 					:categoryClasses="categoryClasses"
 					:instructions="categorySelectText.instructions"
 					:title="categorySelectText.title"
-					v-on:category-select="setSelectedCategory($event)">
+					@category-select="setSelectedCategory($event)">
 				</category-select-table>
 			</b-col>
 
@@ -28,11 +28,9 @@
 					:categoryClasses="categoryClasses"
 					:columnToCategoryMap="columnToCategoryMap"
 					:fields="columnLinkingTable.fields"
-					:needsRefresh="columnLinkingTable.needsRefresh"
 					:selectedCategory="selectedCategory"
 					:tableData="columnToCategoryTable"
-					v-on:column-name-selected="tableClick($event)"
-					v-on:done-redraw="resetTableRefresh()">
+					@column-name-selected="tableClick($event)">
 				</column-linking-table>
 			</b-col>
 
@@ -63,6 +61,7 @@
 <script>
 
 	// Allows for reference to store data by creating simple, implicit getters
+	// Fields listed in mapState below can be found in the store (index.js)
 	import { mapState } from "vuex";
 
 	export default {
@@ -74,7 +73,10 @@
 			// 1. Create the data structure for the category to column linking table
 			this.setupColumnToCategoryTable();
 
-			// 2. Determine page state from data contents and change to that new state
+			// 2. Set selected category to the first category by default
+			this.setSelectedCategory({ category: this.categories[0]});
+
+			// 3. Determine page state from data contents and change to that new state
 			this.changeToNewState();
 		},
 
@@ -95,9 +97,7 @@
 
 						{ key: "column" },
 						{ key: "description" }
-					],
-
-					needsRefresh: false
+					]
 				},
 
 				columnToCategoryTable: [],
@@ -113,7 +113,7 @@
 				},
 
 				// Category selection (default is index 0, no selection is -1)
-				selectedCategory: this.$store.getters.categories[0]
+				selectedCategory: ""
 			}
 		},
 
@@ -152,18 +152,11 @@
 
 			changeState_AtLeastOneCategoryPainted() {
 
-				// 1. Paint the table with previously painted rows documented in the store
-				this.columnLinkingTable.needsRefresh = true;
-
 				// Enable access to the annotation page
 				this.nextPageAccess(true);
 			},
 
 			changeState_NoCategoriesPainted() {
-
-				// 1. Paint the table with previously painted rows documented in the store
-				this.columnLinkingTable.needsRefresh = true;
-				// this.$refs.table.$forceUpdate();
 
 				// Disable access to the annotation page
 				this.nextPageAccess(false);
@@ -217,11 +210,6 @@
 
 				// B. Change the next step button's color
 				this.nextPageButtonColor = ( p_enable ) ? "success" : "secondary";
-			},			
-
-			resetTableRefresh() {
-
-				this.needsRefresh = false;
 			},
 
 			setSelectedCategory(p_clickData) {
@@ -244,18 +232,12 @@
 
 					// A. Each dict has a header entry from the data table file
 					let headerFields = [];
-					let tsvJsonIndex = 0;
-					let tsvJsonIndexMap = {};
 					for ( let headerField in this.dataTable.original[0] ) {
 
 						// I. Save the header field in a list
 						headerFields.push(headerField);
 
-						// II. Save an index map for quick location of column and description
-						tsvJsonIndexMap.headerField = tsvJsonIndex;
-						tsvJsonIndex += 1;
-
-						// III. Save a new dict for this column and description
+						// II. Save a new dict for this column and description
 						this.columnToCategoryTable.push({
 
 							"category": null,
