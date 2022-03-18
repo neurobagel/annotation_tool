@@ -2,8 +2,12 @@
 
     <b-container fluid>
 
-		<!-- Navigation bar -->
-		<tool-navbar :navItemsState="navItemsState" :pageName="fullName"></tool-navbar>
+        <!-- Navigation bar -->
+		<tool-navbar 
+			:navItems="pageData"
+			:navOrder="pageOrder"
+			:pageName="pageData.annotation.fullName">
+		</tool-navbar>
 
         <b-row>
             <b-col cols="4"></b-col>
@@ -22,39 +26,31 @@
 
 <script>
 
+	// Allows for reference to store data by creating simple, implicit getters
+	import { mapState } from "vuex";
+
     export default {
 
         data() {
 
             return {
 
-                // Full text name of this page
-				fullName: this.$store.getters.pageNames.categorization.fullName, 
-
                 // Image for temporary annotation page mockup
                 mockupImage: {
                     filename: "annotation_mockup.jpg",
                     height: 956,
                     width: 1045
-                },
-
-                // Initial status of the navbar items for other pages
-                navItemsState: [
-
-                    { 
-                        enabled: true,
-                        pageInfo: this.$store.state.pageNames.home,
-                    },
-					{
-                        enabled: true,
-                        pageInfo: this.$store.state.pageNames.categorization
-                    },
-					{
-                        enabled: false,
-                        pageInfo: this.$store.state.pageNames.download
-                    }
-				]
+                }
             }
+        },
+
+        computed: {
+
+            ...mapState([
+
+                "pageData",
+                "pageOrder"
+            ])
         }
         
     }
@@ -67,8 +63,6 @@
     margin: 0;
     position: absolute;
     top: 50%;
-    /*-ms-transform: translateY(50%);*/
-    /*transform: translateY(50%);*/
 }
 
 </style>

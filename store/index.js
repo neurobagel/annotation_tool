@@ -1,326 +1,344 @@
 // Root state - Stores state data
 export const state = () => ({
 
-	pageNames: {
-		
-		home: {
-			fullName: "Home",
-			location: "/",
-			pageName: "index",
-		},
-
-		categorization: {
-			fullName: "Categorization",
-			location: "categorization",
-			pageName: "categorization"
-		},
-
-		annotation: {
-			fullName: "Annotation",
-			location: "annotation",
-			pageName: "annotation"
-		},
-
-		download: {
-			fullName: "Download",
-			location: "download",
-			pageName: "download"
-		}
-	},
+	// Page-related data
 
 	pageData: {
 
-		// index.vue
-		home: {
+        home: {
+            
+            accessible: true,
+            fullName: "Home",
+            location: "/",
+            pageName: "index",
+        },
 
-			// Participants.tsv file data
-			tsvFile: null,
+        categorization: {
+            
+            accessible: false,
+            fullName: "Categorization",
+            location: "categorization",
+            pageName: "categorization"
+        },
 
-			// Data dictionary file data
-			jsonFile: null
-		},
+        annotation: {
+            
+            accessible: false,
+            fullName: "Annotation",
+            location: "annotation",
+            pageName: "annotation"
+        },
 
-		// categorization.vue
-		categorization: {
+        download: {
+            
+            accessible: false,
+            fullName: "Download",
+            location: "download",
+            pageName: "download"
+        }
+    },
 
-			// Category paint brushes
-			current: {
-	
-				bColor: "white",
-				category: "",
-				fColor: "black"
-			},
-			default: {
-	
-				bColor: "white",
-				category: "",
-				fColor: "black"			
-			},
+	pageOrder: [
 
-			// Stores currently painted items
-			paintingData: {},
+		"home",
+		"categorization",
+		"annotation",
+		"download"
+	],
 
-			// Stores currently loaded table data
-			tableData: {}
-		},
+    // Data table (i.e. participants.tsv file)
 
-		// annotation.vue
-		annotation: {
+	dataTable: {
 
-		},
+		// List of data table's columns
+		columns: [],
 
-		// download.vue
-		download: {
+		// File type of the original data table file
+		fileType: "",
 
-		}
+		// Participants.tsv file data
+    	// For format see 'convertTsvLinesToDict' in index.js
+		original: null,
+
+		// Version of table data for annotation page 
+		annotated: null
 	},
 
-	painting: {
-		
-		classes: {
+    // Data dictionary (i.e. participants.json)
 
-			paint0: "category-style-0",
-			paint1: "category-style-1",
-			paint2: "category-style-2",
-			paint3: "category-style-3",
-			paint4: "category-style-4"
-		},
+	dataDictionary: {
 
-		palette: {
-			backgroundColors: [],
-			foregroundColors: []
-		}
-	}
+		// File type of the original data dictionary file
+		fileType: "",		
+
+		// Original data dictionary file data
+		original: null,
+
+		// User-amended data dictionary file data
+		amended: {},	
+	},
+
+	// Stores table data in format ready for Bootstrap table
+	// This is an array of objects. See the mutation
+	// 'setupColumnToCategoryTable' for exact format
+	columnToCategoryMap: {
+
+	},
+
+    // Hardcoded list of categories used on the categorization page
+    // and possibly elsewhere in the tool
+    categories: [],
+	
+	// This is a computed direct map between current categories and CSS classes
+	// See getter 'categoryClasses'
+	categoryClasses: null,
+
+	// The following fields are only accessed by store methods
+
+    // Maps our categories in 'categories' to colors in 'toolColorPalette'
+    // (Final class names pending). This way colors can be swappable and
+    // rearrangeable for categories.
+    categoryToColorMap: {},
+
+    // Map of the tools colors to CSS classes containing color (and possibly
+    // other style) values. More palettes could be defined here, either out of
+    // user preference or if we ever decided to code a light/dark mode feature
+    toolColorPalette: {
+
+        color1: "category-style-0",
+        color2: "category-style-1",
+        color3: "category-style-2",
+        color4: "category-style-3",
+        color5: "category-style-4",
+		colorDefault: "category-style-default"
+    }
 })
   
 // Actions - Call mutations to change state data in order to maintain trace of 
 // what component changed state data and when
 export const actions = {
 
-	// Landing page actions
+	// Initializations
 
-	saveTsvFile(p_context, p_tsvLines) {
+	createColumnToCategoryMap(p_context) {
 
-		// 1. Attempt to convert the tsv lines into a dict for each line if valid data given
-		let newTsvData = [];
-		if ( null != p_tsvLines ) 
-			newTsvData = convertTsvLinesToDict(p_tsvLines);
-
-		// 2. Save either an empty array or array of tsv dictionaries to state data
-		p_context.commit("setTsvFile", newTsvData);
+		p_context.commit("setupColumnToCategoryMap");
 	},
+
+	initializeCategories(p_context, p_categories) {
+
+		p_context.commit("setupCategories", p_categories);
+	},
+
+	nuxtServerInit({ commit }) {
+
+		// This function is called on Nuxt server startup
+		
+		// 0. This list is default but we can swap out and reinitialize category
+		// data structures by calling store action 'initializeCategories' with
+		// a new list of categories
+		let categories = [
+
+			"Subject ID",
+        	"Age",
+        	"Sex",
+        	"Diagnosis",
+        	"Assessment Tool"
+		];
+
+		// 1. Setup category-related data structures based on the given categories
+		commit("setupCategories", categories);
+	},
+
+	// Tool navigation
 	
-	saveJsonFile(p_context, p_jsonStringData) {
+	enablePageNavigation(p_context, p_navData) {
+
+		p_context.commit("setPageNavigation", p_navData);
+	},
+
+	// Landing page actions
+	
+	saveDataDictionary(p_context, p_newFileData) {
 
 		// 1. Attempt to transform the string data into JSON if valid data given
-		let newJsonData = {};
-		if ( null != p_jsonStringData )
-			newJsonData = JSON.parse(p_jsonStringData);
+		if ( "json" == p_newFileData.fileType ) {
 
-		// 2. Save either an empty object or the JSON dict to state data
-		p_context.commit("setJsonFile", newJsonData);
-
-	},
-	
-	// Categorization page actions
-
-	linkColumnWithCategory(p_context, p_clickData) {
-
-		// 1. Link this column with the current selected category in the data store
-		let categorizationInfo = p_context.state.pageData.categorization;
-
-		// 2. Commit the new data to the store
-		p_context.commit("addColumnCategorization", {
-
-			bColor: categorizationInfo.current.bColor,
-			dataDictionaryColumn: p_clickData.column,
-			fColor: categorizationInfo.current.fColor,
-			primaryKey: p_clickData["primary-key"],
-			tsvCategory: categorizationInfo.current.category
-		});
-	},
-
-	retrievePalette(p_context) {
-
-		// 0. New color lists
-		let backgroundColors = [];
-		let foregroundColors = [];
-
-		// 1. Wipe the palette
-		p_context.commit("clearPalette");
-
-		// 2. Go through global stylesheets until we find the paintClasses
-		for ( let sheetID in document.styleSheets ) {
-
-			for ( let ruleID in document.styleSheets[sheetID].cssRules ) {
-
-				let paintClasses = p_context.state.painting.classes;
-				for ( let paintClass in paintClasses ) {
-
-					// A. Make sure the CSS ruleset is an object containing a CSS string with the desired paint class
-					if ( typeof (document.styleSheets[sheetID].cssRules[ruleID]) === "object" &&
-						 "cssText" in document.styleSheets[sheetID].cssRules[ruleID] &&
-						 -1 != document.styleSheets[sheetID].cssRules[ruleID].cssText.indexOf(paintClasses[paintClass]) ) {
-
-						// I. Parse the CSS string for this class into an object
-						let cssProperties = parseCssString(
-							document.styleSheets[sheetID].cssRules[ruleID].cssText);
-
-						// II. Retrieve the background-color and color from the css object
-						let backgroundColor = getCssValue(
-							cssProperties,
-							"background-color"
-						);
-						let foregroundColor = getCssValue(
-							cssProperties,
-							"color"
-						);
-
-						// III. Save the background and foreground colors
-						backgroundColors.push(backgroundColor);
-						foregroundColors.push(foregroundColor);
-					}
-				}
-			}
+			if ( null != p_newFileData.data )
+				p_newFileData.formattedData = JSON.parse(p_newFileData.data);
 		}
 
-		// 3. Set the new palette
-		p_context.commit("setPalette", {
-			backgroundColors: backgroundColors,
-			foregroundColors: foregroundColors
-		});
-	},	
+		// 2. Save either an empty object or the JSON dict to state data
+		p_context.commit("setDataDictionary", p_newFileData);
+	},
 
-	saveCurrentPaintInfo(p_context, p_paintingInfo) {
+	saveDataTable(p_context, p_newFileData) {
 
-		// Save the category and paint color for future table painting on
-		// the column categorization page
-		p_context.commit("setCurrentPaintInfo", {
-			category: p_paintingInfo.category,
-			bColor: p_paintingInfo.bColor,
-			fColor: p_paintingInfo.fColor
+		// 1. Attempt to convert the tsv lines into a dict for each line if valid data given
+		if ( "tsv"  == p_newFileData.fileType ) {
+		
+			// 1. Save new table data, formatted for the Vue table element
+			if ( null != p_newFileData.data ) 
+				p_newFileData.formattedData = convertTsvLinesToDict(p_newFileData.data);
+
+			// 2. Save a list of the columns of this new table data
+			if ( p_newFileData.formattedData.length > 0 )
+				p_newFileData.columns = Object.keys(p_newFileData.formattedData[0]);
+		}
+
+		// 2. Save either an empty array or array of tsv dictionaries to state data
+		p_context.commit("setDataTable", p_newFileData);
+	},
+
+	// Categorization page actions
+
+	linkColumnWithCategory(p_context, p_linkingData) {
+
+		// Commit the new data to the store
+		p_context.commit("addColumnCategorization", {
+
+			column: p_linkingData.column,
+			category: p_linkingData.category
 		});
 	},
 
-	saveTableData(p_context, p_newTableData) {
+	unlinkColumnWithCategory(p_context, p_linkingData) {
 
-		// Store the given table data
-		p_context.commit("setNewCategorizationTable", p_newTableData);
-	},
-
-	unlinkColumnWithCategory(p_context, p_clickData) {
-
-		p_context.commit("removeColumnCategorization", p_clickData.column);
-	}	
+		p_context.commit("removeColumnCategorization", p_linkingData.column);
+	}
 }
 
 // Mutations - Change state data, as called by Actions
 export const mutations = {
 
-	// General mutations
+	// Initialization
 
-	clearPalette(p_state) {
+	setupCategories(p_state, p_categories) {
 
-		// Wipe the background and foreground color lists of the palette
-		p_state.painting.palette.backgroundColors = [];
-		p_state.painting.palette.foregroundColors = [];
+		// 1. Save the given category list
+		p_state.categories = p_categories;
 
-	},
-
-	setPalette(p_state, p_newPalette) {
+		// 2. Get color keys from tool color palette
+		let colorKeys = Object.keys(p_state.toolColorPalette);
 		
-		// Save the new background and foreground colors of the palette
-		p_state.painting.palette = p_newPalette;
+		// 3. Create the category to color map
+		let assignedCategories = 0;
+		for ( let index = 0; index < p_categories.length &&
+				index < colorKeys.length; index++ ) {
+
+			// A. Stop when the default color key has been reached
+			if ( "colorDefault" === colorKeys[index] )
+				break;
+
+			// B. Map this category to color key
+			p_state.categoryToColorMap[p_categories[index]] = colorKeys[index];
+
+			// C. Keep track of how many categories have been assigned color keys
+			assignedCategories += 1;
+		}
+		// D. Issue warning if there are not enough color keys for the given category set
+		if ( p_categories.length > assignedCategories ) {
+			console.log("WARNING: Not all categories have been assigned color keys!");
+		}
+
+		// 4. Set up the category to CSS class map
+
+		// A. Create a map between category names and color classes
+		let mapArray = [];
+		for ( let index = 0; index < p_state.categories.length; index++ ) {
+
+			const category = p_state.categories[index];
+			const colorID = p_state.categoryToColorMap[category];
+			const colorClass = p_state.toolColorPalette[colorID];
+			
+			mapArray.push([category, colorClass]);
+		}
+
+		// B. Save the new category to class map
+		p_state.categoryClasses = Object.fromEntries(mapArray);
 	},
 
-	// Landing page mutations
+	setupColumnToCategoryMap(p_state) {
 
-	setTsvFile(p_state, p_tsvRowDictArray) {
+		// NOTE: Map will be wiped if ever category data structures are re-initialized
 
-		// Save the new tsv row dictionary list to state data
-		p_state.pageData.home.tsvFile = p_tsvRowDictArray;
+		// Only proceed if map is not yet created.
+		if ( Object.keys(p_state.columnToCategoryMap).length != 0 )
+			return;
+
+		// Column to category map lists all columns as keys with default value of null
+		p_state.columnToCategoryMap = 
+			Object.fromEntries(p_state.dataTable.columns.map((columnName) => [columnName, null]));
 	},
 
-	setJsonFile(p_state, p_jsonData) {
+	// Tool navigation
 
-		// Save the new json dictionary to state data
-		p_state.pageData.home.jsonFile = p_jsonData;
+	setPageNavigation(p_state, p_navData) {
+
+		// Enable or disable access to this page
+		p_state.pageData[p_navData.pageName].accessible = p_navData.enable;
+	},
+
+	// Landing page
+
+	setDataTable(p_state, p_newFileData) {
+
+		// 1. Save the new tsv row dictionary list to state data
+		p_state.dataTable.original = p_newFileData.formattedData;
+
+		// 2. Save the file type of the new data table
+		p_state.dataTable.fileType = p_newFileData.fileType;
+
+		// 3. Save a list of the columns of this data table
+		p_state.dataTable.columns = p_newFileData.columns;
+	},
+
+	setDataDictionary(p_state, p_newFileData) {
+
+		// 1. Save the new data dictionary to state data
+		p_state.dataDictionary.original = p_newFileData.formattedData;
+
+		// 2. Save the file type of the new data dictionary
+		p_state.dataDictionary.fileType = p_newFileData.fileType;
 	},	
 
 	// Categorization page changes
 
-	addColumnCategorization(p_state, p_categorization) {
+	addColumnCategorization(p_state, p_data) {
 
-		// Save the categorization in the store using the column name as a key
-		p_state.pageData.categorization.paintingData[p_categorization.dataDictionaryColumn] = {
-			tsvCategory: p_categorization.tsvCategory,
-			bColor: p_categorization.bColor,
-			fColor: p_categorization.fColor,
-			primaryKey: p_categorization.primaryKey
-		}
-	},
-
-	setCurrentPaintInfo(p_state, p_newPaintingInfo) {
-
-		// 1. Save the new paint category
-		p_state.pageData.categorization.current.category = p_newPaintingInfo.category;
-
-		// 2. Save the new background and foreground colors
-		p_state.pageData.categorization.current.bColor = p_newPaintingInfo.bColor;
-		p_state.pageData.categorization.current.fColor = p_newPaintingInfo.fColor;
-	},
-
-	setNewCategorizationTable(p_state, p_newTableData) {
-
-		// Store the new table data
-		p_state.pageData.categorization.tableData = p_newTableData;
+		// Save the categorization-column link in the annotated table
+		p_state.columnToCategoryMap[p_data.column] = p_data.category;
 	},
 
 	removeColumnCategorization(p_state, p_columnName) {
 
-		if ( p_columnName in p_state.pageData.categorization.paintingData ) {
-			delete p_state.pageData.categorization.paintingData[p_columnName];
-		}
-	}	
+		// Disassociate the column with this category it was linked to
+		p_state.columnToCategoryMap[p_columnName] = null;
+	}
 }
 
 // Getters - Give access to state data
 export const getters = {
 
-	currentPaintBrush(p_state) {
-		return p_state.pageData.categorization.current;
+	categories(p_state) {
+
+		return p_state.categories;
 	},
 
-	defaultPaintBrush(p_state) {
-		return p_state.pageData.categorization.default;
-	},
-	
-	hasPalette(p_state) {
+	isColumnLinkedToCategory: (p_state) => (p_matchData) => {
 
-		return ( p_state.painting.palette.backgroundColors.length > 0 );
+		// Check to see if the given column has been linked to the given category
+		return ( p_matchData.category === p_state.columnToCategoryMap[p_matchData.column] );
 	},
 
-	pageNames(p_state) {
-		return p_state.pageNames;
+	isDataDictionaryLoaded(p_state) {
+
+		return ( null != p_state.dataDictionary.original );
 	},
 
-	pageData(p_state) {
-		return p_state.pageData;
-	},
+	isDataTableLoaded(p_state) {
 
-	paintingData(p_state) {
-		return p_state.pageData.categorization.paintingData;
-	},
-
-	palette(p_state) {
-		return p_state.painting.palette;
-	}
-}
-
-function printArray(p_array, p_arrayName, p_stringify=false) {
-
-	for ( let index = 0; index < p_array.length; index++ ) {
-		console.log(p_arrayName + "[" + parseInt(index) + "]: " + ((p_stringify) ? JSON.stringify(p_array[index]): p_array[index]));
+		return ( null != p_state.dataTable.original );
 	}
 }
 
@@ -336,7 +354,7 @@ function convertTsvLinesToDict(p_tsvLines){
 	// 2. Create dictionaries for each tsv row keyed on the column headers 
 	for ( let index = 1; index < p_tsvLines.length; index++ ){
 
-		let tsvRowDict = {}
+		let tsvRowDict = {};
 
 		// A. Loop through the tsv row, matching entries with the tsv column headers
 		for ( let index2 = 0; index2 < columnHeaders.length; index2++ ) {
@@ -363,23 +381,4 @@ function convertTsvLinesToDict(p_tsvLines){
 	}
 
 	return tsvRowDictArray;
-}
-
-function getCssValue(p_cssObject, p_cssKey) {
-				
-	// Return the CSS value of the given key if it exists, otherwise blank string
-	return ( p_cssKey in p_cssObject ) ? p_cssObject[p_cssKey] : "";
-}
-
-function parseCssString(p_cssString) {
-
-	// Produce object based on the CSS string via regular expression parsing
-	let regex = /([\w-]*)\s*:\s*([^;]*)/g;
-	let match, cssProperties={};
-	while ( match = regex.exec(p_cssString) ) {
-
-		cssProperties[match[1]] = match[2].trim();
-	}
-
-	return cssProperties;
 }

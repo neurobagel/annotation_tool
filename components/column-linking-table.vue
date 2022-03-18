@@ -1,0 +1,50 @@
+<template>
+
+    <b-container fluid>
+    
+        <!-- Category to column linking table -->
+        <b-table
+            bordered
+            outlined
+            :fields="fields"
+            head-variant="dark"
+            :items="tableData"
+            @row-clicked="applyCategory"
+            :tbody-tr-class="styleTableRow">
+        </b-table>
+
+    </b-container>
+
+</template>
+
+<script>
+
+    export default {
+
+        methods: {
+
+            applyCategory(p_row, p_index, p_event) {
+
+                // Tell the parent page that a column has been linked with a category
+                this.$emit("column-name-selected", { column: p_row.column });
+            },
+
+            styleTableRow(p_row, p_rowType) {
+
+                // Check to see what category has been assigned to this row's column, if any
+                let assignedCategory = this.columnToCategoryMap[p_row.column];
+
+                return ( null === assignedCategory ) ? "" : this.categoryClasses[assignedCategory];
+            }
+        },
+
+        props: [
+
+            "categoryClasses",
+            "columnToCategoryMap",
+            "fields",
+            "selectedCategory",
+            "tableData"
+        ]
+    }
+</script>
