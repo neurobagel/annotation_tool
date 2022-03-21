@@ -17,7 +17,9 @@
           <component
             :is="page.component"
             :columns="annotated_columns"
+            :dataTable="data_table"
             @remove:column="writeColumn($event)"
+            @update:dataTable="writeTable($event)"
           ></component>
         </b-card-text>
       </b-tab>
@@ -55,6 +57,13 @@ export default {
         "iq": "Assessment",
         "otherAge": "Age"
       },
+      data_table: [
+        { age: 11, group: 'PD', sex: 'male', iq: 80, number_comorbid_dx: 1, otherAge: '10Y8M', not_age: "hello" },
+        { age: 12, group: 'CTL', sex: 'n/a', iq: 99, number_comorbid_dx: 1, otherAge: '11Y', not_age: "hello" },
+        { age: 11, group: 'Double', sex: 'female', iq: 100, number_comorbid_dx: 2, otherAge: '12Y5M', not_age: "hello" },
+        { age: 13, group: 'PD', sex: 'male', iq: 110, number_comorbid_dx: 11, otherAge: '12Y', not_age: "hello" },
+        { age: 103, group: 'CTL', sex: 'n/a', iq: 101, number_comorbid_dx: 0, otherAge: '9Y2M', not_age: "hello" },
+      ],
     }
   },
   computed: {
@@ -75,6 +84,10 @@ export default {
         }
       }
       this.annotated_columns = temp
+    },
+    writeTable(event) {
+      console.log('On the Annotation page, I got an updated datatable:', event.transformedTable)
+      console.log('I also got the corresponding transformations:', event.transformHeuristics)
     },
   }
 }

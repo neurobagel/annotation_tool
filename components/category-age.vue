@@ -7,6 +7,13 @@
       :active-category="activeCategoryName"
       @remove:column="$emit('remove:column', $event)"
     ></annot-columns>
+
+    <annot-age-values
+      :active-category="activeCategoryName"
+      :columns="columns"
+      :data-table="dataTable"
+      @update:dataTable="$emit('update:dataTable', $event)"
+    ></annot-age-values>
   </div>
 </template>
 
@@ -24,6 +31,9 @@ export default {
       type: Object,
       required: true
     },
+    dataTable: {
+      type: Array
+    }
   }
 }
 </script>
