@@ -1,6 +1,12 @@
 <template>
 <div>
   <annot-explanation :explanation="explanation"></annot-explanation>
+
+  <annot-columns
+    :columns="columns"
+    :active-category="activeCategoryName"
+    @remove:column="$emit('remove:column', $event)"
+  ></annot-columns>
 </div>
 </template>
 
@@ -10,8 +16,15 @@ export default {
   data() {
     return {
       explanation: 'This is an explanation for how to annotate gender',
+      activeCategoryName: "Gender"
     }
   },
+  props: {
+    columns: {
+      type: Object,
+      required: true
+    },
+  }
 }
 </script>
 
