@@ -36,10 +36,10 @@ export default {
       // TODO: "pages" is used as static testing data. Should be replaced with actual list of used categories
       // from global state / store
       pages: [
-        {title: 'Age', component: 'annot-age', id: 0},
-        {title: 'Sex', component: 'annot-gender', id: 1},
-        {title: 'Diagnosis', component: 'annot-diagnosis', id: 2},
-        {title: 'Assessment', component: 'annot-assessment', id: 3}
+        {title: 'Age', component: 'category-age', id: 0},
+        {title: 'Sex', component: 'category-gender', id: 1},
+        {title: 'Diagnosis', component: 'category-diagnosis', id: 2},
+        {title: 'Assessment', component: 'category-assessment', id: 3}
       ],
     }
   },
