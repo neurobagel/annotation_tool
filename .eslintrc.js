@@ -7,8 +7,8 @@ module.exports = {
   extends: [
     // "airbnb", // TODO: activate this styleset
     "eslint:recommended",
-    "plugin:vue/essential",
-    "plugin:prettier/recommended",
+    "plugin:vue/strongly-recommended",
+    // "plugin:prettier/recommended", // TODO: consider activating
   ],
   parserOptions: {
     ecmaVersion: "latest",
