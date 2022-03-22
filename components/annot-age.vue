@@ -6,15 +6,13 @@
 
 <script>
 export default {
-  name: "annotate_age",
+  name: 'AnnotAge',
   data() {
     return {
       explanation: 'This is an explanation for how to annotate age',
-    }
+    };
   },
-}
+};
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>
