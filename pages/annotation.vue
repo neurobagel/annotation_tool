@@ -1,31 +1,45 @@
 <template>
-
   <b-container fluid>
-
     <!-- Navigation bar -->
     <tool-navbar
       :navItems="pageData"
       :navOrder="pageOrder"
-      :pageName="pageData.annotation.fullName">
+      :pageName="pageData.annotation.fullName"
+    >
     </tool-navbar>
+<!--
+    TODO: revisit the client-side render solution or remove this comment
+    The v-for statement below was causing a mismatch between client-side and server-side
+    DOM. In particular, the first element in "pages" (Age) was rendered twice. The error message was:
+      Vue warn]: The client-side rendered virtual DOM tree is not matching server-rendered content.
+      This is likely caused by incorrect HTML markup,
+      for example nesting block-level elements inside <p>, or missing <tbody>.
+      Bailing hydration and performing full client-side render.
 
-    <!-- This gives us built-in keyboard navigation! -->
-    <b-tabs pills card vertical>
-<!--      TODO: hardcode the pages and just toggle visibility based on state-->
-      <b-tab v-for="page in pages" :title="page.title" :key="page.id">
-        <b-card-text>
-          <component
-            :is="page.component"
-            :columns="annotated_columns"
-            :dataTable="data_table"
-            @remove:column="writeColumn($event)"
-            @update:dataTable="writeTable($event)"
-          ></component>
-        </b-card-text>
-      </b-tab>
-    </b-tabs>
+    The best answer I found online was this pretty useless stackoverflow answer:
+    https://stackoverflow.com/a/61375490/1302009 suggesting that this might be due to some
+    async getting of Array data.
+    I forced this block to be rendered client-side only for now and that fixed it for now
+    See: https://nuxtjs.org/docs/features/nuxt-components/#the-client-only-component
+-->
+    <no-ssr>
+      <!-- This gives us built-in keyboard navigation! -->
+      <b-tabs pills card vertical>
+  <!--      TODO: hardcode the pages and just toggle visibility based on state-->
+        <b-tab v-for="page in pages" :title="page.title" :key="page.id">
+          <b-card-text>
+            <component
+              :is="page.component"
+              :columns="annotated_columns"
+              :dataTable="data_table"
+              @remove:column="writeColumn($event)"
+              @update:dataTable="writeTable($event)"
+            ></component>
+          </b-card-text>
+        </b-tab>
+      </b-tabs>
+    </no-ssr>
   </b-container>
-
 </template>
 
 <script>
@@ -34,9 +48,8 @@
 import { mapState } from "vuex";
 
 export default {
-
+  name: "Annotation",
   data() {
-
     return {
       // TODO: "pages" is used as static testing data. Should be replaced with actual list of used categories
       // from global state / store
@@ -64,14 +77,10 @@ export default {
         { age: 13, group: 'PD', sex: 'male', iq: 110, number_comorbid_dx: 11, otherAge: '12Y', not_age: "hello" },
         { age: 103, group: 'CTL', sex: 'n/a', iq: 101, number_comorbid_dx: 0, otherAge: '9Y2M', not_age: "hello" },
       ],
-    }
+    };
   },
   computed: {
-
-    ...mapState([
-      "pageData",
-      "pageOrder"
-    ])
+    ...mapState(["pageData", "pageOrder"]),
   },
   methods: {
     writeColumn(event) {
@@ -90,10 +99,8 @@ export default {
       console.log('I also got the corresponding transformations:', event.transformHeuristics)
     },
   }
-}
+};
 
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

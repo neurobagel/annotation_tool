@@ -15,21 +15,19 @@
 
 <script>
 export default {
-  name: "sub-explanation",
+  name: "AnnotExplanation",
   data() {
     return {
       card_title: "Explanation",
-    }
+    };
   },
   props: {
     explanation: {
       type: String,
-      default: "No explanation has been provided yet."
+      default: "No explanation has been provided yet.",
     },
-  }
-}
+  },
+};
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>
