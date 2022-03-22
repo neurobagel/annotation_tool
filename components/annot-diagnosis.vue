@@ -6,10 +6,10 @@
 
 <script>
 export default {
-  name: 'AnnotDiagnosis',
+  name: "AnnotDiagnosis",
   data() {
     return {
-      explanation: 'This is an explanation for how to annotate diagnosis',
+      explanation: "This is an explanation for how to annotate diagnosis",
     };
   },
 };
