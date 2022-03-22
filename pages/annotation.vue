@@ -1,68 +1,65 @@
 <template>
+  <b-container fluid>
+    <!-- Navigation bar -->
+    <tool-navbar
+      :navItems="pageData"
+      :navOrder="pageOrder"
+      :pageName="pageData.annotation.fullName"
+    >
+    </tool-navbar>
+<!--
+    TODO: revisit the client-side render solution or remove this comment
+    The v-for statement below was causing a mismatch between client-side and server-side
+    DOM. In particular, the first element in "pages" (Age) was rendered twice. The error message was:
+      Vue warn]: The client-side rendered virtual DOM tree is not matching server-rendered content.
+      This is likely caused by incorrect HTML markup,
+      for example nesting block-level elements inside <p>, or missing <tbody>.
+      Bailing hydration and performing full client-side render.
 
-    <b-container fluid>
+    The best answer I found online was this pretty useless stackoverflow answer:
+    https://stackoverflow.com/a/61375490/1302009 suggesting that this might be due to some
+    async getting of Array data.
+    I forced this block to be rendered client-side only for now and that fixed it for now
+    See: https://nuxtjs.org/docs/features/nuxt-components/#the-client-only-component
+-->
+    <no-ssr>
+      <!-- This gives us built-in keyboard navigation! -->
+      <b-tabs pills card vertical>
+        <!--      TODO: hardcode the pages and just toggle visibility based on state-->
 
-        <!-- Navigation bar -->
-		<tool-navbar 
-			:navItems="pageData"
-			:navOrder="pageOrder"
-			:pageName="pageData.annotation.fullName">
-		</tool-navbar>
-
-        <b-row>
-            <b-col cols="4"></b-col>
-            <b-col cols="4">
-                <img class="vertical-center-mockup"
-                     :src="require(`~/assets/${mockupImage.filename}`)"
-                     :width="mockupImage.width"
-                     :height="mockupImage.height"/>
-            </b-col>
-            <b-col cols="4"></b-col>
-        </b-row>        
-
-    </b-container>
-
+        <b-tab v-for="page in pages" :title="page.title" :key="page.id">
+          <b-card-text>
+            <component :is="page.component"></component>
+          </b-card-text>
+        </b-tab>
+      </b-tabs>
+    </no-ssr>
+  </b-container>
 </template>
 
 <script>
+// Allows for reference to store data by creating simple, implicit getters
+// Fields listed in mapState below can be found in the store (index.js)
+import { mapState } from "vuex";
 
-	// Allows for reference to store data by creating simple, implicit getters
-	import { mapState } from "vuex";
-
-    export default {
-
-        data() {
-
-            return {
-
-                // Image for temporary annotation page mockup
-                mockupImage: {
-                    filename: "annotation_mockup.jpg",
-                    height: 956,
-                    width: 1045
-                }
-            }
-        },
-
-        computed: {
-
-            ...mapState([
-
-                "pageData",
-                "pageOrder"
-            ])
-        }
-        
-    }
-
+export default {
+  name: "Annotation",
+  data() {
+    return {
+      // TODO: "pages" is used as static testing data. Should be replaced with actual list of used categories
+      // from global state / store
+      pages: [
+        { title: "Age", component: "annot-age", id: 0 },
+        { title: "Sex", component: "annot-sex", id: 1 },
+        { title: "Diagnosis", component: "annot-diagnosis", id: 2 },
+        { title: "Assessment", component: "annot-assessment", id: 3 },
+      ],
+    };
+  },
+  computed: {
+    ...mapState(["pageData", "pageOrder"]),
+  },
+};
 </script>
 
-<style scoped>
-
-.vertical-center-mockup {
-    margin: 0;
-    position: absolute;
-    top: 50%;
-}
-
-</style>
+<style scoped></style>
