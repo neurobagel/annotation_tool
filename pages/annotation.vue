@@ -7,16 +7,33 @@
       :pageName="pageData.annotation.fullName"
     >
     </tool-navbar>
-    <!-- This gives us built-in keyboard navigation! -->
-    <b-tabs pills card vertical>
-      <!--      TODO: hardcode the pages and just toggle visibility based on state-->
+<!--
+    TODO: revisit the client-side render solution or remove this comment
+    The v-for statement below was causing a mismatch between client-side and server-side
+    DOM. In particular, the first element in "pages" (Age) was rendered twice. The error message was:
+      Vue warn]: The client-side rendered virtual DOM tree is not matching server-rendered content.
+      This is likely caused by incorrect HTML markup,
+      for example nesting block-level elements inside <p>, or missing <tbody>.
+      Bailing hydration and performing full client-side render.
 
-      <b-tab v-for="page in pages" :title="page.title" :key="page.id">
-        <b-card-text>
-          <component :is="page.component"></component>
-        </b-card-text>
-      </b-tab>
-    </b-tabs>
+    The best answer I found online was this pretty useless stackoverflow answer:
+    https://stackoverflow.com/a/61375490/1302009 suggesting that this might be due to some
+    async getting of Array data.
+    I forced this block to be rendered client-side only for now and that fixed it for now
+    See: https://nuxtjs.org/docs/features/nuxt-components/#the-client-only-component
+-->
+    <no-ssr>
+      <!-- This gives us built-in keyboard navigation! -->
+      <b-tabs pills card vertical>
+        <!--      TODO: hardcode the pages and just toggle visibility based on state-->
+
+        <b-tab v-for="page in pages" :title="page.title" :key="page.id">
+          <b-card-text>
+            <component :is="page.component"></component>
+          </b-card-text>
+        </b-tab>
+      </b-tabs>
+    </no-ssr>
   </b-container>
 </template>
 
