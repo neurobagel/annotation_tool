@@ -40,24 +40,24 @@
 <script>
 // Allows for reference to store data by creating simple, implicit getters
 // Fields listed in mapState below can be found in the store (index.js)
-import { mapState } from 'vuex';
+import { mapState } from "vuex";
 
 export default {
-  name: 'Annotation',
+  name: "Annotation",
   data() {
     return {
       // TODO: "pages" is used as static testing data. Should be replaced with actual list of used categories
       // from global state / store
       pages: [
-        { title: 'Age', component: 'annot-age', id: 0 },
-        { title: 'Sex', component: 'annot-sex', id: 1 },
-        { title: 'Diagnosis', component: 'annot-diagnosis', id: 2 },
-        { title: 'Assessment', component: 'annot-assessment', id: 3 },
+        { title: "Age", component: "annot-age", id: 0 },
+        { title: "Sex", component: "annot-sex", id: 1 },
+        { title: "Diagnosis", component: "annot-diagnosis", id: 2 },
+        { title: "Assessment", component: "annot-assessment", id: 3 },
       ],
     };
   },
   computed: {
-    ...mapState(['pageData', 'pageOrder']),
+    ...mapState(["pageData", "pageOrder"]),
   },
 };
 </script>
