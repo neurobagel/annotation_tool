@@ -50,7 +50,7 @@ export default {
       // from global state / store
       pages: [
         { title: 'Age', component: 'annot-age', id: 0 },
-        { title: 'Sex', component: 'annot-gender', id: 1 },
+        { title: 'Sex', component: 'annot-sex', id: 1 },
         { title: 'Diagnosis', component: 'annot-diagnosis', id: 2 },
         { title: 'Assessment', component: 'annot-assessment', id: 3 },
       ],
