@@ -6,10 +6,10 @@
 
 <script>
 export default {
-  name: 'AnnotSex',
+  name: "AnnotSex",
   data() {
     return {
-      explanation: 'This is an explanation for how to annotate sex',
+      explanation: "This is an explanation for how to annotate sex",
     };
   },
 };
