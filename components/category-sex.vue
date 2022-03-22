@@ -1,13 +1,13 @@
 <template>
-<div>
-  <annot-explanation :explanation="explanation"></annot-explanation>
+  <div>
+    <annot-explanation :explanation="explanation"></annot-explanation>
 
-  <annot-columns
-    :columns="columns"
-    :active-category="activeCategoryName"
-    @remove:column="$emit('remove:column', $event)"
-  ></annot-columns>
-</div>
+    <annot-columns
+      :columns="columns"
+      :active-category="activeCategoryName"
+      @remove:column="$emit('remove:column', $event)"
+    ></annot-columns>
+  </div>
 </template>
 
 <script>
@@ -15,19 +15,17 @@ export default {
   name: "annotate_gender",
   data() {
     return {
-      explanation: 'This is an explanation for how to annotate gender',
-      activeCategoryName: "Gender"
-    }
+      explanation: "This is an explanation for how to annotate gender",
+      activeCategoryName: "Gender",
+    };
   },
   props: {
     columns: {
       type: Object,
-      required: true
+      required: true,
     },
-  }
-}
+  },
+};
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>
