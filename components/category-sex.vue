@@ -15,8 +15,8 @@ export default {
   name: "annotate_gender",
   data() {
     return {
-      explanation: "This is an explanation for how to annotate gender",
-      activeCategoryName: "Gender",
+      explanation: "This is an explanation for how to annotate sex",
+      activeCategoryName: "Sex",
     };
   },
   props: {

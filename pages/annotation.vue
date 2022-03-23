@@ -62,7 +62,7 @@ export default {
       // TODO: replace this with global state getter for annotated columns
       annotated_columns: {
         age: "Age",
-        sex: "Gender",
+        sex: "Sex",
         not_age: "Age",
         group: "Diagnosis",
         number_comorbid_dx: "Diagnosis",
