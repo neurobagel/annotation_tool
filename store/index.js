@@ -205,6 +205,13 @@ export const actions = {
 	unlinkColumnWithCategory(p_context, p_linkingData) {
 
 		p_context.commit("removeColumnCategorization", p_linkingData.column);
+	},
+
+	// Annotation page actions
+
+	saveAnnotatedDataTable(p_context, p_newTable) {
+
+		p_context.commit("setAnnotatedDataTable", p_newTable);
 	}
 }
 
@@ -279,7 +286,7 @@ export const mutations = {
 		p_state.pageData[p_navData.pageName].accessible = p_navData.enable;
 	},
 
-	// Landing page
+	// Landing pages
 
 	setDataTable(p_state, p_newFileData) {
 
@@ -314,6 +321,13 @@ export const mutations = {
 
 		// Disassociate the column with this category it was linked to
 		p_state.columnToCategoryMap[p_columnName] = null;
+	},
+
+	// Annotation page changes
+
+	setAnnotatedDataTable(p_state, p_newTable) {
+
+		p_state.dataTable.annotated = p_newTable;
 	}
 }
 
