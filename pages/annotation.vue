@@ -30,8 +30,8 @@
           <b-card-text>
             <component
               :is="page.component"
-              :columns="annotated_columns"
-              :dataTable="data_table"
+              :columns="columnToCategoryMap"
+              :dataTable="dataTable.original"
               @remove:column="writeColumn($event)"
               @update:dataTable="writeTable($event)"
             ></component>
@@ -57,70 +57,17 @@ export default {
         { title: "Age", component: "category-age", id: 0 },
         { title: "Sex", component: "category-sex", id: 1 },
         { title: "Diagnosis", component: "category-diagnosis", id: 2 },
-        { title: "Assessment", component: "category-assessment", id: 3 },
-      ],
-      // TODO: replace this with global state getter for annotated columns
-      annotated_columns: {
-        age: "Age",
-        sex: "Sex",
-        not_age: "Age",
-        group: "Diagnosis",
-        number_comorbid_dx: "Diagnosis",
-        medload: "Assessment",
-        iq: "Assessment",
-        otherAge: "Age",
-      },
-      data_table: [
-        {
-          age: 11,
-          group: "PD",
-          sex: "male",
-          iq: 80,
-          number_comorbid_dx: 1,
-          otherAge: "10Y8M",
-          not_age: "hello",
-        },
-        {
-          age: 12,
-          group: "CTL",
-          sex: "n/a",
-          iq: 99,
-          number_comorbid_dx: 1,
-          otherAge: "11Y",
-          not_age: "hello",
-        },
-        {
-          age: 11,
-          group: "Double",
-          sex: "female",
-          iq: 100,
-          number_comorbid_dx: 2,
-          otherAge: "12Y5M",
-          not_age: "hello",
-        },
-        {
-          age: 13,
-          group: "PD",
-          sex: "male",
-          iq: 110,
-          number_comorbid_dx: 11,
-          otherAge: "12Y",
-          not_age: "hello",
-        },
-        {
-          age: 103,
-          group: "CTL",
-          sex: "n/a",
-          iq: 101,
-          number_comorbid_dx: 0,
-          otherAge: "9Y2M",
-          not_age: "hello",
-        },
-      ],
+        { title: "Assessment Tool", component: "category-assessment", id: 3 },
+      ]
     };
   },
   computed: {
-    ...mapState(["pageData", "pageOrder"]),
+    ...mapState([
+      "columnToCategoryMap",
+      "dataTable",
+      "pageData",
+      "pageOrder"
+    ]),
   },
   methods: {
     writeColumn(event) {
@@ -128,13 +75,9 @@ export default {
       console.log(
         `On the Annotation page, I was asked to remove "${event.removedColumn}" from the annotated columns`
       );
-      const temp = {};
-      for (let key in this.annotated_columns) {
-        if (key !== event.removedColumn) {
-          temp[key] = this.annotated_columns[key];
-        }
-      }
-      this.annotated_columns = temp;
+
+      // Unlink this column from its current category
+      this.$store.dispatch("unlinkColumnWithCategory", { column: event.removedColumn });
     },
     writeTable(event) {
       console.log(
@@ -145,6 +88,9 @@ export default {
         "I also got the corresponding transformations:",
         event.transformHeuristics
       );
+
+      // Save the annotated table in the store
+      this.$store.dispatch("saveAnnotatedDataTable", event.transformedTable);
     },
   },
 };

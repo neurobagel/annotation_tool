@@ -16,7 +16,7 @@ export default {
   data() {
     return {
       explanation: "This is an explanation for how to annotate assessments",
-      activeCategoryName: "Assessment"
+      activeCategoryName: "Assessment Tool"
     };
   },
   props: {
