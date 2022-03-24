@@ -6,6 +6,8 @@
         <b-table :items="displayTable" :fields="exampleFields">
           <template #cell(select_an_appropriate_mapping)="row">
             <!--Bootstrap-Vue doesn't have a great option here so I am using https://vue-select.org/-->
+            <!--Note: we use the $event statement to add the row data to the payload of the @input
+                event without replacing the original event payload -->
             <v-select
               label="Standard"
               :options="annotationOptions"
@@ -13,6 +15,12 @@
             ></v-select>
           </template>
         </b-table>
+        <b-button
+          variant="success"
+          @click="applyTransform"
+          :disabled="buttonDisabled"
+          >Confirm and Upload
+        </b-button>
       </b-card-body>
     </b-card>
   </div>
@@ -28,12 +36,20 @@ export default {
         "raw_value",
         "select_an_appropriate_mapping",
       ],
-      valueMapping: {}
+      valueMapping: {},
+      buttonDisabled: true,
     };
   },
   mounted() {
     // Initialize the mapping of all unique values as null
-    this.initializeMapping();
+    // TODO: revisit this once we have implemented the missing value components to make sure
+    // we don't break things by later turning values into missing values
+    for (const [colName, uniqueValues] of Object.entries(this.uniqueValues)) {
+      // Now we will create a mapping of the form { uniqueVale: null } for each unique value
+      this.valueMapping[colName] = Object.fromEntries(
+        uniqueValues.map((uniqueValue) => [uniqueValue, null])
+      );
+    }
   },
   computed: {
     relevantColumns() {
@@ -77,35 +93,51 @@ export default {
         })
         .flat();
     },
-    allValuesMapped() {
-      return Object.values(this.valueMapping).map(uniqueVals => {
-          return Object.values(uniqueVals).some(val => val === null )
-        }
-      )
-    },
   },
   methods: {
     removeRow(row) {
       // TODO: use this method to move unique values to the missing value category
-      console.log(row)
+      console.log(row);
     },
     updateMapping(selectedValue, row) {
-      console.log("value selected:", selectedValue, "in row", row.column_name);
       this.valueMapping[row.column_name][row.raw_value] = selectedValue;
-      console.log("Now I have valueMapping:", this.valueMapping)
-      console.log("map status is", this.allValuesMapped)
+      // Determine whether all unique values have now been mapped to something
+      // TODO: this might be better suited for a computed property, but this seems to
+      //  break reactivity
+      this.checkAnnotationState();
+    },
+    checkAnnotationState() {
+      const colHasUnmappedValues = Object.values(this.valueMapping).map(
+        (uniqueColValues) => {
+          // uniqueColValues is an object keyed on each unique value of this column with the
+          // value being the assigned mapping, initialized to "null"
+          // example: uniqueColValues = { "m": null, "f": female }
+          return Object.values(uniqueColValues).some(
+            (uniqueValue) => uniqueValue === null
+          );
+        }
+      );
+      this.buttonDisabled = colHasUnmappedValues.some(
+        (value) => value === true
+      );
     },
     applyTransform() {
+      const transformedTable = this.dataTable.map((row) => {
+        return Object.fromEntries(
+          Object.entries(row).map(([colName, value]) => {
+            if (this.relevantColumns.includes(colName)) {
+              return [colName, this.valueMapping[colName][value]];
+            } else {
+              return [colName, value];
+            }
+          })
+        );
+      });
+      this.$emit("update:dataTable", {
+        transformedTable: transformedTable,
+        transformHeuristics: this.valueMapping,
+      });
     },
-    initializeMapping() {
-      // TODO: revisit this once we have implemented the missing value components to make sure
-      // we don't break things by later turning values into missing values
-
-      for (const [colName, uniqueValues] of Object.entries(this.uniqueValues)) {
-        // Now we will create a mapping of the form { uniqueVale: null } for each unique value
-        this.valueMapping[colName] = Object.fromEntries(uniqueValues.map( uniqueValue => [uniqueValue, null]))
-      }
-    }
   },
   props: {
     dataTable: {

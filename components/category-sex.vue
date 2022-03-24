@@ -13,6 +13,7 @@
       :columns="columns"
       :data-table="dataTable"
       :annotation-options="annotationOptions"
+      @update:dataTable="$emit('update:dataTable', $event)"
     >
     </annot-discrete-choices>
   </div>
