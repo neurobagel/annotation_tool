@@ -149,10 +149,7 @@ export const actions = {
 		];
 
 		// 1. Setup category-related data structures based on the given categories
-		commit("setupCategories", categories);
-
-        // 2. Set the default page as the home page
-        // commit("setCurrentPageNav", "home");		
+		commit("setupCategories", categories);	
 	},
 
 	// Tool navigation
