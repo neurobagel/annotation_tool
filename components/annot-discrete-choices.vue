@@ -9,7 +9,7 @@
             <v-select
               label="Standard"
               :options="annotationOptions"
-              @input="doSomething"
+              @input="updateMapping($event, row.item)"
             ></v-select>
           </template>
         </b-table>
