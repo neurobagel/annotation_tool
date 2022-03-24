@@ -2,13 +2,6 @@
 
 	<b-container fluid>
 
-		<!-- Navigation bar -->
-		<tool-navbar
-			:navItems="pageData"
-			:navOrder="pageOrder"
-			:pageName="pageData.home.fullName">
-		</tool-navbar>
-
 		<!-- Data table file loading area -->
 		<b-row>
 			<h2>Data table</h2>
@@ -94,8 +87,7 @@
 
 				"dataDictionary",
 				"dataTable",
-				"pageData",
-				"pageOrder"
+				"pageData"
 			]),
 
 			stringifiedDataDictionary() {
@@ -169,6 +161,12 @@
 				// 1. Update the store with json file data
 				this.$store.dispatch("saveDataDictionary", newFileData);
 			},
-		}
+		},
+
+        mounted() {
+
+            // 1. Set the current page
+            this.$store.dispatch("setCurrentPage", "home");
+        },		
 	}
 </script>
