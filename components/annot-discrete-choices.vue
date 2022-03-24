@@ -28,8 +28,12 @@ export default {
         "raw_value",
         "select_an_appropriate_mapping",
       ],
-      valueMapping: [],
+      valueMapping: {}
     };
+  },
+  mounted() {
+    // Initialize the mapping of all unique values as null
+    this.initializeMapping();
   },
   computed: {
     relevantColumns() {
@@ -73,14 +77,35 @@ export default {
         })
         .flat();
     },
+    allValuesMapped() {
+      return Object.values(this.valueMapping).map(uniqueVals => {
+          return Object.values(uniqueVals).some(val => val === null )
+        }
+      )
+    },
   },
   methods: {
     removeRow(row) {
-      this.example = this.example.filter((el) => el.raw !== row.raw);
+      // TODO: use this method to move unique values to the missing value category
+      console.log(row)
     },
-    doSomething(thing) {
-      console.log(thing);
+    updateMapping(selectedValue, row) {
+      console.log("value selected:", selectedValue, "in row", row.column_name);
+      this.valueMapping[row.column_name][row.raw_value] = selectedValue;
+      console.log("Now I have valueMapping:", this.valueMapping)
+      console.log("map status is", this.allValuesMapped)
     },
+    applyTransform() {
+    },
+    initializeMapping() {
+      // TODO: revisit this once we have implemented the missing value components to make sure
+      // we don't break things by later turning values into missing values
+
+      for (const [colName, uniqueValues] of Object.entries(this.uniqueValues)) {
+        // Now we will create a mapping of the form { uniqueVale: null } for each unique value
+        this.valueMapping[colName] = Object.fromEntries(uniqueValues.map( uniqueValue => [uniqueValue, null]))
+      }
+    }
   },
   props: {
     dataTable: {
