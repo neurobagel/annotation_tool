@@ -7,6 +7,14 @@
       :active-category="activeCategoryName"
       @remove:column="$emit('remove:column', $event)"
     ></annot-columns>
+
+    <annot-discrete-choices
+      :active-category="activeCategoryName"
+      :columns="columns"
+      :data-table="dataTable"
+      :annotation-options="annotationOptions"
+    >
+    </annot-discrete-choices>
   </div>
 </template>
 
@@ -17,12 +25,16 @@ export default {
     return {
       explanation: "This is an explanation for how to annotate sex",
       activeCategoryName: "Sex",
+      annotationOptions: ["male", "female", "other", "missing value"],
     };
   },
   props: {
     columns: {
       type: Object,
       required: true,
+    },
+    dataTable: {
+      type: Array,
     },
   },
 };
