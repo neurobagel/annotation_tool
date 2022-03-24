@@ -3,6 +3,8 @@ export const state = () => ({
 
 	// Page-related data
 
+	currentPage: "home",
+
 	pageData: {
 
         home: {
@@ -148,14 +150,22 @@ export const actions = {
 
 		// 1. Setup category-related data structures based on the given categories
 		commit("setupCategories", categories);
+
+        // 2. Set the default page as the home page
+        // commit("setCurrentPageNav", "home");		
 	},
 
 	// Tool navigation
 	
 	enablePageNavigation(p_context, p_navData) {
 
-		p_context.commit("setPageNavigation", p_navData);
+		p_context.commit("setPageNavigationAccess", p_navData);
 	},
+
+    setCurrentPage(p_context, p_pageDataKey) {
+
+        p_context.commit("setCurrentPageNav", p_pageDataKey);
+    },	
 
 	// Landing page actions
 	
@@ -280,11 +290,17 @@ export const mutations = {
 
 	// Tool navigation
 
-	setPageNavigation(p_state, p_navData) {
+	setPageNavigationAccess(p_state, p_navData) {
 
 		// Enable or disable access to this page
 		p_state.pageData[p_navData.pageName].accessible = p_navData.enable;
 	},
+
+    setCurrentPageNav(p_state, p_pageDataKey) {
+
+        // Set the current page for the layout navbar
+        p_state.currentPage = p_pageDataKey;
+    },	
 
 	// Landing pages
 

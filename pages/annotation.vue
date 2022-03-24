@@ -1,12 +1,6 @@
 <template>
   <b-container fluid>
-    <!-- Navigation bar -->
-    <tool-navbar
-      :navItems="pageData"
-      :navOrder="pageOrder"
-      :pageName="pageData.annotation.fullName"
-    >
-    </tool-navbar>
+
     <!--
         TODO: revisit the client-side render solution or remove this comment
         The v-for statement below was causing a mismatch between client-side and server-side
@@ -65,8 +59,7 @@ export default {
     ...mapState([
       "columnToCategoryMap",
       "dataTable",
-      "pageData",
-      "pageOrder"
+      "pageData"
     ]),
   },
   methods: {
@@ -93,6 +86,13 @@ export default {
       this.$store.dispatch("saveAnnotatedDataTable", event.transformedTable);
     },
   },
+
+    mounted() {
+
+        // 1. Set the current page name
+        this.$store.dispatch("setCurrentPage", "annotation");
+    }
+
 };
 </script>
 

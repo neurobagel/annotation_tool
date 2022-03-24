@@ -2,13 +2,6 @@
 
 	<b-container fluid>
 
-		<!-- Navigation bar -->
-		<tool-navbar 
-			:navItems="pageData"
-			:navOrder="pageOrder"
-			:pageName="pageData.categorization.fullName">
-		</tool-navbar>
-
 		<b-row>
 
 			<!-- Category selection table -->
@@ -70,7 +63,10 @@ export default {
 
 		mounted() {
 
-			// 1. Create the data structure for the category to column linking table
+            // 1. Set the current page name
+            this.$store.dispatch("setCurrentPage", "categorization");
+
+			// 2. Create the data structure for the category to column linking table
 			this.setupColumnToCategoryTable();
 
 			// 2. Set selected category to the first category by default
@@ -126,8 +122,7 @@ export default {
 				"columnToCategoryMap",
 				"dataTable",
 				"dataDictionary",
-				"pageData",
-				"pageOrder"
+				"pageData"
     		])
   		},
 
