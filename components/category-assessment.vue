@@ -7,6 +7,13 @@
       :active-category="activeCategoryName"
       @remove:column="$emit('remove:column', $event)"
     ></annot-columns>
+
+    <annot-vocabulary
+      :active-category="activeCategoryName"
+      :columns="columns"
+      @update:heuristics="$emit('update:heuristics', $event)"
+      :mode="`column`"
+    ></annot-vocabulary>
   </div>
 </template>
 
