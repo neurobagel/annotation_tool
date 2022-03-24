@@ -165,8 +165,6 @@
 
         mounted() {
 
-            console.log("Index mounted");
-
             // 1. Set the current page
             this.$store.dispatch("setCurrentPage", "home");
         },		
