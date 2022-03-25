@@ -160,6 +160,7 @@ export default {
         }
       //  TODO: check if we need to also handle the case where a column is added
       }
+      this.checkAnnotationState();
     }
   },
   props: {
