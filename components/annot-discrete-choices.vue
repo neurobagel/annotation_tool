@@ -28,7 +28,7 @@
 
 <script>
 export default {
-  name: "discrete-values",
+  name: "AnnotDiscreteValues",
   data() {
     return {
       exampleFields: [
