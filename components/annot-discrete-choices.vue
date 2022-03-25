@@ -42,14 +42,7 @@ export default {
   },
   mounted() {
     // Initialize the mapping of all unique values as null
-    // TODO: revisit this once we have implemented the missing value components to make sure
-    // we don't break things by later turning values into missing values
-    for (const [colName, uniqueValues] of Object.entries(this.uniqueValues)) {
-      // Now we will create a mapping of the form { uniqueVale: null } for each unique value
-      this.valueMapping[colName] = Object.fromEntries(
-        uniqueValues.map((uniqueValue) => [uniqueValue, null])
-      );
-    }
+    this.initializeValueMapping();
   },
   computed: {
     relevantColumns() {
@@ -95,6 +88,18 @@ export default {
     },
   },
   methods: {
+    initializeValueMapping() {
+      // TODO: revisit this once we have implemented the missing value components to make sure
+      // we don't break things by later turning values into missing values
+      // Initialize the mapping as empty
+      this.valueMapping = {};
+      for (const [colName, uniqueValues] of Object.entries(this.uniqueValues)) {
+        // Now we will create a mapping of the form { uniqueVale: null } for each unique value
+        this.valueMapping[colName] = Object.fromEntries(
+          uniqueValues.map((uniqueValue) => [uniqueValue, null])
+        );
+      }
+    },
     removeRow(row) {
       // TODO: use this method to move unique values to the missing value category
       console.log(row);
@@ -138,6 +143,24 @@ export default {
         transformHeuristics: this.valueMapping,
       });
     },
+  },
+  watch: {
+    relevantColumns: function (newColumns, oldColumns) {
+      const removedColumns = oldColumns.filter(column => ! newColumns.includes(column));
+      // const addedColumns = newColumns.filter(column => ! oldColumns.includes(column));
+
+      if (removedColumns.length > 0) {
+        // There has been at least one column removed from the activeCategory,
+        // possibly via the annot-columns component remove action
+        for (let columnName of removedColumns) {
+          // We cannot just remove the key from the object with a normal
+          // JS delete operator because then Vue wouldn't be aware of it.
+          // See also: https://v2.vuejs.org/v2/api/?redirect=true#vm-delete
+          this.$delete(this.valueMapping, columnName);
+        }
+      //  TODO: check if we need to also handle the case where a column is added
+      }
+    }
   },
   props: {
     dataTable: {
