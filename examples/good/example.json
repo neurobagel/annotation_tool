@@ -1,0 +1,33 @@
+{
+	"age": {
+		"Description": "age of the participant",
+		"Units": "years"
+	},
+	"sex": {
+		"Description": "sex of the participant as reported by the participant",
+		"Levels": {
+			"M": "male",
+			"F": "female"
+		}
+	},
+	"group": {
+		"Description": "diagnostic status determined by the study clinician at baseline",
+		"Levels": {
+			"AD": "individuals with Alzheimer's Disease",
+			"HC": "healthy controls",
+			"MCI": "individuals with Mild Cognitive Impairment"
+		}
+	},
+	"medload": {
+		"Description": "reflects the number of dosage of psychotropic medications taken by participants. Higher numbers correspond to more medications and/or higher medication dosage ",
+		"Units": "arbitraty units"
+	},
+	"iq": {
+		"Description": "IQ derived based on the NART assessment.",
+		"Units": "arbitraty units"
+	},
+	"stroop": {
+		"Description": "Reaction time in a Stroop task experiment.",
+		"Units": "milliseconds"
+	}
+}
