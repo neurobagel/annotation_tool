@@ -18,9 +18,18 @@
     -->
     <no-ssr>
       <!-- This gives us built-in keyboard navigation! -->
-      <b-tabs pills card vertical>
+      <b-tabs
+        pills
+        card 
+        vertical
+        v-model="tabNavTitle">
+
         <!--      TODO: hardcode the pages and just toggle visibility based on state-->
-        <b-tab v-for="page in pages" :title="page.title" :key="page.id">
+        <b-tab
+            v-for="page in pages"
+            :title="page.title"
+            :key="page.id"
+            :title-link-class="tabStyle(page.title)">
           <b-card-text>
             <component
               :is="page.component"
@@ -64,6 +73,8 @@ export default {
   name: "Annotation",
   data() {
     return {
+
+        tabNavTitle: "",
       // TODO: "pages" is used as static testing data. Should be replaced with actual list of used categories
       // from global state / store
       pages: [
@@ -75,11 +86,14 @@ export default {
     };
   },
   computed: {
+
     ...mapState([
-      "columnToCategoryMap",
-      "dataTable",
-      "dataDictionary",
-      "pageData"
+        "categories",
+        "categoryClasses",
+        "columnToCategoryMap",
+        "dataTable",
+        "dataDictionary",
+        "pageData"
     ]),
 
     nextPageButtonColor() {
@@ -88,7 +102,15 @@ export default {
         return this.pageData.download.accessible ? "success" : "secondary"
     }
   },
-  methods: {
+  methods: {      
+
+    tabStyle(p_category) {
+
+        console.log("tabStyle with category: " + p_category);
+        console.log("categoryClasses[" + p_category + "]: " + this.categoryClasses[p_category]);
+        return ["annotation-tab-nav", this.categoryClasses[p_category]];
+    },
+
     writeColumn(event) {
       // TODO: find a more succinct implementation. The "delete" operator should work, but somehow doesn't
       console.log(
@@ -124,6 +146,9 @@ export default {
 
         // 1. Set the current page name
         this.$store.dispatch("setCurrentPage", "annotation");
+
+        // 2. Set the initial tab title for styling purposes
+        this.tabNavTitle = this.categories[0];
     }
 
 };

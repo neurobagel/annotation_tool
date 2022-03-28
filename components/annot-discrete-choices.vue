@@ -1,9 +1,9 @@
 <template>
   <div>
-    <b-card no-body>
-      <b-card-header>I am a header</b-card-header>
+    <b-card no-body class="annotation-card">
+      <b-card-header>Annotate each unique value</b-card-header>
       <b-card-body>
-        <b-table :items="displayTable" :fields="exampleFields">
+        <b-table striped :items="displayTable" :fields="exampleFields">
           <template #cell(select_an_appropriate_mapping)="row">
             <!--Bootstrap-Vue doesn't have a great option here so I am using https://vue-select.org/-->
             <!--Note: we use the $event statement to add the row data to the payload of the @input
@@ -16,10 +16,10 @@
           </template>
         </b-table>
         <b-button
-          variant="success"
           @click="applyTransform"
           :disabled="buttonDisabled"
-          >Confirm and Upload
+          :variant="saveAnnotationButtonColor">
+          Save Annotation
         </b-button>
       </b-card-body>
     </b-card>
@@ -65,6 +65,13 @@ export default {
         );
       });
     },
+    
+    saveAnnotationButtonColor() {
+
+        // Bootstrap variant color of the button to save the annotation to the data table
+        return ( !this.buttonDisabled ) ? "success" : "secondary"
+    },
+
     uniqueValues() {
       // Extract array of unique values from filteredTable, keyed on the column names
       return Object.fromEntries(

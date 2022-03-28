@@ -1,9 +1,9 @@
 <template>
   <div>
-    <b-card no-body>
-      <b-card-header>I am a vocabulary header</b-card-header>
+    <b-card no-body class="annotation-card">
+      <b-card-header>Annotate each unique value</b-card-header>
       <b-card-body>
-        <b-table :items="displayTable" :fields="exampleFields" fixed>
+        <b-table striped :items="displayTable" :fields="exampleFields" fixed>
           <template #cell(select_a_vocabulary_term)="row">
             <b-form-input
               id="input-live"
@@ -23,10 +23,10 @@
           </template>
         </b-table>
         <b-button
-          variant="success"
           @click="uploadVocabularyMappings"
           :disabled="buttonDisabled"
-          >Confirm and Upload
+          :variant="saveAnnotationButtonColor">
+          Confirm and Upload
         </b-button>
       </b-card-body>
     </b-card>
@@ -75,6 +75,13 @@ export default {
         )
         .map((element) => element[0]); // return only the column name that was assigned to this.activeCategory
     },
+
+    saveAnnotationButtonColor() {
+
+        // Bootstrap variant color of the button to save the annotation to the data table
+        return ( !this.buttonDisabled ) ? "success" : "secondary"
+    },
+
     exampleFields() {
       let defaultFields = [
         "column_name",

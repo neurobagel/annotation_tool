@@ -4,13 +4,17 @@
 
         <b-row >
 
-            <b-table
-                bordered
-                outlined
-                sticky-header
-                head-variant="dark"
-                :items="dataTable.annotated">
-            </b-table>
+            <b-col cols="12">
+                <b-table
+                    bordered
+                    outlined
+                    sticky-header
+                    striped
+                    head-variant="dark"
+                    :items="dataTable.annotated">
+                </b-table>
+            </b-col>
+            
             <!-- Debug component - shows file contents -->
             <!-- <textarea :rows="textArea.width" :cols="textArea.height" v-model="stringifiedDataTable"></textarea> -->
         </b-row>
