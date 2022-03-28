@@ -7,6 +7,15 @@
       :active-category="activeCategoryName"
       @remove:column="$emit('remove:column', $event)"
     ></annot-columns>
+
+    <annot-vocabulary
+      :active-category="activeCategoryName"
+      :columns="columns"
+      :data-table="dataTable"
+      :dataDictionary="dataDictionary"
+      @update:heuristics="$emit('update:heuristics', $event)"
+      @update:dataTable="$emit('update:dataTable', $event)"
+    ></annot-vocabulary>
   </div>
 </template>
 
@@ -23,6 +32,14 @@ export default {
     columns: {
       type: Object,
       required: true
+    },
+    dataTable: {
+      type: Array,
+    },
+    dataDictionary: {
+      type: Object,
+      required: false,
+      default: null
     },
   }
 };
