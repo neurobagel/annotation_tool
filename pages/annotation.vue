@@ -1,39 +1,61 @@
 <template>
-  <b-container fluid>
 
-    <!--
-        TODO: revisit the client-side render solution or remove this comment
-        The v-for statement below was causing a mismatch between client-side and server-side
-        DOM. In particular, the first element in "pages" (Age) was rendered twice. The error message was:
-          Vue warn]: The client-side rendered virtual DOM tree is not matching server-rendered content.
-          This is likely caused by incorrect HTML markup,
-          for example nesting block-level elements inside <p>, or missing <tbody>.
-          Bailing hydration and performing full client-side render.
+    <b-container fluid>
 
-        The best answer I found online was this pretty useless stackoverflow answer:
-        https://stackoverflow.com/a/61375490/1302009 suggesting that this might be due to some
-        async getting of Array data.
-        I forced this block to be rendered client-side only for now and that fixed it for now
-        See: https://nuxtjs.org/docs/features/nuxt-components/#the-client-only-component
-    -->
-    <no-ssr>
-      <!-- This gives us built-in keyboard navigation! -->
-      <b-tabs pills card vertical>
-        <!--      TODO: hardcode the pages and just toggle visibility based on state-->
-        <b-tab v-for="page in pages" :title="page.title" :key="page.id">
-          <b-card-text>
-            <component
-              :is="page.component"
-              :columns="columnToCategoryMap"
-              :dataTable="dataTable.original"
-              @remove:column="writeColumn($event)"
-              @update:dataTable="writeTable($event)"
-            ></component>
-          </b-card-text>
-        </b-tab>
-      </b-tabs>
-    </no-ssr>
-  </b-container>
+        
+        <!--
+            TODO: revisit the client-side render solution or remove this comment
+            The v-for statement below was causing a mismatch between client-side and server-side
+            DOM. In particular, the first element in "pages" (Age) was rendered twice. The error message was:
+            Vue warn]: The client-side rendered virtual DOM tree is not matching server-rendered content.
+            This is likely caused by incorrect HTML markup,
+            for example nesting block-level elements inside <p>, or missing <tbody>.
+            Bailing hydration and performing full client-side render.
+
+            The best answer I found online was this pretty useless stackoverflow answer:
+            https://stackoverflow.com/a/61375490/1302009 suggesting that this might be due to some
+            async getting of Array data.
+            I forced this block to be rendered client-side only for now and that fixed it for now
+            See: https://nuxtjs.org/docs/features/nuxt-components/#the-client-only-component
+        -->
+        <no-ssr>
+        <!-- This gives us built-in keyboard navigation! -->
+        <b-tabs pills card vertical>
+            <!--      TODO: hardcode the pages and just toggle visibility based on state-->
+            <b-tab v-for="page in pages" :title="page.title" :key="page.id">
+            <b-card-text>
+                <component
+                :is="page.component"
+                :columns="columnToCategoryMap"
+                :dataTable="dataTable.original"
+                @remove:column="writeColumn($event)"
+                @update:dataTable="writeTable($event)"
+                ></component>
+            </b-card-text>
+            </b-tab>
+        </b-tabs>
+        </no-ssr>
+        
+        <b-row>
+
+            <b-col cols="7"></b-col>
+
+            <!-- Button to proceed to the next page -->
+            <!-- Only enabled when at least one annotation table write has been done -->
+            <b-col cols="5">
+                <b-button
+                    class="float-right"
+                    :disabled="!pageData.download.accessible"
+                    :to="'/' + pageData.download.location"
+                    :variant="nextPageButtonColor">
+                    Next step: Review and download harmonized data
+                </b-button>
+            </b-col>
+
+        </b-row>
+
+
+    </b-container>
 </template>
 
 <script>
@@ -56,11 +78,18 @@ export default {
     };
   },
   computed: {
+
     ...mapState([
       "columnToCategoryMap",
       "dataTable",
       "pageData"
     ]),
+
+    nextPageButtonColor() {
+
+        // Bootstrap variant color of the button leading to the categorization page
+        return this.pageData.download.accessible ? "success" : "secondary"
+    }    
   },
   methods: {
     writeColumn(event) {
@@ -72,18 +101,27 @@ export default {
       // Unlink this column from its current category
       this.$store.dispatch("unlinkColumnWithCategory", { column: event.removedColumn });
     },
-    writeTable(event) {
-      console.log(
-        "On the Annotation page, I got an updated datatable:",
-        event.transformedTable
-      );
-      console.log(
-        "I also got the corresponding transformations:",
-        event.transformHeuristics
-      );
 
-      // Save the annotated table in the store
-      this.$store.dispatch("saveAnnotatedDataTable", event.transformedTable);
+    writeTable(event) {
+
+        console.log(
+            "On the Annotation page, I got an updated datatable:",
+            event.transformedTable
+        );
+        console.log(
+            "I also got the corresponding transformations:",
+            event.transformHeuristics
+        );
+
+        // 1. Save the annotated table in the store
+        this.$store.dispatch("saveAnnotatedDataTable", event.transformedTable);
+
+        // 2. Enable the download page when the annotated data table has been written
+        this.$store.dispatch("enablePageNavigation", {
+            
+            pageName: "download",
+            enable: true
+        });      
     },
   },
 

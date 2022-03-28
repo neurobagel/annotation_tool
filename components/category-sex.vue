@@ -36,7 +36,7 @@ export default {
     },
     dataTable: {
       type: Array,
-    },
+    }    
   },
 };
 </script>

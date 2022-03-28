@@ -352,6 +352,11 @@ export const getters = {
 		return p_state.categories;
 	},
 
+	isAnnotatedDataTableLoaded(p_state) {
+
+		return ( null != p_state.dataTable.annotated );
+	},	
+
 	isColumnLinkedToCategory: (p_state) => (p_matchData) => {
 
 		// Check to see if the given column has been linked to the given category
