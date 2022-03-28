@@ -11,7 +11,7 @@
               aria-describedby="input-live-help input-live-feedback"
               :placeholder="placeholder"
               trim
-              @input="doSomething($event, row.item)"
+              @input="updateVocabularyMapping($event, row.item)"
             ></b-form-input>
             <!--             This will only be shown if the preceding input has an invalid state -->
             <!--            <b-form-invalid-feedback id="input-live-feedback">-->
@@ -19,16 +19,17 @@
             <!--            </b-form-invalid-feedback>-->
 
             <!-- This is a form text block (formerly known as help block) -->
-            <b-form-text id="input-live-help"
-              >{{instruction}}
-            </b-form-text>
+            <b-form-text id="input-live-help">{{ instruction }}</b-form-text>
           </template>
         </b-table>
+        <b-button
+          variant="success"
+          @click="uploadVocabularyMappings"
+          :disabled="buttonDisabled"
+          >Confirm and Upload
+        </b-button>
       </b-card-body>
     </b-card>
-    <b-button variant="success" @click="uploadMappings"
-      >Confirm and Upload
-    </b-button>
   </div>
 </template>
 
@@ -40,25 +41,30 @@ export default {
     return {
       vocabularyMapping: {},
       vocabState: null,
+      buttonDisabled: true,
     };
+  },
+  mounted() {
+    // Initialize the mapping of all unique values as null
+    this.initializeVocabularyMapping();
   },
   computed: {
     placeholder() {
       if (this.mode === "column") {
-        return "e.g. MoCA"
+        return "e.g. MoCA";
       } else if (this.mode === "row") {
-        return "e.g. Parkinson's Disease"
+        return "e.g. Parkinson's Disease";
       } else {
-        return ""
+        return "";
       }
     },
     instruction() {
       if (this.mode === "column") {
-        return "Please provide a reproschema term"
+        return "Please provide a reproschema term";
       } else if (this.mode === "row") {
-        return "Please provide a SNOMED-CT term"
+        return "Please provide a SNOMED-CT term";
       } else {
-        return "Please provide an appropriate vocabulary term"
+        return "Please provide an appropriate vocabulary term";
       }
     },
     relevantColumns() {
@@ -137,15 +143,79 @@ export default {
     },
   },
   methods: {
-    doSomething(event, row) {
-      console.log("I am doing something with:", event, "in", row.column_name);
-      this.vocabularyMapping[row.column_name] = event;
+    initializeVocabularyMapping() {
+      // TODO: revisit this once we have implemented the missing value components to make sure
+      // we don't break things by later turning values into missing values
+      // Initialize the mapping as empty
+      this.vocabularyMapping = {};
+      if (this.mode === "row") {
+        for (const [colName, uniqueValues] of Object.entries(
+          this.uniqueValues
+        )) {
+          // Now we will create a mapping of the form { uniqueVale: null } for each unique value
+          this.vocabularyMapping[colName] = Object.fromEntries(
+            uniqueValues.map((uniqueValue) => [uniqueValue, null])
+          );
+        }
+      } else if (this.mode === "column") {
+        // TODO: revisit why we do not have access to this.uniqueValues in column Mode.
+        for (const colName of this.relevantColumns) {
+          this.vocabularyMapping[colName] = null;
+        }
+      }
     },
-    uploadMappings() {
-      this.$emit("update:heuristics", {
-        heuristic: this.vocabularyMapping,
-      }),
-        console.log("uploaded diagnosis heuristics");
+    updateVocabularyMapping(event, row) {
+      if (this.mode === "row") {
+        this.vocabularyMapping[row.column_name][row.raw_value] = event;
+        this.checkVocabularyAnnotationState();
+
+      } else if (this.mode === "column") {
+        this.vocabularyMapping[row.column_name] = event;
+        this.checkVocabularyAnnotationState();
+      }
+    },
+    checkVocabularyAnnotationState() {
+      const colHasUnmappedValues = Object.values(this.vocabularyMapping).map(
+        (uniqueColValues) => {
+          if (this.mode === "row") {
+            // uniqueColValues is an object keyed on each unique value of this column with the
+            // value being the assigned mapping, initialized to "null"
+            return Object.values(uniqueColValues).some(
+              (uniqueValue) => uniqueValue === null
+            );
+          } else if (this.mode === "column") {
+            // uniqueColValues is just a string mapped to the column
+            // if it is not null we are good
+            return uniqueColValues === null;
+          }
+        }
+      );
+      this.buttonDisabled = colHasUnmappedValues.some(
+        (value) => value === true
+      );
+    },
+    uploadVocabularyMappings() {
+      if (this.mode === "column") {
+        this.$emit("update:heuristics", {
+          transformHeuristics: this.vocabularyMapping,
+        });
+      } else if (this.mode === "row") {
+        const transformedTable = this.dataTable.map((row) => {
+          return Object.fromEntries(
+            Object.entries(row).map(([colName, value]) => {
+              if (this.relevantColumns.includes(colName)) {
+                return [colName, this.vocabularyMapping[colName][value]];
+              } else {
+                return [colName, value];
+              }
+            })
+          );
+        });
+        this.$emit("update:dataTable", {
+          transformedTable: transformedTable,
+          transformHeuristics: this.valueMapping,
+        });
+      }
     },
     getDescription(columnName, value = null) {
       let columnDescription = undefined;

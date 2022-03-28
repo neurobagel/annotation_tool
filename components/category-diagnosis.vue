@@ -14,6 +14,7 @@
       :data-table="dataTable"
       :dataDictionary="dataDictionary"
       @update:heuristics="$emit('update:heuristics', $event)"
+      @update:dataTable="$emit('update:dataTable', $event)"
     ></annot-vocabulary>
   </div>
 </template>
