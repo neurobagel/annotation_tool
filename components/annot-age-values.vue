@@ -194,7 +194,7 @@ export default {
     },
     columns: {
       type: Object
-    }
+    }    
   }
 }
 </script>

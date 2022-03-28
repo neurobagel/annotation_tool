@@ -2,12 +2,12 @@
   <b-container fluid>
 
     <!--
-        TODO: revisit the client-side render solution or remove but didn't have itthis comment
+        TODO: revisit the client-side render solution or remove this comment
         The v-for statement below was causing a mismatch between client-side and server-side
         DOM. In particular, the first element in "pages" (Age) was rendered twice. The error message was:
           Vue warn]: The client-side rendered virtual DOM tree is not matching server-rendered content.
           This is likely caused by incorrect HTML markup,
-          for example nesting bannotationlock-level elements inside <p>, or missing <tbody>.
+          for example nesting block-level elements inside <p>, or missing <tbody>.
           Bailing hydration and performing full client-side render.
 
         The best answer I found online was this pretty useless stackoverflow answer:
@@ -34,6 +34,24 @@
         </b-tab>
       </b-tabs>
     </no-ssr>
+
+    <b-row>
+
+      <b-col cols="7"></b-col>
+
+      <!-- Button to proceed to the next page -->
+      <!-- Only enabled when at least one annotation table write has been done -->
+      <b-col cols="5">
+        <b-button
+          class="float-right"
+          :disabled="!pageData.download.accessible"
+          :to="'/' + pageData.download.location"
+          :variant="nextPageButtonColor">
+          Next step: Review and download harmonized data
+        </b-button>
+      </b-col>
+
+    </b-row>
   </b-container>
 </template>
 
@@ -63,6 +81,12 @@ export default {
       "dataDictionary",
       "pageData"
     ]),
+
+    nextPageButtonColor() {
+
+        // Bootstrap variant color of the button leading to the categorization page
+        return this.pageData.download.accessible ? "success" : "secondary"
+    }
   },
   methods: {
     writeColumn(event) {
@@ -84,8 +108,15 @@ export default {
         event.transformHeuristics
       );
 
-      // Save the annotated table in the store
-      this.$store.dispatch("saveAnnotatedDataTable", event.transformedTable);
+        // 1. Save the annotated table in the store
+        this.$store.dispatch("saveAnnotatedDataTable", event.transformedTable);
+
+        // 2. Enable the download page when the annotated data table has been written
+        this.$store.dispatch("enablePageNavigation", {
+
+            pageName: "download",
+            enable: true
+        });
     },
   },
 
