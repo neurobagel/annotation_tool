@@ -191,7 +191,7 @@ export default {
   },
   props: {
     dataTable: {
-      type: Array,
+      type: Object,
       required: true
     },
     activeCategory: {

@@ -267,7 +267,7 @@ export default {
       required: true,
     },
     dataTable: {
-      type: Array,
+      type: Object,
       required: false,
     },
     dataDictionary: {
