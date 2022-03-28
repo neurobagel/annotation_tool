@@ -12,7 +12,6 @@
       :active-category="activeCategoryName"
       :columns="columns"
       :data-table="dataTable"
-      :pageData="pageData"
       :annotation-options="annotationOptions"
       @update:dataTable="$emit('update:dataTable', $event)"
     >
@@ -37,10 +36,6 @@ export default {
     },
     dataTable: {
       type: Array,
-    },
-    pageData: {
-      type: Object,
-      required: true
     }    
   },
 };

@@ -12,7 +12,6 @@
       :active-category="activeCategoryName"
       :columns="columns"
       :data-table="dataTable"
-      :pageData="pageData"
       @update:dataTable="$emit('update:dataTable', $event)"
     ></annot-age-values>
   </div>
@@ -34,11 +33,7 @@ export default {
     },
     dataTable: {
       type: Array
-    },
-    pageData: {
-      type: Object,
-      required: true
-    }    
+    }   
   }
 }
 </script>

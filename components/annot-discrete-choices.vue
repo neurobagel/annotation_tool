@@ -183,12 +183,7 @@ export default {
         // we should instead have a separate mechanism to identify missing values
         return ["default category", "missing value"];
       },
-    },
-    pageData: {
-
-        type: Object,
-        required: true
-    }    
+    }  
   },
 };
 </script>

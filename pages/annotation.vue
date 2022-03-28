@@ -28,7 +28,6 @@
                 :is="page.component"
                 :columns="columnToCategoryMap"
                 :dataTable="dataTable.original"
-                :pageData="pageData"
                 @remove:column="writeColumn($event)"
                 @update:dataTable="writeTable($event)"
                 ></component>
@@ -39,17 +38,17 @@
         
         <b-row>
 
-            <b-col cols="9"></b-col>
+            <b-col cols="7"></b-col>
 
             <!-- Button to proceed to the next page -->
             <!-- Only enabled when at least one annotation table write has been done -->
-            <b-col cols="3">
+            <b-col cols="5">
                 <b-button
                     class="float-right"
                     :disabled="!pageData.download.accessible"
                     :to="'/' + pageData.download.location"
                     :variant="nextPageButtonColor">
-                    Next step: Categorize columns
+                    Next step: Review and download harmonized data
                 </b-button>
             </b-col>
 
