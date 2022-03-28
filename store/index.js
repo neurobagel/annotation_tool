@@ -311,6 +311,9 @@ export const mutations = {
 
 		// 3. Save a list of the columns of this data table
 		p_state.dataTable.columns = p_newFileData.columns;
+
+		// 4. Make the annotated data a copy of the original
+		p_state.dataTable.annotated = structuredClone(p_state.dataTable.original);
 	},
 
 	setDataDictionary(p_state, p_newFileData) {
