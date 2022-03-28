@@ -24,7 +24,7 @@
 			<b-col cols="3">
 				<b-button
 					class="float-right"
-					:disabled="!isAnnotatedDataTableLoaded"
+					:disabled="!isDataAnnotated"
 					:variant="downloadButtonColor">
 					Download Annotated Data
 				</b-button>
@@ -68,18 +68,18 @@
 
             ...mapGetters([
 
-                "isAnnotatedDataTableLoaded"
+                "isDataAnnotated"
             ]),
 
 			downloadButtonColor() {
 
 				// Bootstrap variant color of the button leading to the output download
-				return this.isAnnotatedDataTableLoaded ? "success" : "secondary"
+				return this.isDataAnnotated ? "success" : "secondary"
 			},
 
             fields() {
 
-                if ( !this.isAnnotatedDataTableLoaded ) {
+                if ( !this.isDataAnnotated ) {
                     return [];
                 }
 
@@ -93,7 +93,7 @@
 			stringifiedDataTable() {
 
 				// 0. Return a blank string is there is no loaded data table
-				if ( !this.isAnnotatedDataTableLoaded ) {
+				if ( !this.isDataAnnotated ) {
 					return "";
 				}
 

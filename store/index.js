@@ -353,11 +353,6 @@ export const getters = {
 	categories(p_state) {
 
 		return p_state.categories;
-	},
-
-	isAnnotatedDataTableLoaded(p_state) {
-
-		return ( null != p_state.dataTable.annotated );
 	},	
 
 	isColumnLinkedToCategory: (p_state) => (p_matchData) => {
@@ -365,6 +360,27 @@ export const getters = {
 		// Check to see if the given column has been linked to the given category
 		return ( p_matchData.category === p_state.columnToCategoryMap[p_matchData.column] );
 	},
+
+	isDataAnnotated(p_state) {
+
+		// 1. Compare each row in the original and annotated tables
+		// NOTE: If any value is unequal, the data is considered 'annotated'
+		// We will likely want to revisit this qualification
+		for ( let originalRow of p_state.dataTable.original ) {
+			for ( let annotatedRow of p_state.dataTable.annotated ) {
+
+				// A. Check for unequal column values between the original and annotated tables
+				for ( let column in originalRow ) {
+					if ( annotatedRow[column] != originalRow[column] ) {
+						return true;
+					}
+				}
+			}
+		}
+
+		// If all values in the tables are equal, data has not yet been annotated
+		return false;
+	},	
 
 	isDataDictionaryLoaded(p_state) {
 
