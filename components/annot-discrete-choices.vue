@@ -54,8 +54,10 @@ export default {
         .map((element) => element[0]); // return only the column name that was assigned to this.activeCategory
     },
     filteredTable() {
+      // We want to use the origina dataTable here because we want to display the original raw values
+
       // We return a datatable where each row is filtered to only show the columns that are mapped to the active category
-      return this.dataTable.map((row) => {
+      return this.dataTable.original.map((row) => {
         return Object.fromEntries(
           Object.entries(row).filter(([columnName, _rowValue]) =>
             this.relevantColumns.includes(columnName)
@@ -127,7 +129,9 @@ export default {
       );
     },
     applyTransform() {
-      const transformedTable = this.dataTable.map((row) => {
+      // We want to use the annotated dataTable here in order to not overwrite previous
+      // annotations from other components
+      const transformedTable = this.dataTable.annotated.map((row) => {
         return Object.fromEntries(
           Object.entries(row).map(([colName, value]) => {
             if (this.relevantColumns.includes(colName)) {
@@ -183,7 +187,7 @@ export default {
         // we should instead have a separate mechanism to identify missing values
         return ["default category", "missing value"];
       },
-    }  
+    }
   },
 };
 </script>
