@@ -2,12 +2,12 @@
   <b-container fluid>
 
     <!--
-        TODO: revisit the client-side render solution or remove this comment
+        TODO: revisit the client-side render solution or remove but didn't have itthis comment
         The v-for statement below was causing a mismatch between client-side and server-side
         DOM. In particular, the first element in "pages" (Age) was rendered twice. The error message was:
           Vue warn]: The client-side rendered virtual DOM tree is not matching server-rendered content.
           This is likely caused by incorrect HTML markup,
-          for example nesting block-level elements inside <p>, or missing <tbody>.
+          for example nesting bannotationlock-level elements inside <p>, or missing <tbody>.
           Bailing hydration and performing full client-side render.
 
         The best answer I found online was this pretty useless stackoverflow answer:
@@ -26,6 +26,7 @@
               :is="page.component"
               :columns="columnToCategoryMap"
               :dataTable="dataTable.original"
+              :dataDictionary="dataDictionary.original"
               @remove:column="writeColumn($event)"
               @update:dataTable="writeTable($event)"
             ></component>
@@ -59,6 +60,7 @@ export default {
     ...mapState([
       "columnToCategoryMap",
       "dataTable",
+      "dataDictionary",
       "pageData"
     ]),
   },

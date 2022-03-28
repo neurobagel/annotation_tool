@@ -3,18 +3,16 @@
     <b-card no-body>
       <b-card-header>I am a vocabulary header</b-card-header>
       <b-card-body>
-        <b-table :items="displayTable" :fields="exampleFields">
+        <b-table :items="displayTable" :fields="exampleFields" fixed>
           <template #cell(select_a_vocabulary_term)="row">
             <b-form-input
               id="input-live"
-              v-model="things[row.item.column_name]"
               :state="vocabState"
               aria-describedby="input-live-help input-live-feedback"
               placeholder="enter the SNOMED-CT URI here"
               trim
               @input="doSomething($event, row.item)"
             ></b-form-input>
-
             <!--             This will only be shown if the preceding input has an invalid state -->
             <!--            <b-form-invalid-feedback id="input-live-feedback">-->
             <!--              Enter at least 3 letters-->
@@ -40,7 +38,7 @@ export default {
   name: "AnnotVocabulary",
   data() {
     return {
-      things: {},
+      vocabularyMapping: {},
       vocabState: null,
     };
   },
@@ -54,11 +52,11 @@ export default {
         .map((element) => element[0]); // return only the column name that was assigned to this.activeCategory
     },
     exampleFields() {
-      let defaultFields =  ["column_name", "select_a_vocabulary_term"];
+      let defaultFields =  ["column_name", "description", "select_a_vocabulary_term"];
       if (this.mode === "column") {
         return defaultFields;
       }
-      return  ["column_name", "raw_value", "select_a_vocabulary_term"];
+      return  ["column_name", "raw_value", "description", "select_a_vocabulary_term"];
     },
     filteredTable() {
       // We return a datatable where each row is filtered to only show the columns that are mapped to the active category
@@ -87,7 +85,10 @@ export default {
 
           // If we are in column mode, we don't need to render individual values
           if (this.mode === "column") {
-            return { column_name: colName };
+            return {
+              column_name: colName,
+              description: this.getDescription(colName)[0] === undefined ? "" : this.getDescription(colName)[0]
+            };
 
           //  For row mode, we need the individual (unique) values of the relevant columns
           } else if (this.mode === "row") {
@@ -95,6 +96,7 @@ export default {
               return {
                 column_name: colName,
                 raw_value: value,
+                description: this.getDescription(colName, value)[1] === undefined ? "" : this.getDescription(colName, value)[1]
               };
             });
           }
@@ -105,14 +107,34 @@ export default {
   methods: {
     doSomething(event, row) {
       console.log("I am doing something with:", event, "in", row.column_name);
-      this.things[row.column_name] = event;
+      this.vocabularyMapping[row.column_name] = event;
     },
-    determineState(valueName) {},
     uploadMappings() {
       this.$emit("update:heuristics", {
-        heuristic: this.things,
+        heuristic: this.vocabularyMapping,
       }),
         console.log("uploaded diagnosis heuristics");
+    },
+    getDescription(columnName, value = null) {
+      let columnDescription = undefined;
+      let valueDescription = undefined;
+
+      // If we do not have a data dictionary then the descriptions are undefined
+      if (this.dataDictionary === null || typeof this.dataDictionary !== "object" || columnName === undefined) {
+        return [columnDescription, valueDescription];
+
+      } else if (Object.keys(this.dataDictionary).includes(columnName)) {
+        const columnDict = this.dataDictionary[columnName];
+        columnDescription = columnDict[Object.keys(columnDict).find(key => key.toLowerCase() === "description")];
+
+        if (value !== null) {
+          const columnLevels = columnDict[Object.keys(columnDict).find(key => key.toLowerCase() === "levels")];
+          if (columnLevels !== undefined) {
+            valueDescription = columnLevels[Object.keys(columnLevels).find(key => key.toLowerCase() === value.toLowerCase())];
+          }
+        }
+      }
+      return [columnDescription, valueDescription];
     },
   },
   props: {
@@ -123,6 +145,11 @@ export default {
     dataTable: {
       type: Array,
       required: false,
+    },
+    dataDictionary: {
+      type: Object,
+      required: false,
+      default: null
     },
     activeCategory: {
       type: String,

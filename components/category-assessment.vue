@@ -12,6 +12,7 @@
       :active-category="activeCategoryName"
       :columns="columns"
       @update:heuristics="$emit('update:heuristics', $event)"
+      :dataDictionary="dataDictionary"
       :mode="`column`"
     ></annot-vocabulary>
   </div>
@@ -30,6 +31,11 @@ export default {
     columns: {
       type: Object,
       required: true
+    },
+    dataDictionary: {
+      type: Object,
+      required: false,
+      default: null
     },
   }
 };

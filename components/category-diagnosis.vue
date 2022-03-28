@@ -12,6 +12,7 @@
       :active-category="activeCategoryName"
       :columns="columns"
       :data-table="dataTable"
+      :dataDictionary="dataDictionary"
       @update:heuristics="$emit('update:heuristics', $event)"
     ></annot-vocabulary>
   </div>
@@ -33,6 +34,11 @@ export default {
     },
     dataTable: {
       type: Array,
+    },
+    dataDictionary: {
+      type: Object,
+      required: false,
+      default: null
     },
   }
 };
