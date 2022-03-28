@@ -26,6 +26,7 @@
               :is="page.component"
               :columns="columnToCategoryMap"
               :dataTable="dataTable.original"
+              :pageData="pageData"
               @remove:column="writeColumn($event)"
               @update:dataTable="writeTable($event)"
             ></component>
@@ -82,8 +83,12 @@ export default {
         event.transformHeuristics
       );
 
-      // Save the annotated table in the store
+      // 1. Save the annotated table in the store
       this.$store.dispatch("saveAnnotatedDataTable", event.transformedTable);
+
+      // 2. Programmatically navigate to download page
+      // NOTE: This is done because the 'to' attribute on button overrides the @click event
+      this.$router.push("/" + this.pageData.download.location);
     },
   },
 
@@ -91,6 +96,13 @@ export default {
 
         // 1. Set the current page name
         this.$store.dispatch("setCurrentPage", "annotation");
+
+        // 2. Enable the download page automatically
+        this.$store.dispatch("enablePageNavigation", {
+        	
+					  pageName: "download",
+					  enable: true
+				});
     }
 
 };

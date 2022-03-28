@@ -184,6 +184,11 @@ export default {
         return ["default category", "missing value"];
       },
     },
+    pageData: {
+
+        type: Object,
+        required: true
+    }    
   },
 };
 </script>

@@ -194,7 +194,11 @@ export default {
     },
     columns: {
       type: Object
-    }
+    },
+    pageData: {
+      type: Object,
+      required: true
+    }    
   }
 }
 </script>
