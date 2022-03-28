@@ -25,7 +25,7 @@
             <component
               :is="page.component"
               :columns="columnToCategoryMap"
-              :dataTable="dataTable.original"
+              :dataTable="dataTable"
               :dataDictionary="dataDictionary.original"
               @remove:column="writeColumn($event)"
               @update:dataTable="writeTable($event)"

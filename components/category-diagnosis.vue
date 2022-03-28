@@ -34,7 +34,8 @@ export default {
       required: true
     },
     dataTable: {
-      type: Array,
+      type: Object,
+      required: true
     },
     dataDictionary: {
       type: Object,

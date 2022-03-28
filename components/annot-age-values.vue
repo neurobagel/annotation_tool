@@ -42,8 +42,10 @@ export default {
         .map(element => element[0]) // return only the column name that was assigned to this.activeCategory
     },
     filteredTable() {
+      // We want to use the origina dataTable here because we want to display the original raw values
+
       // We return a datatable where each row is filtered to only show the columns that are mapped to the active category
-      return this.dataTable.map(row => {
+      return this.dataTable.original.map(row => {
           return Object.fromEntries(
             Object.entries(row)
               .filter(
@@ -162,7 +164,10 @@ export default {
       // TODO: we need to be able to handle bad values being passed here
       // Applies the currently stored transform heuristics to the input dataTable to make the results
       // available outside the component
-      const transformedTable = this.dataTable.map(row => {
+
+      // We want to use the annotated dataTable here in order to not overwrite previous
+      // annotations from other components
+      const transformedTable = this.dataTable.annotated.map(row => {
           return Object.fromEntries(
             Object.entries(row).map(
               ([colName, value]) => {
@@ -186,7 +191,7 @@ export default {
   },
   props: {
     dataTable: {
-      type: Array,
+      type: Object,
       required: true
     },
     activeCategory: {
@@ -194,7 +199,7 @@ export default {
     },
     columns: {
       type: Object
-    }    
+    }
   }
 }
 </script>
