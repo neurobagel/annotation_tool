@@ -404,7 +404,12 @@ function convertTsvLinesToDict(p_tsvLines){
 		}
 
 		// B. Save the row dictionary
-		tsvRowDictArray.push(tsvRowDict);
+		// NOTE: Conditional here is to account for the possibility of a blank line
+		// among the tsv lines input to this function. We may want to readdress this
+		// via the Papa parse file input method or just leave as is
+		if ( Object.keys(tsvRowDict).length > 0 ) {
+			tsvRowDictArray.push(tsvRowDict);
+		}
 	}
 
 	return tsvRowDictArray;
