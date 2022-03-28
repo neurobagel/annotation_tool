@@ -9,7 +9,7 @@
               id="input-live"
               :state="vocabState"
               aria-describedby="input-live-help input-live-feedback"
-              placeholder="enter the SNOMED-CT URI here"
+              :placeholder="placeholder"
               trim
               @input="doSomething($event, row.item)"
             ></b-form-input>
@@ -20,15 +20,15 @@
 
             <!-- This is a form text block (formerly known as help block) -->
             <b-form-text id="input-live-help"
-              >Please provide a SNOMED-CT term.</b-form-text
-            >
+              >{{instruction}}
+            </b-form-text>
           </template>
         </b-table>
       </b-card-body>
     </b-card>
     <b-button variant="success" @click="uploadMappings"
-      >Confirm and Upload</b-button
-    >
+      >Confirm and Upload
+    </b-button>
   </div>
 </template>
 
@@ -43,6 +43,24 @@ export default {
     };
   },
   computed: {
+    placeholder() {
+      if (this.mode === "column") {
+        return "e.g. MoCA"
+      } else if (this.mode === "row") {
+        return "e.g. Parkinson's Disease"
+      } else {
+        return ""
+      }
+    },
+    instruction() {
+      if (this.mode === "column") {
+        return "Please provide a reproschema term"
+      } else if (this.mode === "row") {
+        return "Please provide a SNOMED-CT term"
+      } else {
+        return "Please provide an appropriate vocabulary term"
+      }
+    },
     relevantColumns() {
       //  Return only those columns that are annotated with the current category
       return Object.entries(this.columns)
@@ -52,11 +70,20 @@ export default {
         .map((element) => element[0]); // return only the column name that was assigned to this.activeCategory
     },
     exampleFields() {
-      let defaultFields =  ["column_name", "description", "select_a_vocabulary_term"];
+      let defaultFields = [
+        "column_name",
+        "description",
+        "select_a_vocabulary_term",
+      ];
       if (this.mode === "column") {
         return defaultFields;
       }
-      return  ["column_name", "raw_value", "description", "select_a_vocabulary_term"];
+      return [
+        "column_name",
+        "raw_value",
+        "description",
+        "select_a_vocabulary_term",
+      ];
     },
     filteredTable() {
       // We return a datatable where each row is filtered to only show the columns that are mapped to the active category
@@ -82,21 +109,26 @@ export default {
     displayTable() {
       return this.relevantColumns
         .map((colName) => {
-
           // If we are in column mode, we don't need to render individual values
           if (this.mode === "column") {
             return {
               column_name: colName,
-              description: this.getDescription(colName)[0] === undefined ? "" : this.getDescription(colName)[0]
+              description:
+                this.getDescription(colName)[0] === undefined
+                  ? ""
+                  : this.getDescription(colName)[0],
             };
 
-          //  For row mode, we need the individual (unique) values of the relevant columns
+            //  For row mode, we need the individual (unique) values of the relevant columns
           } else if (this.mode === "row") {
             return this.uniqueValues[colName].map((value) => {
               return {
                 column_name: colName,
                 raw_value: value,
-                description: this.getDescription(colName, value)[1] === undefined ? "" : this.getDescription(colName, value)[1]
+                description:
+                  this.getDescription(colName, value)[1] === undefined
+                    ? ""
+                    : this.getDescription(colName, value)[1],
               };
             });
           }
@@ -120,17 +152,35 @@ export default {
       let valueDescription = undefined;
 
       // If we do not have a data dictionary then the descriptions are undefined
-      if (this.dataDictionary === null || typeof this.dataDictionary !== "object" || columnName === undefined) {
+      if (
+        this.dataDictionary === null ||
+        typeof this.dataDictionary !== "object" ||
+        columnName === undefined
+      ) {
         return [columnDescription, valueDescription];
-
       } else if (Object.keys(this.dataDictionary).includes(columnName)) {
         const columnDict = this.dataDictionary[columnName];
-        columnDescription = columnDict[Object.keys(columnDict).find(key => key.toLowerCase() === "description")];
+        columnDescription =
+          columnDict[
+            Object.keys(columnDict).find(
+              (key) => key.toLowerCase() === "description"
+            )
+          ];
 
         if (value !== null) {
-          const columnLevels = columnDict[Object.keys(columnDict).find(key => key.toLowerCase() === "levels")];
+          const columnLevels =
+            columnDict[
+              Object.keys(columnDict).find(
+                (key) => key.toLowerCase() === "levels"
+              )
+            ];
           if (columnLevels !== undefined) {
-            valueDescription = columnLevels[Object.keys(columnLevels).find(key => key.toLowerCase() === value.toLowerCase())];
+            valueDescription =
+              columnLevels[
+                Object.keys(columnLevels).find(
+                  (key) => key.toLowerCase() === value.toLowerCase()
+                )
+              ];
           }
         }
       }
@@ -149,7 +199,7 @@ export default {
     dataDictionary: {
       type: Object,
       required: false,
-      default: null
+      default: null,
     },
     activeCategory: {
       type: String,
