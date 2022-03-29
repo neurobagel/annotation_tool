@@ -1,12 +1,12 @@
 <template>
   <div>
-    <b-card no-body>
-      <b-card-header>I am a header</b-card-header>
+    <b-card no-body class="annotation-card">
+      <b-card-header>Review the age harmonization</b-card-header>
       <b-card-body style="position:relative; height:300px; overflow-y:scroll;">
         <annot-continuous-values :items="unique_table_data"></annot-continuous-values>
       </b-card-body>
     </b-card>
-    <b-button variant="success" @click="applyTransform">Confirm and Upload</b-button>
+    <b-button variant="success" @click="applyTransform">Save Annotation</b-button>
   </div>
 </template>
 

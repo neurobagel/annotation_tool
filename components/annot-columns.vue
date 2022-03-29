@@ -1,5 +1,5 @@
 <template>
-  <b-card no-body>
+  <b-card no-body class="annotation-card">
     <!--    TODO: make this also toggleable like the explanation tab-->
     <b-card-header>Review the annotated columns</b-card-header>
     <b-card-body style="height:30vh; overflow-y:scroll;">

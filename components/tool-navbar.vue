@@ -46,7 +46,7 @@
 
             return {
                 
-                toolName: "Origami Annotation Tool"
+                toolName: "Annotation Tool"
             }
         },
 
