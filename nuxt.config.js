@@ -3,7 +3,7 @@ export default {
 	// Global page headers: https://go.nuxtjs.dev/config-head
 	head: {
 
-		title: "annotation_tool",
+		title: "Annotation Tool",
 		htmlAttrs: {
 			lang: "en"
 		},
