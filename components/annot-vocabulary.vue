@@ -26,7 +26,7 @@
           @click="uploadVocabularyMappings"
           :disabled="buttonDisabled"
           :variant="saveAnnotationButtonColor">
-          Confirm and Upload
+          Save Annotation
         </b-button>
       </b-card-body>
     </b-card>
