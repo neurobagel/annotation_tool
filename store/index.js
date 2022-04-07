@@ -153,6 +153,28 @@ export const actions = {
 	},
 
 	// Tool navigation
+
+	enablePage(p_context, p_navData) {
+
+		// 1. Unlock the given page
+		p_context.dispatch("enablePageNavigation", p_navData);
+
+		// 2. Perform the setup actions for the given page
+		switch ( p_navData.pageName ) {
+
+			case "categorization":
+
+				// Create the new annotated table for categorization now that access is enabled
+				p_context.dispatch("createColumnToCategoryMap");
+				break;
+
+			case "annotation":
+				break;
+
+			case "download":
+				break;
+		}
+	},
 	
 	enablePageNavigation(p_context, p_navData) {
 
@@ -207,7 +229,7 @@ export const actions = {
 			column: p_linkingData.column,
 			category: p_linkingData.category
 		});
-	},
+	},	
 
 	unlinkColumnWithCategory(p_context, p_linkingData) {
 
@@ -299,7 +321,7 @@ export const mutations = {
         p_state.currentPage = p_pageDataKey;
     },	
 
-	// Landing pages
+	// Landing page
 
 	setDataTable(p_state, p_newFileData) {
 

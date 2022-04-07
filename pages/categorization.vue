@@ -41,7 +41,7 @@
 					:disabled="!pageData.annotation.accessible"
 					:to="'/' + pageData.annotation.location"
 					:variant="nextPageButtonColor">
-					Next step: Annotate columns
+					{{ buttonText }}
 				</b-button>
 			</b-col>
 			
@@ -61,25 +61,14 @@ export default {
 
   name: "CategorizationPage",
 
-		mounted() {
-
-            // 1. Set the current page name
-            this.$store.dispatch("setCurrentPage", "categorization");
-
-			// 2. Create the data structure for the category to column linking table
-			this.setupColumnToCategoryTable();
-
-			// 2. Set selected category to the first category by default
-			this.setSelectedCategory({ category: this.categories[0]});
-
-			// 3. Determine page state from data contents and change to that new state
-			this.changeToNewState();
-		},
-
 		data() {
 
 			return {
 
+				// Next button text
+				buttonText: "Next step: Annotate columns",
+
+				// Instructions for column-category linking
                 categorySelectText: {
 
                     instructions: "Click category and then corresponding column from tsv file",
@@ -98,16 +87,6 @@ export default {
 
 				columnToCategoryTable: [],
 
-				// Bootstrap variant color of the button leading to the categorization page
-				nextPageButtonColor: "secondary",
-
-				// Possible states of this page
-				possibleStates: {
-
-					STATE_NOCATEGORIES_PAINTED: 0,
-					STATE_ATLEASTONE_CATEGORY_PAINTED: 1 << 0
-				},
-
 				// Category selection (default is index 0, no selection is -1)
 				selectedCategory: ""
 			}
@@ -123,48 +102,35 @@ export default {
 				"dataTable",
 				"dataDictionary",
 				"pageData"
-    		])
+    		]),
+
+            nextPageButtonColor() {
+            
+                // Bootstrap variant color of the button leading to the annotation page
+                return this.pageData.annotation.accessible ? "success" : "secondary";
+            }
   		},
 
-		methods: {			
+		mounted() {
 
-			changeState(p_state) {
+            // 1. Set the current page name
+            this.$store.dispatch("setCurrentPage", "categorization");
 
-				// 1. Trigger the behavior for the requested state change
-				switch ( p_state ) {
+			// 2. Create the data structure for the category to column linking table
+			this.setupColumnToCategoryTable();
 
-					// A. Handle changes for when at least one category is painted
-					case this.possibleStates.STATE_ATLEASTONE_CATEGORY_PAINTED:
-						this.changeState_AtLeastOneCategoryPainted();
-						break;
+			// 3. Set selected category to the first category by default
+			this.setSelectedCategory({ category: this.categories[0]});
 
-					// B. Handle changes for no categories are painted
-					default:
-						this.changeState_NoCategoriesPainted();
-						break;
-				}
-			},
+			// 4. Determine if the annotation page is available yet and if so, enable it and perform setup actions
+			this.$store.dispatch("enablePage", {
 
-			changeState_AtLeastOneCategoryPainted() {
+				pageName: "annotation",
+				enable: this.countLinkedColumns() > 0
+			});
+		},		  
 
-				// Enable access to the annotation page
-				this.nextPageAccess(true);
-			},
-
-			changeState_NoCategoriesPainted() {
-
-				// Disable access to the annotation page
-				this.nextPageAccess(false);
-			},
-
-			changeToNewState() {
-
-				// 1. Determine page state from data contents
-				let newState = this.determineState();
-
-				// 2. Change the page to the determined state
-				this.changeState(newState);
-			},
+		methods: {
 
 			countLinkedColumns() {
 
@@ -178,70 +144,41 @@ export default {
 				return links;
 			},
 
-			determineState() {
-
-				// 1. Reset the state to default
-				let newState = this.possibleStates.STATE_NOCATEGORIES_PAINTED;
-
-				// 2. Count the number of painted rows in the table
-				let paintedRowsCount = this.countLinkedColumns();
-
-				// 3. Add appropriate state flags based on data contents
-				if ( paintedRowsCount > 0 )
-					newState |= this.possibleStates.STATE_ATLEASTONE_CATEGORY_PAINTED;
-
-				return newState;
-			},			
-
-			nextPageAccess(p_enable) {
-				
-				// 1. Enable/disable access to the annotation page on the nav bar
-
-				// A. Enable the nav item
-				this.$store.dispatch("enablePageNavigation", { 
-					pageName: "annotation",
-					enable: p_enable
-				});
-
-				// B. Change the next step button's color
-				this.nextPageButtonColor = ( p_enable ) ? "success" : "secondary";
-			},
-
 			setSelectedCategory(p_clickData) {
 
 				// Save the name of the selected category
 				this.selectedCategory = p_clickData.category;
 			},
-			
+
 			setupColumnToCategoryTable() {
 
-				// 0. Check that there is a data table and data dictionary in the data store
-				if ( null == this.dataTable.original && null == this.dataDictionary )
+				// 0. Check that there is at least a data table and data dictionary in the data store
+				if ( null == this.dataTable.original )
 					return;
 
-				// Uses both data table and data dictionary
-				if ( null != this.dataDictionary.original && null != this.dataTable.original ) {
+				// 1. Produce an array of dicts
+				this.columnToCategoryTable = [];
 
-					// 1. Produce an array of dicts
-					this.columnToCategoryTable = [];
+				// A. Each dict has a header entry from the data table file
+				let headerFields = [];
+				for ( let headerField in this.dataTable.original[0] ) {
 
-					// A. Each dict has a header entry from the data table file
-					let headerFields = [];
-					for ( let headerField in this.dataTable.original[0] ) {
+					// I. Save the header field in a list
+					headerFields.push(headerField);
 
-						// I. Save the header field in a list
-						headerFields.push(headerField);
+					// II. Save a new dict for this column and description
+					this.columnToCategoryTable.push({
 
-						// II. Save a new dict for this column and description
-						this.columnToCategoryTable.push({
+						"category": null,
+						"column": headerField,
+						"description": ""
+					});
+				}
 
-							"category": null,
-							"column": headerField,
-							"description": ""
-						});
-					}
+				// 2. Add in descriptions if a data dictionary has been supplied
+				if ( null != this.dataDictionary.original ) {
 
-					// B. and a corresponding "description" column that is (possibly) sourced from the json file
+					// A. and a corresponding "description" column that is (possibly) sourced from the json file
 					for ( let column in this.dataDictionary.original ) {
 
 						// I. Save a lowercase version of the current json key
@@ -272,25 +209,7 @@ export default {
 						}
 					}
 				}
-				// Uses just data table data
-				else {
-
-					// 1. Produce an array of dicts
-					this.columnToCategoryTable = [];
-
-					// A. Each dict has a header entry from the data table file
-					for ( let headerField in this.dataTable.original[0] ) {
-
-						// I. Save a new dict for this column and description
-						this.columnToCategoryTable.push({
-
-							"category": null,
-							"column": headerField,
-							"description": ""
-						});
-					}
-				}
-			},
+			},			
 
 			tableClick(p_clickData) {
 
@@ -311,9 +230,15 @@ export default {
 				// II. Link or unlink the currently-selected category and the clicked column
 				this.$store.dispatch(dataStoreFunction, dataForStore);
 
-				// 2. Determine if page state should be changed and change it if necessary
-				this.changeToNewState();
+				// 2. If at least one column has been categorized,
+				// and if so enable the annotation page and perform setup actions
+				this.$store.dispatch("enablePage", {
+
+					pageName: "annotation",
+					enable: this.countLinkedColumns() > 0
+				});
 			}
 		}		
-	}
+	};
+
 </script>

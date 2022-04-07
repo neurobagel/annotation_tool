@@ -3,33 +3,42 @@
 	<b-container fluid>
 
 		<!-- Data table file loading area -->
+        <b-row>
+            <h2>Data table</h2>
+        </b-row>
+
+        <!-- Shows file contents -->
 		<b-row>
-			<h2>Data table</h2>
-
-			<!-- Debug component - shows file contents -->
 			<textarea :rows="textArea.width" :cols="textArea.height" v-model="stringifiedDataTable"></textarea>
+		</b-row>
 
-			<!-- Selects data table file (i.e. participants.tsv) -->
+        <!-- Selects data table file (i.e. participants.tsv) -->
+        <b-row>
 			<file-selector
 				:content-type="contentTypes.dataTable"
 				v-on:file-selected="saveDataTable($event)">
 			</file-selector>
-		</b-row>
+        </b-row>
+
 
 		<!-- Data dictionary file loading area -->
+        <b-row>
+            <h2>Data dictionary</h2>
+        </b-row>
+
+        <!-- Shows file contents -->
 		<b-row>
-			<h2>Data dictionary</h2>
-
-			<!-- Debug component - shows file contents -->
 			<textarea :rows="textArea.width" :cols="textArea.height" v-model="stringifiedDataDictionary"></textarea>
+		</b-row>
 
-			<!-- Selects data dictionary file (i.e. participants.json) -->
+        <b-row>
+        	<!-- Selects data dictionary file (i.e. participants.json) -->
 			<file-selector
 				:content-type="contentTypes.dataDictionary"
 				v-on:file-selected="saveDataDictionary($event)">
 			</file-selector>
-		</b-row>
-
+        </b-row>
+        
 		<b-row>
 
 			<b-col cols="9"></b-col>
@@ -42,7 +51,7 @@
 					:disabled="!pageData.categorization.accessible"
 					:to="'/' + pageData.categorization.location"
 					:variant="nextPageButtonColor">
-					Next step: Categorize columns
+                    {{ buttonText }}
 				</b-button>
 			</b-col>
 
@@ -64,6 +73,9 @@
 		data() {
 
 			return {
+
+                // Next button text
+                buttonText: "Next step: Categorize columns",
 
 				// Content types that are expected for the file selectors
 				contentTypes: {
@@ -89,6 +101,12 @@
 				"dataTable",
 				"pageData"
 			]),
+
+            nextPageButtonColor() {
+            
+                // Bootstrap variant color of the button leading to the categorization page
+                return this.pageData.categorization.accessible ? "success" : "secondary";
+            },
 
 			stringifiedDataDictionary() {
 
@@ -118,55 +136,54 @@
 
 				// 2. Return the tsv file data joined as one string
 				return textAreaArray.join("\n");
-			},
-      nextPageButtonColor() {
-        // Bootstrap variant color of the button leading to the categorization page
-        return this.pageData.categorization.accessible ? "success" : "secondary"
-      }
-		},
-
-		methods: {
-
-			saveDataTable(p_fileData) {
-
-				// NOTE: Defaults to tsv for now
-				let newFileData = {
-
-					data: ( null == p_fileData || 0 == p_fileData.length ) ? null : p_fileData,
-					fileType: "tsv"
-				};
-
-				// 1. Update the store with tsv file data
-				this.$store.dispatch("saveDataTable", newFileData);
-
-				// 2. Tell the store that a dataTable is now available and that we can unlock the categorization page
-        this.$store.dispatch("enablePageNavigation", {
-          pageName: "categorization",
-          enable: true
-        })
-
-        // 3. Create the new annotated table for categorization now that access is enabled
-        this.$store.dispatch("createColumnToCategoryMap");
-			},
-
-			saveDataDictionary(p_fileData) {
-
-				// NOTE: Defaults to json for now
-				let newFileData = {
-
-					data: ( "none" == p_fileData ) ? null : p_fileData,
-					fileType: "json"
-				};
-
-				// 1. Update the store with json file data
-				this.$store.dispatch("saveDataDictionary", newFileData);
-			},
+			}
 		},
 
         mounted() {
 
-            // 1. Set the current page
+            // 1. Set the current page name
             this.$store.dispatch("setCurrentPage", "home");
-        },		
-	}
+
+            // 2. If a data table has been loaded, 
+            // enable access to the categorization page and perform setup actions for it
+            this.$store.dispatch("enablePage", {
+
+                pageName: "categorization",
+                enable: this.$store.getters.isDataTableLoaded
+            });            
+        },        
+
+		methods: {
+
+			saveDataDictionary(p_fileData) {
+
+				// Update the store with json file data
+                // NOTE: Defaults to json for now
+				this.$store.dispatch("saveDataDictionary", {
+
+					data: ( "none" == p_fileData ) ? null : p_fileData,
+					fileType: "json"
+				});
+			},            
+
+			saveDataTable(p_fileData) {
+
+				// 1. Update the store with tsv file data
+                // NOTE: Defaults to tsv for now
+				this.$store.dispatch("saveDataTable", {
+
+					data: ( null == p_fileData || 0 == p_fileData.length ) ? null : p_fileData,
+					fileType: "tsv"
+				});
+
+                // 2. Enable access to the categorization page and perform setup actions for it
+                this.$store.dispatch("enablePage", {
+
+                    pageName: "categorization",
+                    enable: true
+                });
+			}
+		}		
+	};
+
 </script>

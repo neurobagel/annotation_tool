@@ -5,8 +5,39 @@
 	display: none;
 }
 
-/* Palette for categories on the categorization page
-   and other interface items in the tool */
+/* Bootstrap styles */
+
+.container-fluid {
+		
+	padding: 0;
+}
+
+.row {
+
+	margin: 1em;
+	padding-left: 2em;
+	padding-right: 2em;
+}
+
+/* Annotation page styles */
+
+.annotation-card {
+
+	margin-bottom: 1em;
+}
+
+.annotation-tab-nav {
+
+	margin-bottom: 1em;
+	opacity: 0.5;
+}
+
+.annotation-tab-nav.active{
+
+	opacity: 1.0;
+}
+
+/* Category palette */
 
 .category-style-0 {
 
@@ -38,33 +69,4 @@
 	
 	background-color: white;
 	color: black;
-}
-
-/* Bootstrap styles */
-
-.container-fluid {
-		
-	padding: 0;
-}
-
-.row {
-
-	margin: 1em;
-	padding-left: 2em;
-	padding-right: 2em;
-}
-
-/* Annotation page styles */
-
-.annotation-card {
-	margin-bottom: 1em;
-}
-
-.annotation-tab-nav {
-	margin-bottom: 1em;
-	opacity: 0.5;
-}
-
-.annotation-tab-nav.active{
-	opacity: 1.0;
 }

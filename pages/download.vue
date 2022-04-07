@@ -15,8 +15,6 @@
                 </b-table>
             </b-col>
             
-            <!-- Debug component - shows file contents -->
-            <!-- <textarea :rows="textArea.width" :cols="textArea.height" v-model="stringifiedDataTable"></textarea> -->
         </b-row>
 
         <b-row>
@@ -64,54 +62,28 @@
 
         computed: {
 
-            ...mapState([
-
-				"dataTable",
-				"pageData"
-			]),
-
             ...mapGetters([
 
                 "isDataAnnotated"
-            ]),
+            ]),			
+
+            ...mapState([
+
+				"dataTable"
+			]),
 
 			downloadButtonColor() {
 
 				// Bootstrap variant color of the button leading to the output download
 				return this.isDataAnnotated ? "success" : "secondary"
-			},
-
-            fields() {
-
-                if ( !this.isDataAnnotated ) {
-                    return [];
-                }
-
-                let fieldsArray = [];
-                for ( let column of Object.keys(this.dataTable.annotated[0]) ) {
-                    fieldsArray.push({ key: column });
-                }
-                return fieldsArray;
-            },
-
-			stringifiedDataTable() {
-
-				// 0. Return a blank string is there is no loaded data table
-				if ( !this.isDataAnnotated ) {
-					return "";
-				}
-
-				// 1. Convert the tsv file data into a list of strings
-				// NOTE: Defaults to tsv for now
-				let textAreaArray = [Object.keys(this.dataTable.annotated[0]).join("\t")];
-				for ( let index = 0; index < Object.keys(this.dataTable.annotated[0]).length; index++ ) {
-					textAreaArray.push(Object.values(this.dataTable.annotated[index]).join("\t"));
-				}
-
-				// 2. Return the tsv file data joined as one string
-				return textAreaArray.join("\n");
-			}            
+			}           
         },
+
+        mounted() {
+
+            // Set the current page
+            this.$store.dispatch("setCurrentPage", "download");
+        },		
 
         methods: {
 
@@ -136,12 +108,6 @@
                 pseudoClickEvent.initEvent("click", true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
                 pseudoAnchor.dispatchEvent(pseudoClickEvent);
             }
-        },
-
-        mounted() {
-
-            // 1. Set the current page
-            this.$store.dispatch("setCurrentPage", "download");
         }
     }
 
