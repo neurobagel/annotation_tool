@@ -1,44 +1,44 @@
 <template>
-  <div>
-    <annot-explanation :explanation="explanation"></annot-explanation>
 
-    <annot-columns
-      :columns="columns"
-      :active-category="activeCategoryName"
-      @remove:column="$emit('remove:column', $event)"
-    ></annot-columns>
+    <div>
 
-    <annot-age-values
-      :active-category="activeCategoryName"
-      :columns="columns"
-      :data-table="dataTable"
-      @update:dataTable="$emit('update:dataTable', $event)"
-    ></annot-age-values>
-  </div>
+        <annot-explanation :explanation="explanation"></annot-explanation>
+
+        <annot-columns
+            :active-category="activeCategoryName"
+            :columns="columns"
+            @remove:column="$emit('remove:column', $event)"></annot-columns>
+
+        <annot-age-values
+            :active-category="activeCategoryName"
+            :columns="columns"
+            :data-table="dataTable"
+            @update:dataTable="$emit('update:dataTable', $event)"></annot-age-values>
+
+    </div>
+
 </template>
 
 <script>
-export default {
-  name: "annotate_age",
-  data() {
-    return {
-      explanation: 'This is an explanation for how to annotate age',
-      activeCategoryName: 'Age'
+
+    export default {
+
+        props: {
+            
+            columns: { type: Object, required: true },
+            dataTable: { type: Object, required: true }
+        },        
+
+        name: "annotate_age",
+
+        data() {
+
+            return {
+
+                activeCategoryName: "Age",
+                explanation: "This is an explanation for how to annotate age"
+            };
+        }
     }
-  },
-  props: {
-    columns: {
-      type: Object,
-      required: true
-    },
-    dataTable: {
-      type: Object,
-      required: true
-    }
-  }
-}
+
 </script>
-
-<style scoped>
-
-</style>

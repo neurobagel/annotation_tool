@@ -15,12 +15,12 @@
         <!-- Category selection table -->
         <b-row>
             <b-table
+                outlined
+                selectable
                 head-variant="dark"
                 :items="categoryTable"
-                outlined
                 @row-selected="selectCategory"
                 select-mode="single"
-                selectable
                 selected-variant=""
                 :tbody-tr-class="styleTableRow"
                 thead-class="hidden">
@@ -34,6 +34,14 @@
 <script>
 
     export default {
+
+        props: {
+
+            categories: { type: Array, required: true },
+            categoryClasses: { type: Object, required: true },
+            instructions: { type: String, required: true },
+            title: { type: String, required: true }
+        },
 
         data() {
 
@@ -78,9 +86,7 @@
 
                 return [opacityClass, colorClass];
             }
-        },
-
-        props: ["categories", "categoryClasses", "instructions", "title"]
+        }
     }
 
 </script>

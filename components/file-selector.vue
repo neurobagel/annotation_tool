@@ -5,7 +5,7 @@
 		<b-row class="file-selector-row">
 			<b-form>
 				<label class="file-selector-button btn">
-					Choose file
+					{{ uiText.instructions }}
 					<input type="file" :accept="contentType" @change="onFileSelected"/>
 				</label>
 				<span>{{ fileName }}</span>
@@ -18,9 +18,14 @@
 
 <script>
 
-	import Papa from "papaparse";				// Input file reading
+	import Papa from "papaparse";	// Input file reading
 
 	export default {
+
+		props: {
+
+			contentType: { type: String, required: true }
+		},
 		
 		data() {
 
@@ -32,7 +37,12 @@
 					"tsv": "text/tab-separated-values"
 				},
 
-				fileInput: null
+				fileInput: null,
+
+				uiText: {
+
+					instructions: "Choose file"
+				}
 			}
 		},
 
@@ -95,9 +105,7 @@
 				}
 
 			}		
-		},
-
-		props: ["contentType"]
+		}
 	}
 
 </script>
@@ -108,11 +116,6 @@ input[type="file"] {
 
 	display: none;
 }
-
-/*.btn:hover {
-	
-	color: white;
-}*/
 
 .custom-file-upload {
 
@@ -137,6 +140,7 @@ input[type="file"] {
 	color: white;
 }
 .file-selector-button:active {
+
   background: #e5e5e5;
   -webkit-box-shadow: inset 0px 0px 5px #c1c1c1;
      -moz-box-shadow: inset 0px 0px 5px #c1c1c1;
@@ -149,4 +153,5 @@ input[type="file"] {
 	margin-left: 0 !important;
 	padding-left: 0 !important;
 }
+
 </style>

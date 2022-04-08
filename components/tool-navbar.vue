@@ -7,7 +7,7 @@
 
             <!-- Brand -->
             <b-navbar-brand class="brand-styling">
-                <h1>{{ toolName }}</h1>
+                <h1>{{ uiText.toolName }}</h1>
             </b-navbar-brand>
 
             <!-- Collapse toggle -->
@@ -43,13 +43,21 @@
 
     export default {
 
-		props: ["navItems", "pageName"],
+		props: {
+
+            navItems: { type: Object, required: true },
+            pageName: { type: String, required: true }
+        },
 
         data() {
 
             return {
                 
-                toolName: "Annotation Tool"
+                // Text for UI elements
+                uiText: {
+
+                    toolName: "Annotation Tool"
+                }
             }
         },
 
@@ -60,7 +68,7 @@
                 let variant = "secondary";
 
                 // The nav item for this page
-                if ( this.pageName == p_navItemData.fullName ) {
+                if ( this.pageName === p_navItemData.fullName ) {
                     variant = "dark";
                 }
                 // Else, if the page is accessible

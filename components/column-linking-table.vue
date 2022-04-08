@@ -21,6 +21,15 @@
 
     export default {
 
+        props: {
+
+            categoryClasses: { type: Object, required: true },
+            columnToCategoryMap: { type: Object, required: true },
+            fields: { type: Array, required: true },
+            selectedCategory: { type: String, required: true },
+            tableData: { type: Array, required: true },
+        },        
+
         methods: {
 
             applyCategory(p_row, p_index, p_event) {
@@ -36,15 +45,6 @@
 
                 return ( null === assignedCategory ) ? "" : this.categoryClasses[assignedCategory];
             }
-        },
-
-        props: [
-
-            "categoryClasses",
-            "columnToCategoryMap",
-            "fields",
-            "selectedCategory",
-            "tableData"
-        ]
+        }
     }
 </script>

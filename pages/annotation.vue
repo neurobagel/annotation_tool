@@ -59,7 +59,7 @@
                     :disabled="!pageData.download.accessible"
                     :to="'/' + pageData.download.location"
                     :variant="nextPageButtonColor">
-                    {{ buttonText }}
+                    {{ uiText.nextButton }}
                 </b-button>
             </b-col>
 
@@ -83,9 +83,6 @@
 
             return {
 
-                // Next button text
-                buttonText: "Next step: Review and download harmonized data",
-
                 // TODO: "pages" is used as static testing data. Should be replaced with actual list of used categories
                 // from global state / store
                 pages: [
@@ -97,6 +94,12 @@
                 ],
 
                 tabNavTitle: "",
+
+                // Text for UI elements
+                uiText: {
+
+                    nextButton: "Next step: Review and download harmonized data"
+                }
             };
         },
 

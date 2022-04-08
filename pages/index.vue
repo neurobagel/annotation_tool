@@ -4,7 +4,7 @@
 
 		<!-- Data table file loading area -->
         <b-row>
-            <h2>Data table</h2>
+            <h2>{{ uiText.dataTableHeader }}</h2>
         </b-row>
 
         <!-- Shows file contents -->
@@ -23,7 +23,7 @@
 
 		<!-- Data dictionary file loading area -->
         <b-row>
-            <h2>Data dictionary</h2>
+            <h2>{{ uiText.dataDictionaryHeader }}</h2>
         </b-row>
 
         <!-- Shows file contents -->
@@ -51,7 +51,7 @@
 					:disabled="!pageData.categorization.accessible"
 					:to="'/' + pageData.categorization.location"
 					:variant="nextPageButtonColor">
-                    {{ buttonText }}
+                    {{ uiText.nextButton }}
 				</b-button>
 			</b-col>
 
@@ -74,9 +74,6 @@
 
 			return {
 
-                // Next button text
-                buttonText: "Next step: Categorize columns",
-
 				// Content types that are expected for the file selectors
 				contentTypes: {
 
@@ -89,6 +86,14 @@
 
 					width: 5,
 					height: 200
+				},
+
+				// Text for UI elements
+				uiText: {
+
+					dataTableHeader: "Data table",
+					dataDictionaryHeader: "Data dictionary",
+					nextButton: "Next step: Categorize columns"
 				}
 			}
 		},

@@ -28,7 +28,7 @@
 					class="float-right"
 					:disabled="!isDataAnnotated"
 					:variant="downloadButtonColor">
-					Download Annotated Data
+					{{ uiText.downloadButton }}
 				</b-button>
 			</b-col>
         
@@ -46,6 +46,8 @@
 
     export default {
 
+        name: "DownloadPage",
+
         data() {
 
             return {
@@ -55,7 +57,13 @@
 
 					width: 5,
 					height: 800
-				}
+				},
+
+                // Text for UI elements
+                uiText: {
+
+                    downloadButton: "Download Annotated Data"
+                }
 
             };
         },

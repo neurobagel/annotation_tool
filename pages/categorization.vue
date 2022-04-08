@@ -9,8 +9,8 @@
 				<category-select-table
 					:categories="categories"
 					:categoryClasses="categoryClasses"
-					:instructions="categorySelectText.instructions"
-					:title="categorySelectText.title"
+					:instructions="uiText.categorySelectInstructions"
+					:title="uiText.categorySelectTitle"
 					@category-select="setSelectedCategory($event)">
 				</category-select-table>
 			</b-col>
@@ -41,7 +41,7 @@
 					:disabled="!pageData.annotation.accessible"
 					:to="'/' + pageData.annotation.location"
 					:variant="nextPageButtonColor">
-					{{ buttonText }}
+					{{ uiText.nextButton }}
 				</b-button>
 			</b-col>
 			
@@ -57,23 +57,16 @@
 	// Fields listed in mapState below can be found in the store (index.js)
 	import { mapState } from "vuex";
 
-export default {
+	export default {
 
-  name: "CategorizationPage",
+  		name: "CategorizationPage",
 
 		data() {
 
 			return {
 
-				// Next button text
-				buttonText: "Next step: Annotate columns",
-
 				// Instructions for column-category linking
-                categorySelectText: {
-
-                    instructions: "Click category and then corresponding column from tsv file",
-                    title: "Recommended Categories"
-                },
+                categorySelectText: {},
 
 				// Columns for file data table	
 				columnLinkingTable: {
@@ -88,7 +81,15 @@ export default {
 				columnToCategoryTable: [],
 
 				// Category selection (default is index 0, no selection is -1)
-				selectedCategory: ""
+				selectedCategory: "",
+
+				// Text for UI elements
+				uiText: {
+
+                    categorySelectInstructions: "Click category and then corresponding column from tsv file",
+					categorySelectTitle: "Recommended Categories",
+					nextButton: "Next step: Annotate columns",
+				}
 			}
 		},
 
