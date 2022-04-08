@@ -36,11 +36,14 @@
         </b-navbar>
 
     </div>
+
 </template>
 
 <script>
 
     export default {
+
+		props: ["navItems", "pageName"],
 
         data() {
 
@@ -67,10 +70,7 @@
 
                 return variant;
             }
-        },
-
-        props: ["navItems", "pageName"]
-
+        }
     }
 </script>
 

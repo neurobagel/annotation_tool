@@ -39,8 +39,8 @@
                             :dataDictionary="dataDictionary.original"
                             :dataTable="dataTable"
                             :is="page.component"
-                            @remove:column="writeColumn($event)"
-                            @update:dataTable="writeTable($event)"></component>
+                            @remove:column="unlinkColumnWithCategory($event)"
+                            @update:dataTable="saveAnnotatedDataTable($event)"></component>
                     </b-card-text>
                 </b-tab>
 
@@ -127,12 +127,12 @@
             // 2. Set the initial tab title for styling purposes
             this.tabNavTitle = this.categories[0];
 
-			// 3. If any data has been annotated, enable the download page and perform setup actions
-			this.$store.dispatch("enablePage", {
+            // 3. If any data has been annotated, enable the download page and perform setup actions
+            this.$store.dispatch("enablePage", {
 
-				pageName: "download",
-				enable: this.$store.getters.isDataAnnotated
-			});
+                pageName: "download",
+                enable: this.$store.getters.isDataAnnotated
+            });
         },
 
         methods: {
@@ -143,7 +143,7 @@
                 return ["annotation-tab-nav", this.categoryClasses[p_category]];
             },
 
-            writeColumn(p_event) {
+            unlinkColumnWithCategory(p_event) {
 
                 // TODO: find a more succinct implementation. The "delete" operator should work, but somehow doesn't
 
@@ -151,10 +151,10 @@
                 this.$store.dispatch("unlinkColumnWithCategory", { column: p_event.removedColumn });
             },
 
-            writeTable(event) {
+            saveAnnotatedDataTable(p_event) {
 
                 // 1. Save the annotated table in the store
-                this.$store.dispatch("saveAnnotatedDataTable", event.transformedTable);
+                this.$store.dispatch("saveAnnotatedDataTable", p_event.transformedTable);
 
                 // 2. If any data has been annotated, enable the download page and perform setup actions
                 this.$store.dispatch("enablePage", {
