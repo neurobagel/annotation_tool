@@ -56,8 +56,6 @@
 
             filteredDataTable() {
 
-                console.log("annotation-tab:filteredDataTable" + " for " + this.details.category);
-
                 let filteredTable = this.dataTable.original.map((row) => {
 
                     return Object.fromEntries(
@@ -75,9 +73,6 @@
 
             relevantColumns() {
 
-                console.log("annotation-tab:relevantColumns" + " for " + this.details.category);
-                console.log(`columnToCategoryMap: ${JSON.stringify(this.columnToCategoryMap)}`);
-
                 // Create and return a list of columns that are categorized with this tab's category
                 let columnList = [];
                 for ( const columnName in this.columnToCategoryMap ) {
@@ -87,19 +82,10 @@
                     }
                 }
 
-                console.log(`result: ${columnList}`);
-
                 return columnList;
-
-                // // Return only those columns that are annotated with the current category
-                // return Object.entries(this.columnToCategoryMap)
-                //              .filter(([columnName, categoryName]) => categoryName === this.category)
-                //              .map((element) => element[0]);
             },           
 
             uniqueValues() {
-
-                console.log("annotation-tab:uniqueValues" + " for " + this.details.category);
 
                 // 1. Create and return an object that maps column names to unique values from the filtered table
                 let uniqueValuesMap = {};
@@ -109,23 +95,7 @@
                     uniqueValuesMap[columnName] = Array.from(new Set(this.filteredDataTable.map(row => row[columnName])));
                 }
 
-                // console.log(`annotation-tab uniqueValues() produces ${JSON.stringify(uniqueValuesMap)}`);
-                // console.log(`relevantColumns were ${this.relevantColumns}`);
-                // console.log(`filteredDataTable was ${JSON.stringify(this.filteredDataTable)}`);
-
-                console.log(`result: ${JSON.stringify(uniqueValuesMap)}`);
-
                 return uniqueValuesMap;
-
-                // return Object.fromEntries(
-                //     this.relevantColumns.map(columnName => {
-
-                //         // Get unique values for this column from the filtered table
-                //         const uniqueValues = new Set(this.filteredTable.map(row => row[columnName]));
-
-                //         return [columnName, Array.from(uniqueValues)]
-                //     })
-                // );
             }                   
         },
 
