@@ -26,23 +26,21 @@
                 vertical
                 v-model="tabNavTitle">
 
-                <!-- TODO: Hardcode the pages and just toggle visibility based on state-->
                 <b-tab
-                    v-for="page in pages"
-                    :key="page.id"
-                    :title="page.title"
-                    :title-link-class="tabStyle(page.title)">
+                    v-for="details in annotationDetails"
+                    :key="details.id"
+                    :title="details.category"
+                    :title-link-class="tabStyle(details.category)">
 
                     <b-card-text>
-                        <component
-                            :columns="columnToCategoryMap"
-                            :dataDictionary="dataDictionary.original"
-                            :dataTable="dataTable"
-                            :is="page.component"
-                            @remove:column="unlinkColumnWithCategory($event)"
-                            @update:dataTable="saveAnnotatedDataTable($event)"></component>
+                        <annot-tab
+                            :details="details"
+                            @remove:column="unlinkColumnFromCategory($event)"
+                            @update:dataTable="saveAnnotatedDataTable($event)"></annot-tab>
                     </b-card-text>
+
                 </b-tab>
+
 
             </b-tabs>
         </no-ssr>
@@ -71,9 +69,11 @@
 
 <script>
 
-    // Allows for reference to store data by creating simple, implicit getters
     // Fields listed in mapState below can be found in the store (index.js)
     import { mapState } from "vuex";
+
+    // Allows for reference to store data by creating simple, implicit getters
+    import { mapGetters } from "vuex";
 
     export default {
     
@@ -83,17 +83,7 @@
 
             return {
 
-                // TODO: "pages" is used as static testing data. Should be replaced with actual list of used categories
-                // from global state / store
-                pages: [
-
-                    { title: "Age", component: "category-age", id: 0 },
-                    { title: "Sex", component: "category-sex", id: 1 },
-                    { title: "Diagnosis", component: "category-diagnosis", id: 2 },
-                    { title: "Assessment Tool", component: "category-assessment", id: 3 },
-                ],
-
-                tabNavTitle: "",
+                tabNavTitle: 0,
 
                 // Text for UI elements
                 uiText: {
@@ -105,9 +95,16 @@
 
         computed: {
 
+            ...mapGetters([
+
+                "columnDescription",
+                "valueDescription",
+                "isDataAnnotated"
+            ]),
+
             ...mapState([
 
-                "categories",
+                "annotationDetails",
                 "categoryClasses",
                 "columnToCategoryMap",
                 "dataTable",
@@ -122,50 +119,61 @@
             }
         },
 
+        provide() {
+
+            return {
+
+                columnToCategoryMap: this.columnToCategoryMap,
+                dataTable: this.dataTable,
+                dataDictionary: this.dataDictionary,
+                columnDescription: this.columnDescription,
+                valueDescription: this.valueDescription
+            };
+        },
+
         mounted() {
 
             // 1. Set the current page name
             this.$store.dispatch("setCurrentPage", "annotation");
 
-            // 2. Set the initial tab title for styling purposes
-            this.tabNavTitle = this.categories[0];
-
-            // 3. If any data has been annotated, enable the download page and perform setup actions
+            // 2. If any data has been annotated, enable the download page and perform setup actions
             this.$store.dispatch("enablePage", {
 
                 pageName: "download",
-                enable: this.$store.getters.isDataAnnotated
+                enable: this.isDataAnnotated
             });
         },
 
         methods: {
-
-            tabStyle(p_category) {
-
-                // Return the style for the tab given the category it represents
-                return ["annotation-tab-nav", this.categoryClasses[p_category]];
-            },
-
-            unlinkColumnWithCategory(p_event) {
-
-                // TODO: find a more succinct implementation. The "delete" operator should work, but somehow doesn't
-
-                // Unlink this column from its current category
-                this.$store.dispatch("unlinkColumnWithCategory", { column: p_event.removedColumn });
-            },
 
             saveAnnotatedDataTable(p_event) {
 
                 // 1. Save the annotated table in the store
                 this.$store.dispatch("saveAnnotatedDataTable", p_event.transformedTable);
 
-                // 2. If any data has been annotated, enable the download page and perform setup actions
+                // 2. Enable or disable the download page when the annotated data table has been written,
+                // depending on whether or not an annotation has occurred
                 this.$store.dispatch("enablePage", {
 
                     pageName: "download",
-                    enable: this.$store.getters.isDataAnnotated
+                    enable: this.isDataAnnotated
                 });
+            },            
+
+            tabStyle(p_category) {
+
+                // The 'title-link-class' attribute for b-tab expects a single or list of classes
+                return ["annotation-tab-nav", this.categoryClasses[p_category]];
             },
+
+            unlinkColumnFromCategory(p_event) {
+
+                // 1. Undo annotation for this column
+                this.$store.dispatch("revertColumnToOriginal", p_event.removedColumn);
+
+                // 2. Unlink this column from its currently-assigned category
+                this.$store.dispatch("unlinkColumnFromCategory", { column: p_event.removedColumn });
+            }
         }
     };
 

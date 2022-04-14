@@ -21,7 +21,7 @@
 
                     <b-nav-item
                         v-for="(navItem, key) in navItems"
-                        :active="pageName == navItem.fullName"
+                        :active="pageName === navItem.fullName"
                         :disabled="!navItem.accessible"
                         :key="navItem.pageName"
                         :to="navItem.location"
@@ -84,46 +84,46 @@
 
 <style>
 
-.brand-styling {
+    .brand-styling {
 
-    font-size: 2.25em;
-    font-family: -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        Roboto,
-        "Helvetica Neue",
-        Arial,
-        "Noto Sans",
-        "Liberation Sans",
-        sans-serif,
-        "Apple Color Emoji",
-        "Segoe UI Emoji",
-        "Segoe UI Symbol",
-        "Noto Color Emoji";
-    padding-left: 1em;
-}
+        font-size: 2.25em;
+        font-family: -apple-system,
+            BlinkMacSystemFont,
+            "Segoe UI",
+            Roboto,
+            "Helvetica Neue",
+            Arial,
+            "Noto Sans",
+            "Liberation Sans",
+            sans-serif,
+            "Apple Color Emoji",
+            "Segoe UI Emoji",
+            "Segoe UI Symbol",
+            "Noto Color Emoji";
+        padding-left: 1em;
+    }
 
-.navbar {
-    background-color: white !important;
-}
+    .navbar {
+        background-color: white !important;
+    }
 
-.nav-item.dark a {
+    .nav-item.dark a {
 
-    color: #000 !important;
-}
+        color: #000 !important;
+    }
 
-.nav-item.secondary a {
+    .nav-item.secondary a {
 
-    color: #adb5bd !important;
-}
+        color: #adb5bd !important;
+    }
 
-.nav-item.success a {
+    .nav-item.success a {
 
-    color: #28a745 !important;
-}
+        color: #28a745 !important;
+    }
 
-#right-nav {
-    padding-right: 2em;
-}
+    #right-nav {
+        padding-right: 2em;
+    }
 
 </style>

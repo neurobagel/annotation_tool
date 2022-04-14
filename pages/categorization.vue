@@ -138,7 +138,7 @@
 				// Count the number of columns that have had categories linked to them
 				let links = 0;
 				for ( let column in this.columnToCategoryMap ) {
-					if ( null != this.columnToCategoryMap[column] )
+					if ( null !== this.columnToCategoryMap[column] )
 						links += 1;
 				}
 
@@ -154,7 +154,7 @@
 			setupColumnToCategoryTable() {
 
 				// 0. Check that there is at least a data table and data dictionary in the data store
-				if ( null == this.dataTable.original )
+				if ( null === this.dataTable.original )
 					return;
 
 				// 1. Produce an array of dicts
@@ -177,7 +177,7 @@
 				}
 
 				// 2. Add in descriptions if a data dictionary has been supplied
-				if ( null != this.dataDictionary.original ) {
+				if ( null !== this.dataDictionary.original ) {
 
 					// A. and a corresponding "description" column that is (possibly) sourced from the json file
 					for ( let column in this.dataDictionary.original ) {
@@ -191,13 +191,13 @@
 							for ( let index = 0; index < this.columnToCategoryTable.length; index++ ) {
 
 								// NOTE: Advanced column name matching here between tsv and json? J. Armoza 01/26/22
-								if ( columnLowercase == this.columnToCategoryTable[index].column.toLowerCase() ) {
+								if ( columnLowercase === this.columnToCategoryTable[index].column.toLowerCase() ) {
 
 									// a. Determine the description string for this json file column entry
 									let descriptionStr = "";
 									for ( let subkey in this.dataDictionary.original[column] ) {
 
-										if ( "description" == subkey.toLowerCase() ) {
+										if ( "description" === subkey.toLowerCase() ) {
 											descriptionStr = this.dataDictionary.original[column][subkey];
 											break;
 										}
@@ -217,10 +217,10 @@
 				// 1. Style or unstyle table row
 
 				// A. Determine if category-column linking or unlinking has occurred
-				let linking = !( this.selectedCategory == this.columnToCategoryMap[p_clickData.column] );
+				let linking = !( this.selectedCategory === this.columnToCategoryMap[p_clickData.column] );
 
 				// B. Record the linking/unlinking in the data store
-				let dataStoreFunction = ( linking ) ? "linkColumnWithCategory" : "unlinkColumnWithCategory";
+				let dataStoreFunction = ( linking ) ? "linkColumnWithCategory" : "unlinkColumnFromCategory";
 
 				// I. Build a new object for passing to the store for category-column linking
 				let dataForStore = { column: p_clickData["column"] };

@@ -23,7 +23,7 @@
 	export default {
 
 		props: {
-
+			
 			contentType: { type: String, required: true }
 		},
 		
@@ -50,7 +50,7 @@
 
 			fileName() {
 
-				return ( null == this.fileInput ) ? "" : this.fileInput.name;
+				return ( null === this.fileInput ) ? "" : this.fileInput.name;
 			}
 		},
 
@@ -62,7 +62,7 @@
 				this.fileInput = p_event.target.files[0];
 
 				// A. If no file selected, emit a no file selected message
-				if ( "undefined" == typeof this.fileInput ) {
+				if ( "undefined" === typeof this.fileInput ) {
 					this.$emit("file-selected", "none");
 					return;
 				}
@@ -70,7 +70,7 @@
 				// 2. Parse the whole file and save the lines
 				
 				// A. TSV file parsing
-				if ( this.knownContentTypes["tsv"] == this.contentType ) {
+				if ( this.knownContentTypes["tsv"] === this.contentType ) {
 
 					Papa.parse(this.fileInput, {
 
@@ -82,7 +82,7 @@
 					});
 				} 
 				// B. JSON file parsing
-				else if ( this.knownContentTypes["json"] == this.contentType ) {
+				else if ( this.knownContentTypes["json"] === this.contentType ) {
 
 					// I. Reference to this json object in this component's data
 					var myJson;
@@ -112,46 +112,48 @@
 
 <style>
 
-input[type="file"] {
+	input[type="file"] {
 
-	display: none;
-}
+		display: none;
+	}
 
-.custom-file-upload {
+	.custom-file-upload {
 
-	border: 1px solid #ccc;
-	display: inline-block;
-	padding: 6px 12px;
-	cursor: pointer;
-}
+		border: 1px solid #ccc;
+		cursor: pointer;
+		display: inline-block;
+		padding: 6px 12px;
+	}
 
-.file-selector-button {
+	.file-selector-button {
 
-	background-color: #28a745;
-	border-color: #28a745;
-	border-radius: 5px;
-	color: white;
-	padding: 0.5em 0.75em 0.5em 0.75em;
-}
-.file-selector-button:hover {
-	
-	border-color: green;
-	background-color: green;
-	color: white;
-}
-.file-selector-button:active {
+		background-color: #28a745;
+		border-color: #28a745;
+		border-radius: 5px;
+		color: white;
+		padding: 0.5em 0.75em 0.5em 0.75em;
+	}
 
-  background: #e5e5e5;
-  -webkit-box-shadow: inset 0px 0px 5px #c1c1c1;
-     -moz-box-shadow: inset 0px 0px 5px #c1c1c1;
-          box-shadow: inset 0px 0px 5px #c1c1c1;
-   outline: none;
-}
+	.file-selector-button:hover {
+		
+		background-color: green;
+		border-color: green;
+		color: white;
+	}
 
-.file-selector-row {
+	.file-selector-button:active {
 
-	margin-left: 0 !important;
-	padding-left: 0 !important;
-}
+		background: #e5e5e5;
+		box-shadow: inset 0px 0px 5px #c1c1c1;
+		-moz-box-shadow: inset 0px 0px 5px #c1c1c1;
+		-webkit-box-shadow: inset 0px 0px 5px #c1c1c1;
+		outline: none;
+	}
+
+	.file-selector-row {
+
+		margin-left: 0 !important;
+		padding-left: 0 !important;
+	}
 
 </style>

@@ -2,19 +2,20 @@
 
     <b-card no-body class="annotation-card">
 
-        <!--        TODO: make this also toggleable like the explanation tab-->
+        <!-- TODO: Make this also toggleable like the explanation tab -->
         <b-card-header>{{ uiText.instructions }}</b-card-header>
 
         <b-card-body class="columns-card-body">
             <b-list-group>
                 <b-list-group-item
                     class="d-flex justify-content-between align-items-center"
-                    v-for="[columName, categoryName] of Object.entries(filteredColumns)">
-                    {{ columName }}
+                    :key="columnName"
+                    v-for="columnName of relevantColumns">
+                    {{ columnName }} {{ retrieveColumnDescription(columnName) }}
                     <b-button
                         variant="danger"
-                        @click="removeColumn(columName, categoryName)">
-                    {{ uiText.removeButton }}
+                        @click="removeColumn(columnName)">
+                        {{ uiText.removeButton }}
                     </b-button>
                 </b-list-group-item>
             </b-list-group>
@@ -25,13 +26,15 @@
 </template>
 
 <script>
+
     export default {
 
         props: {
-            
-            activeCategory: { type: String, default: "" },
-            columns: { type: Object, required: true }
-        },    
+
+           relevantColumns: { type: Array, required: true } 
+        },
+
+        inject: ["columnDescription"],
 
         name: "annotate-part-annotated-columns",
 
@@ -45,37 +48,26 @@
                     removeButton: "remove"
                 }
             };
-        },
-
-        computed: {
-
-            filteredColumns() {
-
-                // "columns" is an object of the form
-                // { columnName: "CategoryName", ... } that contains all annotated columns and the categories they were mapped to
-                // In normal use, this object is kept in the global state and is passed here via the parent components
-                return Object.fromEntries(
-                    Object.entries(this.columns)
-                          .filter(([columnName, categoryName]) => categoryName === this.activeCategory)
-                );
-            }
-        },    
+        },  
 
         methods: {
 
-            removeColumn(columnName, categoryName) {
+            removeColumn(columnName) {
                 
-                // TODO: take the information passed from the button to remove the column from the list of columns in the global state
+                // Trigger an unlinking of this column from its previously assigned category in the store
                 this.$emit("remove:column", {
 
-                    removedColumn: columnName,
-                    columnCategory: categoryName
+                    removedColumn: columnName
                 });
             },
 
-            // TODO: retrieve any descriptions of the column names from the data dictionary - if they exist
-            retrieveColumnDescription() {
+            retrieveColumnDescription(p_columnName) {
 
+                // Attempt to get the description of this column from the data dictionary
+                const columnDescription = this.columnDescription(p_columnName);
+
+                // Return the column description if it exists, otherwise return blank string
+                return ( null !== columnDescription ) ? ` - ${columnDescription}` : "";
             }
         }
     }
@@ -84,10 +76,10 @@
 
 <style scoped>
 
-.columns-card-body {
-    
-    height: 30vh;
-    overflow-y: scroll;
-}
+    .columns-card-body {
+        
+        height: 30vh;
+        overflow-y: scroll;
+    }
 
 </style>
