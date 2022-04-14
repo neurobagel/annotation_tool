@@ -15,7 +15,7 @@
                             trim
                             aria-describedby="input-live-help input-live-feedback"
                             id="input-live"
-                            @input="updateVocabularyMapping($event, row.item)"
+                            @input="updateMapping($event, row.item)"
                             :placeholder="placeholder"
                             :state="vocabState"></b-form-input>
 
@@ -32,12 +32,15 @@
                     </template>
                 </b-table>
                 
-                <b-button
-                    @click="uploadVocabularyMappings"
-                    :disabled="buttonDisabled"
-                    :variant="saveAnnotationButtonColor">
-                    {{ uiText.saveButton }}
-                </b-button>
+                <!-- Button to save the annotated data of this tab to the store -->
+                <b-row>     
+                    <b-button
+                        :disabled="saveButtonDisabled"
+                        :variant="saveButtonColor"
+                        @click="applyAnnotation()">
+                        {{ uiText.saveButton }}
+                    </b-button>
+                </b-row>
 
             </b-card-body>
 
@@ -49,24 +52,25 @@
 
 <script>
 
-    // TODO: Merge this component with the vocabulary component
     export default {
 
         props: {
             
-            activeCategory: { type: String },
-            columns: { type: Object, required: true, },
-            dataDictionary: { type: Object, required: false, default: null },
-            dataTable: { type: Object, required: false, },
-            mode: {
+            filteredTable: { type: Array },
+            // Options contains 'mode' which is one of ["column", "row"]
+            // column: Only the column names are mapped to vocabulary terms inside the data dictionary
+            // row: The row values are mapped to vocabulary terms
+            options: { type: Object, required: true },
+            relevantColumns: { type: Array, required: true },
+            uniqueValues: { type: Object, required: true }
+        },
 
-                // One of [ "column", "row" ]
-                // column: only the column names are mapped to vocabulary terms inside the data dictionary
-                // row: the row values are mapped to vocabulary terms
-                type: String,
-                default: "row",
-            }
-        },        
+        inject: [
+            
+            "dataTable",
+            "columnDescription",
+            "valueDescription"
+        ],             
 
         name: "AnnotVocabulary",
 
@@ -74,7 +78,7 @@
 
             return {
 
-                buttonDisabled: true,
+                saveButtonDisabled: true,
 
                 // Text for UI elements
                 uiText: {
@@ -93,42 +97,50 @@
 
             displayTable() {
 
-                return this.relevantColumns.map((colName) => {
+                let tableArray = [];
 
-                    // If we are in column mode, we don't need to render individual values
-                    if ( this.mode === "column" ) {
+                // If in 'column' mode, create table entries for each of the relevant columns
+                if ( "column" === this.options.mode ) {
 
-                        let columnDescription = "";
-                        if ( this.getDescription(colName)[0] !== undefined ) {
-                            columnDescription = this.getDescription(colName)[0];
-                        }
+                    // 1. Make a row for each column
+                    for ( let columnName of this.relevantColumns ) {
+                        
+                        // A. Get the column description
+                        let columnDescription = this.columnDescription(columnName);
 
-                        return {
+                        // B. Save the new row entry
+                        tableArray.push({
 
-                            column_name: colName,
-                            description: columnDescription
-                        };
-                    } 
-                    // For row mode, we need the individual (unique) values of the relevant columns
-                    else if ( this.mode === "row" ) {
-
-                        return this.uniqueValues[colName].map((value) => {
-
-                            let columnDescription = "";
-                            if ( this.getDescription(colName, value)[1] !== undefined ) {
-                                columnDescription = this.getDescription(colName, value)[1];
-                            }
-
-                            return {
-
-                                column_name: colName,
-                                raw_value: value,
-                                description: columnDescription
-                            };
+                            column_name: columnName,
+                            description : ( undefined === columnDescription ) ? "" : columnDescription
                         });
                     }
-                })
-                .flat();
+                }
+                // Else, in 'row' mode create table entries for each value in the relevant columns
+                else {
+
+                    // 1. Make a row for each column value 
+                    for ( const columnName of this.relevantColumns ) {
+
+                        console.log("displayTable uniqueValues[" + columnName + "]: " + JSON.stringify(this.uniqueValues[columnName]));
+
+                        for ( const value of this.uniqueValues[columnName]) {
+
+                            // A. Get the value description from the data dictionary, if available
+                            let valueDescription = this.valueDescription(columnName, value);
+
+                            // B. Save the new row entry
+                            tableArray.push({
+
+                                column_name: columnName,
+                                description: ( undefined === valueDescription ) ? "" : valueDescription,
+                                raw_value: value
+                            });
+                        }
+                    }
+                }
+
+                return tableArray;
             },            
 
             exampleFields() {
@@ -140,7 +152,7 @@
                     "select_a_vocabulary_term",
                 ];
 
-                if ( this.mode === "column" ) {
+                if ( this.options.mode === "column" ) {
                     return defaultFields;
                 }
 
@@ -151,30 +163,15 @@
                     "description",
                     "select_a_vocabulary_term",
                 ];
-            },
-
-            filteredTable() {
-
-                // We want to use the origina dataTable here because we want to display the original raw values
-
-                // We return a datatable where each row is filtered to only show the columns that are mapped to the active category
-                return this.dataTable.original.map((row) => {
-                    
-                    return Object.fromEntries(
-                        Object.entries(row).filter(([columnName, _rowValue]) =>
-                            this.relevantColumns.includes(columnName)
-                        )
-                    );
-                });
-            },                      
+            },                     
 
             instruction() {
 
                 let instructionText = "";
-                switch ( this.mode ) {
+                switch ( this.options.mode ) {
 
                     case "column":
-                        instructionText = "Please provide a reproschema term";
+                        instructionText = "Please provide a Reproschema term";
                         break;
                     
                     case "row":
@@ -192,7 +189,7 @@
             placeholder() {
 
                 let placeHolderText = "";
-                switch ( this.mode ) {
+                switch ( this.options.mode ) {
 
                     case "column":
                         placeHolderText = "e.g. MoCA";
@@ -209,185 +206,146 @@
                 return placeHolderText;
             },
 
-            relevantColumns() {
-
-                // Return only those columns that are annotated with the current category
-                return Object.entries(this.columns)
-                             .filter(([columnName, categoryName]) => categoryName === this.activeCategory)
-                            .map((element) => element[0]); // Return only the column name that was assigned to this.activeCategory
-            },
-
-            saveAnnotationButtonColor() {
+            saveButtonColor() {
 
                 // Bootstrap variant color of the button to save the annotation to the data table
-                return ( !this.buttonDisabled ) ? "success" : "secondary";
-            },
-
-            uniqueValues() {
-
-                // Extract array of unique values from filteredTable, keyed on the column names
-                return Object.fromEntries(
-                    this.relevantColumns.map((colName) => {
-
-                        const uniques = new Set(
-                            this.filteredTable.map((row) => row[colName])
-                        );
-
-                        return [colName, Array.from(uniques)];
-                    })
-                );
+                return ( !this.saveButtonDisabled ) ? "success" : "secondary";
             }
         },
 
         mounted() {
             
             // Initialize the mapping of all unique values as null
-            this.initializeVocabularyMapping();
+            this.initializeMapping();
         },        
 
         methods: {
 
-            checkVocabularyAnnotationState() {
+            applyAnnotation() {
 
-                const colHasUnmappedValues = Object.values(this.vocabularyMapping).map(
-                    (uniqueColValues) => {
+                // If this is 'row' mode
+                if ( "row" === this.options.mode ) {
 
-                        if ( this.mode === "row" ) {
+                    // We want to use the annotated dataTable here in order to not overwrite previous
+                    // annotations from other components
 
-                            // uniqueColValues is an object keyed on each unique value of this column with the
-                            // value being the assigned mapping, initialized to "null"
-                            return Object.values(uniqueColValues).some(
-                                (uniqueValue) => uniqueValue === null
-                            );
-                        } else if ( this.mode === "column" ) {
+                    // 1. Create a local copy of the annotated table for transformation
+                    let transformedTable = structuredClone(this.dataTable.annotated);
 
-                            // uniqueColValues is just a string mapped to the column
-                            // if it is not null we are good
-                            return uniqueColValues === null;
+                    // 2. Transform all values in columns categorized as 'age' columns
+                    for ( let index = 0; index < transformedTable.length; index++ ) {
+                        for ( let columnName in transformedTable[index] ) {
+
+                                if ( this.relevantColumns.includes(columnName) ) {
+
+                                    // TODO: if "value" is a missing value or doesn't fit the heuristic, this will currently break!
+                                    transformedTable[index][columnName] = this.transformedValue(columnName, transformedTable[index][columnName]);
+                                }
                         }
                     }
-                );
-                
-                this.buttonDisabled = colHasUnmappedValues.some(
-                    (value) => value === true
-                );
-            },
 
-            getDescription(columnName, value = null) {
+                    // 3. Trigger a save of this transformation to the annotated table in the store
+                    this.$emit("update:dataTable", {
 
-                let columnDescription = undefined;
-                let valueDescription = undefined;
-
-                // If we do not have a data dictionary then the descriptions are undefined
-                if ( this.dataDictionary === null ||
-                     typeof this.dataDictionary !== "object" ||
-                     columnName === undefined ) {
-
-                    return [columnDescription, valueDescription];
-                } else if ( Object.keys(this.dataDictionary).includes(columnName) ) {
-
-                    const columnDict = this.dataDictionary[columnName];
-
-                    columnDescription = columnDict[
-                        Object.keys(columnDict).find(
-                            (key) => key.toLowerCase() === "description"
-                        )
-                    ];
-
-                    if ( value !== null ) {
-
-                        const columnLevels = columnDict[
-                            Object.keys(columnDict).find(
-                                (key) => key.toLowerCase() === "levels"
-                            )
-                        ];
-
-                        if ( columnLevels !== undefined ) {
-
-                            valueDescription = columnLevels[
-                                Object.keys(columnLevels).find(
-                                    (key) => key.toLowerCase() === value.toLowerCase()
-                                )
-                            ];
-                        }
-                    }
-                }
-                
-                return [columnDescription, valueDescription];
-            },                       
-
-            initializeVocabularyMapping() {
-
-                // TODO: Revisit this once we have implemented the missing value components to make sure
-                // we don't break things by later turning values into missing values
-
-                // Initialize the mapping as empty
-                this.vocabularyMapping = {};
-                if ( this.mode === "row" ) {
-
-                    for ( const [colName, uniqueValues] of Object.entries(this.uniqueValues) ) {
-
-                        // Now we will create a mapping of the form { uniqueVale: null } for each unique value
-                        this.vocabularyMapping[colName] = Object.fromEntries(
-                            uniqueValues.map((uniqueValue) => [uniqueValue, null])
-                        );
-                    }
-                } else if ( this.mode === "column" ) {
-
-                    // TODO: Revisit why we do not have access to this.uniqueValues in column Mode.
-                    for ( const colName of this.relevantColumns ) {
-
-                        this.vocabularyMapping[colName] = null;
-                    }
-                }
-            },
-
-            updateVocabularyMapping(event, row) {
-
-                if ( this.mode === "row" ) {
-
-                    this.vocabularyMapping[row.column_name][row.raw_value] = event;
-                    this.checkVocabularyAnnotationState();
-
-                } else if ( this.mode === "column" ) {
-
-                    this.vocabularyMapping[row.column_name] = event;
-                    this.checkVocabularyAnnotationState();
-                }
-            },
-
-            uploadVocabularyMappings() {
-
-                if ( this.mode === "column" ) {
+                        transformHeuristics: this.vocabularyMapping,
+                        transformedTable: transformedTable
+                    });
+                } 
+                // Else, this is 'column' mode
+                else {
 
                     this.$emit("update:heuristics", {
 
                         transformHeuristics: this.vocabularyMapping,
                     });
-                } else if (this.mode === "row") {
-
-                    // We want to use the annotated dataTable here in order to not overwrite previous
-                    // annotations from other components
-                    const transformedTable = this.dataTable.annotated.map((row) => {
-                        
-                        return Object.fromEntries(
-                            Object.entries(row).map(([colName, value]) => {
-                                
-                                if ( this.relevantColumns.includes(colName) ) {
-                                    return [colName, this.vocabularyMapping[colName][value]];
-                                } else {
-                                    return [colName, value];
-                                }
-                            })
-                        );
-                    });
-                    
-                    this.$emit("update:dataTable", {
-
-                        transformHeuristics: this.valueMapping,
-                        transformedTable: transformedTable
-                    });
                 }
+            },          
+
+            checkAnnotationState() {
+
+                let columnHasUnmappedValues = false;
+
+                if ( "row" === this.options.mode ) {
+
+                    // 1. Look for unannotated values in the vocabulary map
+                    for ( let columnName in this.vocabularyMapping ) {
+
+                        // A. Check to see if there is at least one unannotated value for this column
+                        if ( Object.values(this.vocabularyMapping[columnName])
+                                   .some((uniqueValue) => null === uniqueValue) ) {
+
+                            columnHasUnmappedValues = true;
+                            break;
+                        }
+                    }
+                } 
+                // Else, this is in "column" mode
+                else {
+
+                    // 1. Look for unannotated values in the vocabulary map
+                    columnHasUnmappedValues = Object.values(this.vocabularyMapping)
+                                                    .some((uniqueValue) => null === uniqueValue);
+                }
+
+                return columnHasUnmappedValues;
+            },
+
+            initializeMapping() {
+
+                // TODO: Revisit this once we have implemented the missing value components to make sure
+                // we don't break things by later turning values into missing values
+
+                // 1. Initialize the mapping as empty
+                this.vocabularyMapping = {};
+
+                // If this is 'row' mode
+                if ( "row" === this.options.mode ) {
+
+                    // Create a mapping of the form { uniqueValue: null } for each unique value
+                    for ( const columnName in this.uniqueValues ) {
+
+                        this.vocabularyMapping[columnName] = {};
+
+                        for ( const value of this.uniqueValues[columnName] ) {
+
+                            console.log(`value: ${value}`);
+                            this.vocabularyMapping[columnName][value] = null;
+                        }
+                    }
+                } 
+                // Else, this is 'column' mode
+                else {
+
+                    // TODO: Revisit why we do not have access to this.uniqueValues in column Mode.
+                    for ( const columnName of this.relevantColumns ) {
+
+                        this.vocabularyMapping[columnName] = null;
+                    }
+                }
+            },
+
+            transformedValue(p_columnName, p_value) {
+
+                return this.vocabularyMapping[p_columnName][p_value];
+            },
+
+            updateMapping(p_newValue, p_tableRow) {
+
+                console.log("annot-vocabulary:updateMapping");
+
+                // 1. Update the mapping with the new value
+
+                // If this is 'row' mode
+                if ( "row" === this.options.mode ) {
+                    this.vocabularyMapping[p_tableRow.column_name][p_tableRow.raw_value] = p_newValue;
+                } 
+                // Else, this is 'column' mode
+                else {
+                    this.vocabularyMapping[p_tableRow.column_name] = p_newValue;
+                }
+
+                // 2. Base the status of the disabled button on if annotation criteria have been met
+                this.saveButtonDisabled = this.checkAnnotationState();
             }
         }
     }
