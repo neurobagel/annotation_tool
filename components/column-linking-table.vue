@@ -41,7 +41,7 @@
             styleTableRow(p_row, p_rowType) {
 
                 // Check to see what category has been assigned to this row's column, if any
-                let assignedCategory = this.columnToCategoryMap[p_row.column];
+                const assignedCategory = this.columnToCategoryMap[p_row.column];
 
                 return ( null === assignedCategory ) ? "" : this.categoryClasses[assignedCategory];
             }

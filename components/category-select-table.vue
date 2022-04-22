@@ -78,11 +78,11 @@
             styleTableRow(p_row, p_rowType) {
 
                 // 1. Determine the opacity for this row
-                let opacityClass = ( this.selectedCategory !== p_row.category ) ?
+                const opacityClass = ( this.selectedCategory !== p_row.category ) ?
                     "category-transparent" : "category-opaque";
 
                 // 2. Get the color class for this row
-                let colorClass = this.categoryClasses[p_row.category];
+                const colorClass = this.categoryClasses[p_row.category];
 
                 return [opacityClass, colorClass];
             }

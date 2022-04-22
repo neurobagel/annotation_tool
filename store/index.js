@@ -150,7 +150,7 @@ export const actions = {
 		// 0. This list is default but we can swap out and reinitialize category
 		// data structures by calling store action 'initializeCategories' with
 		// a new list of categories
-		let categories = [
+		const categories = [
 
 			"Subject ID",
         	"Age",
@@ -162,7 +162,7 @@ export const actions = {
 		// 0. This annotation information is default but we can swap out and reinitialize
 		// annotation data structures by calling 'initializeAnnotationDetails' with a new
 		// object containing annotation information for each category
-		let annotationDetails = [
+		const annotationDetails = [
 
 			{
 				id: 0,
@@ -290,7 +290,7 @@ export const actions = {
 	revertColumnToOriginal(p_context, p_columnName) {
 
 		// Gather original table column values in row-order
-		let originalValues = [];
+		const originalValues = [];
 		for ( let index = 0; index < p_context.state.dataTable.original.length; index++ ){
 			originalValues.push(p_context.state.dataTable.original[index][p_columnName]);
 		}
@@ -325,7 +325,7 @@ export const mutations = {
 		p_state.categories = p_categories;
 
 		// 2. Get color keys from tool color palette
-		let colorKeys = Object.keys(p_state.toolColorPalette);
+		const colorKeys = Object.keys(p_state.toolColorPalette);
 		
 		// 3. Create the category to color map
 		let assignedCategories = 0;
@@ -350,7 +350,7 @@ export const mutations = {
 		// 4. Set up the category to CSS class map
 
 		// A. Create a map between category names and color classes
-		let mapArray = [];
+		const mapArray = [];
 		for ( let index = 0; index < p_state.categories.length; index++ ) {
 
 			const category = p_state.categories[index];
@@ -464,7 +464,7 @@ export const getters = {
 		if ( null !== p_state.dataDictionary.original && Object.keys(p_state.dataDictionary.original).includes(p_columnName) ) {
 			
 			// A. Get dictionary's description string for this column
-			let dictionaryDescStr = Object.keys(p_state.dataDictionary.original[p_columnName]).find(
+			const dictionaryDescStr = Object.keys(p_state.dataDictionary.original[p_columnName]).find(
 				(key) => key.toLowerCase() === "description");
 
 			// B. Get the column description if the description key was found
@@ -485,13 +485,13 @@ export const getters = {
 		if ( null !== p_state.dataDictionary.original && Object.keys(p_state.dataDictionary.original).includes(p_columnName) ) {
 
 			// A. Get dictionary's levels string for this column
-			let dictionaryLevelsStr = Object.keys(p_state.dataDictionary.original[p_columnName]).find((key) => key.toLowerCase() === "levels");
+			const dictionaryLevelsStr = Object.keys(p_state.dataDictionary.original[p_columnName]).find((key) => key.toLowerCase() === "levels");
 
 			// B. Attempt to get the value string in this 'levels' object
 			if ( dictionaryLevelsStr ) {
 
 				// I. Get the dictionary's value string for this column's value
-				let dictionaryValueStr = Object.keys(p_state.dataDictionary.original[p_columnName][dictionaryLevelsStr]).find(
+				const dictionaryValueStr = Object.keys(p_state.dataDictionary.original[p_columnName][dictionaryLevelsStr]).find(
 					(key) => key.toLowerCase() === p_value.toLowerCase());
 
 				// II. Get the value description
@@ -516,7 +516,7 @@ export const getters = {
 		const tablesAreEqual = p_state.dataTable.original.every((originalTableRow, index) => {
 
 			let allValuesEqual = true;
-			for ( let column in originalTableRow ) {
+			for ( const column in originalTableRow ) {
 				if ( originalTableRow[column] !== p_state.dataTable.annotated[index][column] ) {
 					allValuesEqual = false;
 					break;
@@ -548,12 +548,12 @@ function convertTsvLinesToTableData(p_tsvLines){
 	var tsvRowDictArray = [];
 
 	// 1. First tsv line contains column headers
-	let columnHeaders = p_tsvLines[0];
+	const columnHeaders = p_tsvLines[0];
 
 	// 2. Create dictionaries for each tsv row keyed on the column headers 
 	for ( let index = 1; index < p_tsvLines.length; index++ ){
 
-		let tsvRowDict = {};
+		const tsvRowDict = {};
 
 		// A. Loop through the tsv row, matching entries with the tsv column headers
 		for ( let index2 = 0; index2 < columnHeaders.length; index2++ ) {

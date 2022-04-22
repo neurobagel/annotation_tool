@@ -83,8 +83,8 @@
             columnTransformHeuristics() {
 
                 // Create and return a map between column name and detected age format
-                let heuristicsDict = {};
-                for ( let columnName of this.relevantColumns ) {
+                const heuristicsDict = {};
+                for ( const columnName of this.relevantColumns ) {
                     heuristicsDict[columnName] = this.detectColumnAgeFormat(columnName);
                 }
 
@@ -100,8 +100,8 @@
             uniqueTableData() {
 
                 // Create and return a table listing metadata about these age values
-                let tableData = [];
-                for ( let columnName of this.relevantColumns ) {
+                const tableData = [];
+                for ( const columnName of this.relevantColumns ) {
                     for ( let index = this.unique_range.start; index < this.unique_range.end; index++ ) {
                         
                         const currentHeuristic = this.columnTransformHeuristics[columnName];
@@ -133,11 +133,11 @@
                 // annotations from other components
 
                 // 1. Create a local copy of the annotated table for transformation
-                let transformedTable = structuredClone(this.dataTable.annotated);
+                const transformedTable = structuredClone(this.dataTable.annotated);
 
                 // 2. Transform all values in columns categorized as 'age' columns
                 for ( let index = 0; index < transformedTable.length; index++ ) {
-                    for ( let columnName in transformedTable[index] ) {
+                    for ( const columnName in transformedTable[index] ) {
 
                             if ( this.relevantColumns.includes(columnName) ) {
 

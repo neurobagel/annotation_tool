@@ -134,7 +134,7 @@
 
 				// 1. Convert the tsv file data into a list of strings
 				// NOTE: Defaults to tsv for now
-				let textAreaArray = [Object.keys(this.dataTable.original[0]).join("\t")];
+				const textAreaArray = [Object.keys(this.dataTable.original[0]).join("\t")];
 				for ( let index = 0; index < Object.keys(this.dataTable.original[0]).length; index++ ) {
 					textAreaArray.push(Object.values(this.dataTable.original[index]).join("\t"));
 				}

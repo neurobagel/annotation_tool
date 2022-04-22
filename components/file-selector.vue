@@ -88,7 +88,7 @@
 					var myJson;
 
 					// II. Create a file reader object for reading the json file contents
-					let reader = new FileReader();
+					const reader = new FileReader();
 
 					// III. On loading the file contents:
 					reader.onload = e => {

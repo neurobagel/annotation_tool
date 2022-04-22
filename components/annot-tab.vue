@@ -56,15 +56,13 @@
 
             filteredDataTable() {
 
-                let filteredTable = this.dataTable.original.map((row) => {
+                const filteredTable = this.dataTable.original.map((row) => {
 
                     return Object.fromEntries(
                         Object.entries(row).filter(([columnName, rowValue]) =>
                             this.relevantColumns.includes(columnName))
                     );
                 });
-
-                console.log(`result: ${JSON.stringify(filteredTable)}`);
 
                 // Return a data table where each row is filtered to only show the columns that are mapped to the given category
                 // NOTE: The original data table is used here because we want to display the original raw values
@@ -74,7 +72,7 @@
             relevantColumns() {
 
                 // Create and return a list of columns that are categorized with this tab's category
-                let columnList = [];
+                const columnList = [];
                 for ( const columnName in this.columnToCategoryMap ) {
 
                     if ( this.category === this.columnToCategoryMap[columnName] ) {
@@ -88,7 +86,7 @@
             uniqueValues() {
 
                 // 1. Create and return an object that maps column names to unique values from the filtered table
-                let uniqueValuesMap = {};
+                const uniqueValuesMap = {};
                 for ( const columnName of this.relevantColumns ) {
 
                     // A. Get unique values for this column from the filtered table

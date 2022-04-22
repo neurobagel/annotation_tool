@@ -97,22 +97,22 @@
 
             displayTable() {
 
-                let tableArray = [];
+                const tableArray = [];
 
                 // If in 'column' mode, create table entries for each of the relevant columns
                 if ( "column" === this.options.mode ) {
 
                     // 1. Make a row for each column
-                    for ( let columnName of this.relevantColumns ) {
+                    for ( const columnName of this.relevantColumns ) {
                         
                         // A. Get the column description
-                        let columnDescription = this.columnDescription(columnName);
+                        const columnDescription = this.columnDescription(columnName);
 
                         // B. Save the new row entry
                         tableArray.push({
 
                             column_name: columnName,
-                            description : ( undefined === columnDescription ) ? "" : columnDescription
+                            description : ( null === columnDescription ) ? "" : columnDescription
                         });
                     }
                 }
@@ -127,13 +127,13 @@
                         for ( const value of this.uniqueValues[columnName]) {
 
                             // A. Get the value description from the data dictionary, if available
-                            let valueDescription = this.valueDescription(columnName, value);
+                            const valueDescription = this.valueDescription(columnName, value);
 
                             // B. Save the new row entry
                             tableArray.push({
 
                                 column_name: columnName,
-                                description: ( undefined === valueDescription ) ? "" : valueDescription,
+                                description: ( null === valueDescription ) ? "" : valueDescription,
                                 raw_value: value
                             });
                         }
@@ -145,7 +145,7 @@
 
             exampleFields() {
 
-                let defaultFields = [
+                const defaultFields = [
 
                     "column_name",
                     "description",
@@ -230,11 +230,11 @@
                     // annotations from other components
 
                     // 1. Create a local copy of the annotated table for transformation
-                    let transformedTable = structuredClone(this.dataTable.annotated);
+                    const transformedTable = structuredClone(this.dataTable.annotated);
 
                     // 2. Transform all values in columns categorized as 'age' columns
                     for ( let index = 0; index < transformedTable.length; index++ ) {
-                        for ( let columnName in transformedTable[index] ) {
+                        for ( const columnName in transformedTable[index] ) {
 
                                 if ( this.relevantColumns.includes(columnName) ) {
 
@@ -268,7 +268,7 @@
                 if ( "row" === this.options.mode ) {
 
                     // 1. Look for unannotated values in the vocabulary map
-                    for ( let columnName in this.vocabularyMapping ) {
+                    for ( const columnName in this.vocabularyMapping ) {
 
                         // A. Check to see if there is at least one unannotated value for this column
                         if ( Object.values(this.vocabularyMapping[columnName])

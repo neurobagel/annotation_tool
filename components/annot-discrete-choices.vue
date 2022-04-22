@@ -99,7 +99,7 @@
             displayTable() {
 
                 // Create and return table data list column name and corresponding value for all unique values in the relevant columns
-                let tableData = [];
+                const tableData = [];
                 for ( const columnName of this.relevantColumns ) {
                     for ( const value of this.uniqueValues[columnName] ) {
                         tableData.push({
@@ -130,7 +130,7 @@
 
                     // There has been at least one column removed from this component's category,
                     // possibly via the annot-columns component 'remove' action
-                    for ( let columnName of removedColumns ) {
+                    for ( const columnName of removedColumns ) {
 
                         // We cannot just remove the key from the object with a normal
                         // JS delete operator because then Vue wouldn't be aware of it.
@@ -161,7 +161,7 @@
                 // annotations from other components
 
                 // 1. Create a local copy of the annotated table for transformation
-                let transformedTable = structuredClone(this.dataTable.annotated);
+                const transformedTable = structuredClone(this.dataTable.annotated);
 
                 // 2. Transform all values in columns categorized as 'age' columns
                 for ( let index = 0; index < transformedTable.length; index++ ) {
