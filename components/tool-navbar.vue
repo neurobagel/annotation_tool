@@ -20,7 +20,7 @@
                 <b-navbar-nav class="ml-auto" id="right-nav">
 
                     <b-nav-item
-                        v-for="(navItem, key) in navItems"
+                        v-for="(navItem, _key) in navItems"
                         :active="pageName === navItem.fullName"
                         :disabled="!navItem.accessible"
                         :key="navItem.pageName"

@@ -2,13 +2,18 @@
 
     <div>
 
-        <b-card no-body class="annotation-card">
+        <b-card
+            no-body
+            class="annotation-card">
 
             <b-card-header>{{ uiText.instructions }}</b-card-header>
 
             <b-card-body>
 
-                <b-table striped :fields="exampleFields" :items="displayTable">
+                <b-table
+                    striped
+                    :fields="exampleFields"
+                    :items="displayTable">
                     <template #cell(select_an_appropriate_mapping)="row">
 
                         <!-- Bootstrap-Vue doesn't have a great option here so I am using https://vue-select.org/ -->
@@ -17,8 +22,7 @@
                         <v-select
                             label="Standard"
                             :options="options"
-                            @input="updateMapping($event, row.item)"
-                        ></v-select>
+                            @input="updateMapping($event, row.item)"></v-select>
                     </template>
                 </b-table>
 
@@ -46,7 +50,7 @@
 
         props: {
 
-            filteredDataTable: { type: Array },
+            filteredDataTable: { type: Array, default: () => [] },
             options: {
 
                 type: Array,
@@ -222,6 +226,7 @@
             removeRow(p_row) {
 
                 // TODO: Use this method to move unique values to the missing value category
+                return p_row;
             },
 
             transformedValue(p_columnName, p_value) {

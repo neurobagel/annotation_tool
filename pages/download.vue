@@ -2,7 +2,7 @@
 
     <div>
 
-        <b-row >
+        <b-row>
 
             <b-col cols="12">
                 <b-table
@@ -22,15 +22,15 @@
             <b-col cols="9"></b-col>
 
             <!-- Button to proceed to download the annotation output data -->
-			<!-- Only enabled when annotation has been at least partially completed -->
-			<b-col cols="3">
-				<b-button
-					class="float-right"
-					:disabled="!isDataAnnotated"
-					:variant="downloadButtonColor">
-					{{ uiText.downloadButton }}
-				</b-button>
-			</b-col>
+            <!-- Only enabled when annotation has been at least partially completed -->
+            <b-col cols="3">
+                <b-button
+                    class="float-right"
+                    :disabled="!isDataAnnotated"
+                    :variant="downloadButtonColor">
+                    {{ uiText.downloadButton }}
+                </b-button>
+            </b-col>
         
         </b-row>
 
@@ -40,8 +40,8 @@
 
 <script>
 
-	// Allows for reference to store data by creating simple, implicit getters
-	import { mapState } from "vuex";
+    // Allows for reference to store data by creating simple, implicit getters
+    import { mapState } from "vuex";
     import { mapGetters } from "vuex";
 
     export default {
@@ -52,12 +52,12 @@
 
             return {
 
-				// Size of the file display textboxes
-				textArea: {
+                // Size of the file display textboxes
+                textArea: {
 
-					width: 5,
-					height: 800
-				},
+                    width: 5,
+                    height: 800
+                },
 
                 // Text for UI elements
                 uiText: {
@@ -73,25 +73,25 @@
             ...mapGetters([
 
                 "isDataAnnotated"
-            ]),			
+            ]),            
 
             ...mapState([
 
-				"dataTable"
-			]),
+                "dataTable"
+            ]),
 
-			downloadButtonColor() {
+            downloadButtonColor() {
 
-				// Bootstrap variant color of the button leading to the output download
-				return this.isDataAnnotated ? "success" : "secondary"
-			}           
+                // Bootstrap variant color of the button leading to the output download
+                return this.isDataAnnotated ? "success" : "secondary"
+            }           
         },
 
         mounted() {
 
             // Set the current page
             this.$store.dispatch("setCurrentPage", "download");
-        },		
+        },        
 
         methods: {
 

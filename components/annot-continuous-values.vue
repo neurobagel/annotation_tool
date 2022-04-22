@@ -1,7 +1,11 @@
 <template>
 
-    <b-table striped hover :items="items" id="annotation-table">
-        
+    <b-table
+        hover
+        striped
+        id="annotation-table"
+        :items="items">
+
         <!-- TODO: implement a way for the user to edit the transformed values -->
         <!--
             <template #[column]="row">
@@ -19,10 +23,10 @@
 
         props: {
             
-            items: {}
+            items: { type: Array, default: () => [] }
         },
 
-        name: "continuous-table",
+        name: "ContinuousTable",
         
         data() {
         

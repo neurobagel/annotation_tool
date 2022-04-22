@@ -1,6 +1,8 @@
 <template>
 
-    <b-card no-body class="annotation-card">
+    <b-card
+        no-body
+        class="annotation-card">
 
         <!-- TODO: Make this also toggleable like the explanation tab -->
         <b-card-header>{{ uiText.instructions }}</b-card-header>
@@ -36,7 +38,7 @@
 
         inject: ["columnDescription"],
 
-        name: "annotate-part-annotated-columns",
+        name: "AnnotatePartAnnotatedColumns",
 
         data() {
 

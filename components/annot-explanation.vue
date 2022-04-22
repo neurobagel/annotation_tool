@@ -4,8 +4,10 @@
 
         <b-card no-body class="mb-1">
 
-            <b-card-header header-tag="header" class="p-1" role="tab">
-                <b-button block v-b-toggle.accordion-explanation variant="info">{{ uiText.cardTitle }}</b-button>
+            <b-card-header class="p-1" header-tag="header" role="tab">
+                <b-button block v-b-toggle.accordion-explanation variant="info">
+                    {{ uiText.cardTitle }}
+                </b-button>
             </b-card-header>
 
             <b-collapse id="accordion-explanation" accordion="my-accordion" role="tabpanel">

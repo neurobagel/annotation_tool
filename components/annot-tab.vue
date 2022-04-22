@@ -8,16 +8,16 @@
         <!-- Lists all the columns linked to the category of this annotation tab -->
         <annot-columns
             :active-category="details.category"
-            :relevantColumns="relevantColumns"
+            :relevant-columns="relevantColumns"
             @remove:column="$emit('remove:column', $event)"></annot-columns>
 
         <!-- Component specializing in the particular kind of annotation for this tab's category -->
         <component 
             :is="details.specializedComponent"
-            :filteredDataTable="filteredDataTable"
+            :filtered-data-table="filteredDataTable"
             :options="details.options"
-            :relevantColumns="relevantColumns"
-            :uniqueValues="uniqueValues"
+            :relevant-columns="relevantColumns"
+            :unique-values="uniqueValues"
             @update:dataTable="$emit('update:dataTable', $event)"
             @update:heuristics="$emit('update:heuristics', $event)"></component>     
 
@@ -59,7 +59,7 @@
                 const filteredTable = this.dataTable.original.map((row) => {
 
                     return Object.fromEntries(
-                        Object.entries(row).filter(([columnName, rowValue]) =>
+                        Object.entries(row).filter(([columnName, /*rowValue*/]) =>
                             this.relevantColumns.includes(columnName))
                     );
                 });

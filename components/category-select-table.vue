@@ -4,13 +4,15 @@
 
         <!-- Heading for category select component -->
         <b-row>
-			<h3>{{ title }}</h3>
-		</b-row>
+            <h3>{{ title }}</h3>
+        </b-row>
 
         <!-- Instructions prompting the user how to link categories and columns -->
-		<b-row>
-			<p class="instructions-text">{{ instructions }}</p>
-		</b-row>
+        <b-row>
+            <p class="instructions-text">
+                {{ instructions }}
+            </p>
+        </b-row>
 
         <!-- Category selection table -->
         <b-row>
@@ -71,7 +73,7 @@
                     this.selectedCategory = p_row[0].category;
 
                     // 2. Tell the parent page about the category selction
-					this.$emit("category-select", { category: this.selectedCategory });
+                    this.$emit("category-select", { category: this.selectedCategory });
                 }
             },
 

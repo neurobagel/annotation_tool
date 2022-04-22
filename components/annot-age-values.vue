@@ -2,7 +2,9 @@
 
     <div>
 
-        <b-card no-body class="annotation-card">
+        <b-card
+            no-body
+            class="annotation-card">
             <b-card-header>{{ uiText.instructions }}</b-card-header>
             <b-card-body class="age-values-card-body">
                 <annot-continuous-values :items="uniqueTableData"></annot-continuous-values>
@@ -29,8 +31,8 @@
 
         props: { 
 
-            filteredDataTable: { type: Array },
-            options: { type: Object },
+            filteredDataTable: { type: Array, default: () => [] },
+            options: { type: Object, default: () => {} },
             relevantColumns: { type: Array, required: true },
             uniqueValues: { type: Object, required: true }
         },
@@ -40,7 +42,7 @@
             "dataTable"
         ],
 
-        name: "sub-numeric-validation",
+        name: "SubNumericValidation",
     
         data() {
 
@@ -176,10 +178,11 @@
                         convertedValue = parseFloat(p_value.replace(",", "."));
                         break;
 
-                    case "range":
+                    case "range": {
                         const [lower, upper] = p_value.split('-').map(val => parseFloat(val.trim()));
                         convertedValue = (lower + upper) / 2;
                         break;
+                    }
 
                     case "int":
                         convertedValue = parseInt(p_value);
@@ -189,7 +192,7 @@
                         convertedValue = "missing value";
                         break;
 
-                    case "isoyear":
+                    case "isoyear": {
 
                         // TODO: think of a way to get the values parsed without having to call the detectAge method again here
                         const ageFormats = this.detectAgeFormat(p_value);
@@ -197,6 +200,7 @@
                         const monthValue = Object.keys(ageFormats).includes("isomonth") ? parseInt(ageFormats.isomonth.replace("M", "")) / 12 : 0;
                         convertedValue = `${yearValue + monthValue}`;
                         break;
+                    }
 
                     default:
                         break;
@@ -214,7 +218,7 @@
 
                 if ( regexHits !== null ) {
 
-                    const matchingKeys = Object.keys(regexHits.groups).filter(key => regexHits.groups[key] !== undefined);
+                    const matchingKeys = Object.keys(regexHits.groups).filter(key => undefined !== regexHits.groups[key]);
                     return Object.fromEntries(matchingKeys.map(key => [key, regexHits.groups[key]]));
                 }
             },
@@ -241,14 +245,14 @@
 
                 // We want to exclude "string" because it is the category for "missing" and we don't count these
                 if ( Object.keys(p_formatCounts).includes("string") && 
-                     Object.keys(p_formatCounts).length === 1 ) {
+                     1 === Object.keys(p_formatCounts).length ) {
 
                     // All values in this column are "string". Not much we can do.
                     return "string";
                 }
 
                 const filteredCounts = Object.fromEntries(
-                    Object.entries(p_formatCounts).filter(([key, value]) => key !== "string")
+                    Object.entries(p_formatCounts).filter(([key, value]) => "string" !== key)
                 );
 
                 const countValues = Object.values(filteredCounts);

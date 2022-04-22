@@ -27,7 +27,9 @@
                         -->
 
                         <!-- This is a form text block (formerly known as help block) -->
-                        <b-form-text id="input-live-help">{{ instruction }}</b-form-text>
+                        <b-form-text id="input-live-help">
+                            {{ instruction }}
+                        </b-form-text>
 
                     </template>
                 </b-table>
@@ -56,7 +58,8 @@
 
         props: {
             
-            filteredTable: { type: Array },
+            filteredDataTable: { type: Array, default: () => [] },
+            
             // Options contains 'mode' which is one of ["column", "row"]
             // column: Only the column names are mapped to vocabulary terms inside the data dictionary
             // row: The row values are mapped to vocabulary terms
