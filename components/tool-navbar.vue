@@ -11,7 +11,7 @@
             </b-navbar-brand>
 
             <!-- Collapse toggle -->
-            <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
+            <b-navbar-toggle target="nav-collapse" />
 
             <!-- All these children are collapsible -->
             <b-collapse id="nav-collapse" is-nav>
@@ -43,7 +43,7 @@
 
     export default {
 
-		props: {
+        props: {
 
             navItems: { type: Object, required: true },
             pageName: { type: String, required: true }

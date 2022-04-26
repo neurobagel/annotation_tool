@@ -33,7 +33,7 @@
 
         props: {
 
-           relevantColumns: { type: Array, required: true } 
+            relevantColumns: { type: Array, required: true }
         },
 
         inject: ["columnDescription"],
@@ -50,7 +50,7 @@
                     removeButton: "remove"
                 }
             };
-        },  
+        },
 
         methods: {
 

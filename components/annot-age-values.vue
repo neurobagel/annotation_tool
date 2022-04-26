@@ -7,12 +7,12 @@
             class="annotation-card">
             <b-card-header>{{ uiText.instructions }}</b-card-header>
             <b-card-body class="age-values-card-body">
-                <annot-continuous-values :items="uniqueTableData"></annot-continuous-values>
+                <annot-continuous-values :items="uniqueTableData" />
             </b-card-body>
         </b-card>
 
         <!-- Button to save the annotated data of this tab to the store -->
-        <b-row>     
+        <b-row>
             <b-button
                 :disabled="saveButtonDisabled"
                 :variant="saveButtonColor"
@@ -29,7 +29,7 @@
 
     export default {
 
-        props: { 
+        props: {
 
             filteredDataTable: { type: Array, default: () => [] },
             options: { type: Object, default: () => {} },
@@ -58,7 +58,7 @@
                     '(?<range>\\d+-\\d+)',
                     '(?<int>^\\d+$)',
                     '(?<string>^\\D+$)', // This needs to be before the ISO times to capture
-                    '(?<isoyear>\\d+Y)?(?<isomonth>\\d+M)?',
+                    '(?<isoyear>\\d+Y)?(?<isomonth>\\d+M)?'
                 ],
 
                 // Text for UI elements
@@ -69,7 +69,7 @@
                 },
 
                 // TODO: Turn the range into an argument for the component
-                unique_range: { start: 0, end: 3 },                
+                unique_range: { start: 0, end: 3 }
             }
         },
 
@@ -141,11 +141,11 @@
                 for ( let index = 0; index < transformedTable.length; index++ ) {
                     for ( const columnName in transformedTable[index] ) {
 
-                            if ( this.relevantColumns.includes(columnName) ) {
+                        if ( this.relevantColumns.includes(columnName) ) {
 
-                                // TODO: if "value" is a missing value or doesn't fit the heuristic, this will currently break!
-                                transformedTable[index][columnName] = this.transformedValue(columnName, transformedTable[index][columnName]);
-                            }
+                            // TODO: if "value" is a missing value or doesn't fit the heuristic, this will currently break!
+                            transformedTable[index][columnName] = this.transformedValue(columnName, transformedTable[index][columnName]);
+                        }
                     }
                 }
 
@@ -154,7 +154,7 @@
 
                     transformHeuristics: this.columnTransformHeuristics,
                     transformedTable: transformedTable
-                });                
+                });
             },
 
             convertAge(p_value, p_transformHeuristic) {
@@ -207,7 +207,7 @@
                 }
 
                 return convertedValue;
-            },                      
+            },
             
             detectAgeFormat(p_value) {
 
@@ -239,13 +239,13 @@
                 }
 
                 return this.getMostCommonFormat(columnFormats);
-            },            
+            },
 
             getMostCommonFormat(p_formatCounts) {
 
                 // We want to exclude "string" because it is the category for "missing" and we don't count these
-                if ( Object.keys(p_formatCounts).includes("string") && 
-                     1 === Object.keys(p_formatCounts).length ) {
+                if ( Object.keys(p_formatCounts).includes("string") &&
+                    1 === Object.keys(p_formatCounts).length ) {
 
                     // All values in this column are "string". Not much we can do.
                     return "string";
@@ -264,7 +264,7 @@
             transformedValue(p_columnName, p_value) {
 
                 return this.convertAge(p_value, this.columnTransformHeuristics[p_columnName])
-            },            
+            }
         }
     }
 

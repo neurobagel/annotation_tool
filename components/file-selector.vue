@@ -78,14 +78,14 @@
 
                             // I. Send the file data to the store to be processed and saved
                             this.$emit("file-selected", results.data);
-                        },
+                        }
                     });
-                } 
+                }
                 // B. JSON file parsing
                 else if ( this.knownContentTypes["json"] === this.contentType ) {
 
                     // I. Reference to this json object in this component's data
-                    var myJson;
+                    let myJson;
 
                     // II. Create a file reader object for reading the json file contents
                     const reader = new FileReader();
@@ -104,7 +104,7 @@
                     reader.readAsText(this.fileInput);
                 }
 
-            }        
+            }
         }
     }
 

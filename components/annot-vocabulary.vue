@@ -17,10 +17,10 @@
                             id="input-live"
                             @input="updateMapping($event, row.item)"
                             :placeholder="placeholder"
-                            :state="vocabState"></b-form-input>
+                            :state="vocabState" />
 
                         <!-- This will only be shown if the preceding input has an invalid state -->
-                        <!-- 
+                        <!--
                             <b-form-invalid-feedback id="input-live-feedback">
                                 Enter at least 3 letters
                             </b-form-invalid-feedback>
@@ -35,7 +35,7 @@
                 </b-table>
                 
                 <!-- Button to save the annotated data of this tab to the store -->
-                <b-row>     
+                <b-row>
                     <b-button
                         :disabled="saveButtonDisabled"
                         :variant="saveButtonColor"
@@ -73,7 +73,7 @@
             "dataTable",
             "columnDescription",
             "valueDescription"
-        ],             
+        ],
 
         name: "AnnotVocabulary",
 
@@ -92,7 +92,7 @@
 
                 vocabularyMapping: {},
 
-                vocabState: null,
+                vocabState: null
             };
         },
 
@@ -122,10 +122,8 @@
                 // Else, in 'row' mode create table entries for each value in the relevant columns
                 else {
 
-                    // 1. Make a row for each column value 
+                    // 1. Make a row for each column value
                     for ( const columnName of this.relevantColumns ) {
-
-                        console.log("displayTable uniqueValues[" + columnName + "]: " + JSON.stringify(this.uniqueValues[columnName]));
 
                         for ( const value of this.uniqueValues[columnName]) {
 
@@ -144,7 +142,7 @@
                 }
 
                 return tableArray;
-            },            
+            },
 
             exampleFields() {
 
@@ -152,7 +150,7 @@
 
                     "column_name",
                     "description",
-                    "select_a_vocabulary_term",
+                    "select_a_vocabulary_term"
                 ];
 
                 if ( this.options.mode === "column" ) {
@@ -164,9 +162,9 @@
                     "column_name",
                     "raw_value",
                     "description",
-                    "select_a_vocabulary_term",
+                    "select_a_vocabulary_term"
                 ];
-            },                     
+            },
 
             instruction() {
 
@@ -187,7 +185,7 @@
                 }
 
                 return instructionText;
-            },            
+            },
 
             placeholder() {
 
@@ -220,7 +218,7 @@
             
             // Initialize the mapping of all unique values as null
             this.initializeMapping();
-        },        
+        },
 
         methods: {
 
@@ -239,11 +237,11 @@
                     for ( let index = 0; index < transformedTable.length; index++ ) {
                         for ( const columnName in transformedTable[index] ) {
 
-                                if ( this.relevantColumns.includes(columnName) ) {
+                            if ( this.relevantColumns.includes(columnName) ) {
 
-                                    // TODO: if "value" is a missing value or doesn't fit the heuristic, this will currently break!
-                                    transformedTable[index][columnName] = this.transformedValue(columnName, transformedTable[index][columnName]);
-                                }
+                                // TODO: if "value" is a missing value or doesn't fit the heuristic, this will currently break!
+                                transformedTable[index][columnName] = this.transformedValue(columnName, transformedTable[index][columnName]);
+                            }
                         }
                     }
 
@@ -253,16 +251,16 @@
                         transformHeuristics: this.vocabularyMapping,
                         transformedTable: transformedTable
                     });
-                } 
+                }
                 // Else, this is 'column' mode
                 else {
 
                     this.$emit("update:heuristics", {
 
-                        transformHeuristics: this.vocabularyMapping,
+                        transformHeuristics: this.vocabularyMapping
                     });
                 }
-            },          
+            },
 
             checkAnnotationState() {
 
@@ -275,19 +273,19 @@
 
                         // A. Check to see if there is at least one unannotated value for this column
                         if ( Object.values(this.vocabularyMapping[columnName])
-                                   .some((uniqueValue) => null === uniqueValue) ) {
+                            .some((uniqueValue) => null === uniqueValue) ) {
 
                             columnHasUnmappedValues = true;
                             break;
                         }
                     }
-                } 
+                }
                 // Else, this is in "column" mode
                 else {
 
                     // 1. Look for unannotated values in the vocabulary map
                     columnHasUnmappedValues = Object.values(this.vocabularyMapping)
-                                                    .some((uniqueValue) => null === uniqueValue);
+                        .some((uniqueValue) => null === uniqueValue);
                 }
 
                 return columnHasUnmappedValues;
@@ -311,11 +309,10 @@
 
                         for ( const value of this.uniqueValues[columnName] ) {
 
-                            console.log(`value: ${value}`);
                             this.vocabularyMapping[columnName][value] = null;
                         }
                     }
-                } 
+                }
                 // Else, this is 'column' mode
                 else {
 
@@ -334,14 +331,12 @@
 
             updateMapping(p_newValue, p_tableRow) {
 
-                console.log("annot-vocabulary:updateMapping");
-
                 // 1. Update the mapping with the new value
 
                 // If this is 'row' mode
                 if ( "row" === this.options.mode ) {
                     this.vocabularyMapping[p_tableRow.column_name][p_tableRow.raw_value] = p_newValue;
-                } 
+                }
                 // Else, this is 'column' mode
                 else {
                     this.vocabularyMapping[p_tableRow.column_name] = p_newValue;

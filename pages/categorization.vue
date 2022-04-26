@@ -124,7 +124,7 @@
             this.setSelectedCategory({ category: this.categories[0]});
 
             // 4. Determine if the annotation page is available yet and if so, enable it and perform setup actions
-            this.$store.dispatch("enablePage", {
+            this.$store.dispatch("initializePage", {
 
                 pageName: "annotation",
                 enable: this.countLinkedColumns() > 0
@@ -233,7 +233,7 @@
 
                 // 2. If at least one column has been categorized,
                 // and if so enable the annotation page and perform setup actions
-                this.$store.dispatch("enablePage", {
+                this.$store.dispatch("initializePage", {
 
                     pageName: "annotation",
                     enable: this.countLinkedColumns() > 0

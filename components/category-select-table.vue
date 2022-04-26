@@ -25,8 +25,7 @@
                 select-mode="single"
                 selected-variant=""
                 :tbody-tr-class="styleTableRow"
-                thead-class="hidden">
-            </b-table>
+                thead-class="hidden" />
         </b-row>
 
     </b-container>
@@ -69,7 +68,7 @@
                 // If a new category was selected...
                 if ( 0 !== p_row.length ) {
 
-                    // 1. Save the newly selected category, if given    
+                    // 1. Save the newly selected category, if given
                     this.selectedCategory = p_row[0].category;
 
                     // 2. Tell the parent page about the category selction
@@ -109,6 +108,6 @@
 
         color: grey;
         font-style: italic;
-    }    
+    }
 
 </style>

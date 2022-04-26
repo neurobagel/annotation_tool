@@ -22,12 +22,12 @@
                         <v-select
                             label="Standard"
                             :options="options"
-                            @input="updateMapping($event, row.item)"></v-select>
+                            @input="updateMapping($event, row.item)" />
                     </template>
                 </b-table>
 
                 <!-- Button to save the annotated data of this tab to the store -->
-                <b-row>     
+                <b-row>
                     <b-button
                         :disabled="saveButtonDisabled"
                         :variant="saveButtonColor"
@@ -70,7 +70,7 @@
         inject: [
             
             "dataTable"
-        ],               
+        ],
 
         name: "AnnotDiscreteValues",
 
@@ -84,7 +84,7 @@
 
                     "column_name",
                     "raw_value",
-                    "select_an_appropriate_mapping",
+                    "select_an_appropriate_mapping"
                 ],
 
                 // Text for UI elements
@@ -94,7 +94,7 @@
                     saveButton: "Save Annotation"
                 },
 
-                valueMapping: {},
+                valueMapping: {}
             };
         },
 
@@ -149,7 +149,7 @@
                 // and set the disabled status of the save annotation button
                 this.saveButtonDisabled = !this.checkAnnotationState();
             }
-        },              
+        },
 
         mounted() {
 
@@ -171,11 +171,11 @@
                 for ( let index = 0; index < transformedTable.length; index++ ) {
                     for ( const columnName in transformedTable[index] ) {
 
-                            if ( this.relevantColumns.includes(columnName) ) {
+                        if ( this.relevantColumns.includes(columnName) ) {
 
-                                // TODO: If "value" is a missing value or doesn't fit the heuristic, this will currently break!
-                                transformedTable[index][columnName] = this.transformedValue(columnName, transformedTable[index][columnName]);
-                            }
+                            // TODO: If "value" is a missing value or doesn't fit the heuristic, this will currently break!
+                            transformedTable[index][columnName] = this.transformedValue(columnName, transformedTable[index][columnName]);
+                        }
                     }
                 }
 
@@ -185,7 +185,7 @@
                     transformHeuristics: this.valueMapping,
                     transformedTable: transformedTable
                 });
-            },            
+            },
 
             checkAnnotationState() {
 
@@ -197,7 +197,7 @@
 
                     // A. Check for an annotated value in the column
                     if ( Object.values(this.valueMapping[columnName]).some(
-                            (uniqueValue) => null !== uniqueValue) ) {
+                        (uniqueValue) => null !== uniqueValue) ) {
                         hasAnnotation = true;
                         break;
                     }
@@ -205,7 +205,7 @@
 
                 // Return whether or not there is at least one annotation
                 return hasAnnotation;
-            },            
+            },
 
             initializeMapping() {
 

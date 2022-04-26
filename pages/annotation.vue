@@ -137,7 +137,7 @@
             this.$store.dispatch("setCurrentPage", "annotation");
 
             // 2. If any data has been annotated, enable the download page and perform setup actions
-            this.$store.dispatch("enablePage", {
+            this.$store.dispatch("initializePage", {
 
                 pageName: "download",
                 enable: this.isDataAnnotated
@@ -153,7 +153,7 @@
 
                 // 2. Enable or disable the download page when the annotated data table has been written,
                 // depending on whether or not an annotation has occurred
-                this.$store.dispatch("enablePage", {
+                this.$store.dispatch("initializePage", {
 
                     pageName: "download",
                     enable: this.isDataAnnotated

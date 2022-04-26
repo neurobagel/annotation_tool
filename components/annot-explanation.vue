@@ -28,11 +28,11 @@
 
         props: {
         
-            explanation: { 
+            explanation: {
                 
                 type: String,
-                default: "No explanation has been provided yet.",
-            },
+                default: "No explanation has been provided yet."
+            }
         },
 
         name: "AnnotExplanation",
@@ -44,7 +44,7 @@
                 // Text for UI elements
                 uiText: {
 
-                    cardTitle: "Explanation",
+                    cardTitle: "Explanation"
                 }
             };
         }

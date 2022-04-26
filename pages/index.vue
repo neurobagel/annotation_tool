@@ -157,7 +157,7 @@
 
             // 2. If a data table has been loaded, 
             // enable access to the categorization page and perform setup actions for it
-            this.$store.dispatch("enablePage", {
+            this.$store.dispatch("initializePage", {
 
                 pageName: "categorization",
                 enable: this.$store.getters.isDataTableLoaded
@@ -188,7 +188,7 @@
                 });
 
                 // 2. Enable access to the categorization page and perform setup actions for it
-                this.$store.dispatch("enablePage", {
+                this.$store.dispatch("initializePage", {
 
                     pageName: "categorization",
                     enable: true

@@ -10,8 +10,7 @@
             head-variant="dark"
             :items="tableData"
             @row-clicked="applyCategory"
-            :tbody-tr-class="styleTableRow">
-        </b-table>
+            :tbody-tr-class="styleTableRow" />
 
     </b-container>
 
@@ -27,8 +26,8 @@
             columnToCategoryMap: { type: Object, required: true },
             fields: { type: Array, required: true },
             selectedCategory: { type: String, required: true },
-            tableData: { type: Array, required: true },
-        },        
+            tableData: { type: Array, required: true }
+        },
 
         methods: {
 
