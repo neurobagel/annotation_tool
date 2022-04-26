@@ -59,7 +59,7 @@
                 const filteredTable = this.dataTable.original.map((row) => {
 
                     return Object.fromEntries(
-                        Object.entries(row).filter(([columnName /*rowValue*/]) =>
+                        Object.entries(row).filter(([columnName, rowValue]) =>
                             this.relevantColumns.includes(columnName))
                     );
                 });
