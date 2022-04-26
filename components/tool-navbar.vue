@@ -7,11 +7,11 @@
 
             <!-- Brand -->
             <b-navbar-brand class="brand-styling">
-                <h1>{{ toolName }}</h1>
+                <h1>{{ uiText.toolName }}</h1>
             </b-navbar-brand>
 
             <!-- Collapse toggle -->
-            <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
+            <b-navbar-toggle target="nav-collapse" />
 
             <!-- All these children are collapsible -->
             <b-collapse id="nav-collapse" is-nav>
@@ -20,8 +20,8 @@
                 <b-navbar-nav class="ml-auto" id="right-nav">
 
                     <b-nav-item
-                        v-for="(navItem, key) in navItems"
-                        :active="pageName == navItem.fullName"
+                        v-for="(navItem, _key) in navItems"
+                        :active="pageName === navItem.fullName"
                         :disabled="!navItem.accessible"
                         :key="navItem.pageName"
                         :to="navItem.location"
@@ -36,17 +36,28 @@
         </b-navbar>
 
     </div>
+
 </template>
 
 <script>
 
     export default {
 
+        props: {
+
+            navItems: { type: Object, required: true },
+            pageName: { type: String, required: true }
+        },
+
         data() {
 
             return {
                 
-                toolName: "Annotation Tool"
+                // Text for UI elements
+                uiText: {
+
+                    toolName: "Annotation Tool"
+                }
             }
         },
 
@@ -57,7 +68,7 @@
                 let variant = "secondary";
 
                 // The nav item for this page
-                if ( this.pageName == p_navItemData.fullName ) {
+                if ( this.pageName === p_navItemData.fullName ) {
                     variant = "dark";
                 }
                 // Else, if the page is accessible
@@ -67,55 +78,52 @@
 
                 return variant;
             }
-        },
-
-        props: ["navItems", "pageName"]
-
+        }
     }
 </script>
 
 <style>
 
-.brand-styling {
+    .brand-styling {
 
-    font-size: 2.25em;
-    font-family: -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        Roboto,
-        "Helvetica Neue",
-        Arial,
-        "Noto Sans",
-        "Liberation Sans",
-        sans-serif,
-        "Apple Color Emoji",
-        "Segoe UI Emoji",
-        "Segoe UI Symbol",
-        "Noto Color Emoji";
-    padding-left: 1em;
-}
+        font-size: 2.25em;
+        font-family: -apple-system,
+            BlinkMacSystemFont,
+            "Segoe UI",
+            Roboto,
+            "Helvetica Neue",
+            Arial,
+            "Noto Sans",
+            "Liberation Sans",
+            sans-serif,
+            "Apple Color Emoji",
+            "Segoe UI Emoji",
+            "Segoe UI Symbol",
+            "Noto Color Emoji";
+        padding-left: 1em;
+    }
 
-.navbar {
-    background-color: white !important;
-}
+    .navbar {
+        background-color: white !important;
+    }
 
-.nav-item.dark a {
+    .nav-item.dark a {
 
-    color: #000 !important;
-}
+        color: #000 !important;
+    }
 
-.nav-item.secondary a {
+    .nav-item.secondary a {
 
-    color: #adb5bd !important;
-}
+        color: #adb5bd !important;
+    }
 
-.nav-item.success a {
+    .nav-item.success a {
 
-    color: #28a745 !important;
-}
+        color: #28a745 !important;
+    }
 
-#right-nav {
-    padding-right: 2em;
-}
+    #right-nav {
+        padding-right: 2em;
+    }
 
 </style>

@@ -1,152 +1,159 @@
 <template>
 
-	<div>
+    <div>
 
-		<b-row class="file-selector-row">
-			<b-form>
-				<label class="file-selector-button btn">
-					Choose file
-					<input type="file" :accept="contentType" @change="onFileSelected"/>
-				</label>
-				<span>{{ fileName }}</span>
-			</b-form>
-		</b-row>
+        <b-row class="file-selector-row">
+            <b-form>
+                <label class="file-selector-button btn">
+                    {{ uiText.instructions }}
+                    <input type="file" :accept="contentType" @change="onFileSelected" />
+                </label>
+                <span>{{ fileName }}</span>
+            </b-form>
+        </b-row>
 
-	</div>
+    </div>
 
 </template>
 
 <script>
 
-	import Papa from "papaparse";				// Input file reading
+    import Papa from "papaparse";    // Input file reading
 
-	export default {
-		
-		data() {
+    export default {
 
-			return {
-				
-				knownContentTypes: {
+        props: {
+            
+            contentType: { type: String, required: true }
+        },
+        
+        data() {
 
-					"json": "application/json",
-					"tsv": "text/tab-separated-values"
-				},
+            return {
+                
+                knownContentTypes: {
 
-				fileInput: null
-			}
-		},
+                    "json": "application/json",
+                    "tsv": "text/tab-separated-values"
+                },
 
-		computed: {
+                fileInput: null,
 
-			fileName() {
+                uiText: {
 
-				return ( null == this.fileInput ) ? "" : this.fileInput.name;
-			}
-		},
+                    instructions: "Choose file"
+                }
+            }
+        },
 
-		methods: {
+        computed: {
 
-			onFileSelected(p_event){
+            fileName() {
 
-				// 1. Save the file name
-				this.fileInput = p_event.target.files[0];
+                return ( null === this.fileInput ) ? "" : this.fileInput.name;
+            }
+        },
 
-				// A. If no file selected, emit a no file selected message
-				if ( "undefined" == typeof this.fileInput ) {
-					this.$emit("file-selected", "none");
-					return;
-				}
-				
-				// 2. Parse the whole file and save the lines
-				
-				// A. TSV file parsing
-				if ( this.knownContentTypes["tsv"] == this.contentType ) {
+        methods: {
 
-					Papa.parse(this.fileInput, {
+            onFileSelected(p_event){
 
-						complete: results => {
+                // 1. Save the file name
+                this.fileInput = p_event.target.files[0];
 
-							// I. Send the file data to the store to be processed and saved
-							this.$emit("file-selected", results.data);
-						},
-					});
-				} 
-				// B. JSON file parsing
-				else if ( this.knownContentTypes["json"] == this.contentType ) {
+                // A. If no file selected, emit a no file selected message
+                if ( "undefined" === typeof this.fileInput ) {
+                    this.$emit("file-selected", "none");
+                    return;
+                }
+                
+                // 2. Parse the whole file and save the lines
+                
+                // A. TSV file parsing
+                if ( this.knownContentTypes["tsv"] === this.contentType ) {
 
-					// I. Reference to this json object in this component's data
-					var myJson;
+                    Papa.parse(this.fileInput, {
 
-					// II. Create a file reader object for reading the json file contents
-					let reader = new FileReader();
+                        complete: results => {
 
-					// III. On loading the file contents:
-					reader.onload = e => {
+                            // I. Send the file data to the store to be processed and saved
+                            this.$emit("file-selected", results.data);
+                        }
+                    });
+                }
+                // B. JSON file parsing
+                else if ( this.knownContentTypes["json"] === this.contentType ) {
 
-						// a. Save a reference to the loaded contents
-						myJson = e.target.result;
+                    // I. Reference to this json object in this component's data
+                    let myJson;
 
-						// b. Send the file data to any parent/listener
-						this.$emit("file-selected", myJson);
-					};
+                    // II. Create a file reader object for reading the json file contents
+                    const reader = new FileReader();
 
-					// IV. Read the json file contents as text
-					reader.readAsText(this.fileInput);
-				}
+                    // III. On loading the file contents:
+                    reader.onload = e => {
 
-			}		
-		},
+                        // a. Save a reference to the loaded contents
+                        myJson = e.target.result;
 
-		props: ["contentType"]
-	}
+                        // b. Send the file data to any parent/listener
+                        this.$emit("file-selected", myJson);
+                    };
+
+                    // IV. Read the json file contents as text
+                    reader.readAsText(this.fileInput);
+                }
+
+            }
+        }
+    }
 
 </script>
 
 <style>
 
-input[type="file"] {
+    input[type="file"] {
 
-	display: none;
-}
+        display: none;
+    }
 
-/*.btn:hover {
-	
-	color: white;
-}*/
+    .custom-file-upload {
 
-.custom-file-upload {
+        border: 1px solid #ccc;
+        cursor: pointer;
+        display: inline-block;
+        padding: 6px 12px;
+    }
 
-	border: 1px solid #ccc;
-	display: inline-block;
-	padding: 6px 12px;
-	cursor: pointer;
-}
+    .file-selector-button {
 
-.file-selector-button {
+        background-color: #28a745;
+        border-color: #28a745;
+        border-radius: 5px;
+        color: white;
+        padding: 0.5em 0.75em 0.5em 0.75em;
+    }
 
-	background-color: #28a745;
-	border-color: #28a745;
-	border-radius: 5px;
-	color: white;
-	padding: 0.5em 0.75em 0.5em 0.75em;
-}
-.file-selector-button:hover {
-	
-	border-color: green;
-	background-color: green;
-	color: white;
-}
-.file-selector-button:active {
-  background: #e5e5e5;
-  -webkit-box-shadow: inset 0px 0px 5px #c1c1c1;
-     -moz-box-shadow: inset 0px 0px 5px #c1c1c1;
-          box-shadow: inset 0px 0px 5px #c1c1c1;
-   outline: none;
-}
+    .file-selector-button:hover {
+        
+        background-color: green;
+        border-color: green;
+        color: white;
+    }
 
-.file-selector-row {
+    .file-selector-button:active {
 
-	margin-left: 0 !important;
-	padding-left: 0 !important;
-}
+        background: #e5e5e5;
+        box-shadow: inset 0px 0px 5px #c1c1c1;
+        -moz-box-shadow: inset 0px 0px 5px #c1c1c1;
+        -webkit-box-shadow: inset 0px 0px 5px #c1c1c1;
+        outline: none;
+    }
+
+    .file-selector-row {
+
+        margin-left: 0 !important;
+        padding-left: 0 !important;
+    }
+
 </style>
