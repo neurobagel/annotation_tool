@@ -153,17 +153,12 @@
                     "select_a_vocabulary_term"
                 ];
 
-                if ( this.options.mode === "column" ) {
-                    return defaultFields;
+                if ( "row" === this.options.mode ) {
+
+                    defaultFields.splice(1, 0, "raw_value")
                 }
 
-                return [
-
-                    "column_name",
-                    "raw_value",
-                    "description",
-                    "select_a_vocabulary_term"
-                ];
+                return defaultFields;
             },
 
             instruction() {
@@ -253,7 +248,7 @@
                     });
                 }
                 // Else, this is 'column' mode
-                else {
+                else if ( "column" === this.options.mode ) {
 
                     this.$emit("update:heuristics", {
 
@@ -281,7 +276,7 @@
                     }
                 }
                 // Else, this is in "column" mode
-                else {
+                else if ( "column" === this.options.mode ) {
 
                     // 1. Look for unannotated values in the vocabulary map
                     columnHasUnmappedValues = Object.values(this.vocabularyMapping)
@@ -314,7 +309,7 @@
                     }
                 }
                 // Else, this is 'column' mode
-                else {
+                else if ( "column" === this.options.mode ) {
 
                     // TODO: Revisit why we do not have access to this.uniqueValues in column Mode.
                     for ( const columnName of this.relevantColumns ) {
@@ -338,7 +333,7 @@
                     this.vocabularyMapping[p_tableRow.column_name][p_tableRow.raw_value] = p_newValue;
                 }
                 // Else, this is 'column' mode
-                else {
+                else if ( "column" === this.options.mode ) {
                     this.vocabularyMapping[p_tableRow.column_name] = p_newValue;
                 }
 
