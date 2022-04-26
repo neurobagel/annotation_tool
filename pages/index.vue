@@ -19,8 +19,7 @@
         <b-row>
             <file-selector
                 :content-type="contentTypes.dataTable"
-                @file-selected="saveDataTable($event)">
-            </file-selector>
+                @file-selected="saveDataTable($event)" />
         </b-row>
 
 
@@ -41,13 +40,12 @@
             <!-- Selects data dictionary file (i.e. participants.json) -->
             <file-selector
                 :content-type="contentTypes.dataDictionary"
-                @file-selected="saveDataDictionary($event)">
-            </file-selector>
+                @file-selected="saveDataDictionary($event)" />
         </b-row>
         
         <b-row>
 
-            <b-col cols="9"></b-col>
+            <b-col cols="9" />
 
             <!-- Button to proceed to the next page -->
             <!-- Only enabled when file content has been loaded -->
@@ -155,14 +153,14 @@
             // 1. Set the current page name
             this.$store.dispatch("setCurrentPage", "home");
 
-            // 2. If a data table has been loaded, 
+            // 2. If a data table has been loaded,
             // enable access to the categorization page and perform setup actions for it
             this.$store.dispatch("initializePage", {
 
                 pageName: "categorization",
                 enable: this.$store.getters.isDataTableLoaded
-            });            
-        },        
+            });
+        },
 
         methods: {
 
@@ -175,7 +173,7 @@
                     data: ( "none" === p_fileData ) ? null : p_fileData,
                     fileType: "json"
                 });
-            },            
+            },
 
             saveDataTable(p_fileData) {
 
@@ -194,7 +192,7 @@
                     enable: true
                 });
             }
-        }        
+        }
     };
 
 </script>

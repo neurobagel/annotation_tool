@@ -36,7 +36,7 @@
                         <annot-tab
                             :details="details"
                             @remove:column="unlinkColumnFromCategory($event)"
-                            @update:dataTable="saveAnnotatedDataTable($event)"></annot-tab>
+                            @update:dataTable="saveAnnotatedDataTable($event)" />
                     </b-card-text>
 
                 </b-tab>
@@ -47,7 +47,7 @@
 
         <b-row>
 
-            <b-col cols="7"></b-col>
+            <b-col cols="7" />
 
             <!-- Button to proceed to the next page -->
             <!-- Only enabled when at least one annotation table write has been done -->
@@ -158,7 +158,7 @@
                     pageName: "download",
                     enable: this.isDataAnnotated
                 });
-            },            
+            },
 
             tabStyle(p_category) {
 

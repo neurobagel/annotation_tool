@@ -11,8 +11,7 @@
                     :category-classes="categoryClasses"
                     :instructions="uiText.categorySelectInstructions"
                     :title="uiText.categorySelectTitle"
-                    @category-select="setSelectedCategory($event)">
-                </category-select-table>
+                    @category-select="setSelectedCategory($event)" />
             </b-col>
 
             <!-- Category to column linking table -->
@@ -23,15 +22,14 @@
                     :fields="columnLinkingTable.fields"
                     :selected-category="selectedCategory"
                     :table-data="columnToCategoryTable"
-                    @column-name-selected="tableClick($event)">
-                </column-linking-table>
+                    @column-name-selected="tableClick($event)" />
             </b-col>
 
         </b-row>
 
         <b-row>
             
-            <b-col cols="9"></b-col>
+            <b-col cols="9" />
             
             <!-- Button to proceed to the next page -->
             <!-- Only enabled when at least one column has been categorized -->
@@ -45,7 +43,7 @@
                 </b-button>
             </b-col>
             
-        </b-row>        
+        </b-row>
 
     </b-container>
 
@@ -59,7 +57,7 @@
 
     export default {
 
-          name: "CategorizationPage",
+        name: "CategorizationPage",
 
         data() {
 
@@ -68,7 +66,7 @@
                 // Instructions for column-category linking
                 categorySelectText: {},
 
-                // Columns for file data table    
+                // Columns for file data table
                 columnLinkingTable: {
                     
                     fields: [
@@ -88,7 +86,7 @@
 
                     categorySelectInstructions: "Click category and then corresponding column from tsv file",
                     categorySelectTitle: "Recommended Categories",
-                    nextButton: "Next step: Annotate columns",
+                    nextButton: "Next step: Annotate columns"
                 }
             }
         },
@@ -110,7 +108,7 @@
                 // Bootstrap variant color of the button leading to the annotation page
                 return this.pageData.annotation.accessible ? "success" : "secondary";
             }
-          },
+        },
 
         mounted() {
 
@@ -129,7 +127,7 @@
                 pageName: "annotation",
                 enable: this.countLinkedColumns() > 0
             });
-        },          
+        },
 
         methods: {
 
@@ -201,7 +199,7 @@
                                             descriptionStr = this.dataDictionary.original[column][subkey];
                                             break;
                                         }
-                                    }    
+                                    }
                                 
                                     // b. Save the description from the json file colum entry
                                     this.columnToCategoryTable[index].description = descriptionStr;
@@ -210,7 +208,7 @@
                         }
                     }
                 }
-            },            
+            },
 
             tableClick(p_clickData) {
 
@@ -239,7 +237,7 @@
                     enable: this.countLinkedColumns() > 0
                 });
             }
-        }        
+        }
     };
 
 </script>
