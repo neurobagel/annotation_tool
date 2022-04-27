@@ -7,8 +7,12 @@
     "build": "nuxt build",
     "start": "nuxt start",
     "generate": "nuxt generate",
-    "lint": "eslint ./*/*.vue",
-    "precommit": "npm run lint"
+    "lint": "eslint ./*/*.vue"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run lint"
+    }
   },
   "dependencies": {
     "@nuxtjs/axios": "^5.13.6",
