@@ -7,7 +7,8 @@
     "build": "nuxt build",
     "start": "nuxt start",
     "generate": "nuxt generate",
-    "lint": "eslint ./*/*.vue"
+    "lint": "eslint ./*/*.vue",
+    "prepare": "husky install"
   },
   "husky": {
     "hooks": {
