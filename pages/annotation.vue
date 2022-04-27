@@ -36,7 +36,9 @@
                         <annot-tab
                             :details="details"
                             @remove:column="unlinkColumnFromCategory($event)"
-                            @update:dataTable="saveAnnotatedDataTable($event)" />
+                            @remove:missingValue="removeMissingValue($event)"
+                            @update:dataTable="saveAnnotatedDataTable($event)"
+                            @update:missingColumnValues="saveMissingColumnValues($event)" />
                     </b-card-text>
 
                 </b-tab>
@@ -98,8 +100,9 @@
             ...mapGetters([
 
                 "columnDescription",
-                "valueDescription",
-                "isDataAnnotated"
+                "isDataAnnotated",
+                "isMissingValue",
+                "valueDescription"
             ]),
 
             ...mapState([
@@ -107,9 +110,10 @@
                 "annotationDetails",
                 "categoryClasses",
                 "columnToCategoryMap",
-                "dataTable",
                 "dataDictionary",
-                "pageData"
+                "dataTable",
+                "pageData",
+                "missingColumnValues"
             ]),
 
             nextPageButtonColor() {
@@ -123,11 +127,16 @@
 
             return {
 
-                columnToCategoryMap: this.columnToCategoryMap,
-                dataTable: this.dataTable,
-                dataDictionary: this.dataDictionary,
+                // Getters
                 columnDescription: this.columnDescription,
-                valueDescription: this.valueDescription
+                isMissingValue: this.isMissingValue,
+                valueDescription: this.valueDescription,
+
+                // Store fields
+                columnToCategoryMap: this.columnToCategoryMap,
+                dataDictionary: this.dataDictionary,
+                dataTable: this.dataTable,
+                missingColumnValues: this.missingColumnValues
             };
         },
 
@@ -146,6 +155,24 @@
 
         methods: {
 
+            removeMissingValue(p_event) {
+
+                // 1. Create copy of the missing values list for this column without the value to be removed
+                const missingValuesList = {}
+                missingValuesList[p_event.column] = [];
+
+                for ( const value of this.missingColumnValues[p_event.column] ) {
+
+                    // A. Do not save the given value to the new missing values list
+                    if ( value !== p_event.value ) {
+                        missingValuesList[p_event.column].push(value);
+                    }
+                }
+
+                // 2. Save the new missing value list for this column to the store
+                this.$store.dispatch("saveMissingColumnValues", missingValuesList);
+            },
+
             saveAnnotatedDataTable(p_event) {
 
                 // 1. Save the annotated table in the store
@@ -158,6 +185,12 @@
                     pageName: "download",
                     enable: this.isDataAnnotated
                 });
+            },
+
+            saveMissingColumnValues(p_event) {
+
+                // Save the algorithm and/or user-specified missing values to the store
+                this.$store.dispatch("saveMissingColumnValues", p_event);
             },
 
             tabStyle(p_category) {
