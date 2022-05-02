@@ -215,7 +215,7 @@
                 // 1. Style or unstyle table row
 
                 // A. Determine if category-column linking or unlinking has occurred
-                const linking = !( this.selectedCategory === this.columnToCategoryMap[p_clickData.column] );
+                const linking = ( this.selectedCategory !== this.columnToCategoryMap[p_clickData.column] );
 
                 // B. Record the linking/unlinking in the data store
                 const dataStoreFunction = ( linking ) ? "linkColumnWithCategory" : "unlinkColumnFromCategory";
@@ -229,8 +229,8 @@
                 // II. Link or unlink the currently-selected category and the clicked column
                 this.$store.dispatch(dataStoreFunction, dataForStore);
 
-                // 2. If at least one column has been categorized,
-                // and if so enable the annotation page and perform setup actions
+                // 2. Enable the annotation page and perform setup actions if
+                // at least one column has been categorized
                 this.$store.dispatch("initializePage", {
 
                     pageName: "annotation",

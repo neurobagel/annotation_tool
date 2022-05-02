@@ -12,7 +12,7 @@ export const state = () => ({
             accessible: true,
             fullName: "Home",
             location: "/",
-            pageName: "index",
+            pageName: "index"
         },
 
         categorization: {
@@ -62,7 +62,7 @@ export const state = () => ({
         // For format see 'convertTsvLinesToTableData' in index.js
         original: null,
 
-        // Version of table data for annotation page 
+        // Version of table data for annotation page
         annotated: null
     },
 
@@ -71,13 +71,13 @@ export const state = () => ({
     dataDictionary: {
 
         // File type of the original data dictionary file
-        fileType: "",        
+        fileType: "",
 
         // Original data dictionary file data
         original: null,
 
         // User-amended data dictionary file data
-        amended: {},    
+        amended: {}
     },
 
     // Stores table data in format ready for Bootstrap table
@@ -119,10 +119,14 @@ export const state = () => ({
 
     // Keeps track of textual- and component-related information for the annotation of each category
     // See action nuxtServerInit() for initialization code
-    annotationDetails: []
+    annotationDetails: [],
+
+	// Stores a list of (potentially) missing values for each column. This is determined in the missing-values
+	// components on the annotation page, and then amended by the user as they see fit
+	missingColumnValues: {}
 })
   
-// Actions - Call mutations to change state data in order to maintain trace of 
+// Actions - Call mutations to change state data in order to maintain trace of
 // what component changed state data and when
 export const actions = {
 
@@ -159,40 +163,44 @@ export const actions = {
             "Assessment Tool"
         ];
 
-        // 0. This annotation information is default but we can swap out and reinitialize
-        // annotation data structures by calling 'initializeAnnotationDetails' with a new
-        // object containing annotation information for each category
-        const annotationDetails = [
+		// 0. This annotation information is default but we can swap out and reinitialize
+		// annotation data structures by calling 'initializeAnnotationDetails' with a new
+		// object containing annotation information for each category
+		const annotationDetails = [
 
-            {
-                id: 0,
-                category: "Age",
-                explanation: "This is an explanation for how to annotate age.",
-                options: {},
-                specializedComponent: "annot-age-values"
-            },
-            {
-                id: 1,
-                category: "Sex",
+			{
+				id: 0,
+				category: "Age",
+				dataType: "continuous",
+				explanation: "This is an explanation for how to annotate age.",
+				options: {},
+				specializedComponent: "annot-age-values"
+			},
+			{
+				id: 1,
+				category: "Sex",
+				dataType: "categorical",
                 explanation: "This is an explanation for how to annotate sex.",
-                options: ["male", "female", "other", "missing value"],
-                specializedComponent: "annot-discrete-choices"
-            },
-            {
-                id: 2,
-                category: "Diagnosis",
-                explanation: "This is an explanation for how to annotate diagnosis.",
-                options: { mode: "row" },
-                specializedComponent: "annot-vocabulary"
-            },
-            {
-                id: 3,
-                category: "Assessment Tool",
-                explanation: "This is an explanation for how to annotate assessments.",
-                options: { mode: "column" },
-                specializedComponent: "annot-vocabulary"
-            }
-        ];
+				options: ["male", "female", "other", "missing value"],
+				specializedComponent: "annot-discrete-choices"
+			},
+			{
+				id: 2,
+				category: "Diagnosis",
+				dataType: "string",
+				explanation: "This is an explanation for how to annotate diagnosis.",
+				options: { mode: "row" },
+				specializedComponent: "annot-vocabulary"
+			},
+			{
+				id: 3,
+				category: "Assessment Tool",
+				dataType: "string",
+				explanation: "This is an explanation for how to annotate assessments.",
+				options: { mode: "column" },
+				specializedComponent: "annot-vocabulary"
+			}
+		];
 
         // 1. Setup category-related data structures based on the given categories
         commit("setupCategories", categories);
@@ -228,12 +236,12 @@ export const actions = {
             case "download":
                 break;
         }
-    },    
+    },
 
     setCurrentPage(p_context, p_pageDataKey) {
 
         p_context.commit("setCurrentPageNav", p_pageDataKey);
-    },    
+    },
 
     // Landing page actions
     
@@ -256,7 +264,7 @@ export const actions = {
         if ( "tsv"  === p_newFileData.fileType ) {
         
             // 1. Save new table data, formatted for the Vue table element
-            if ( null !== p_newFileData.data ) 
+            if ( null !== p_newFileData.data )
                 p_newFileData.formattedData = convertTsvLinesToTableData(p_newFileData.data);
 
             // 2. Save a list of the columns of this new table data
@@ -278,7 +286,7 @@ export const actions = {
             column: p_linkingData.column,
             category: p_linkingData.category
         });
-    },    
+    },
 
     unlinkColumnFromCategory(p_context, p_linkingData) {
 
@@ -306,12 +314,17 @@ export const actions = {
             tableToChange: p_context.state.dataTable.annotated,
             newValues: originalValues
         });
-    },    
+    },
 
     saveAnnotatedDataTable(p_context, p_newTable) {
 
         p_context.commit("setAnnotatedDataTable", p_newTable);
-    }
+    },
+
+	saveMissingColumnValues(p_context, p_missingColumnValues) {
+
+		p_context.commit("setMissingColumnValues", p_missingColumnValues);
+	}
 }
 
 // Mutations - Change state data, as called by Actions
@@ -378,7 +391,7 @@ export const mutations = {
             return;
 
         // Column to category map lists all columns as keys with default value of null
-        p_state.columnToCategoryMap = 
+        p_state.columnToCategoryMap =
             Object.fromEntries(p_state.dataTable.columns.map((columnName) => [columnName, null]));
     },
 
@@ -394,9 +407,18 @@ export const mutations = {
 
         // Set the current page for the layout navbar
         p_state.currentPage = p_pageDataKey;
-    },    
+    },
 
     // Landing page
+
+    setDataDictionary(p_state, p_newFileData) {
+
+        // 1. Save the new data dictionary to state data
+        p_state.dataDictionary.original = p_newFileData.formattedData;
+
+        // 2. Save the file type of the new data dictionary
+        p_state.dataDictionary.fileType = p_newFileData.fileType;
+    },
 
     setDataTable(p_state, p_newFileData) {
 
@@ -412,15 +434,6 @@ export const mutations = {
         // 4. Make the annotated data a copy of the original
         p_state.dataTable.annotated = structuredClone(p_state.dataTable.original);
     },
-
-    setDataDictionary(p_state, p_newFileData) {
-
-        // 1. Save the new data dictionary to state data
-        p_state.dataDictionary.original = p_newFileData.formattedData;
-
-        // 2. Save the file type of the new data dictionary
-        p_state.dataDictionary.fileType = p_newFileData.fileType;
-    },    
 
     // Categorization page
 
@@ -444,12 +457,21 @@ export const mutations = {
         for ( let index = 0; index < p_changeInfo.tableToChange.length; index++ ) {
             p_changeInfo.tableToChange[index][p_changeInfo.columnName] = p_changeInfo.newValues[index];
         }
-    },    
+    },
 
     setAnnotatedDataTable(p_state, p_newTable) {
 
         p_state.dataTable.annotated = p_newTable;
-    }
+    },
+
+	setMissingColumnValues(p_state, p_missingColumnValues) {
+
+		// Save the new list of missing values for each given column
+		for ( const columnName in p_missingColumnValues ) {
+
+			p_state.missingColumnValues[columnName] = [...p_missingColumnValues[columnName]];
+		}
+	}
 }
 
 // Getters - Give access to state data
@@ -458,7 +480,7 @@ export const getters = {
     categories(p_state) {
 
         return p_state.categories;
-    },     
+    },
 
     columnDescription: (p_state) => (p_columnName) => {
 
@@ -480,6 +502,53 @@ export const getters = {
 
         return columnDescription;
     },
+
+    isColumnLinkedToCategory: (p_state) => (p_matchData) => {
+
+        // Check to see if the given column has been linked to the given category
+        return ( p_matchData.category === p_state.columnToCategoryMap[p_matchData.column] );
+    },
+
+    isDataAnnotated(p_state) {
+
+        // Check to see if the annotated data table is different from the original data table
+        const tablesAreEqual = p_state.dataTable.original.every((originalTableRow, index) => {
+
+            let allValuesEqual = true;
+            for ( const column in originalTableRow ) {
+                if ( originalTableRow[column] !== p_state.dataTable.annotated[index][column] ) {
+                    allValuesEqual = false;
+                    break;
+                }
+            }
+
+            return allValuesEqual;
+        });
+
+        // Annotation has not occurred if both tables are equal
+        return !tablesAreEqual;
+    },
+
+    isDataDictionaryLoaded(p_state) {
+
+        return ( null !== p_state.dataDictionary.original );
+    },
+
+    isDataTableLoaded(p_state) {
+
+        return ( null !== p_state.dataTable.original );
+    },
+
+	isMissingValue: (p_state) => (p_columnName, p_value) => {
+
+		if ( !Object.keys(p_state.missingColumnValues).includes(p_columnName) ) {
+			console.log(`WARNING: Could not find '${p_columnName}' in p_state.missingColumnValues`);
+		}
+
+		// Value is considered missing if it is not in the store's missing values list
+		// This is determined via determineMissingValues() and later on, the user via this component
+		return ( p_state.missingColumnValues[p_columnName].includes(p_value) );
+	},
 
     valueDescription: (p_state) => (p_columnName, p_value) => {
 
@@ -506,43 +575,7 @@ export const getters = {
             }
         }
 
-        return valueDescription;     
-    },    
-
-    isColumnLinkedToCategory: (p_state) => (p_matchData) => {
-
-        // Check to see if the given column has been linked to the given category
-        return ( p_matchData.category === p_state.columnToCategoryMap[p_matchData.column] );
-    },
-
-    isDataAnnotated(p_state) {
-
-        // Check to see if the annotated data table is different from the original data table
-        const tablesAreEqual = p_state.dataTable.original.every((originalTableRow, index) => {
-
-            let allValuesEqual = true;
-            for ( const column in originalTableRow ) {
-                if ( originalTableRow[column] !== p_state.dataTable.annotated[index][column] ) {
-                    allValuesEqual = false;
-                    break;
-                }
-            }
-
-            return allValuesEqual;
-        });
-
-        // Annotation has not occurred if both tables are equal
-        return !tablesAreEqual;
-    },    
-
-    isDataDictionaryLoaded(p_state) {
-
-        return ( null !== p_state.dataDictionary.original );
-    },
-
-    isDataTableLoaded(p_state) {
-
-        return ( null !== p_state.dataTable.original );
+        return valueDescription;
     }
 }
 
@@ -555,7 +588,7 @@ function convertTsvLinesToTableData(p_tsvLines){
     // 1. First tsv line contains column headers
     const columnHeaders = p_tsvLines[0];
 
-    // 2. Create dictionaries for each tsv row keyed on the column headers 
+    // 2. Create dictionaries for each tsv row keyed on the column headers
     for ( let index = 1; index < p_tsvLines.length; index++ ){
 
         const tsvRowDict = {};
@@ -572,7 +605,7 @@ function convertTsvLinesToTableData(p_tsvLines){
             if ( p_tsvLines[index].length !== columnHeaders.length ){
                 console.log("WARNING: tsv row " + parseInt(index) + " has different size than tsv header.");
                 console.log("Row size: " + parseInt(p_tsvLines[index].length));
-                console.log("Row: \'" + p_tsvLines[index] + "\'");
+                console.log("Row: '" + p_tsvLines[index] + "'");
                 console.log("Header fields: " + columnHeaders.length);
             }
 

@@ -3,11 +3,10 @@
     <div>
 
         <!-- Navigation bar -->
-        <tool-navbar 
+        <tool-navbar
             :nav-items="pageData"
             :nav-order="pageOrder"
-            :page-name="pageData[currentPage].fullName">
-        </tool-navbar>
+            :page-name="pageData[currentPage].fullName" />
         
         <!-- Current page -->
         <Nuxt />

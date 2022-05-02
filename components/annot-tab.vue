@@ -11,6 +11,13 @@
             :relevant-columns="relevantColumns"
             @remove:column="$emit('remove:column', $event)" />
 
+        <!-- Lists any values determined to be missing (e.g. potentially invalid) in this tab's columns -->
+        <annot-missing-values
+            :data-type="details.dataType"
+            :unique-values="uniqueValues"
+            @remove:missingValue="$emit('remove:missingValue', $event)"
+            @update:missingColumnValues="$emit('update:missingColumnValues', $event)" />
+
         <!-- Component specializing in the particular kind of annotation for this tab's category -->
         <component
             :is="details.specializedComponent"
