@@ -78,7 +78,7 @@
     import { mapGetters } from "vuex";
 
     export default {
-    
+
         name: "AnnotationPage",
 
         data() {
@@ -151,6 +151,10 @@
                 pageName: "download",
                 enable: this.isDataAnnotated
             });
+
+            // TODO: remove this, just a temporary way to add any missing values to the store
+            const missingLists = {"sex": [0, 1]}
+            this.saveMissingColumnValues(missingLists)
         },
 
         methods: {
@@ -188,7 +192,7 @@
             },
 
             saveMissingColumnValues(p_event) {
-
+                // TODO document what this thing does and expects
                 // Save the algorithm and/or user-specified missing values to the store
                 this.$store.dispatch("saveMissingColumnValues", p_event);
             },

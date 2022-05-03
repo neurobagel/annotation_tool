@@ -36,8 +36,7 @@
 
         props: {
 
-            dataType: { type: String, required: true },
-            uniqueValues: { type: Object, required: true }
+            relevantColumns: { type: Array, required: true }
         },
 
         inject: ["missingColumnValues"],
@@ -54,8 +53,6 @@
                     { key: "not_missing"}
                 ],
 
-                tableItems: [],
-
                 uiText: {
 
                     notMissingButton: "Not Missing",
@@ -70,131 +67,30 @@
 
                 "isMissingValue",
                 "valueDescription"
-            ])
-        },
+            ]),
 
-        created() {
-
-            // 1. Create lists of potentially missing values for the data based on
-            // information in the data dictionary and the data type for this category
-            this.determineMissingValues();
-
-            // 2. Create an array of objects for missing value table data
-            this.createTableData();
+            tableItems() {
+                const tmp = [
+                    {
+                        column: 'sex',
+                        description: 'my description',
+                        value: 'my value'
+                    }
+                ]
+                return tmp
+            }
         },
 
         methods: {
 
-            createTableData() {
-
-                // 0. Wipe any old table data
-                this.tableItems = [];
-
-                // 1. Create a list of objects describing each value for each
-                // column listed in 'uniqueValues'
-                for ( const columnName in this.uniqueValues ) {
-                    for ( const value of this.uniqueValues[columnName] ) {
-
-                        // A. Only missing values for this data type are listed
-                        if ( this.isMissingValue(columnName, value) ) {
-
-                            this.tableItems.push({
-
-                                column: columnName,
-                                description: this.valueDescription(columnName, value),
-                                value: value
-                            });
-                        }
-                    }
-                }
-            },
-
-            determineMissingValues() {
-
-                // 0. Create an object for missing values lists for all columns of this component
-                const missingValuesLists = {};
-
-                // 1. Create a set of lists for potentially missing values of
-                // each column assigned to this tab's cateogry
-                for ( const columnName in this.uniqueValues ) {
-
-                    // A. Only determine missing values if there is no value list for this column in the store
-                    if ( Object.keys(this.missingColumnValues).includes(columnName) ) {
-                        continue;
-                    }
-
-                    // B. Each column has a list of potentially missing values
-                    missingValuesLists[columnName] = [];
-
-                    // C. Determine value invalidity based on the data type of this category
-                    for ( const value of this.uniqueValues[columnName] ) {
-
-                        switch ( this.dataType ) {
-
-                            case "categorical":
-                                if ( !this.isValidCategorical(columnName, value) ) {
-                                    missingValuesLists[columnName].push(value);
-                                }
-                                break;
-
-                            case "continuous":
-                                if ( !this.isValidContinuous(value) ) {
-                                    missingValuesLists[columnName].push(value);
-                                }
-                                break;
-
-                            case "string":
-                                if ( !this.isValidString(value) ) {
-                                    missingValuesLists[columnName].push(value);
-                                }
-                                break;
-                        }
-                    }
-                }
-
-                // 2. Save the missing values lists to the store
-                this.$emit("update:missingColumnValues", missingValuesLists);
-            },
-
-            isValidCategorical(p_column, p_value) {
-
-                let isValid = true;
-
-                // 1. Value is potentially invalid if it is missing from the data dictionary description
-                if ( null === this.valueDescription(p_column, p_value) ) {
-                    isValid = false;
-                }
-
-                return isValid;
-            },
-
-            isValidContinuous(p_value) {
-
-                let isValid = true;
-
-                // 1. Value is likely invalid if it is not numeric
-                if ( isNaN(p_value) ) {
-                    isValid = false;
-                }
-
-                return isValid;
-            },
-
-            isValidString(p_value) {
-
-                let isValid = true;
-
-                return isValid;
-            },
-
             removeColumn(p_tableItem) {
 
                 // 1. Remove the item from table data
-                this.tableItems = this.tableItems.filter(item => 
+                this.tableItems = this.tableItems.filter(item =>
                     item.column === p_tableItem.column && item.value !== p_tableItem.value );
 
                 // 2. Remove this value from the column's missing value list in the store
-                this.$emit('remove:missingValue', p_tableItem);                    
+                this.$emit('remove:missingValue', p_tableItem);
             }
         }
     }
@@ -208,5 +104,5 @@
         height: 30vh;
         overflow-y: scroll;
     }
-    
+
 </style>

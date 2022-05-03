@@ -13,8 +13,7 @@
 
         <!-- Lists any values determined to be missing (e.g. potentially invalid) in this tab's columns -->
         <annot-missing-values
-            :data-type="details.dataType"
-            :unique-values="uniqueValues"
+            :relevant-columns="relevantColumns"
             @remove:missingValue="$emit('remove:missingValue', $event)"
             @update:missingColumnValues="$emit('update:missingColumnValues', $event)" />
 
