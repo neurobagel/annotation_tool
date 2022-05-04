@@ -24,6 +24,12 @@
                             :options="options"
                             @input="updateMapping($event, row.item)" />
                     </template>
+                    <template #cell(missing_value)="row">
+                        <b-button
+                            variant="danger">
+                            {{ uiText.missingValueButton }}
+                        </b-button>
+                    </template>
                 </b-table>
 
                 <!-- Button to save the annotated data of this tab to the store -->
@@ -84,14 +90,16 @@
 
                     "column_name",
                     "raw_value",
-                    "select_an_appropriate_mapping"
+                    "select_an_appropriate_mapping",
+                    "missing_value"
                 ],
 
                 // Text for UI elements
                 uiText: {
 
                     instructions: "Annotate each unique value",
-                    saveButton: "Save Annotation"
+                    saveButton: "Save Annotation",
+                    missingValueButton: "Missing Value"
                 },
 
                 valueMapping: {}
