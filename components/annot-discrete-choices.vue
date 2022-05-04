@@ -150,7 +150,7 @@
 
                 const removedColumns = p_oldColumns.filter(column => !p_newColumns.includes(column));
 
-                if (removedColumns.length > 0) {
+                if ( removedColumns.length > 0 ) {
 
                     // There has been at least one column removed from this component's category,
                     // possibly via the annot-columns component 'remove' action
