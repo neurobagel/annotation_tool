@@ -150,11 +150,11 @@
 
                 const removedColumns = p_oldColumns.filter(column => !p_newColumns.includes(column));
 
-                if ( removedColumns.length > 0 ) {
+                if (removedColumns.length > 0) {
 
                     // There has been at least one column removed from this component's category,
                     // possibly via the annot-columns component 'remove' action
-                    for ( const columnName of removedColumns ) {
+                    for (const columnName of removedColumns) {
 
                         // We cannot just remove the key from the object with a normal
                         // JS delete operator because then Vue wouldn't be aware of it.
