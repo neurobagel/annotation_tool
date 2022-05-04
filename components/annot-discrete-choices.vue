@@ -189,8 +189,12 @@
 
                         if ( this.relevantColumns.includes(columnName) ) {
 
-                            // TODO: If "value" is a missing value or doesn't fit the heuristic, this will currently break!
-                            transformedTable[index][columnName] = this.transformedValue(columnName, transformedTable[index][columnName]);
+                            if ( this.isMissingValue(columnName, transformedTable[index][columnName]) ) {
+                                // TODO: this string should be replaced by an app-wide way to designate missing values
+                                transformedTable[index][columnName] = "missing value";
+                            } else {
+                                transformedTable[index][columnName] = this.transformedValue(columnName, transformedTable[index][columnName]);
+                            }
                         }
                     }
                 }
