@@ -32,6 +32,12 @@
                         </b-form-text>
 
                     </template>
+                    <template #cell(missing_value)="row">
+                        <b-button
+                            variant="danger">
+                            {{ uiText.missingValueButton }}
+                        </b-button>
+                    </template>
                 </b-table>
 
                 <!-- Button to save the annotated data of this tab to the store -->
@@ -87,7 +93,8 @@
                 uiText: {
 
                     instructions: "Annotate each unique value",
-                    saveButton: "Save Annotation"
+                    saveButton: "Save Annotation",
+                    missingValueButton: "Missing value"
                 },
 
                 vocabularyMapping: {},
@@ -150,7 +157,8 @@
 
                     "column_name",
                     "description",
-                    "select_a_vocabulary_term"
+                    "select_a_vocabulary_term",
+                    "missing_value"
                 ];
 
                 if ( "row" === this.options.mode ) {
