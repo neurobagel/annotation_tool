@@ -198,23 +198,16 @@
             },
 
             checkAnnotationState() {
+                // The annotation status returns true if all unique values are
+                // either assigned a mapping (e.g. have an entry in this.valueMapping) or
+                // have been declared as missing values (e.g. this.isMissingValue is true)
 
-                // 1. Begin with the assumption that there are no annotations
-                let hasAnnotation = false;
-
-                // 2. Attempt to find at least one value as having been annotated
-                for ( const columnName in this.valueMapping ) {
-
-                    // A. Check for an annotated value in the column
-                    if ( Object.values(this.valueMapping[columnName]).some(
-                        (uniqueValue) => null !== uniqueValue) ) {
-                        hasAnnotation = true;
-                        break;
-                    }
-                }
-
-                // Return whether or not there is at least one annotation
-                return hasAnnotation;
+                return this.relevantColumns.every(
+                    columnName => this.uniqueValues[columnName].every(
+                        uniqueValue => (
+                            this.valueMapping[columnName][uniqueValue] !== null) ||
+                            this.isMissingValue(columnName, uniqueValue))
+                )
             },
 
             initializeMapping() {
