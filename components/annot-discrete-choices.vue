@@ -24,6 +24,12 @@
                             :options="options"
                             @input="updateMapping($event, row.item)" />
                     </template>
+                    <template #cell(missing_value)="row">
+                        <b-button
+                            variant="danger">
+                            {{ uiText.missingValueButton }}
+                        </b-button>
+                    </template>
                 </b-table>
 
                 <!-- Button to save the annotated data of this tab to the store -->
@@ -68,7 +74,7 @@
         },
 
         inject: [
-            
+
             "dataTable"
         ],
 
@@ -84,14 +90,16 @@
 
                     "column_name",
                     "raw_value",
-                    "select_an_appropriate_mapping"
+                    "select_an_appropriate_mapping",
+                    "missing_value"
                 ],
 
                 // Text for UI elements
                 uiText: {
 
                     instructions: "Annotate each unique value",
-                    saveButton: "Save Annotation"
+                    saveButton: "Save Annotation",
+                    missingValueButton: "Missing Value"
                 },
 
                 valueMapping: {}
@@ -116,7 +124,7 @@
 
                 return tableData;
             },
-            
+
             saveButtonColor() {
 
                 // Bootstrap variant color of the button to save the annotation to the data table
@@ -125,7 +133,7 @@
         },
 
         watch: {
-            
+
             relevantColumns(p_newColumns, p_oldColumns) {
 
                 const removedColumns = p_oldColumns.filter(column => !p_newColumns.includes(column));
@@ -141,7 +149,7 @@
                         // See also: https://v2.vuejs.org/v2/api/?redirect=true#vm-delete
                         this.$delete(this.valueMapping, columnName);
                     }
-                
+
                     // TODO: Check if we need to also handle the case where a column is added
                 }
 
