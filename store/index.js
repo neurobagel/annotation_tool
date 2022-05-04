@@ -465,12 +465,14 @@ export const mutations = {
     },
 
 	setMissingColumnValues(p_state, p_missingColumnValues) {
+        // This method merges incoming updated missingColumnValues records with the missingColumnValues
+        // object in the store. Because the incoming changes can be incomplete (e.g. only contain updated
+        // records of a single column), we cannot just overwrite the store object with them.
+        // However, because of how reactivity in Vue works, we can also not simply overwrite the affected columns
+        // (i.e. keys) in the object, because that will break reactivity.
+        // The below pattern via assign sovles this problem. See here: https://v2.vuejs.org/v2/guide/reactivity.html
+        p_state.missingColumnValues = Object.assign({}, p_state.missingColumnValues, p_missingColumnValues);
 
-		// Save the new list of missing values for each given column
-		for ( const columnName in p_missingColumnValues ) {
-
-			p_state.missingColumnValues[columnName] = [...p_missingColumnValues[columnName]];
-		}
 	}
 }
 
