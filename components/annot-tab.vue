@@ -25,7 +25,8 @@
             :relevant-columns="relevantColumns"
             :unique-values="uniqueValues"
             @update:dataTable="$emit('update:dataTable', $event)"
-            @update:heuristics="$emit('update:heuristics', $event)" />
+            @update:heuristics="$emit('update:heuristics', $event)"
+            @update:missingValue="$emit('update:missingValue', $event)" />
 
     </div>
 

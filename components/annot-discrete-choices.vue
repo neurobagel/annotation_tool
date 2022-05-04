@@ -26,7 +26,8 @@
                     </template>
                     <template #cell(missing_value)="row">
                         <b-button
-                            variant="danger">
+                            variant="danger"
+                            @click="declareMissing(row.item)">
                             {{ uiText.missingValueButton }}
                         </b-button>
                     </template>
@@ -231,10 +232,14 @@
                 }
             },
 
-            removeRow(p_row) {
+            declareMissing(p_row) {
 
                 // TODO: Use this method to move unique values to the missing value category
-                return p_row;
+                console.log("please declare", p_row, "missing")
+                this.$emit('update:missingValue', {
+                    column: p_row.column_name,
+                    value: p_row.raw_value
+                });
             },
 
             transformedValue(p_columnName, p_value) {
