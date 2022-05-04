@@ -76,7 +76,8 @@
 
         inject: [
 
-            "dataTable"
+            "dataTable",
+            "isMissingValue"
         ],
 
         name: "AnnotDiscreteValues",
@@ -110,16 +111,16 @@
         computed: {
 
             displayTable() {
-
-                // Create and return table data list column name and corresponding value for all unique values in the relevant columns
+                // Create and return table data for the unique values in the relevant columns that are not missing values
                 const tableData = [];
                 for ( const columnName of this.relevantColumns ) {
                     for ( const value of this.uniqueValues[columnName] ) {
-                        tableData.push({
-
-                            column_name: columnName,
-                            raw_value: value
-                        });
+                        if ( ! this.isMissingValue(columnName, value) ) {
+                            tableData.push({
+                                column_name: columnName,
+                                raw_value: value
+                            });
+                        }
                     }
                 }
 
