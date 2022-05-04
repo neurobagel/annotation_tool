@@ -1,7 +1,9 @@
 <template>
 
     <div>
-        <b-card class="annotation-card">
+        <b-card
+            no-body
+            class="annotation-card">
 
             <b-card-header>{{ uiText.title }}</b-card-header>
 
