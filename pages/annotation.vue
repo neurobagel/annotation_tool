@@ -173,7 +173,7 @@
 
                     // We do a sanity check to see if the new missing value is already listed as missing
                     // This should not happen unless a missing value is erroneously still being shown in the list of values to be annotated.
-                    if ( ! (p_event.value in columnMissingValues[p_event.column]) ) {
+                    if ( ! ( columnMissingValues[p_event.column].includes(p_event.value) ) ) {
                         columnMissingValues[p_event.column].push(p_event.value);
                     } else {
                         console.log(p_event.value, "is already in the list of missing values for column", p_event.column);
