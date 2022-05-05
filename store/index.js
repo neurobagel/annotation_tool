@@ -8,7 +8,7 @@ export const state = () => ({
     pageData: {
 
         home: {
-            
+
             accessible: true,
             fullName: "Home",
             location: "/",
@@ -16,7 +16,7 @@ export const state = () => ({
         },
 
         categorization: {
-            
+
             accessible: false,
             fullName: "Categorization",
             location: "categorization",
@@ -24,7 +24,7 @@ export const state = () => ({
         },
 
         annotation: {
-            
+
             accessible: false,
             fullName: "Annotation",
             location: "annotation",
@@ -32,7 +32,7 @@ export const state = () => ({
         },
 
         download: {
-            
+
             accessible: false,
             fullName: "Download",
             location: "download",
@@ -90,7 +90,7 @@ export const state = () => ({
     // Hardcoded list of categories used on the categorization page
     // and possibly elsewhere in the tool
     categories: [],
-    
+
     // This is a computed direct map between current categories and CSS classes
     // See getter 'categoryClasses'
     categoryClasses: null,
@@ -124,8 +124,8 @@ export const state = () => ({
 	// Stores a list of (potentially) missing values for each column. This is determined in the missing-values
 	// components on the annotation page, and then amended by the user as they see fit
 	missingColumnValues: {}
-})
-  
+});
+
 // Actions - Call mutations to change state data in order to maintain trace of
 // what component changed state data and when
 export const actions = {
@@ -150,7 +150,7 @@ export const actions = {
     nuxtServerInit({ commit }) {
 
         // This function is called on Nuxt server startup
-        
+
         // 0. This list is default but we can swap out and reinitialize category
         // data structures by calling store action 'initializeCategories' with
         // a new list of categories
@@ -210,7 +210,7 @@ export const actions = {
     },
 
     // Tool navigation
-    
+
     enablePageNavigation(p_context, p_navData) {
 
         p_context.commit("setPageNavigationAccess", p_navData);
@@ -244,7 +244,7 @@ export const actions = {
     },
 
     // Landing page actions
-    
+
     saveDataDictionary(p_context, p_newFileData) {
 
         // 1. Attempt to transform the string data into JSON if valid data given
@@ -262,7 +262,7 @@ export const actions = {
 
         // 1. Attempt to convert the tsv lines into a dict for each line if valid data given
         if ( "tsv"  === p_newFileData.fileType ) {
-        
+
             // 1. Save new table data, formatted for the Vue table element
             if ( null !== p_newFileData.data )
                 p_newFileData.formattedData = convertTsvLinesToTableData(p_newFileData.data);
@@ -309,7 +309,7 @@ export const actions = {
         }
 
         p_context.commit("changeColumnValues", {
-            
+
             columnName: p_columnName,
             tableToChange: p_context.state.dataTable.annotated,
             newValues: originalValues
@@ -325,7 +325,7 @@ export const actions = {
 
 		p_context.commit("setMissingColumnValues", p_missingColumnValues);
 	}
-}
+};
 
 // Mutations - Change state data, as called by Actions
 export const mutations = {
@@ -344,7 +344,7 @@ export const mutations = {
 
         // 2. Get color keys from tool color palette
         const colorKeys = Object.keys(p_state.toolColorPalette);
-        
+
         // 3. Create the category to color map
         let assignedCategories = 0;
         for ( let index = 0; index < p_categories.length &&
@@ -374,7 +374,7 @@ export const mutations = {
             const category = p_state.categories[index];
             const colorID = p_state.categoryToColorMap[category];
             const colorClass = p_state.toolColorPalette[colorID];
-            
+
             mapArray.push([category, colorClass]);
         }
 
@@ -465,14 +465,16 @@ export const mutations = {
     },
 
 	setMissingColumnValues(p_state, p_missingColumnValues) {
+        // This method merges incoming updated missingColumnValues records with the missingColumnValues
+        // object in the store. Because the incoming changes can be incomplete (e.g. only contain updated
+        // records of a single column), we cannot just overwrite the store object with them.
+        // However, because of how reactivity in Vue works, we can also not simply overwrite the affected columns
+        // (i.e. keys) in the object, because that will break reactivity.
+        // The below pattern via assign sovles this problem. See here: https://v2.vuejs.org/v2/guide/reactivity.html
+        p_state.missingColumnValues = Object.assign({}, p_state.missingColumnValues, p_missingColumnValues);
 
-		// Save the new list of missing values for each given column
-		for ( const columnName in p_missingColumnValues ) {
-
-			p_state.missingColumnValues[columnName] = [...p_missingColumnValues[columnName]];
-		}
 	}
-}
+};
 
 // Getters - Give access to state data
 export const getters = {
@@ -489,7 +491,7 @@ export const getters = {
 
         // 1. Find the description for this column in the data dictionary
         if ( null !== p_state.dataDictionary.original && Object.keys(p_state.dataDictionary.original).includes(p_columnName) ) {
-            
+
             // A. Get dictionary's description string for this column
             const dictionaryDescStr = Object.keys(p_state.dataDictionary.original[p_columnName]).find(
                 (key) => key.toLowerCase() === "description");
@@ -540,13 +542,13 @@ export const getters = {
     },
 
 	isMissingValue: (p_state) => (p_columnName, p_value) => {
+    // Checks if a column-value combination is stored in the missingColumnValues object
+    // and returns true if it is, false otherwise
 
 		if ( !Object.keys(p_state.missingColumnValues).includes(p_columnName) ) {
 			console.log(`WARNING: Could not find '${p_columnName}' in p_state.missingColumnValues`);
 		}
 
-		// Value is considered missing if it is not in the store's missing values list
-		// This is determined via determineMissingValues() and later on, the user via this component
 		return ( p_state.missingColumnValues[p_columnName].includes(p_value) );
 	},
 
@@ -577,7 +579,7 @@ export const getters = {
 
         return valueDescription;
     }
-}
+};
 
 // Action helpers
 function convertTsvLinesToTableData(p_tsvLines){
