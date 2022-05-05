@@ -246,6 +246,6 @@
                 this.saveButtonDisabled = !this.checkAnnotationState();
             }
         }
-    }
+    };
 
 </script>

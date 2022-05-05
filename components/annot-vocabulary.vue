@@ -155,7 +155,7 @@
 
                 if ( "row" === this.options.mode ) {
 
-                    defaultFields.splice(1, 0, "raw_value")
+                    defaultFields.splice(1, 0, "raw_value");
                 }
 
                 return defaultFields;
@@ -341,6 +341,6 @@
                 this.saveButtonDisabled = this.checkAnnotationState();
             }
         }
-    }
+    };
 
 </script>

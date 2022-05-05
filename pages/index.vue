@@ -99,7 +99,7 @@
                     dataDictionaryHeader: "Data dictionary",
                     nextButton: "Next step: Categorize columns"
                 }
-            }
+            };
         },
 
         computed: {

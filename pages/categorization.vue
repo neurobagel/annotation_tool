@@ -88,7 +88,7 @@
                     categorySelectTitle: "Recommended Categories",
                     nextButton: "Next step: Annotate columns"
                 }
-            }
+            };
         },
 
         computed: {

@@ -43,7 +43,7 @@
 
                     instructions: "Choose file"
                 }
-            }
+            };
         },
 
         computed: {
@@ -106,7 +106,7 @@
 
             }
         }
-    }
+    };
 
 </script>
 

@@ -35,6 +35,6 @@
                 column: "cell(raw)"
             };
         }
-    }
+    };
 
 </script>

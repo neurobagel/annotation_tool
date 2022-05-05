@@ -82,7 +82,7 @@
             downloadButtonColor() {
 
                 // Bootstrap variant color of the button leading to the output download
-                return this.isDataAnnotated ? "success" : "secondary"
+                return this.isDataAnnotated ? "success" : "secondary";
             }
         },
 
@@ -97,8 +97,8 @@
             saveFile() {
 
                 // 1. Create a blob out of the annotated table data
-                const data = JSON.stringify(this.dataTable.annotated)
-                const blob = new Blob([data], {type: "text/plain"})
+                const data = JSON.stringify(this.dataTable.annotated);
+                const blob = new Blob([data], {type: "text/plain"});
     
                 // 2. Create an anchor tag in memory linked to the blob
                 const pseudoAnchor = document.createElement("a");
@@ -116,6 +116,6 @@
                 pseudoAnchor.dispatchEvent(pseudoClickEvent);
             }
         }
-    }
+    };
 
 </script>

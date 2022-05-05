@@ -32,6 +32,6 @@
                 "pageOrder"
             ])
         }
-    }
+    };
 
 </script>

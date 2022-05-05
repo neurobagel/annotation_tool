@@ -58,7 +58,7 @@
 
                     toolName: "Annotation Tool"
                 }
-            }
+            };
         },
 
         methods: {
@@ -79,7 +79,7 @@
                 return variant;
             }
         }
-    }
+    };
 </script>
 
 <style>

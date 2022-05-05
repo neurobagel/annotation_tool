@@ -72,7 +72,7 @@
                 return ( null !== columnDescription ) ? ` - ${columnDescription}` : "";
             }
         }
-    }
+    };
     
 </script>
 

@@ -45,5 +45,5 @@
                 return ( null === assignedCategory ) ? "" : this.categoryClasses[assignedCategory];
             }
         }
-    }
+    };
 </script>
