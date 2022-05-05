@@ -124,7 +124,7 @@ export const state = () => ({
 	// Stores a list of (potentially) missing values for each column. This is determined in the missing-values
 	// components on the annotation page, and then amended by the user as they see fit
 	missingColumnValues: {}
-})
+});
 
 // Actions - Call mutations to change state data in order to maintain trace of
 // what component changed state data and when
@@ -325,7 +325,7 @@ export const actions = {
 
 		p_context.commit("setMissingColumnValues", p_missingColumnValues);
 	}
-}
+};
 
 // Mutations - Change state data, as called by Actions
 export const mutations = {
@@ -474,7 +474,7 @@ export const mutations = {
         p_state.missingColumnValues = Object.assign({}, p_state.missingColumnValues, p_missingColumnValues);
 
 	}
-}
+};
 
 // Getters - Give access to state data
 export const getters = {
@@ -579,7 +579,7 @@ export const getters = {
 
         return valueDescription;
     }
-}
+};
 
 // Action helpers
 function convertTsvLinesToTableData(p_tsvLines){

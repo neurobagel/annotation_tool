@@ -74,7 +74,7 @@
             ]),
 
             tableItems() {
-                let missingValueArray = []
+                let missingValueArray = [];
 
                 for ( let column of this.relevantColumns ) {
                     if ( Object.keys(this.missingColumnValues).includes(column) ) {
@@ -86,12 +86,12 @@
                                     description: description === null ? "" : description,
                                     value: missing_value
                                 }
-                            )
+                            );
 
                         }
                     }
                 }
-                return missingValueArray
+                return missingValueArray;
             }
         },
 
@@ -102,7 +102,7 @@
                 this.$emit('remove:missingValue', p_tableItem);
             }
         }
-    }
+    };
 
 </script>
 

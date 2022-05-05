@@ -55,7 +55,7 @@
 
                 // Category of the current annotation tab
                 category: ""
-            }
+            };
         },
 
         computed: {
@@ -111,6 +111,6 @@
             // Set the given category for this tab
             this.category = this.details.category;
         }
-    }
+    };
 
 </script>
