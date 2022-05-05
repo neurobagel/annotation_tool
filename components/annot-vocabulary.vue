@@ -79,7 +79,8 @@
 
             "dataTable",
             "columnDescription",
-            "valueDescription"
+            "valueDescription",
+            "isMissingValue"
         ],
 
         name: "AnnotVocabulary",
@@ -107,6 +108,11 @@
         computed: {
 
             displayTable() {
+                // This method generates the unique values that will be displayed in the UI for the user to annotate
+                // Two modes exist:
+                // row:     this mode shows the unique values in the relevantColumns (e.g. for diagnosis)
+                // column:  this mode shows the relevantColumn names and let's the user annotate each column
+                // In row mode, only values that are not declared as missing will be shown.
 
                 const tableArray = [];
 
@@ -130,22 +136,27 @@
                 // Else, in 'row' mode create table entries for each value in the relevant columns
                 else {
 
-                    // 1. Make a row for each column value
+                    // 1. Make a row for each unique column value
                     for ( const columnName of this.relevantColumns ) {
 
                         for ( const value of this.uniqueValues[columnName]) {
 
-                            // A. Get the value description from the data dictionary, if available
-                            const valueDescription = this.valueDescription(columnName, value);
+                            // only display values for annotation that are not declared as missing by the user
+                            if ( ! this.isMissingValue(columnName, value) ) {
 
-                            // B. Save the new row entry
-                            tableArray.push({
+                                // A. Get the value description from the data dictionary, if available
+                                const valueDescription = this.valueDescription(columnName, value);
 
-                                column_name: columnName,
-                                description: ( null === valueDescription ) ? "" : valueDescription,
-                                raw_value: value
-                            });
+                                // B. Save the new row entry
+                                tableArray.push({
+
+                                    column_name: columnName,
+                                    description: (null === valueDescription) ? "" : valueDescription,
+                                    raw_value: value
+                                });
+                            }
                         }
+
                     }
                 }
 
