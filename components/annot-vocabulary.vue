@@ -34,7 +34,8 @@
                     </template>
                     <template #cell(missing_value)="row">
                         <b-button
-                            variant="danger">
+                            variant="danger"
+                            @click="declareMissing(row.item)">
                             {{ uiText.missingValueButton }}
                         </b-button>
                     </template>
@@ -224,6 +225,15 @@
         },
 
         methods: {
+
+            declareMissing(p_row) {
+
+                console.log("please declare", p_row, "missing")
+                this.$emit('update:missingValue', {
+                    column: p_row.column_name,
+                    value: p_row.raw_value
+                });
+            },
 
             applyAnnotation() {
 
