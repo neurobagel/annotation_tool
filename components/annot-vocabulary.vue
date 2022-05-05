@@ -44,7 +44,7 @@
                 <!-- Button to save the annotated data of this tab to the store -->
                 <b-row>
                     <b-button
-                        :disabled="saveButtonDisabled"
+                        :disabled="!saveButtonEnabled"
                         :variant="saveButtonColor"
                         @click="applyAnnotation()">
                         {{ uiText.saveButton }}
@@ -222,14 +222,35 @@
                 return placeHolderText;
             },
 
+            saveButtonEnabled() {
+
+                for ( const [columnName, columnMappings] of Object.entries(this.vocabularyMapping) ) {
+                    console.log("val", columnName, columnMappings)
+                    for ( const [uniqueValue, mappedValue] of Object.entries(columnMappings) ) {
+                        // The first time we find any mapped value that is neither non-empty nor missing, we return
+                        // a status of false. Otherwise, we return true.
+                        if (
+                            // We use negate the first conditional tuple so that lazy evaluation of the two conditionals
+                            // joined by && will skip the second conditional if uniqueValue is null. This is important
+                            // because null doesn't have a .trim() method.
+                            ! ( mappedValue  !== null && mappedValue.trim().length > 0 ) &&
+                            ( ! this.isMissingValue(columnName, uniqueValue) )
+                        ) {
+                            return false;
+                        }
+                    }
+                }
+                return true;
+            },
+
             saveButtonColor() {
 
                 // Bootstrap variant color of the button to save the annotation to the data table
-                return ( !this.saveButtonDisabled ) ? "success" : "secondary";
+                return this.saveButtonEnabled ? "success" : "secondary";
             }
         },
 
-        mounted() {
+        created() {
 
             // Initialize the mapping of all unique values as null
             this.initializeMapping();
@@ -240,6 +261,8 @@
             declareMissing(p_row) {
 
                 console.log("please declare", p_row, "missing")
+                // Set the current mapping to null
+                this.storeMapping(p_row.column_name, p_row.raw_value, null);
                 this.$emit('update:missingValue', {
                     column: p_row.column_name,
                     value: p_row.raw_value
@@ -353,13 +376,29 @@
                 return this.vocabularyMapping[p_columnName][p_value];
             },
 
+            storeMapping(columnName, uniqueValue, updatedValue) {
+                // TODO: the implementation here is identical to the one in annot-discrete-choices.vue
+                // First, we merge the inner level (e.g. the mapping for the columnName)
+                const innerUpdate = Object.assign(
+                    this.vocabularyMapping[columnName],
+                    { [uniqueValue]: updatedValue}
+                );
+                // Second, we merge the outer layer (e.g. the complete mapping object)
+                this.vocabularyMapping = Object.assign(
+                    {},
+                    this.vocabularyMapping,
+                    { [columnName]: innerUpdate}
+                );
+
+            },
+
             updateMapping(p_newValue, p_tableRow) {
 
                 // 1. Update the mapping with the new value
 
                 // If this is 'row' mode
                 if ( "row" === this.options.mode ) {
-                    this.vocabularyMapping[p_tableRow.column_name][p_tableRow.raw_value] = p_newValue;
+                    this.storeMapping(p_tableRow.column_name, p_tableRow.raw_value, p_newValue);
                 }
                 // Else, this is 'column' mode
                 else if ( "column" === this.options.mode ) {
