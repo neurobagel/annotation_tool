@@ -90,7 +90,7 @@ module.exports = {
         // Whitespace =========================================================
 
         // Trailing whitespace only allowed in comments (specifically for comment block)
-        "no-trailing-spaces": ["error", { "skipBlankLines": true }],
+        "no-trailing-spaces": ["error", { "skipBlankLines": false, "ignoreComments": false }],
 
         // Four-space indentation for html tags in template portion of vue file
         "vue/html-indent": [ "warn", 4, {
