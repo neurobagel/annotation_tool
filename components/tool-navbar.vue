@@ -52,7 +52,7 @@
         data() {
 
             return {
-                
+
                 // Text for UI elements
                 uiText: {
 

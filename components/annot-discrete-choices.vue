@@ -68,7 +68,7 @@
         },
 
         inject: [
-            
+
             "dataTable"
         ],
 
@@ -116,7 +116,7 @@
 
                 return tableData;
             },
-            
+
             saveButtonColor() {
 
                 // Bootstrap variant color of the button to save the annotation to the data table
@@ -125,7 +125,7 @@
         },
 
         watch: {
-            
+
             relevantColumns(p_newColumns, p_oldColumns) {
 
                 const removedColumns = p_oldColumns.filter(column => !p_newColumns.includes(column));
@@ -141,7 +141,7 @@
                         // See also: https://v2.vuejs.org/v2/api/?redirect=true#vm-delete
                         this.$delete(this.valueMapping, columnName);
                     }
-                
+
                     // TODO: Check if we need to also handle the case where a column is added
                 }
 

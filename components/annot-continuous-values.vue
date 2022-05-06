@@ -12,7 +12,7 @@
                  <b-button variant="info" >{{row.item.raw}} </b-button>
             </template>
         -->
-        
+
     </b-table>
 
 </template>
@@ -22,16 +22,16 @@
     export default {
 
         props: {
-            
+
             items: { type: Array, default: () => [] }
         },
 
         name: "ContinuousTable",
-        
+
         data() {
-        
+
             return {
-        
+
                 column: "cell(raw)"
             };
         }

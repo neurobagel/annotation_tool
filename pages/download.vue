@@ -13,7 +13,7 @@
                     head-variant="dark"
                     :items="dataTable.annotated" />
             </b-col>
-            
+
         </b-row>
 
         <b-row>
@@ -30,7 +30,7 @@
                     {{ uiText.downloadButton }}
                 </b-button>
             </b-col>
-        
+
         </b-row>
 
     </div>
@@ -99,7 +99,7 @@
                 // 1. Create a blob out of the annotated table data
                 const data = JSON.stringify(this.dataTable.annotated);
                 const blob = new Blob([data], {type: "text/plain"});
-    
+
                 // 2. Create an anchor tag in memory linked to the blob
                 const pseudoAnchor = document.createElement("a");
                 pseudoAnchor.download = "annotated_data.json";
@@ -109,7 +109,7 @@
                     pseudoAnchor.download,
                     pseudoAnchor.href
                 ].join(':');
-                
+
                 // 3. Dispatch a mouse click event on the in-memory anchor tag
                 const pseudoClickEvent = document.createEvent("MouseEvents");
                 pseudoClickEvent.initEvent("click", true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);

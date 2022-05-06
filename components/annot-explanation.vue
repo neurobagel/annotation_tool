@@ -27,16 +27,16 @@
     export default {
 
         props: {
-        
+
             explanation: {
-                
+
                 type: String,
                 default: "No explanation has been provided yet."
             }
         },
 
         name: "AnnotExplanation",
-    
+
         data() {
 
             return {

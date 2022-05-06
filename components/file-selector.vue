@@ -23,14 +23,14 @@
     export default {
 
         props: {
-            
+
             contentType: { type: String, required: true }
         },
-        
+
         data() {
 
             return {
-                
+
                 knownContentTypes: {
 
                     "json": "application/json",
@@ -66,9 +66,9 @@
                     this.$emit("file-selected", "none");
                     return;
                 }
-                
+
                 // 2. Parse the whole file and save the lines
-                
+
                 // A. TSV file parsing
                 if ( this.knownContentTypes["tsv"] === this.contentType ) {
 
@@ -135,7 +135,7 @@
     }
 
     .file-selector-button:hover {
-        
+
         background-color: green;
         border-color: green;
         color: white;
