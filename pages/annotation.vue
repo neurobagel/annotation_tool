@@ -189,7 +189,7 @@
             removeMissingValue(p_event) {
 
                 // 1. Create copy of the missing values list for this column without the value to be removed
-                const missingValuesList = {}
+                const missingValuesList = {};
                 missingValuesList[p_event.column] = [];
 
                 for ( const value of this.missingColumnValues[p_event.column] ) {

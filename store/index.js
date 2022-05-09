@@ -569,7 +569,7 @@ export const getters = {
 
         // 0. If we do not have a data dictionary then the value description is undefined (e.g. 'null')
         let valueDescription = null;
-        console.log("getting description for", p_columnName, p_value)
+        console.log("getting description for", p_columnName, p_value);
 
         // 1. Find the description for this column's value in the data dictionary
         if ( null !== p_state.dataDictionary.original && Object.keys(p_state.dataDictionary.original).includes(p_columnName) ) {
