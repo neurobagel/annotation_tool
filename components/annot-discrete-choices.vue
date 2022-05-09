@@ -24,12 +24,19 @@
                             :options="options"
                             @input="updateMapping($event, row.item)" />
                     </template>
+                    <template #cell(missing_value)="row">
+                        <b-button
+                            variant="danger"
+                            @click="declareMissing(row.item)">
+                            {{ uiText.missingValueButton }}
+                        </b-button>
+                    </template>
                 </b-table>
 
                 <!-- Button to save the annotated data of this tab to the store -->
                 <b-row>
                     <b-button
-                        :disabled="saveButtonDisabled"
+                        :disabled="!saveButtonEnabled"
                         :variant="saveButtonColor"
                         @click="applyAnnotation">
                         {{ uiText.saveButton }}
@@ -59,7 +66,7 @@
                 default() {
                     // TODO: We currently let users tell us about a missing value in the same way they annotate real values
                     // we should instead have a separate mechanism to identify missing values
-                    return ["default category", "missing value"];
+                    return ["default category", this.missingValueLabel];
                 },
                 required: true
             },
@@ -69,7 +76,10 @@
 
         inject: [
 
-            "dataTable"
+            "dataTable",
+            "isMissingValue",
+            "missingColumnValues",
+            "missingValueLabel"
         ],
 
         name: "AnnotDiscreteValues",
@@ -78,20 +88,20 @@
 
             return {
 
-                saveButtonDisabled: true,
-
                 exampleFields: [
 
                     "column_name",
                     "raw_value",
-                    "select_an_appropriate_mapping"
+                    "select_an_appropriate_mapping",
+                    "missing_value"
                 ],
 
                 // Text for UI elements
                 uiText: {
 
                     instructions: "Annotate each unique value",
-                    saveButton: "Save Annotation"
+                    saveButton: "Save Annotation",
+                    missingValueButton: "Missing Value"
                 },
 
                 valueMapping: {}
@@ -100,17 +110,28 @@
 
         computed: {
 
-            displayTable() {
+            saveButtonEnabled() {
 
-                // Create and return table data list column name and corresponding value for all unique values in the relevant columns
+                return this.relevantColumns.every(
+                    columnName => this.uniqueValues[columnName].every(
+                        uniqueValue => (
+                            (this.valueMapping[columnName][uniqueValue] !== null) ||
+                            this.isMissingValue(columnName, uniqueValue) )
+                    )
+                );
+            },
+
+            displayTable() {
+                // Create and return table data for the unique values in the relevant columns that are not missing values
                 const tableData = [];
                 for ( const columnName of this.relevantColumns ) {
                     for ( const value of this.uniqueValues[columnName] ) {
-                        tableData.push({
-
-                            column_name: columnName,
-                            raw_value: value
-                        });
+                        if ( ! this.isMissingValue(columnName, value) ) {
+                            tableData.push({
+                                column_name: columnName,
+                                raw_value: value
+                            });
+                        }
                     }
                 }
 
@@ -120,15 +141,15 @@
             saveButtonColor() {
 
                 // Bootstrap variant color of the button to save the annotation to the data table
-                return ( !this.saveButtonDisabled ) ? "success" : "secondary";
+                return this.saveButtonEnabled ? "success" : "secondary";
             }
         },
 
         watch: {
 
-            relevantColumns(p_newColumns, p_oldColumns) {
+            relevantColumns( p_newColumns, p_oldColumns ) {
 
-                const removedColumns = p_oldColumns.filter(column => !p_newColumns.includes(column));
+                const removedColumns = p_oldColumns.filter( column => !p_newColumns.includes(column) );
 
                 if ( removedColumns.length > 0 ) {
 
@@ -139,19 +160,15 @@
                         // We cannot just remove the key from the object with a normal
                         // JS delete operator because then Vue wouldn't be aware of it.
                         // See also: https://v2.vuejs.org/v2/api/?redirect=true#vm-delete
-                        this.$delete(this.valueMapping, columnName);
+                        this.$delete( this.valueMapping, columnName );
                     }
 
                     // TODO: Check if we need to also handle the case where a column is added
                 }
-
-                // Determine whether at least one annotation has occurred
-                // and set the disabled status of the save annotation button
-                this.saveButtonDisabled = !this.checkAnnotationState();
             }
         },
 
-        mounted() {
+        created() {
 
             // Initialize the mapping of all unique values as null
             this.initializeMapping();
@@ -173,8 +190,12 @@
 
                         if ( this.relevantColumns.includes(columnName) ) {
 
-                            // TODO: If "value" is a missing value or doesn't fit the heuristic, this will currently break!
-                            transformedTable[index][columnName] = this.transformedValue(columnName, transformedTable[index][columnName]);
+                            if ( this.isMissingValue(columnName, transformedTable[index][columnName]) ) {
+                                // TODO: this string should be replaced by an app-wide way to designate missing values
+                                transformedTable[index][columnName] = this.missingValueLabel;
+                            } else {
+                                transformedTable[index][columnName] = this.transformedValue(columnName, transformedTable[index][columnName]);
+                            }
                         }
                     }
                 }
@@ -185,26 +206,6 @@
                     transformHeuristics: this.valueMapping,
                     transformedTable: transformedTable
                 });
-            },
-
-            checkAnnotationState() {
-
-                // 1. Begin with the assumption that there are no annotations
-                let hasAnnotation = false;
-
-                // 2. Attempt to find at least one value as having been annotated
-                for ( const columnName in this.valueMapping ) {
-
-                    // A. Check for an annotated value in the column
-                    if ( Object.values(this.valueMapping[columnName]).some(
-                        (uniqueValue) => null !== uniqueValue) ) {
-                        hasAnnotation = true;
-                        break;
-                    }
-                }
-
-                // Return whether or not there is at least one annotation
-                return hasAnnotation;
             },
 
             initializeMapping() {
@@ -223,10 +224,13 @@
                 }
             },
 
-            removeRow(p_row) {
+            declareMissing(p_row) {
 
                 // TODO: Use this method to move unique values to the missing value category
-                return p_row;
+                this.$emit('update:missingValue', {
+                    column: p_row.column_name,
+                    value: p_row.raw_value
+                });
             },
 
             transformedValue(p_columnName, p_value) {
@@ -236,14 +240,22 @@
             },
 
             updateMapping(p_selectedValue, p_row) {
+                // This method updates the valueMapping object.
+                // In order for Vue to detect this change and be reactive, we have to merge the new
+                // value with the existing object, one level at a time
 
-                // 1. Update the local annotation value map with the selected, new annotation value
-                this.valueMapping[p_row.column_name][p_row.raw_value] = p_selectedValue;
+                // First, we merge the inner level (e.g. the mapping for the columnName)
+                const innerUpdate = Object.assign(
+                    this.valueMapping[p_row.column_name],
+                    { [p_row.raw_value]: p_selectedValue }
+                );
 
-                // 2. Determine whether all unique values have now been mapped to something
-                // and set the disabled status of the save annotation button
-                // TODO: This might be better suited for a computed property, but this seems to break reactivity
-                this.saveButtonDisabled = !this.checkAnnotationState();
+                // Second, we merge the outer layer (e.g. the complete mapping object)
+                this.valueMapping = Object.assign(
+                    {},
+                    this.valueMapping,
+                    { [p_row.column_name]: innerUpdate }
+                );
             }
         }
     };

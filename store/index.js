@@ -117,6 +117,9 @@ export const state = () => ({
 
     // Annotation page-specific fields
 
+    // The string label applied to values designated as "missing values" when the data are annotated.
+    missingValueLabel: "missing value",
+
     // Keeps track of textual- and component-related information for the annotation of each category
     // See action nuxtServerInit() for initialization code
     annotationDetails: [],
@@ -181,7 +184,7 @@ export const actions = {
 				category: "Sex",
 				dataType: "categorical",
                 explanation: "This is an explanation for how to annotate sex.",
-				options: ["male", "female", "other", "missing value"],
+				options: ["male", "female", "other"],
 				specializedComponent: "annot-discrete-choices"
 			},
 			{
@@ -544,18 +547,32 @@ export const getters = {
 	isMissingValue: (p_state) => (p_columnName, p_value) => {
     // Checks if a column-value combination is stored in the missingColumnValues object
     // and returns true if it is, false otherwise
+    // if no records are stored for the entire p_columnName, then also returns false
 
 		if ( !Object.keys(p_state.missingColumnValues).includes(p_columnName) ) {
-			console.log(`WARNING: Could not find '${p_columnName}' in p_state.missingColumnValues`);
+			console.log(`WARNING: Could not find '${p_columnName}' in p_state.missingColumnValues. Will treat as not missing.`);
+            return false;
 		}
 
 		return ( p_state.missingColumnValues[p_columnName].includes(p_value) );
 	},
 
+    getMissingValuesColumn: (p_state) => (p_columnName) => {
+        // For a given column name returns the array of missing values the state knows about
+        // or returns null if no missing values are stored for this column name
+
+        if ( !Object.keys(p_state.missingColumnValues).includes(p_columnName) ) {
+            return null;
+        } else {
+            return p_state.missingColumnValues[p_columnName];
+        }
+    },
+
     valueDescription: (p_state) => (p_columnName, p_value) => {
 
         // 0. If we do not have a data dictionary then the value description is undefined (e.g. 'null')
         let valueDescription = null;
+        console.log("getting description for", p_columnName, p_value);
 
         // 1. Find the description for this column's value in the data dictionary
         if ( null !== p_state.dataDictionary.original && Object.keys(p_state.dataDictionary.original).includes(p_columnName) ) {
