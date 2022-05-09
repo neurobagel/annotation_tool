@@ -146,20 +146,20 @@
 
         watch: {
 
-            relevantColumns(p_newColumns, p_oldColumns) {
+            relevantColumns( p_newColumns, p_oldColumns ) {
 
-                const removedColumns = p_oldColumns.filter(column => !p_newColumns.includes(column));
+                const removedColumns = p_oldColumns.filter( column => !p_newColumns.includes(column) );
 
-                if (removedColumns.length > 0) {
+                if ( removedColumns.length > 0 ) {
 
                     // There has been at least one column removed from this component's category,
                     // possibly via the annot-columns component 'remove' action
-                    for (const columnName of removedColumns) {
+                    for ( const columnName of removedColumns ) {
 
                         // We cannot just remove the key from the object with a normal
                         // JS delete operator because then Vue wouldn't be aware of it.
                         // See also: https://v2.vuejs.org/v2/api/?redirect=true#vm-delete
-                        this.$delete(this.valueMapping, columnName);
+                        this.$delete( this.valueMapping, columnName );
                     }
 
                     // TODO: Check if we need to also handle the case where a column is added
