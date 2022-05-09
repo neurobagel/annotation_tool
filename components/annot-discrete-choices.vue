@@ -227,7 +227,6 @@
             declareMissing(p_row) {
 
                 // TODO: Use this method to move unique values to the missing value category
-                console.log("please declare", p_row, "missing");
                 this.$emit('update:missingValue', {
                     column: p_row.column_name,
                     value: p_row.raw_value
