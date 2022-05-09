@@ -39,7 +39,8 @@
 
         inject: [
 
-            "dataTable"
+            "dataTable",
+            "missingValueLabel"
         ],
 
         name: "SubNumericValidation",
@@ -189,7 +190,7 @@
                         break;
 
                     case "string":
-                        convertedValue = "missing value";
+                        convertedValue = this.missingValueLabel;
                         break;
 
                     case "isoyear": {

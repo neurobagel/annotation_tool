@@ -117,6 +117,9 @@ export const state = () => ({
 
     // Annotation page-specific fields
 
+    // The string label applied to values designated as "missing values" when the data are annotated.
+    missingValueLabel: "missing value",
+
     // Keeps track of textual- and component-related information for the annotation of each category
     // See action nuxtServerInit() for initialization code
     annotationDetails: [],
@@ -181,7 +184,7 @@ export const actions = {
 				category: "Sex",
 				dataType: "categorical",
                 explanation: "This is an explanation for how to annotate sex.",
-				options: ["male", "female", "other", "missing value"],
+				options: ["male", "female", "other"],
 				specializedComponent: "annot-discrete-choices"
 			},
 			{

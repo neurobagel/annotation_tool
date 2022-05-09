@@ -66,7 +66,7 @@
                 default() {
                     // TODO: We currently let users tell us about a missing value in the same way they annotate real values
                     // we should instead have a separate mechanism to identify missing values
-                    return ["default category", "missing value"];
+                    return ["default category", this.missingValueLabel];
                 },
                 required: true
             },
@@ -78,7 +78,8 @@
 
             "dataTable",
             "isMissingValue",
-            "missingColumnValues"
+            "missingColumnValues",
+            "missingValueLabel"
         ],
 
         name: "AnnotDiscreteValues",
@@ -191,7 +192,7 @@
 
                             if ( this.isMissingValue(columnName, transformedTable[index][columnName]) ) {
                                 // TODO: this string should be replaced by an app-wide way to designate missing values
-                                transformedTable[index][columnName] = "missing value";
+                                transformedTable[index][columnName] = this.missingValueLabel;
                             } else {
                                 transformedTable[index][columnName] = this.transformedValue(columnName, transformedTable[index][columnName]);
                             }

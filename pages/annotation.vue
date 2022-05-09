@@ -114,7 +114,8 @@
                 "dataDictionary",
                 "dataTable",
                 "pageData",
-                "missingColumnValues"
+                "missingColumnValues",
+                "missingValueLabel"
             ]),
 
             nextPageButtonColor() {
@@ -137,7 +138,8 @@
                 columnToCategoryMap: this.columnToCategoryMap,
                 dataDictionary: this.dataDictionary,
                 dataTable: this.dataTable,
-                missingColumnValues: this.missingColumnValues
+                missingColumnValues: this.missingColumnValues,
+                missingValueLabel: this.missingValueLabel
             };
         },
 
