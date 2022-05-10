@@ -17,8 +17,7 @@
             I forced this block to be rendered client-side only for now and that fixed it for now
             See: https://nuxtjs.org/docs/features/nuxt-components/#the-client-only-component
         -->
-        <no-ssr>
-
+        <client-only>
             <!-- This gives us built-in keyboard navigation! -->
             <b-tabs
                 card
@@ -43,9 +42,8 @@
 
                 </b-tab>
 
-
             </b-tabs>
-        </no-ssr>
+        </client-only>
 
         <b-row>
 
