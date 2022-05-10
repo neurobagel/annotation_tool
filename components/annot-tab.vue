@@ -82,6 +82,12 @@
                 const columnList = [];
                 for ( const columnName in this.columnToCategoryMap ) {
 
+                    // If this tab is an assessment tool group, make sure this column is in its toolset
+                    if ( Object.prototype.hasOwnProperty.call(this.details, "groupName") &&
+                        !(this.details.tools.includes(columnName)) ) {
+                        continue;
+                    }
+
                     if ( this.category === this.columnToCategoryMap[columnName] ) {
                         columnList.push(columnName);
                     }

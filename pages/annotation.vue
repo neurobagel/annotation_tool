@@ -29,8 +29,8 @@
                 <b-tab
                     v-for="details in annotationDetails"
                     :key="details.id"
-                    :title="details.category"
-                    :title-link-class="tabStyle(details.category)">
+                    :title="tabTitle(details)"
+                    :title-link-class="tabStyle(details)">
 
                     <b-card-text>
                         <annot-tab
@@ -193,11 +193,28 @@
                 this.$store.dispatch("saveMissingColumnValues", p_event);
             },
 
-            tabStyle(p_category) {
+            tabStyle(p_details) {
 
-                // The 'title-link-class' attribute for b-tab expects a single or list of classes
-                return ["annotation-tab-nav", this.categoryClasses[p_category]];
+                // NOTE: The 'title-link-class' attribute for b-tab expects a single or list of classes
+
+                // Style assessment tool group tabs like assessment tools
+                if ( Object.prototype.hasOwnProperty.call(p_details, "groupName") ) {
+
+                    return ["annotation-tab-nav", this.categoryClasses["Assessment Tool"]]
+                }
+                
+                // Else, style the tab based on the detail's category
+                return ["annotation-tab-nav", this.categoryClasses[p_details.category]];
             },
+
+            tabTitle(p_details) {
+
+                // Return the annotation detail's tool group name if it exists,
+                // otherwise just the detail's category
+                return ( Object.prototype.hasOwnProperty.call(p_details, "groupName") ) ?
+                    p_details.groupName : p_details.category;
+
+            },            
 
             unlinkColumnFromCategory(p_event) {
 

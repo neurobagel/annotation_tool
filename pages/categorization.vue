@@ -33,6 +33,7 @@
 
         <!-- Tool grouping -->
         <categ-tool-group
+            @new-tool-group="saveNewToolGroup($event)"
             :column-names="dataTable.columns"
             :column-to-category-map="columnToCategoryMap" />
 
@@ -148,6 +149,11 @@
                 }
 
                 return links;
+            },
+
+            saveNewToolGroup(p_toolGroupData) {
+
+                this.$store.dispatch("createToolGroup", p_toolGroupData);
             },
 
             setSelectedCategory(p_clickData) {

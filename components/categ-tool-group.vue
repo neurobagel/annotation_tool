@@ -75,8 +75,8 @@
                 <template #top-row v-if="hasNoGroups">
                     <!-- Adding &nbsp; to the cell so that it maintains the standard cell height -->
                     <td
-                        v-for="index in assessmentToolGroups.fields.length"
-                        :key="assessmentToolGroups.fields[index]">
+                        v-for="field in assessmentToolGroups.fields"
+                        :key="field.key">
                             &nbsp;
                     </td>
                 </template>
@@ -120,18 +120,16 @@
                             key: "name",
                             label: "Name",
                             type: "text",
-                            editable: true,
                             placeholder: "Enter Name..."
                         },
                         {
                             key: "toolList",
                             label: "Tools",
-                            type: "text",
-                            editable: false
+                            type: "text"
                         },
                         {
                             key:"action",
-                            label:" ",
+                            label: " ",
                             type: "text"
                         }
                     ]
@@ -214,7 +212,14 @@
                 // 2. Save this group to the tool group map
                 this.toolGroups[this.newToolGroupName] = [...this.selectedTools];
 
-                // 3. Clear the tool group input fields
+                // 3. Tell the categorization page a new tool group has been created
+                this.$emit("new-tool-group", {
+
+                    name: this.newToolGroupName,
+                    tools: this.selectedTools
+                });
+
+                // 4. Clear the tool group input fields
                 this.newToolGroupName = "";
                 this.selectedTools = [];
             },

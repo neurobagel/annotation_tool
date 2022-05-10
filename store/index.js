@@ -288,6 +288,11 @@ export const actions = {
         });
     },
 
+    createToolGroup(p_context, p_toolGroupData) {
+
+        p_context.commit("saveToolGroup", p_toolGroupData);
+    },
+
     unlinkColumnFromCategory(p_context, p_linkingData) {
 
         p_context.commit("removeColumnCategorization", p_linkingData.column);
@@ -447,6 +452,22 @@ export const mutations = {
 
         // Disassociate the column with this category it was linked to
         p_state.columnToCategoryMap[p_columnName] = null;
+    },
+
+    saveToolGroup(p_state, p_toolGroupData) {
+
+        // Add a new assessment tool item to the annotation details list for this tool group
+        p_state.annotationDetails.push({
+
+            id: p_state.annotationDetails.length,
+            category: p_toolGroupData.name,
+            dataType: "string",
+            explanation: "This is an explanation for how to annotate assessments.",
+            groupName: p_toolGroupData.name,
+            options: { mode: "column" },
+            specializedComponent: "annot-vocabulary",
+            tools: p_toolGroupData.tools
+        });
     },
 
     // Annotation page
