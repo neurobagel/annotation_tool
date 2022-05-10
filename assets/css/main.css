@@ -19,6 +19,14 @@
 	padding-right: 2em;
 }
 
+/* Categorization page styles */
+
+.instructions-text {
+
+	color: grey;
+	font-style: italic;
+}
+
 /* Annotation page styles */
 
 .annotation-card {
