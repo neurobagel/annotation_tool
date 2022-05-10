@@ -103,6 +103,12 @@ module.exports = {
             allowEmptyLines: true
         }],
 
+        "vue/multi-word-component-names": ["error", {
+
+            // Ignore the single-word name for Nuxt's default layout
+            "ignores": ["DefaultLayout"]
+        }],
+
         // Four space indent for script portion of vue file
         "vue/script-indent": ["error", 4, {
 
