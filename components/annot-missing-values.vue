@@ -188,7 +188,6 @@
             },
 
             removeColumn(p_tableItem) {
-
                 // Remove this value from the column's missing value list in the store
                 this.$emit('remove:missingValue', p_tableItem);
             }
