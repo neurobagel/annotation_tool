@@ -75,8 +75,8 @@
                 <template #top-row v-if="hasNoGroups">
                     <!-- Adding &nbsp; to the cell so that it maintains the standard cell height -->
                     <td
-                        v-for="index in assessmentToolGroups.fields.length"
-                        :key="assessmentToolGroups.fields[index]">
+                        v-for="field in assessmentToolGroups.fields"
+                        :key="field.key">
                             &nbsp;
                     </td>
                 </template>
@@ -212,7 +212,7 @@
                 });
 
                 // 2. Save this group to the tool group map
-                this.toolGroups[this.newToolGroupName] = [...this.selectedTools];
+                this.$set(this.toolGroups, this.newToolGroupName, [...this.selectedTools]);
 
                 // 3. Clear the tool group input fields
                 this.newToolGroupName = "";
@@ -244,7 +244,7 @@
                 this.assessmentToolGroups.items.splice(groupIndex, 1);
 
                 // 2. Remove this group from the tool group map
-                delete this.toolGroups[p_row.item.name];
+                this.$delete(this.toolGroups, p_row.item.name);
             }
         }
     }
