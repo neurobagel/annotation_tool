@@ -187,7 +187,7 @@
                 let options = [];
                 for ( const columnName in this.columnToCategoryMap ) {
 
-                    if ( "Assessment Tool" == this.columnToCategoryMap[columnName] ) {
+                    if ( "Assessment Tool" === this.columnToCategoryMap[columnName] ) {
                         options.push({
 
                             // Columns cannot be grouped twice.
