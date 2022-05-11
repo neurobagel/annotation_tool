@@ -108,6 +108,8 @@
             columnToCategoryMap: { type: Object, required: true }
         },
 
+        inject: ["toolGroups"],
+
         data() {
 
             return {
@@ -118,7 +120,7 @@
                     fields: [
                         {
                             key: "name",
-                            label: "Name",
+                            label: "Group Name",
                             type: "text",
                             placeholder: "Enter Name..."
                         },
@@ -139,13 +141,11 @@
 
                 selectedTools: [],
 
-                toolGroups: {},
-
                 uiText: {
 
                     alreadyExistsText: "Group already exists in table",
                     createToolGroupButton: "+ Create Tool Group",
-                    instructions: "Choose a name and columns and then click the 'create' button",
+                    instructions: "Enter a name, choose columns, and then click the 'create' button",
                     removeToolGroupButton: "x Remove Tool Group",
                     title: "Assessment Tool Groups",
                     toolGroupNamePlaceholder: "Type name of assessment tool group here..."
@@ -174,6 +174,20 @@
                 return ( "" !== this.newToolGroupName &&
                     this.selectedTools.length > 0 &&
                     !Object.prototype.hasOwnProperty.call(this.toolGroups, this.newToolGroupName) );
+            }
+        },
+
+        mounted() {
+
+            // Initialize the interface based on the contents of toolGroups in
+            // the store by populating the tool group table
+            for ( const toolGroup in this.toolGroups ) {
+
+                this.assessmentToolGroups.items.push({
+
+                    name: toolGroup,
+                    toolList: this.toolGroups[toolGroup].join(", ")
+                });
             }
         },
 
@@ -249,7 +263,7 @@
                 this.assessmentToolGroups.items.splice(groupIndex, 1);
 
                 // 2. Remove this group from the tool group map
-                delete this.toolGroups[p_row.item.name];
+                this.$emit("remove-tool-group", { name: p_row.item.name });
             }
         }
     }

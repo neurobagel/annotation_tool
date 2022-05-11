@@ -24,6 +24,7 @@
                 card
                 pills
                 vertical
+                nav-wrapper-class="col-2"
                 v-model="tabNavTitle">
 
                 <b-tab
@@ -113,7 +114,8 @@
                 "dataDictionary",
                 "dataTable",
                 "pageData",
-                "missingColumnValues"
+                "missingColumnValues",
+                "toolGroups"
             ]),
 
             nextPageButtonColor() {
@@ -136,7 +138,8 @@
                 columnToCategoryMap: this.columnToCategoryMap,
                 dataDictionary: this.dataDictionary,
                 dataTable: this.dataTable,
-                missingColumnValues: this.missingColumnValues
+                missingColumnValues: this.missingColumnValues,
+                toolGroups: this.toolGroups
             };
         },
 

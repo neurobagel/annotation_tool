@@ -123,7 +123,10 @@ export const state = () => ({
 
 	// Stores a list of (potentially) missing values for each column. This is determined in the missing-values
 	// components on the annotation page, and then amended by the user as they see fit
-	missingColumnValues: {}
+	missingColumnValues: {},
+
+    // Keeps track of named assessment tool groups and their associated tools (e.g. columns in the data table)
+    toolGroups: {}
 })
   
 // Actions - Call mutations to change state data in order to maintain trace of
@@ -192,14 +195,8 @@ export const actions = {
 				options: { mode: "row" },
 				specializedComponent: "annot-vocabulary"
 			},
-			{
-				id: 3,
-				category: "Assessment Tool",
-				dataType: "string",
-				explanation: "This is an explanation for how to annotate assessments.",
-				options: { mode: "column" },
-				specializedComponent: "annot-vocabulary"
-			}
+            
+            // NOTE: Assessment tools are now only added to annotationDetails when grouped
 		];
 
         // 1. Setup category-related data structures based on the given categories
@@ -291,6 +288,11 @@ export const actions = {
     createToolGroup(p_context, p_toolGroupData) {
 
         p_context.commit("saveToolGroup", p_toolGroupData);
+    },
+
+    removeToolGroup(p_context, p_toolGroupData) {
+
+        p_context.commit("deleteToolGroup", p_toolGroupData);
     },
 
     unlinkColumnFromCategory(p_context, p_linkingData) {
@@ -448,6 +450,11 @@ export const mutations = {
         p_state.columnToCategoryMap[p_data.column] = p_data.category;
     },
 
+    deleteToolGroup(p_state, p_toolGroupData) {
+
+        delete p_state.toolGroups[p_toolGroupData.name];
+    },
+
     removeColumnCategorization(p_state, p_columnName) {
 
         // Disassociate the column with this category it was linked to
@@ -460,7 +467,7 @@ export const mutations = {
         p_state.annotationDetails.push({
 
             id: p_state.annotationDetails.length,
-            category: p_toolGroupData.name,
+            category: "Assessment Tool",
             dataType: "string",
             explanation: "This is an explanation for how to annotate assessments.",
             groupName: p_toolGroupData.name,
