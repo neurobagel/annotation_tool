@@ -2,6 +2,7 @@
 
     <b-container fluid>
 
+        <!-- Column-categorization linking -->
         <b-row>
 
             <!-- Category selection table -->
@@ -27,6 +28,15 @@
 
         </b-row>
 
+        <!-- Whitespace to separate category-column categorization area from tool grouping area -->
+        <b-row>&nbsp;</b-row>
+
+        <!-- Tool grouping -->
+        <categ-tool-group
+            :column-names="dataTable.columns"
+            :column-to-category-map="columnToCategoryMap" />
+
+        <!-- Next page button -->
         <b-row>
 
             <b-col cols="9" />
@@ -62,9 +72,6 @@
         data() {
 
             return {
-
-                // Instructions for column-category linking
-                categorySelectText: {},
 
                 // Columns for file data table
                 columnLinkingTable: {
