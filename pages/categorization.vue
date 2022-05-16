@@ -199,7 +199,7 @@
 
                     pageName: "annotation",
                     enable: this.nextPageAccessible()
-                });                
+                });
             },
 
             saveNewToolGroup(p_toolGroupData) {

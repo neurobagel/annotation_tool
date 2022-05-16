@@ -203,7 +203,7 @@
                 // Style assessment tool group tabs like assessment tools
                 if ( Object.prototype.hasOwnProperty.call(p_details, "groupName") ) {
 
-                    return ["annotation-tab-nav", this.categoryClasses["Assessment Tool"]]
+                    return ["annotation-tab-nav", this.categoryClasses["Assessment Tool"]];
                 }
                 
                 // Else, style the tab based on the detail's category
@@ -217,7 +217,7 @@
                 return ( Object.prototype.hasOwnProperty.call(p_details, "groupName") ) ?
                     p_details.groupName : p_details.category;
 
-            },            
+            },
 
             unlinkColumnFromCategory(p_event) {
 

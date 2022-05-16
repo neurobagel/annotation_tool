@@ -190,11 +190,11 @@
             removeColumn(p_tableItem) {
 
                 // 1. Remove the item from table data
-                this.tableItems = this.tableItems.filter(item => 
+                this.tableItems = this.tableItems.filter(item =>
                     item.column === p_tableItem.column && item.value !== p_tableItem.value );
 
                 // 2. Remove this value from the column's missing value list in the store
-                this.$emit('remove:missingValue', p_tableItem);                    
+                this.$emit('remove:missingValue', p_tableItem);
             }
         }
     }
