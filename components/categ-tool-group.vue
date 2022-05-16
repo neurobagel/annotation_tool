@@ -223,17 +223,14 @@
                     toolList: this.selectedTools.join(", ")
                 });
 
-                // 2. Save this group to the tool group map
-                this.toolGroups[this.newToolGroupName] = [...this.selectedTools];
-
-                // 3. Tell the categorization page a new tool group has been created
+                // 2. Tell the categorization page a new tool group has been created
                 this.$emit("new-tool-group", {
 
                     name: this.newToolGroupName,
                     tools: this.selectedTools
                 });
 
-                // 4. Clear the tool group input fields
+                // 3. Clear the tool group input fields
                 this.newToolGroupName = "";
                 this.selectedTools = [];
             },
@@ -242,12 +239,10 @@
 
                 let foundTool = false;
 
-                // 1. Look for tool name in the table
-                for ( const item of this.assessmentToolGroups.items ) {
-                    
-                    // A. Look for tool name in this group's tools
-                    const toolNames = item.toolList.split(", ");
-                    if ( toolNames.includes(p_columnName) ) {
+                // Look for tool name in the saved tool groups
+                for ( const groupName in this.toolGroups ) {
+
+                    if ( this.toolGroups[groupName].includes(p_columnName) ) {
                         foundTool = true;
                         break;
                     }

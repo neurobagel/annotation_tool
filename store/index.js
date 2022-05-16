@@ -1,3 +1,7 @@
+
+// Facilitate Vue reactivity via 'Vue.set' and 'Vue.delete'
+import Vue from 'vue';
+
 // Root state - Stores state data
 export const state = () => ({
 
@@ -452,7 +456,13 @@ export const mutations = {
 
     deleteToolGroup(p_state, p_toolGroupData) {
 
-        delete p_state.toolGroups[p_toolGroupData.name];
+        // 1. Remove this tool group from the list
+        Vue.delete(p_state.toolGroups, p_toolGroupData.name);
+        
+        // 2. Remove the toolgroup from the annotation details
+        const groupIndex = p_state.annotationDetails.findIndex(detail => 
+            p_toolGroupData.name === detail?.groupName);
+        p_state.annotationDetails.splice(groupIndex, 1);
     },
 
     removeColumnCategorization(p_state, p_columnName) {
@@ -463,7 +473,11 @@ export const mutations = {
 
     saveToolGroup(p_state, p_toolGroupData) {
 
-        // Add a new assessment tool item to the annotation details list for this tool group
+        // 1. Save this group to the tool group map
+        // p_state.set(p_state.toolGroups, p_toolGroupData.name, p_toolGroupData.tools);
+        Vue.set(p_state.toolGroups, p_toolGroupData.name, [...p_toolGroupData.tools]);
+
+        // 2. Add a new assessment tool item to the annotation details list for this tool group
         p_state.annotationDetails.push({
 
             id: p_state.annotationDetails.length,
