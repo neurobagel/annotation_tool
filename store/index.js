@@ -86,7 +86,7 @@ export const state = () => ({
 
     // Stores table data in format ready for Bootstrap table
     // This is an array of objects. See the mutation
-    // 'setupColumnToCategoryTable' for exact format
+    // 'setupColumnToCategoryMap' for exact format
     columnToCategoryMap: {
 
     },
@@ -299,6 +299,11 @@ export const actions = {
         p_context.commit("changeToolGroup", p_toolGroupData);
     },
 
+    removeToolFromGroup(p_context, p_data) {
+
+        p_context.commit("deleteToolFromGroup", p_data)
+    },
+
     removeToolGroup(p_context, p_toolGroupData) {
 
         p_context.commit("deleteToolGroup", p_toolGroupData);
@@ -461,14 +466,17 @@ export const mutations = {
 
     changeToolGroup(p_state, p_toolGroupData) {
 
-        console.log("changeToolGroup");
-        console.log(`toolGroupData: ${JSON.stringify(p_toolGroupData)}`);
-
         // 1. Remove the old group from the tool group object
         Vue.delete(p_state.toolGroups, p_toolGroupData.previousName);
 
         // 2. Add the new group to the tool group object
         Vue.set(p_state.toolGroups, p_toolGroupData.name, p_toolGroupData.tools);
+
+        // 3. Alter the annotation details to reflect this change
+        const detailIndex = p_state.annotationDetails.findIndex(
+            detail => p_toolGroupData.previousName === detail.groupName);
+        p_state.annotationDetails[detailIndex].groupName = p_toolGroupData.name;
+        p_state.annotationDetails[detailIndex].tools = p_toolGroupData.tools;
     },
 
     deleteToolGroup(p_state, p_toolGroupData) {
@@ -488,6 +496,13 @@ export const mutations = {
         p_state.columnToCategoryMap[p_columnName] = null;
     },
 
+    deleteToolFromGroup(p_state, p_data) {
+
+        // Remove the tool from the given tool group
+        p_state.toolGroups[p_data.group].splice(
+            p_state.toolGroups[p_data.group].findIndex(element => element === p_data.tool), 1);
+    },
+
     saveToolGroup(p_state, p_toolGroupData) {
 
         // 1. Save this group to the tool group map
@@ -504,7 +519,7 @@ export const mutations = {
             groupName: p_toolGroupData.name,
             options: { mode: "column" },
             specializedComponent: "annot-vocabulary",
-            tools: p_toolGroupData.tools
+            tools: p_state.toolGroups[p_toolGroupData.name]
         });
     },
 

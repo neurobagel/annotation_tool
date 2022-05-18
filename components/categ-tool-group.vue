@@ -111,11 +111,14 @@
 
         props: {
 
-            columnNames: { type: Array, required: true },
-            columnToCategoryMap: { type: Object, required: true }
+            columnNames: { type: Array, required: true }
         },
 
-        inject: ["toolGroups"],
+        inject: [
+
+            "columnToCategoryMap",
+            "toolGroups"
+        ],
 
         data() {
 
@@ -240,18 +243,62 @@
             }
         },
 
+        watch: {
+
+            columnToCategoryMap: {
+
+                deep: true,
+                handler(p_newColumnToCategoryMap, p_oldColumnToCategoryMap) {
+
+                    // Note: `newValue` will be equal to `oldValue` here
+                    // on nested mutations as long as the object itself
+                    // hasn't been replaced.
+
+                    // 1. Check to see if any columns have been unlinked as assessment tools
+                    const toBeRemoved = [];
+                    for ( const item of this.assessmentToolGroups.items ) {
+
+                        const toolArray = item.toolList.split(", ");
+                        for ( const tool of toolArray ) {
+
+                            if ( null === this.columnToCategoryMap[tool] ) {
+                                toBeRemoved.push(tool);
+                            }
+                        }
+                    }
+
+                    // 2. Remove the recently unlinked columns from the tool groups in the store
+                    for ( const groupName in this.toolGroups ) {
+                        for ( const column of toBeRemoved ) {
+                            if ( this.toolGroups[groupName].includes(column) ) {
+
+                                this.$emit("remove-tool-from-group", {
+                                    tool: column,
+                                    group: groupName
+                                });
+                            }
+                        }
+                    }
+
+                    // 3. If any tool group is empty, remove it from the store
+                    for ( const groupName in this.toolGroups ) {
+                        if ( 0 === this.toolGroups[groupName].length ) {
+
+                            this.removeToolGroup({ item: { name: groupName }});
+                        }
+                    }
+
+                    // 4. Update the tool group data with changes
+                    this.refreshToolGroupTable();
+                }
+            }
+        },
+
         mounted() {
 
             // Initialize the interface based on the contents of toolGroups in
             // the store by populating the tool group table
-            for ( const toolGroup in this.toolGroups ) {
-
-                this.assessmentToolGroups.items.push({
-
-                    name: toolGroup,
-                    toolList: this.toolGroups[toolGroup].join(", ")
-                });
-            }
+            this.refreshToolGroupTable();
         },
 
         methods: {
@@ -345,6 +392,22 @@
 
                 // 4. Deselect table row
                 this.$refs.table.clearSelected();
+            },
+            
+            refreshToolGroupTable() {
+
+                // 1. Make sure the items list is clear
+                this.assessmentToolGroups.items = [];
+
+                // 2. Build the tool group table data based on the current store values
+                for ( const toolGroup in this.toolGroups ) {
+
+                    this.assessmentToolGroups.items.push({
+
+                        name: toolGroup,
+                        toolList: this.toolGroups[toolGroup].join(", ")
+                    });
+                }
             },
 
             removeToolGroup(p_row) {

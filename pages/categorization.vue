@@ -34,7 +34,7 @@
         <!-- Tool grouping -->
         <categ-tool-group
             :column-names="dataTable.columns"
-            :column-to-category-map="columnToCategoryMap"
+            @remove-tool-from-group="removeToolFromGroup($event)"
             @tool-group-action="toolGroupAction($event)" />
 
         <!-- Next page button -->
@@ -123,6 +123,7 @@
 
             return {
 
+                "columnToCategoryMap": this.columnToCategoryMap,
                 "toolGroups": this.toolGroups
             };
         },
@@ -173,18 +174,23 @@
                     }
                 }
 
+                // 3. Make sure all assessment tool columns are grouped
                 for ( const toolGroup in this.toolGroups ) {
                     for ( const tool of this.toolGroups[toolGroup] ) {
                         const columnIndex = assessmentToolColumns.indexOf(tool);
                         assessmentToolColumns.splice(columnIndex, 1);
                     }
                 }
-
                 const toolGroupingStatus = ( 0 === assessmentToolColumns.length );
 
                 // Annotation page is only accessible if at least one column has
                 // been categorized and all assessment tools have been grouped
                 return categorizationStatus && toolGroupingStatus;
+            },
+
+            removeToolFromGroup(p_toolData) {
+
+                this.$store.dispatch("removeToolFromGroup", p_toolData);
             },
 
             removeToolGroup(p_toolGroupData) {
