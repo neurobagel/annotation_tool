@@ -52,10 +52,10 @@
                 <b-col class="no-padding-right" ols="8">
                     <b-button
                         class="float-right"
-                        :disabled="!readyToAddToolGroup"
+                        :disabled="!readyToAddOrModifyToolGroup"
                         variant="info"
-                        @click="createToolGroup()">
-                        {{ uiText.createToolGroupButton }}
+                        @click="( modes.create === currentMode ) ? createToolGroup() : modifyToolGroup()">
+                        {{ currentModeText() }}
                     </b-button>
                 </b-col>
             </b-row>
@@ -67,9 +67,13 @@
             <!-- Tool grouping table -->
             <b-table
                 bordered
+                selectable
                 head-variant="dark"
+                ref="table"
+                select-mode="single"
                 :items="assessmentToolGroups.items"
-                :fields="assessmentToolGroups.fields">
+                :fields="assessmentToolGroups.fields"
+                @row-selected="selectTableRow($event)">
 
                 <!-- Blank row for empty table for aesthetics -->
                 <template #top-row v-if="hasNoGroups">
@@ -99,6 +103,9 @@
 </template>
 
 <script>
+
+    // Allows for reference to store data by creating simple, implicit getters
+    import { mapGetters } from "vuex";
 
     export default {
 
@@ -137,6 +144,15 @@
                     ]
                 },
 
+                currentGroup: "",
+                currentMode: "create",
+
+                modes: {
+
+                    create: "create",
+                    modify: "modify"
+                },
+
                 newToolGroupName: "",
 
                 selectedTools: [],
@@ -146,6 +162,7 @@
                     alreadyExistsText: "Group already exists in table",
                     createToolGroupButton: "+ Create Tool Group",
                     instructions: "Enter a name, choose columns, and then click the 'create' button",
+                    modifyToolGroupbutton: "~ Modify Tool Group",
                     removeToolGroupButton: "x Remove Tool Group",
                     title: "Assessment Tool Groups",
                     toolGroupNamePlaceholder: "Type name of assessment tool group here..."
@@ -163,17 +180,63 @@
 
             invalidNameEntered() {
 
-                // Duplicate group names are not allowed
-                return ( this.newToolGroupName in this.toolGroups );
+                // Name cannot be a duplicate of another tool group
+                let invalid = ( this.newToolGroupName in this.toolGroups );
+
+                // With the exception of the current group being edited while in 'modify' mode
+                if ( this.modes.modify === this.currentMode ) {
+                    invalid = invalid && this.currentGroup !== this.newToolGroupName;
+                }
+
+                return invalid;
             },
 
-            readyToAddToolGroup() {
+            ...mapGetters([
 
-                // A new tool group can be added if a new name has been entered
-                // and there are at least one columns selected
-                return ( "" !== this.newToolGroupName &&
-                    this.selectedTools.length > 0 &&
-                    !Object.prototype.hasOwnProperty.call(this.toolGroups, this.newToolGroupName) );
+                "getGroupOfTool",
+                "isToolGrouped"
+            ]),
+
+            readyToAddOrModifyToolGroup() {
+
+                // 1. Minimum ready condition check
+
+                // A. The entered group name must not be blank and there must be
+                // at least one tool selected
+                let ready = ( "" !== this.newToolGroupName &&
+                    this.selectedTools.length > 0 );
+                
+                // B. Short-circuit out if this condition is not met
+                if ( !ready ) {
+                    return false;
+                }
+
+                // 2. Mode-specific additional condition check
+                switch ( this.currentMode ) {
+
+                    case this.modes.create:
+
+                        // No duplicate group names allowed
+                        ready = ( ready &&
+                            !Object.prototype.hasOwnProperty.call(this.toolGroups, this.newToolGroupName) );
+                        break;
+
+                    case this.modes.modify:
+
+                        // No duplicate group names, but skip check for the
+                        // name of the group currently being modified
+                        for ( const groupName in this.toolGroups ) {
+
+                            if ( groupName === this.newToolGroupName &&
+                                groupName !== this.currentGroup ) {
+                                ready = false;
+                                break;
+                            }
+                        }
+                        break;
+                }
+
+                return ready;
             }
         },
 
@@ -195,16 +258,30 @@
 
             columnOptions() {
 
-                // Only columns categorized as assessment tools can be grouped together
-                let options = [];
+                const options = [];
+
+                // 1. Determine availability of columns for selection
                 for ( const columnName in this.columnToCategoryMap ) {
 
                     if ( "Assessment Tool" == this.columnToCategoryMap[columnName] ) {
+
+                        let disabledStatus = true;
+
+                        // A. Columns are available if they are not already grouped,
+                        // OR if in 'modify' mode if they are part of the
+                        // current group being modified
+                        if ( (this.modes.modify === this.currentMode && this.currentGroup === this.getGroupOfTool(columnName)) ||
+                            !this.isToolGrouped(columnName) ) {
+
+                            disabledStatus = false;
+                        }
+
+                        // B. Note that available columns are added in the order
+                        // they are listed in the column linking table on the
+                        // categorization page
                         options.push({
 
-                            // Columns cannot be grouped twice.
-                            // A column is disabled from selection once grouped.
-                            disabled: this.isToolAlreadyGrouped(columnName),
+                            disabled: disabledStatus,
                             text: columnName,
                             value: columnName
                         });
@@ -212,6 +289,12 @@
                 }
 
                 return options;
+            },
+
+            currentModeText() {
+
+                return ( this.modes.create === this.currentMode ) ?
+                    this.uiText.createToolGroupButton : this.uiText.modifyToolGroupbutton;
             },
 
             createToolGroup() {
@@ -224,31 +307,44 @@
                 });
 
                 // 2. Tell the categorization page a new tool group has been created
-                this.$emit("new-tool-group", {
+                this.$emit("tool-group-action", {
 
-                    name: this.newToolGroupName,
-                    tools: this.selectedTools
+                    action: "createToolGroup",
+                    data: {
+                        name: this.newToolGroupName,
+                        tools: this.selectedTools
+                    }
                 });
 
-                // 3. Clear the tool group input fields
-                this.newToolGroupName = "";
-                this.selectedTools = [];
+                // 3. Mode stays in 'create' but input fields are cleared
+                this.switchMode(this.modes.create, {});
             },
 
-            isToolAlreadyGrouped(p_columnName) {
+            modifyToolGroup() {
 
-                let foundTool = false;
+                // 1. Find item in table data and modify it
+                const groupIndex = this.assessmentToolGroups.items.findIndex(groupData =>
+                    this.currentGroup === groupData.name);
+                this.$set(this.assessmentToolGroups.items[groupIndex], "name", this.newToolGroupName);
+                this.$set(this.assessmentToolGroups.items[groupIndex], "toolList", this.selectedTools.join(", "));
 
-                // Look for tool name in the saved tool groups
-                for ( const groupName in this.toolGroups ) {
+                // 2. Tell the categorization page a tool group has been modified
+                this.$emit("tool-group-action", {
 
-                    if ( this.toolGroups[groupName].includes(p_columnName) ) {
-                        foundTool = true;
-                        break;
+                    action: "modifyToolGroup",
+                    data: {
+
+                        name: this.newToolGroupName,
+                        previousName: this.currentGroup,
+                        tools: this.selectedTools
                     }
-                }
+                });
 
-                return foundTool;
+                // 3. Switch back to 'create' mode
+                this.switchMode(this.modes.create, {});
+
+                // 4. Deselect table row
+                this.$refs.table.clearSelected();
             },
 
             removeToolGroup(p_row) {
@@ -258,7 +354,51 @@
                 this.assessmentToolGroups.items.splice(groupIndex, 1);
 
                 // 2. Remove this group from the tool group map
-                this.$emit("remove-tool-group", { name: p_row.item.name });
+                this.$emit("tool-group-action", {
+
+                    action: "removeToolGroup",
+                    data: {
+                        name: p_row.item.name
+                    }
+                });
+            },
+
+            switchMode(p_mode, p_data) {
+
+                if ( this.modes.create === p_mode ) {
+
+                    // 1. Clear the tool group input fields
+                    this.newToolGroupName = "";
+                    this.selectedTools = [];
+
+                    // 2. Set the mode back to 'create'
+                    this.currentMode = "create";
+
+                    // 3. Clear field indicating current group being edited
+                    this.currentGroup = "";
+                } else if ( this.modes.modify === p_mode ) {
+
+                    // 1. Set mode to 'modify' mode
+                    this.currentMode = this.modes.modify;
+
+                    // 2. Save the group name for saving edits later
+                    this.currentGroup = p_data.name;
+
+                    // 3. Populate textbox with selected group's name
+                    this.newToolGroupName = p_data.name;
+                }
+            },
+
+            selectTableRow(p_eventData) {
+
+                // Deselecting a table row switches to 'create' mode
+                if ( 0 === p_eventData.length ) {
+                    this.switchMode(this.modes.create, {});
+                }
+                // Selecting a table row switches to 'modify' mode
+                else {
+                    this.switchMode(this.modes.modify, p_eventData[0]);
+                }
             }
         }
     }

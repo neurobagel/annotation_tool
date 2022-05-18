@@ -35,8 +35,7 @@
         <categ-tool-group
             :column-names="dataTable.columns"
             :column-to-category-map="columnToCategoryMap"
-            @new-tool-group="saveNewToolGroup($event)"
-            @remove-tool-group="removeToolGroup($event)" />
+            @tool-group-action="toolGroupAction($event)" />
 
         <!-- Next page button -->
         <b-row>
@@ -301,6 +300,20 @@
 
                 // II. Link or unlink the currently-selected category and the clicked column
                 this.$store.dispatch(dataStoreFunction, dataForStore);
+
+                // 2. Enable the annotation page and perform setup actions if
+                // accessibility criteria have been met
+                this.$store.dispatch("initializePage", {
+
+                    pageName: "annotation",
+                    enable: this.nextPageAccessible()
+                });
+            },
+
+            toolGroupAction(p_event) {
+
+                // 1. Create, modify, or remove this tool group in the store
+                this.$store.dispatch(p_event.action, p_event.data);
 
                 // 2. Enable the annotation page and perform setup actions if
                 // accessibility criteria have been met

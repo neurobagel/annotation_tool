@@ -294,6 +294,11 @@ export const actions = {
         p_context.commit("saveToolGroup", p_toolGroupData);
     },
 
+    modifyToolGroup(p_context, p_toolGroupData) {
+
+        p_context.commit("changeToolGroup", p_toolGroupData);
+    },
+
     removeToolGroup(p_context, p_toolGroupData) {
 
         p_context.commit("deleteToolGroup", p_toolGroupData);
@@ -454,6 +459,18 @@ export const mutations = {
         p_state.columnToCategoryMap[p_data.column] = p_data.category;
     },
 
+    changeToolGroup(p_state, p_toolGroupData) {
+
+        console.log("changeToolGroup");
+        console.log(`toolGroupData: ${JSON.stringify(p_toolGroupData)}`);
+
+        // 1. Remove the old group from the tool group object
+        Vue.delete(p_state.toolGroups, p_toolGroupData.previousName);
+
+        // 2. Add the new group to the tool group object
+        Vue.set(p_state.toolGroups, p_toolGroupData.name, p_toolGroupData.tools);
+    },
+
     deleteToolGroup(p_state, p_toolGroupData) {
 
         // 1. Remove this tool group from the list
@@ -545,6 +562,19 @@ export const getters = {
         return columnDescription;
     },
 
+    getGroupOfTool: (p_state) => (p_tool) => {
+
+        // Look for the group of the given tool
+        let toolGroup = null;
+        for ( const groupName in p_state.toolGroups ) {
+            if ( p_state.toolGroups[groupName].includes(p_tool) ) {
+                toolGroup = groupName;
+            }
+        }
+
+        return toolGroup;
+    },    
+
     isColumnLinkedToCategory: (p_state) => (p_matchData) => {
 
         // Check to see if the given column has been linked to the given category
@@ -592,6 +622,22 @@ export const getters = {
 		return ( p_state.missingColumnValues[p_columnName].includes(p_value) );
 	},
 
+    isToolGrouped: (p_state) => (p_columnName) => {
+
+        let foundTool = false;
+
+        // Look for tool name in the saved tool groups
+        for ( const groupName in p_state.toolGroups ) {
+
+            if ( p_state.toolGroups[groupName].includes(p_columnName) ) {
+                foundTool = true;
+                break;
+            }
+        }
+
+        return foundTool;
+    },    
+
     valueDescription: (p_state) => (p_columnName, p_value) => {
 
         // 0. If we do not have a data dictionary then the value description is undefined (e.g. 'null')
@@ -618,7 +664,7 @@ export const getters = {
         }
 
         return valueDescription;
-    }
+    }    
 }
 
 // Action helpers
