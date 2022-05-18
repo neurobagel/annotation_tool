@@ -175,6 +175,12 @@
 
         computed: {
 
+            ...mapGetters([
+
+                "getGroupOfTool",
+                "isToolGrouped"
+            ]),
+
             hasNoGroups() {
 
                 // Table is blank if it has just the default blank entry
@@ -193,12 +199,6 @@
 
                 return invalid;
             },
-
-            ...mapGetters([
-
-                "getGroupOfTool",
-                "isToolGrouped"
-            ]),
 
             readyToAddOrModifyToolGroup() {
 
@@ -317,7 +317,8 @@
                         // A. Columns are available if they are not already grouped,
                         // OR if in 'modify' mode if they are part of the
                         // current group being modified
-                        if ( (this.modes.modify === this.currentMode && this.currentGroup === this.getGroupOfTool(columnName)) ||
+                        if ( (this.modes.modify === this.currentMode &&
+                            this.currentGroup === this.getGroupOfTool(columnName)) ||
                             !this.isToolGrouped(columnName) ) {
 
                             disabledStatus = false;
@@ -435,7 +436,7 @@
                     this.selectedTools = [];
 
                     // 2. Set the mode back to 'create'
-                    this.currentMode = "create";
+                    this.currentMode = this.modes.create;
 
                     // 3. Clear field indicating current group being edited
                     this.currentGroup = "";
