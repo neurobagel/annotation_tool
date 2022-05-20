@@ -193,7 +193,7 @@ export const actions = {
 				dataType: "string",
 				explanation: "This is an explanation for how to annotate diagnosis.",
 				options: { mode: "row" },
-				specializedComponent: "annot-vocabulary"
+				specializedComponent: "annot-vocabulary-row"
 			},
 			{
 				id: 3,
@@ -201,7 +201,7 @@ export const actions = {
 				dataType: "string",
 				explanation: "This is an explanation for how to annotate assessments.",
 				options: { mode: "column" },
-				specializedComponent: "annot-vocabulary"
+				specializedComponent: "annot-vocabulary-column"
 			}
 		];
 
@@ -468,6 +468,7 @@ export const mutations = {
     },
 
 	setMissingColumnValues(p_state, p_missingColumnValues) {
+        
         // This method merges incoming updated missingColumnValues records with the missingColumnValues
         // object in the store. Because the incoming changes can be incomplete (e.g. only contain updated
         // records of a single column), we cannot just overwrite the store object with them.
@@ -545,19 +546,26 @@ export const getters = {
     },
 
 	isMissingValue: (p_state) => (p_columnName, p_value) => {
-    // Checks if a column-value combination is stored in the missingColumnValues object
-    // and returns true if it is, false otherwise
-    // if no records are stored for the entire p_columnName, then also returns false
+
+        console.log("Entering isMissingValue");
+
+        // Checks if a column-value combination is stored in the missingColumnValues object
+        // and returns true if it is, false otherwise
+        // if no records are stored for the entire p_columnName, then also returns false
 
 		if ( !Object.keys(p_state.missingColumnValues).includes(p_columnName) ) {
+            
 			console.log(`WARNING: Could not find '${p_columnName}' in p_state.missingColumnValues. Will treat as not missing.`);
             return false;
 		}
+
+        console.log("Exiting isMissingValue");
 
 		return ( p_state.missingColumnValues[p_columnName].includes(p_value) );
 	},
 
     getMissingValuesColumn: (p_state) => (p_columnName) => {
+        
         // For a given column name returns the array of missing values the state knows about
         // or returns null if no missing values are stored for this column name
 
@@ -570,9 +578,8 @@ export const getters = {
 
     valueDescription: (p_state) => (p_columnName, p_value) => {
 
-        // 0. If we do not have a data dictionary then the value description is undefined (e.g. 'null')
-        let valueDescription = null;
-        console.log("getting description for", p_columnName, p_value);
+        // 0. If we do not have a data dictionary then the value description is undefined (e.g. "")
+        let valueDescription = "";
 
         // 1. Find the description for this column's value in the data dictionary
         if ( null !== p_state.dataDictionary.original && Object.keys(p_state.dataDictionary.original).includes(p_columnName) ) {

@@ -113,6 +113,7 @@
             saveButtonEnabled() {
 
                 return this.relevantColumns.every(
+
                     columnName => this.uniqueValues[columnName].every(
                         uniqueValue => (
                             (this.valueMapping[columnName][uniqueValue] !== null) ||

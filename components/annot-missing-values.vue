@@ -8,10 +8,12 @@
             <b-card-header>{{ uiText.title }}</b-card-header>
 
             <b-card-body class="missing-values-card-body">
+
                 <b-table
                     striped
                     :fields="fields"
                     :items="tableItems">
+
                     <template #cell(not_missing)="data">
                         <b-button
                             variant="danger"
@@ -19,7 +21,9 @@
                             {{ uiText.notMissingButton }}
                         </b-button>
                     </template>
+
                 </b-table>
+
             </b-card-body>
 
         </b-card>
@@ -74,23 +78,29 @@
             ]),
 
             tableItems() {
+
                 let missingValueArray = [];
 
+                // Create a table of missing values along with their column and data dictionary description
                 for ( let column of this.relevantColumns ) {
+
                     if ( Object.keys(this.missingColumnValues).includes(column) ) {
-                        for ( let missing_value of this.missingColumnValues[column] ) {
-                            const description = this.valueDescription(column, missing_value);
-                            missingValueArray.push(
-                                {
-                                    column: column,
-                                    description: description === null ? "" : description,
-                                    value: missing_value
-                                }
-                            );
+
+                        for ( let missingValue of this.missingColumnValues[column] ) {
+
+                            const description = this.valueDescription(column, missingValue);
+
+                            missingValueArray.push({
+
+                                column: column,
+                                description: description === null ? "" : description,
+                                value: missingValue
+                            });
 
                         }
                     }
                 }
+
                 return missingValueArray;
             }
         },
@@ -98,8 +108,9 @@
         methods: {
 
             removeColumn(p_tableItem) {
+
                 // Remove this value from the column's missing value list in the store
-                this.$emit('remove:missingValue', p_tableItem);
+                this.$emit("remove:missingValue", p_tableItem);
             }
         }
     };
