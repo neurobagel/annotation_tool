@@ -55,10 +55,10 @@ export default {
 	build: {
 		extend(p_config, p_ctx) {
 			if ( p_ctx.isDev ) {
-				p_config.devtool = p_ctx.isClient ? "source-map" : "inline-source-map"
+				p_config.devtool = p_ctx.isClient ? "source-map" : "inline-source-map";
 			}
 		}
 	},
 
 	devtool: "source-map"
-}
+};

@@ -24,7 +24,7 @@
         </b-card-body>
 
     </b-card>
-    
+
 </template>
 
 <script>
@@ -55,7 +55,7 @@
         methods: {
 
             removeColumn(columnName) {
-                
+
                 // Trigger an unlinking of this column from its previously assigned category in the store
                 this.$emit("remove:column", {
 
@@ -72,14 +72,14 @@
                 return ( null !== columnDescription ) ? ` - ${columnDescription}` : "";
             }
         }
-    }
-    
+    };
+
 </script>
 
 <style scoped>
 
     .columns-card-body {
-        
+
         height: 30vh;
         overflow-y: scroll;
     }

@@ -17,8 +17,7 @@
             I forced this block to be rendered client-side only for now and that fixed it for now
             See: https://nuxtjs.org/docs/features/nuxt-components/#the-client-only-component
         -->
-        <no-ssr>
-
+        <client-only>
             <!-- This gives us built-in keyboard navigation! -->
             <b-tabs
                 card
@@ -39,14 +38,14 @@
                             @remove:column="unlinkColumnFromCategory($event)"
                             @remove:missingValue="removeMissingValue($event)"
                             @update:dataTable="saveAnnotatedDataTable($event)"
-                            @update:missingColumnValues="saveMissingColumnValues($event)" />
+                            @update:missingColumnValues="saveMissingColumnValues($event)"
+                            @update:missingValue="addMissingValue($event)" />
                     </b-card-text>
 
                 </b-tab>
 
-
             </b-tabs>
-        </no-ssr>
+        </client-only>
 
         <b-row>
 
@@ -79,7 +78,7 @@
     import { mapGetters } from "vuex";
 
     export default {
-    
+
         name: "AnnotationPage",
 
         data() {
@@ -115,6 +114,7 @@
                 "dataTable",
                 "pageData",
                 "missingColumnValues",
+                "missingValueLabel",
                 "toolGroups"
             ]),
 
@@ -139,6 +139,7 @@
                 dataDictionary: this.dataDictionary,
                 dataTable: this.dataTable,
                 missingColumnValues: this.missingColumnValues,
+                missingValueLabel: this.missingValueLabel,
                 toolGroups: this.toolGroups
             };
         },
@@ -157,11 +158,41 @@
         },
 
         methods: {
+            addMissingValue(p_event) {
+                // This method expects an event object with a `column` and a `value` key.
+                // It will merge the new missing value with the existing missing value array for
+                // the `column` name and save it to the global store
+
+                let columnMissingValues = {};
+
+                if ( Object.keys(this.missingColumnValues).includes(p_event.column) ) {
+                    // If missing values are already listed for this column, we add the new value to them
+                    // We will reconstruct the array of missing values from the store because we don't want to copy it directly
+                    // TODO: an alternative approach would be to use deepcopy from https://github.com/lodash/lodash
+                    columnMissingValues[p_event.column] = [];
+                    for ( const value of this.missingColumnValues[p_event.column] ) {
+                        columnMissingValues[p_event.column].push(value);
+                    }
+
+                    // We do a sanity check to see if the new missing value is already listed as missing
+                    // This should not happen unless a missing value is erroneously still being shown in the list of values to be annotated.
+                    if ( ! ( columnMissingValues[p_event.column].includes(p_event.value) ) ) {
+                        columnMissingValues[p_event.column].push(p_event.value);
+                    } else {
+                        console.log(p_event.value, "is already in the list of missing values for column", p_event.column);
+                    }
+
+                } else {
+                    // Because no missing values were listed in the store for this column before, we just save the new one
+                    columnMissingValues[p_event.column] = [p_event.value];
+                }
+                this.$store.dispatch("saveMissingColumnValues", columnMissingValues);
+            },
 
             removeMissingValue(p_event) {
 
                 // 1. Create copy of the missing values list for this column without the value to be removed
-                const missingValuesList = {}
+                const missingValuesList = {};
                 missingValuesList[p_event.column] = [];
 
                 for ( const value of this.missingColumnValues[p_event.column] ) {
@@ -191,7 +222,7 @@
             },
 
             saveMissingColumnValues(p_event) {
-
+                // TODO document what this thing does and expects
                 // Save the algorithm and/or user-specified missing values to the store
                 this.$store.dispatch("saveMissingColumnValues", p_event);
             },

@@ -88,7 +88,7 @@
                 return [opacityClass, colorClass];
             }
         }
-    }
+    };
 
 </script>
 

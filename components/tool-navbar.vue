@@ -52,13 +52,13 @@
         data() {
 
             return {
-                
+
                 // Text for UI elements
                 uiText: {
 
                     toolName: "Annotation Tool"
                 }
-            }
+            };
         },
 
         methods: {
@@ -79,7 +79,7 @@
                 return variant;
             }
         }
-    }
+    };
 </script>
 
 <style>

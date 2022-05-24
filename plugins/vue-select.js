@@ -1,6 +1,6 @@
-import Vue from 'vue'
-import vSelect from 'vue-select'
+import Vue from 'vue';
+import vSelect from 'vue-select';
 
-Vue.component('VSelect', vSelect)
+Vue.component('VSelect', vSelect);
 
 import 'vue-select/dist/vue-select.css';
