@@ -23,13 +23,14 @@
                 card
                 pills
                 vertical
+                nav-wrapper-class="col-2"
                 v-model="tabNavTitle">
 
                 <b-tab
                     v-for="details in annotationDetails"
                     :key="details.id"
-                    :title="details.category"
-                    :title-link-class="tabStyle(details.category)">
+                    :title="tabTitle(details)"
+                    :title-link-class="tabStyle(details)">
 
                     <b-card-text>
                         <annot-tab
@@ -99,8 +100,10 @@
             ...mapGetters([
 
                 "columnDescription",
+                "getGroupOfTool",
                 "isDataAnnotated",
                 "isMissingValue",
+                "isToolGrouped",
                 "valueDescription"
             ]),
 
@@ -113,7 +116,8 @@
                 "dataTable",
                 "pageData",
                 "missingColumnValues",
-                "missingValueLabel"
+                "missingValueLabel",
+                "toolGroups"
             ]),
 
             nextPageButtonColor() {
@@ -137,7 +141,8 @@
                 dataDictionary: this.dataDictionary,
                 dataTable: this.dataTable,
                 missingColumnValues: this.missingColumnValues,
-                missingValueLabel: this.missingValueLabel
+                missingValueLabel: this.missingValueLabel,
+                toolGroups: this.toolGroups
             };
         },
 
@@ -224,10 +229,27 @@
                 this.$store.dispatch("saveMissingColumnValues", p_event);
             },
 
-            tabStyle(p_category) {
+            tabStyle(p_details) {
 
-                // The 'title-link-class' attribute for b-tab expects a single or list of classes
-                return ["annotation-tab-nav", this.categoryClasses[p_category]];
+                // NOTE: The 'title-link-class' attribute for b-tab expects a single or list of classes
+
+                // Style assessment tool group tabs like assessment tools
+                if ( Object.hasOwn(p_details, "groupName") ) {
+
+                    return ["annotation-tab-nav", this.categoryClasses["Assessment Tool"]];
+                }
+                
+                // Else, style the tab based on the detail's category
+                return ["annotation-tab-nav", this.categoryClasses[p_details.category]];
+            },
+
+            tabTitle(p_details) {
+
+                // Return the annotation detail's tool group name if it exists,
+                // otherwise just the detail's category
+                return ( Object.hasOwn(p_details, "groupName") ) ?
+                    p_details.groupName : p_details.category;
+
             },
 
             unlinkColumnFromCategory(p_event) {
@@ -237,6 +259,25 @@
 
                 // 2. Unlink this column from its currently-assigned category
                 this.$store.dispatch("unlinkColumnFromCategory", { column: p_event.removedColumn });
+
+                // 3. If this column was a grouped tool, remove it from its group
+                if ( this.isToolGrouped(p_event.removedColumn) ) {
+
+                    // A. Remove the tool from its group
+                    const groupName = this.getGroupOfTool(p_event.removedColumn);
+                    this.$store.dispatch("removeToolFromGroup", {
+                        group: groupName,
+                        tool: p_event.removedColumn
+                    });
+
+                    // B. If its former group is now empty of tools, remove the group itself
+                    for ( const groupName in this.toolGroups ) {
+                        if ( 0 === this.toolGroups[groupName].length ) {
+
+                            this.$store.dispatch("removeToolGroup", { name: groupName });
+                        }
+                    }                    
+                }
             }
         }
     };

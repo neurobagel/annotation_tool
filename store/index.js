@@ -1,3 +1,7 @@
+
+// Facilitate Vue reactivity via 'Vue.set' and 'Vue.delete'
+import Vue from 'vue';
+
 // Root state - Stores state data
 export const state = () => ({
 
@@ -82,7 +86,7 @@ export const state = () => ({
 
     // Stores table data in format ready for Bootstrap table
     // This is an array of objects. See the mutation
-    // 'setupColumnToCategoryTable' for exact format
+    // 'setupColumnToCategoryMap' for exact format
     columnToCategoryMap: {
 
     },
@@ -124,9 +128,12 @@ export const state = () => ({
     // See action nuxtServerInit() for initialization code
     annotationDetails: [],
 
-	// Stores a list of (potentially) missing values for each column. This is determined in the missing-values
-	// components on the annotation page, and then amended by the user as they see fit
-	missingColumnValues: {}
+	  // Stores a list of (potentially) missing values for each column. This is determined in the missing-values
+	  // components on the annotation page, and then amended by the user as they see fit
+	  missingColumnValues: {},
+
+    // Keeps track of named assessment tool groups and their associated tools (e.g. columns in the data table)
+    toolGroups: {}
 });
 
 // Actions - Call mutations to change state data in order to maintain trace of
@@ -195,14 +202,8 @@ export const actions = {
 				options: { mode: "row" },
 				specializedComponent: "annot-vocabulary"
 			},
-			{
-				id: 3,
-				category: "Assessment Tool",
-				dataType: "string",
-				explanation: "This is an explanation for how to annotate assessments.",
-				options: { mode: "column" },
-				specializedComponent: "annot-vocabulary"
-			}
+            
+            // NOTE: Assessment tools are now only added to annotationDetails when grouped
 		];
 
         // 1. Setup category-related data structures based on the given categories
@@ -289,6 +290,26 @@ export const actions = {
             column: p_linkingData.column,
             category: p_linkingData.category
         });
+    },
+
+    createToolGroup(p_context, p_toolGroupData) {
+
+        p_context.commit("saveToolGroup", p_toolGroupData);
+    },
+
+    modifyToolGroup(p_context, p_toolGroupData) {
+
+        p_context.commit("changeToolGroup", p_toolGroupData);
+    },
+
+    removeToolFromGroup(p_context, p_data) {
+
+        p_context.commit("deleteToolFromGroup", p_data)
+    },
+
+    removeToolGroup(p_context, p_toolGroupData) {
+
+        p_context.commit("deleteToolGroup", p_toolGroupData);
     },
 
     unlinkColumnFromCategory(p_context, p_linkingData) {
@@ -446,10 +467,63 @@ export const mutations = {
         p_state.columnToCategoryMap[p_data.column] = p_data.category;
     },
 
+    changeToolGroup(p_state, p_toolGroupData) {
+
+        // 1. Remove the old group from the tool group object
+        Vue.delete(p_state.toolGroups, p_toolGroupData.previousName);
+
+        // 2. Add the new group to the tool group object
+        Vue.set(p_state.toolGroups, p_toolGroupData.name, p_toolGroupData.tools);
+
+        // 3. Alter the annotation details to reflect this change
+        const detailIndex = p_state.annotationDetails.findIndex(
+            detail => p_toolGroupData.previousName === detail.groupName);
+        p_state.annotationDetails[detailIndex].groupName = p_toolGroupData.name;
+        p_state.annotationDetails[detailIndex].tools = p_toolGroupData.tools;
+    },
+
+    deleteToolGroup(p_state, p_toolGroupData) {
+
+        // 1. Remove this tool group from the list
+        Vue.delete(p_state.toolGroups, p_toolGroupData.name);
+        
+        // 2. Remove the toolgroup from the annotation details
+        const groupIndex = p_state.annotationDetails.findIndex(detail => 
+            p_toolGroupData.name === detail?.groupName);
+        p_state.annotationDetails.splice(groupIndex, 1);
+    },
+
     removeColumnCategorization(p_state, p_columnName) {
 
         // Disassociate the column with this category it was linked to
         p_state.columnToCategoryMap[p_columnName] = null;
+    },
+
+    deleteToolFromGroup(p_state, p_data) {
+
+        // Remove the tool from the given tool group
+        p_state.toolGroups[p_data.group].splice(
+            p_state.toolGroups[p_data.group].findIndex(element => element === p_data.tool), 1);
+    },
+
+    saveToolGroup(p_state, p_toolGroupData) {
+
+        // 1. Save this group to the tool group map
+        // p_state.set(p_state.toolGroups, p_toolGroupData.name, p_toolGroupData.tools);
+        Vue.set(p_state.toolGroups, p_toolGroupData.name, [...p_toolGroupData.tools]);
+
+        // 2. Add a new assessment tool item to the annotation details list for this tool group
+        p_state.annotationDetails.push({
+
+            id: p_state.annotationDetails.length,
+            category: "Assessment Tool",
+            dataType: "string",
+            explanation: "This is an explanation for how to annotate assessments.",
+            groupName: p_toolGroupData.name,
+            options: { mode: "column" },
+            specializedComponent: "annot-vocabulary",
+            tools: p_state.toolGroups[p_toolGroupData.name]
+        });
     },
 
     // Annotation page
@@ -508,6 +582,19 @@ export const getters = {
         return columnDescription;
     },
 
+    getGroupOfTool: (p_state) => (p_tool) => {
+
+        // Look for the group of the given tool
+        let toolGroup = null;
+        for ( const groupName in p_state.toolGroups ) {
+            if ( p_state.toolGroups[groupName].includes(p_tool) ) {
+                toolGroup = groupName;
+            }
+        }
+
+        return toolGroup;
+    },    
+
     isColumnLinkedToCategory: (p_state) => (p_matchData) => {
 
         // Check to see if the given column has been linked to the given category
@@ -557,6 +644,22 @@ export const getters = {
 		return ( p_state.missingColumnValues[p_columnName].includes(p_value) );
 	},
 
+    isToolGrouped: (p_state) => (p_columnName) => {
+
+        let foundTool = false;
+
+        // Look for tool name in the saved tool groups
+        for ( const groupName in p_state.toolGroups ) {
+
+            if ( p_state.toolGroups[groupName].includes(p_columnName) ) {
+                foundTool = true;
+                break;
+            }
+        }
+
+        return foundTool;
+    },    
+
     getMissingValuesColumn: (p_state) => (p_columnName) => {
         // For a given column name returns the array of missing values the state knows about
         // or returns null if no missing values are stored for this column name
@@ -567,6 +670,7 @@ export const getters = {
             return p_state.missingColumnValues[p_columnName];
         }
     },
+
 
     valueDescription: (p_state) => (p_columnName, p_value) => {
 
@@ -597,6 +701,7 @@ export const getters = {
         return valueDescription;
     }
 };
+
 
 // Action helpers
 function convertTsvLinesToTableData(p_tsvLines){

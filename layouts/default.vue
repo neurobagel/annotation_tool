@@ -23,6 +23,8 @@
 
     export default {
 
+        name: "DefaultLayout",
+
         computed: {
 
             ...mapState([
