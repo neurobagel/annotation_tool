@@ -33,7 +33,7 @@
 
                     </template>
                 </b-table>
-                
+
                 <!-- Button to save the annotated data of this tab to the store -->
                 <b-row>
                     <b-button
@@ -57,9 +57,9 @@
     export default {
 
         props: {
-            
+
             filteredDataTable: { type: Array, default: () => [] },
-            
+
             // Options contains 'mode' which is one of ["column", "row"]
             // column: Only the column names are mapped to vocabulary terms inside the data dictionary
             // row: The row values are mapped to vocabulary terms
@@ -69,7 +69,7 @@
         },
 
         inject: [
-            
+
             "dataTable",
             "columnDescription",
             "valueDescription"
@@ -107,7 +107,7 @@
 
                     // 1. Make a row for each column
                     for ( const columnName of this.relevantColumns ) {
-                        
+
                         // A. Get the column description
                         const columnDescription = this.columnDescription(columnName);
 
@@ -155,7 +155,7 @@
 
                 if ( "row" === this.options.mode ) {
 
-                    defaultFields.splice(1, 0, "raw_value")
+                    defaultFields.splice(1, 0, "raw_value");
                 }
 
                 return defaultFields;
@@ -169,7 +169,7 @@
                     case "column":
                         instructionText = "Please provide a Reproschema term";
                         break;
-                    
+
                     case "row":
                         instructionText = "Please provide a SNOMED-CT term";
                         break;
@@ -210,7 +210,7 @@
         },
 
         mounted() {
-            
+
             // Initialize the mapping of all unique values as null
             this.initializeMapping();
         },
@@ -341,6 +341,6 @@
                 this.saveButtonDisabled = this.checkAnnotationState();
             }
         }
-    }
+    };
 
 </script>

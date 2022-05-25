@@ -1,7 +1,7 @@
 <template>
 
     <b-container fluid>
-    
+
         <!-- Category to column linking table -->
         <b-table
             bordered
@@ -32,7 +32,7 @@
         methods: {
 
             applyCategory(p_row, p_index, p_event) {
-                
+
                 // Tell the parent page that a column has been linked with a category
                 this.$emit("column-name-selected", { column: p_row.column });
             },
@@ -45,5 +45,5 @@
                 return ( null === assignedCategory ) ? "" : this.categoryClasses[assignedCategory];
             }
         }
-    }
+    };
 </script>

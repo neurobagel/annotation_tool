@@ -39,9 +39,9 @@
 
         <!-- Next page button -->
         <b-row>
-            
+
             <b-col cols="9" />
-            
+
             <!-- Button to proceed to the next page -->
             <!-- Only enabled when at least one column has been categorized -->
             <b-col cols="3">
@@ -53,7 +53,7 @@
                     {{ uiText.nextButton }}
                 </b-button>
             </b-col>
-            
+
         </b-row>
 
     </b-container>
@@ -76,7 +76,7 @@
 
                 // Columns for file data table
                 columnLinkingTable: {
-                    
+
                     fields: [
 
                         { key: "column" },
@@ -96,11 +96,11 @@
                     categorySelectTitle: "Recommended Categories",
                     nextButton: "Next step: Annotate columns"
                 }
-            }
+            };
         },
 
         computed: {
-            
+
             ...mapState([
 
                 "categories",
@@ -113,7 +113,7 @@
             ]),
 
             nextPageButtonColor() {
-            
+
                 // Bootstrap variant color of the button leading to the annotation page
                 return this.pageData.annotation.accessible ? "success" : "secondary";
             }
@@ -278,7 +278,7 @@
                                             break;
                                         }
                                     }
-                                
+
                                     // b. Save the description from the json file colum entry
                                     this.columnToCategoryTable[index].description = descriptionStr;
                                 }

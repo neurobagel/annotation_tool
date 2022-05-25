@@ -1,5 +1,5 @@
 <template>
-  
+
     <div>
 
         <!-- Navigation bar -->
@@ -7,10 +7,10 @@
             :nav-items="pageData"
             :nav-order="pageOrder"
             :page-name="pageData[currentPage].fullName" />
-        
+
         <!-- Current page -->
         <Nuxt />
-  
+
     </div>
 
 </template>
@@ -26,7 +26,7 @@
         name: "DefaultLayout",
 
         computed: {
-                
+
             ...mapState([
 
                 "currentPage",
@@ -34,6 +34,6 @@
                 "pageOrder"
             ])
         }
-    }
+    };
 
 </script>

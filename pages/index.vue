@@ -42,7 +42,7 @@
                 :content-type="contentTypes.dataDictionary"
                 @file-selected="saveDataDictionary($event)" />
         </b-row>
-        
+
         <b-row>
 
             <b-col cols="9" />
@@ -99,7 +99,7 @@
                     dataDictionaryHeader: "Data dictionary",
                     nextButton: "Next step: Categorize columns"
                 }
-            }
+            };
         },
 
         computed: {
@@ -112,7 +112,7 @@
             ]),
 
             nextPageButtonColor() {
-            
+
                 // Bootstrap variant color of the button leading to the categorization page
                 return this.pageData.categorization.accessible ? "success" : "secondary";
             },
