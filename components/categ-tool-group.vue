@@ -221,7 +221,7 @@
 
                         // No duplicate group names allowed
                         ready = ( ready &&
-                            !Object.prototype.hasOwnProperty.call(this.toolGroups, this.newToolGroupName) );
+                            !Object.hasOwn(this.toolGroups, this.newToolGroupName) );
                         break;
 
                     case this.modes.modify:

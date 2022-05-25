@@ -101,8 +101,10 @@
             ...mapGetters([
 
                 "columnDescription",
+                "getGroupOfTool",
                 "isDataAnnotated",
                 "isMissingValue",
+                "isToolGrouped",
                 "valueDescription"
             ]),
 
@@ -201,7 +203,7 @@
                 // NOTE: The 'title-link-class' attribute for b-tab expects a single or list of classes
 
                 // Style assessment tool group tabs like assessment tools
-                if ( Object.prototype.hasOwnProperty.call(p_details, "groupName") ) {
+                if ( Object.hasOwn(p_details, "groupName") ) {
 
                     return ["annotation-tab-nav", this.categoryClasses["Assessment Tool"]];
                 }
@@ -214,7 +216,7 @@
 
                 // Return the annotation detail's tool group name if it exists,
                 // otherwise just the detail's category
-                return ( Object.prototype.hasOwnProperty.call(p_details, "groupName") ) ?
+                return ( Object.hasOwn(p_details, "groupName") ) ?
                     p_details.groupName : p_details.category;
 
             },
@@ -226,6 +228,25 @@
 
                 // 2. Unlink this column from its currently-assigned category
                 this.$store.dispatch("unlinkColumnFromCategory", { column: p_event.removedColumn });
+
+                // 3. If this column was a grouped tool, remove it from its group
+                if ( this.isToolGrouped(p_event.removedColumn) ) {
+
+                    // A. Remove the tool from its group
+                    const groupName = this.getGroupOfTool(p_event.removedColumn);
+                    this.$store.dispatch("removeToolFromGroup", {
+                        group: groupName,
+                        tool: p_event.removedColumn
+                    });
+
+                    // B. If its former group is now empty of tools, remove the group itself
+                    for ( const groupName in this.toolGroups ) {
+                        if ( 0 === this.toolGroups[groupName].length ) {
+
+                            this.$store.dispatch("removeToolGroup", { name: groupName });
+                        }
+                    }                    
+                }
             }
         }
     };

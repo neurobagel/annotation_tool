@@ -83,7 +83,7 @@
                 for ( const columnName in this.columnToCategoryMap ) {
 
                     // If this tab is an assessment tool group, make sure this column is in its toolset
-                    if ( Object.prototype.hasOwnProperty.call(this.details, "groupName") &&
+                    if ( Object.hasOwn(this.details, "groupName") &&
                         !(this.details.tools.includes(columnName)) ) {
                         continue;
                     }
