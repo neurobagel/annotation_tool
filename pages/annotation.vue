@@ -17,7 +17,7 @@
             I forced this block to be rendered client-side only for now and that fixed it for now
             See: https://nuxtjs.org/docs/features/nuxt-components/#the-client-only-component
         -->
-        <no-ssr>
+        <client-only>
 
             <!-- This gives us built-in keyboard navigation! -->
             <b-tabs
@@ -46,7 +46,7 @@
 
 
             </b-tabs>
-        </no-ssr>
+        </client-only>
 
         <b-row>
 
@@ -179,7 +179,7 @@
 
                     // We do a sanity check to see if the new missing value is already listed as missing
                     // This should not happen unless a missing value is erroneously still being shown in the list of values to be annotated.
-                    if ( ! ( columnMissingValues[p_event.column].includes(p_event.value) ) ) {
+                    if ( !columnMissingValues[p_event.column].includes(p_event.value) ) {
 
                         columnMissingValues[p_event.column].push(p_event.value);
                     } else {

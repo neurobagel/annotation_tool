@@ -157,17 +157,9 @@
 
             saveButtonEnabled() {
 
-                console.log("saveButtonEnabled");
-
                 for ( const columnName in this.vocabularyMapping ) {
 
-                    console.log("vocabularyMapping loop");
-
                     const mappedValue = this.vocabularyMapping[columnName];
-
-                    console.log(`mappedValue: ${mappedValue}`);
-
-                    let x = true;
 
                     // The first time we find any mapped value that is empty
                     // or unique value that is not missing, we return a status of false
@@ -211,9 +203,6 @@
       
                 deep: true,
                 handler (p_newValue, p_oldValue) {
-
-                    console.log(`p_newValue: ${JSON.stringify(p_newValue)}`);
-                    console.log(`p_oldValue: ${JSON.stringify(p_oldValue)}`);
 
                     // 1. Update the mapping with the new value
                     for ( const row of p_newValue ) {
@@ -260,8 +249,6 @@
             },
 
             checkAnnotationState() {
-
-                console.log("Entering checkAnnotationState");
 
                 // Look for unannotated values in the vocabulary map
                 return Object.values(this.vocabularyMapping)

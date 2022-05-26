@@ -1,3 +1,5 @@
+import Vue from "vue";
+
 // Root state - Stores state data
 export const state = () => ({
 
@@ -475,8 +477,13 @@ export const mutations = {
         // However, because of how reactivity in Vue works, we can also not simply overwrite the affected columns
         // (i.e. keys) in the object, because that will break reactivity.
         // The below pattern via assign sovles this problem. See here: https://v2.vuejs.org/v2/guide/reactivity.html
-        p_state.missingColumnValues = Object.assign({}, p_state.missingColumnValues, p_missingColumnValues);
 
+        const missingColumnKey = Object.keys(p_missingColumnValues)[0];
+        if ( 0 === p_missingColumnValues[missingColumnKey].length ) {
+            Vue.delete(p_state.missingColumnValues, missingColumnKey);
+        } else {
+            p_state.missingColumnValues = Object.assign({}, p_state.missingColumnValues, p_missingColumnValues);
+        }
 	}
 };
 
@@ -547,19 +554,14 @@ export const getters = {
 
 	isMissingValue: (p_state) => (p_columnName, p_value) => {
 
-        console.log("Entering isMissingValue");
-
         // Checks if a column-value combination is stored in the missingColumnValues object
         // and returns true if it is, false otherwise
         // if no records are stored for the entire p_columnName, then also returns false
 
 		if ( !Object.keys(p_state.missingColumnValues).includes(p_columnName) ) {
             
-			console.log(`WARNING: Could not find '${p_columnName}' in p_state.missingColumnValues. Will treat as not missing.`);
             return false;
 		}
-
-        console.log("Exiting isMissingValue");
 
 		return ( p_state.missingColumnValues[p_columnName].includes(p_value) );
 	},
