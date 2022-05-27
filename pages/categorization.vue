@@ -2,6 +2,7 @@
 
     <b-container fluid>
 
+        <!-- Column-categorization linking -->
         <b-row>
 
             <!-- Category selection table -->
@@ -27,6 +28,16 @@
 
         </b-row>
 
+        <!-- Whitespace to separate category-column categorization area from tool grouping area -->
+        <b-row>&nbsp;</b-row>
+
+        <!-- Tool grouping -->
+        <categ-tool-group
+            :column-names="dataTable.columns"
+            @remove-tool-from-group="removeToolFromGroup($event)"
+            @tool-group-action="toolGroupAction($event)" />
+
+        <!-- Next page button -->
         <b-row>
 
             <b-col cols="9" />
@@ -63,9 +74,6 @@
 
             return {
 
-                // Instructions for column-category linking
-                categorySelectText: {},
-
                 // Columns for file data table
                 columnLinkingTable: {
 
@@ -100,7 +108,8 @@
                 "columnToCategoryMap",
                 "dataTable",
                 "dataDictionary",
-                "pageData"
+                "pageData",
+                "toolGroups"
             ]),
 
             nextPageButtonColor() {
@@ -108,6 +117,15 @@
                 // Bootstrap variant color of the button leading to the annotation page
                 return this.pageData.annotation.accessible ? "success" : "secondary";
             }
+        },
+
+        provide() {
+
+            return {
+
+                "columnToCategoryMap": this.columnToCategoryMap,
+                "toolGroups": this.toolGroups
+            };
         },
 
         mounted() {
@@ -125,7 +143,7 @@
             this.$store.dispatch("initializePage", {
 
                 pageName: "annotation",
-                enable: this.countLinkedColumns() > 0
+                enable: this.nextPageAccessible()
             });
         },
 
@@ -141,6 +159,66 @@
                 }
 
                 return links;
+            },
+
+            nextPageAccessible() {
+
+                // 1. Determine if at least one column has been linked to a category
+                const categorizationStatus = this.countLinkedColumns() > 0;
+
+                // 2. Determine if all columns assigned the 'Assessment Tool' category have been grouped
+                const assessmentToolColumns = [];
+                for ( const column in this.columnToCategoryMap ) {
+                    if ( "Assessment Tool" === this.columnToCategoryMap[column] ) {
+                        assessmentToolColumns.push(column);
+                    }
+                }
+
+                // 3. Make sure all assessment tool columns are grouped
+                for ( const toolGroup in this.toolGroups ) {
+                    for ( const tool of this.toolGroups[toolGroup] ) {
+                        const columnIndex = assessmentToolColumns.indexOf(tool);
+                        assessmentToolColumns.splice(columnIndex, 1);
+                    }
+                }
+                const toolGroupingStatus = ( 0 === assessmentToolColumns.length );
+
+                // Annotation page is only accessible if at least one column has
+                // been categorized and all assessment tools have been grouped
+                return categorizationStatus && toolGroupingStatus;
+            },
+
+            removeToolFromGroup(p_toolData) {
+
+                this.$store.dispatch("removeToolFromGroup", p_toolData);
+            },
+
+            removeToolGroup(p_toolGroupData) {
+
+                // 1. Remove this tool group from the store
+                this.$store.dispatch("removeToolGroup", p_toolGroupData);
+
+                // 2. Enable the annotation page and perform setup actions if
+                // accessibility criteria have been met
+                this.$store.dispatch("initializePage", {
+
+                    pageName: "annotation",
+                    enable: this.nextPageAccessible()
+                });
+            },
+
+            saveNewToolGroup(p_toolGroupData) {
+
+                // 1. Create this new tool group in the store
+                this.$store.dispatch("createToolGroup", p_toolGroupData);
+
+                // 2. Enable the annotation page and perform setup actions if
+                // accessibility criteria have been met
+                this.$store.dispatch("initializePage", {
+
+                    pageName: "annotation",
+                    enable: this.nextPageAccessible()
+                });
             },
 
             setSelectedCategory(p_clickData) {
@@ -230,11 +308,25 @@
                 this.$store.dispatch(dataStoreFunction, dataForStore);
 
                 // 2. Enable the annotation page and perform setup actions if
-                // at least one column has been categorized
+                // accessibility criteria have been met
                 this.$store.dispatch("initializePage", {
 
                     pageName: "annotation",
-                    enable: this.countLinkedColumns() > 0
+                    enable: this.nextPageAccessible()
+                });
+            },
+
+            toolGroupAction(p_event) {
+
+                // 1. Create, modify, or remove this tool group in the store
+                this.$store.dispatch(p_event.action, p_event.data);
+
+                // 2. Enable the annotation page and perform setup actions if
+                // accessibility criteria have been met
+                this.$store.dispatch("initializePage", {
+
+                    pageName: "annotation",
+                    enable: this.nextPageAccessible()
                 });
             }
         }

@@ -3,7 +3,7 @@
     <div>
 
         <!-- Explanation text for this annotation tab -->
-        <annot-explanation :explanation="details.explanation" />
+        <annot-explanation :explanation="details.explanation" :index="details.id" />
 
         <!-- Lists all the columns linked to the category of this annotation tab -->
         <annot-columns
@@ -81,6 +81,12 @@
                 // Create and return a list of columns that are categorized with this tab's category
                 const columnList = [];
                 for ( const columnName in this.columnToCategoryMap ) {
+
+                    // If this tab is an assessment tool group, make sure this column is in its toolset
+                    if ( Object.hasOwn(this.details, "groupName") &&
+                        !(this.details.tools.includes(columnName)) ) {
+                        continue;
+                    }
 
                     if ( this.category === this.columnToCategoryMap[columnName] ) {
                         columnList.push(columnName);
