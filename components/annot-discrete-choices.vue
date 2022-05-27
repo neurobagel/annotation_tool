@@ -19,10 +19,12 @@
                         <!-- Bootstrap-Vue doesn't have a great option here so I am using https://vue-select.org/ -->
                         <!-- NOTE: We use the $event statement to add the row data to the payload of the @input
                             event without replacing the original event payload -->
+
                         <v-select
-                            label="Standard"
                             :options="options"
+                            :value="valueMapping[row.item.column_name][row.item.raw_value]"
                             @input="updateMapping($event, row.item)" />
+                                                  
                     </template>
                     <template #cell(missing_value)="row">
                         <b-button
@@ -110,25 +112,16 @@
 
         computed: {
 
-            saveButtonEnabled() {
-
-                return this.relevantColumns.every(
-
-                    columnName => this.uniqueValues[columnName].every(
-                        uniqueValue => (
-                            (this.valueMapping[columnName][uniqueValue] !== null) ||
-                            this.isMissingValue(columnName, uniqueValue) )
-                    )
-                );
-            },
-
             displayTable() {
+
                 // Create and return table data for the unique values in the relevant columns that are not missing values
                 const tableData = [];
                 for ( const columnName of this.relevantColumns ) {
                     for ( const value of this.uniqueValues[columnName] ) {
-                        if ( ! this.isMissingValue(columnName, value) ) {
+                        if ( !this.isMissingValue(columnName, value) ) {
+
                             tableData.push({
+
                                 column_name: columnName,
                                 raw_value: value
                             });
@@ -143,12 +136,24 @@
 
                 // Bootstrap variant color of the button to save the annotation to the data table
                 return this.saveButtonEnabled ? "success" : "secondary";
-            }
+            },
+
+            saveButtonEnabled() {
+
+                return this.relevantColumns.every(
+
+                    columnName => this.uniqueValues[columnName].every(
+                        uniqueValue => (
+                            "" !== this.valueMapping[columnName][uniqueValue] ||
+                            this.isMissingValue(columnName, uniqueValue) )
+                    )
+                );
+            }            
         },
 
         watch: {
 
-            relevantColumns( p_newColumns, p_oldColumns ) {
+            relevantColumns(p_newColumns, p_oldColumns) {
 
                 const removedColumns = p_oldColumns.filter( column => !p_newColumns.includes(column) );
 
@@ -161,7 +166,7 @@
                         // We cannot just remove the key from the object with a normal
                         // JS delete operator because then Vue wouldn't be aware of it.
                         // See also: https://v2.vuejs.org/v2/api/?redirect=true#vm-delete
-                        this.$delete( this.valueMapping, columnName );
+                        this.$delete(this.valueMapping, columnName);
                     }
 
                     // TODO: Check if we need to also handle the case where a column is added
@@ -171,7 +176,7 @@
 
         created() {
 
-            // Initialize the mapping of all unique values as null
+            // Initialize the mapping of all unique values as empty string
             this.initializeMapping();
         },
 
@@ -218,9 +223,9 @@
                 this.valueMapping = {};
                 for ( const [colName, uniqueValues] of Object.entries(this.uniqueValues) ) {
 
-                    // Now we will create a mapping of the form { uniqueVale: null } for each unique value
+                    // Now we will create a mapping of the form { uniqueVale: "" } for each unique value
                     this.valueMapping[colName] = Object.fromEntries(
-                        uniqueValues.map((uniqueValue) => [uniqueValue, null])
+                        uniqueValues.map((uniqueValue) => [uniqueValue, ""])
                     );
                 }
             },
@@ -228,7 +233,8 @@
             declareMissing(p_row) {
 
                 // TODO: Use this method to move unique values to the missing value category
-                this.$emit('update:missingValue', {
+                this.$emit("update:missingValue", {
+
                     column: p_row.column_name,
                     value: p_row.raw_value
                 });
@@ -241,17 +247,18 @@
             },
 
             updateMapping(p_selectedValue, p_row) {
+
                 // This method updates the valueMapping object.
                 // In order for Vue to detect this change and be reactive, we have to merge the new
                 // value with the existing object, one level at a time
 
-                // First, we merge the inner level (e.g. the mapping for the columnName)
+                // 1. Merge the inner level (e.g. the mapping for the columnName)
                 const innerUpdate = Object.assign(
                     this.valueMapping[p_row.column_name],
                     { [p_row.raw_value]: p_selectedValue }
                 );
 
-                // Second, we merge the outer layer (e.g. the complete mapping object)
+                // 2. Merge the outer layer (e.g. the complete mapping object)
                 this.valueMapping = Object.assign(
                     {},
                     this.valueMapping,

@@ -303,8 +303,6 @@
 
             initializeMapping() {
 
-                console.log("initializeMapping()");
-
                 // TODO: Revisit this once we have implemented the missing value components to make sure
                 // we don't break things by later turning values into missing values
 
@@ -321,9 +319,6 @@
                         this.vocabularyMapping[columnName][value] = "";
                     }
                 }
-
-                console.log(`this.uniqueValues: ${JSON.stringify(this.uniqueValues)}`);
-                console.log(`this.vocabularyMapping: ${JSON.stringify(this.vocabularyMapping)}`);
             },
 
             refreshTableItems() {
