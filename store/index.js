@@ -521,7 +521,7 @@ export const mutations = {
             explanation: "This is an explanation for how to annotate assessments.",
             groupName: p_toolGroupData.name,
             options: { mode: "column" },
-            specializedComponent: "annot-vocabulary",
+            specializedComponent: "annot-vocabulary-column",
             tools: p_state.toolGroups[p_toolGroupData.name]
         });
     },
