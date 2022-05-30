@@ -20,7 +20,7 @@
                 {{ uiText.saveButton }}
             </b-button>
         </b-row>
-        
+
     </div>
 
 </template>
@@ -38,12 +38,13 @@
         },
 
         inject: [
-            
-            "dataTable"
+
+            "dataTable",
+            "missingValueLabel"
         ],
 
         name: "SubNumericValidation",
-    
+
         data() {
 
             return {
@@ -70,11 +71,11 @@
 
                 // TODO: Turn the range into an argument for the component
                 unique_range: { start: 0, end: 3 }
-            }
+            };
         },
 
         computed: {
-            
+
             ageRegex() {
 
                 // Creates a regular expression that combines all named capture groups with XOR relationships
@@ -105,7 +106,7 @@
                 const tableData = [];
                 for ( const columnName of this.relevantColumns ) {
                     for ( let index = this.unique_range.start; index < this.unique_range.end; index++ ) {
-                        
+
                         const currentHeuristic = this.columnTransformHeuristics[columnName];
                         const currentValue = this.uniqueValues[columnName][index];
 
@@ -168,7 +169,7 @@
 
                     case "float":
                         convertedValue = parseFloat(p_value);
-                        break
+                        break;
 
                     case "bounded":
                         convertedValue = parseInt(p_value.replace("+", ""));
@@ -189,7 +190,7 @@
                         break;
 
                     case "string":
-                        convertedValue = "missing value";
+                        convertedValue = this.missingValueLabel;
                         break;
 
                     case "isoyear": {
@@ -208,7 +209,7 @@
 
                 return convertedValue;
             },
-            
+
             detectAgeFormat(p_value) {
 
                 // Returns an Object array where keys are the format(s) of the age value and values are the portion of the
@@ -263,17 +264,17 @@
 
             transformedValue(p_columnName, p_value) {
 
-                return this.convertAge(p_value, this.columnTransformHeuristics[p_columnName])
+                return this.convertAge(p_value, this.columnTransformHeuristics[p_columnName]);
             }
         }
-    }
+    };
 
 </script>
 
 <style scoped>
 
     .age-values-card-body {
-        
+
         height: 300px;
         overflow-y: scroll;
         position: relative;

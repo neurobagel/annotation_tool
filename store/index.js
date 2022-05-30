@@ -1,3 +1,7 @@
+
+// Facilitate Vue reactivity via 'Vue.set' and 'Vue.delete'
+import Vue from "vue";
+
 // Root state - Stores state data
 export const state = () => ({
 
@@ -8,7 +12,7 @@ export const state = () => ({
     pageData: {
 
         home: {
-            
+
             accessible: true,
             fullName: "Home",
             location: "/",
@@ -16,7 +20,7 @@ export const state = () => ({
         },
 
         categorization: {
-            
+
             accessible: false,
             fullName: "Categorization",
             location: "categorization",
@@ -24,7 +28,7 @@ export const state = () => ({
         },
 
         annotation: {
-            
+
             accessible: false,
             fullName: "Annotation",
             location: "annotation",
@@ -32,7 +36,7 @@ export const state = () => ({
         },
 
         download: {
-            
+
             accessible: false,
             fullName: "Download",
             location: "download",
@@ -82,7 +86,7 @@ export const state = () => ({
 
     // Stores table data in format ready for Bootstrap table
     // This is an array of objects. See the mutation
-    // 'setupColumnToCategoryTable' for exact format
+    // 'setupColumnToCategoryMap' for exact format
     columnToCategoryMap: {
 
     },
@@ -90,7 +94,7 @@ export const state = () => ({
     // Hardcoded list of categories used on the categorization page
     // and possibly elsewhere in the tool
     categories: [],
-    
+
     // This is a computed direct map between current categories and CSS classes
     // See getter 'categoryClasses'
     categoryClasses: null,
@@ -117,15 +121,21 @@ export const state = () => ({
 
     // Annotation page-specific fields
 
+    // The string label applied to values designated as "missing values" when the data are annotated.
+    missingValueLabel: "missing value",
+
     // Keeps track of textual- and component-related information for the annotation of each category
     // See action nuxtServerInit() for initialization code
     annotationDetails: [],
 
-	// Stores a list of (potentially) missing values for each column. This is determined in the missing-values
-	// components on the annotation page, and then amended by the user as they see fit
-	missingColumnValues: {}
-})
-  
+	  // Stores a list of (potentially) missing values for each column. This is determined in the missing-values
+	  // components on the annotation page, and then amended by the user as they see fit
+	  missingColumnValues: {},
+
+    // Keeps track of named assessment tool groups and their associated tools (e.g. columns in the data table)
+    toolGroups: {}
+});
+
 // Actions - Call mutations to change state data in order to maintain trace of
 // what component changed state data and when
 export const actions = {
@@ -150,7 +160,7 @@ export const actions = {
     nuxtServerInit({ commit }) {
 
         // This function is called on Nuxt server startup
-        
+
         // 0. This list is default but we can swap out and reinitialize category
         // data structures by calling store action 'initializeCategories' with
         // a new list of categories
@@ -181,7 +191,7 @@ export const actions = {
 				category: "Sex",
 				dataType: "categorical",
                 explanation: "This is an explanation for how to annotate sex.",
-				options: ["male", "female", "other", "missing value"],
+				options: ["male", "female", "other"],
 				specializedComponent: "annot-discrete-choices"
 			},
 			{
@@ -190,16 +200,10 @@ export const actions = {
 				dataType: "string",
 				explanation: "This is an explanation for how to annotate diagnosis.",
 				options: { mode: "row" },
-				specializedComponent: "annot-vocabulary"
+				specializedComponent: "annot-vocabulary-row"
 			},
-			{
-				id: 3,
-				category: "Assessment Tool",
-				dataType: "string",
-				explanation: "This is an explanation for how to annotate assessments.",
-				options: { mode: "column" },
-				specializedComponent: "annot-vocabulary"
-			}
+            
+            // NOTE: Assessment tools are now only added to annotationDetails when grouped
 		];
 
         // 1. Setup category-related data structures based on the given categories
@@ -210,7 +214,7 @@ export const actions = {
     },
 
     // Tool navigation
-    
+
     enablePageNavigation(p_context, p_navData) {
 
         p_context.commit("setPageNavigationAccess", p_navData);
@@ -244,7 +248,7 @@ export const actions = {
     },
 
     // Landing page actions
-    
+
     saveDataDictionary(p_context, p_newFileData) {
 
         // 1. Attempt to transform the string data into JSON if valid data given
@@ -262,7 +266,7 @@ export const actions = {
 
         // 1. Attempt to convert the tsv lines into a dict for each line if valid data given
         if ( "tsv"  === p_newFileData.fileType ) {
-        
+
             // 1. Save new table data, formatted for the Vue table element
             if ( null !== p_newFileData.data )
                 p_newFileData.formattedData = convertTsvLinesToTableData(p_newFileData.data);
@@ -288,6 +292,26 @@ export const actions = {
         });
     },
 
+    createToolGroup(p_context, p_toolGroupData) {
+
+        p_context.commit("saveToolGroup", p_toolGroupData);
+    },
+
+    modifyToolGroup(p_context, p_toolGroupData) {
+
+        p_context.commit("changeToolGroup", p_toolGroupData);
+    },
+
+    removeToolFromGroup(p_context, p_data) {
+
+        p_context.commit("deleteToolFromGroup", p_data)
+    },
+
+    removeToolGroup(p_context, p_toolGroupData) {
+
+        p_context.commit("deleteToolGroup", p_toolGroupData);
+    },
+
     unlinkColumnFromCategory(p_context, p_linkingData) {
 
         p_context.commit("removeColumnCategorization", p_linkingData.column);
@@ -309,7 +333,7 @@ export const actions = {
         }
 
         p_context.commit("changeColumnValues", {
-            
+
             columnName: p_columnName,
             tableToChange: p_context.state.dataTable.annotated,
             newValues: originalValues
@@ -325,7 +349,7 @@ export const actions = {
 
 		p_context.commit("setMissingColumnValues", p_missingColumnValues);
 	}
-}
+};
 
 // Mutations - Change state data, as called by Actions
 export const mutations = {
@@ -344,7 +368,7 @@ export const mutations = {
 
         // 2. Get color keys from tool color palette
         const colorKeys = Object.keys(p_state.toolColorPalette);
-        
+
         // 3. Create the category to color map
         let assignedCategories = 0;
         for ( let index = 0; index < p_categories.length &&
@@ -374,7 +398,7 @@ export const mutations = {
             const category = p_state.categories[index];
             const colorID = p_state.categoryToColorMap[category];
             const colorClass = p_state.toolColorPalette[colorID];
-            
+
             mapArray.push([category, colorClass]);
         }
 
@@ -443,10 +467,63 @@ export const mutations = {
         p_state.columnToCategoryMap[p_data.column] = p_data.category;
     },
 
+    changeToolGroup(p_state, p_toolGroupData) {
+
+        // 1. Remove the old group from the tool group object
+        Vue.delete(p_state.toolGroups, p_toolGroupData.previousName);
+
+        // 2. Add the new group to the tool group object
+        Vue.set(p_state.toolGroups, p_toolGroupData.name, p_toolGroupData.tools);
+
+        // 3. Alter the annotation details to reflect this change
+        const detailIndex = p_state.annotationDetails.findIndex(
+            detail => p_toolGroupData.previousName === detail.groupName);
+        p_state.annotationDetails[detailIndex].groupName = p_toolGroupData.name;
+        p_state.annotationDetails[detailIndex].tools = p_toolGroupData.tools;
+    },
+
+    deleteToolGroup(p_state, p_toolGroupData) {
+
+        // 1. Remove this tool group from the list
+        Vue.delete(p_state.toolGroups, p_toolGroupData.name);
+        
+        // 2. Remove the toolgroup from the annotation details
+        const groupIndex = p_state.annotationDetails.findIndex(detail => 
+            p_toolGroupData.name === detail?.groupName);
+        p_state.annotationDetails.splice(groupIndex, 1);
+    },
+
     removeColumnCategorization(p_state, p_columnName) {
 
         // Disassociate the column with this category it was linked to
         p_state.columnToCategoryMap[p_columnName] = null;
+    },
+
+    deleteToolFromGroup(p_state, p_data) {
+
+        // Remove the tool from the given tool group
+        p_state.toolGroups[p_data.group].splice(
+            p_state.toolGroups[p_data.group].findIndex(element => element === p_data.tool), 1);
+    },
+
+    saveToolGroup(p_state, p_toolGroupData) {
+
+        // 1. Save this group to the tool group map
+        // p_state.set(p_state.toolGroups, p_toolGroupData.name, p_toolGroupData.tools);
+        Vue.set(p_state.toolGroups, p_toolGroupData.name, [...p_toolGroupData.tools]);
+
+        // 2. Add a new assessment tool item to the annotation details list for this tool group
+        p_state.annotationDetails.push({
+
+            id: p_state.annotationDetails.length,
+            category: "Assessment Tool",
+            dataType: "string",
+            explanation: "This is an explanation for how to annotate assessments.",
+            groupName: p_toolGroupData.name,
+            options: { mode: "column" },
+            specializedComponent: "annot-vocabulary",
+            tools: p_state.toolGroups[p_toolGroupData.name]
+        });
     },
 
     // Annotation page
@@ -465,14 +542,22 @@ export const mutations = {
     },
 
 	setMissingColumnValues(p_state, p_missingColumnValues) {
+        
+        // This method merges incoming updated missingColumnValues records with the missingColumnValues
+        // object in the store. Because the incoming changes can be incomplete (e.g. only contain updated
+        // records of a single column), we cannot just overwrite the store object with them.
+        // However, because of how reactivity in Vue works, we can also not simply overwrite the affected columns
+        // (i.e. keys) in the object, because that will break reactivity.
+        // The below pattern via assign sovles this problem. See here: https://v2.vuejs.org/v2/guide/reactivity.html
 
-		// Save the new list of missing values for each given column
-		for ( const columnName in p_missingColumnValues ) {
-
-			p_state.missingColumnValues[columnName] = [...p_missingColumnValues[columnName]];
-		}
+        const missingColumnKey = Object.keys(p_missingColumnValues)[0];
+        if ( 0 === p_missingColumnValues[missingColumnKey].length ) {
+            Vue.delete(p_state.missingColumnValues, missingColumnKey);
+        } else {
+            p_state.missingColumnValues = Object.assign({}, p_state.missingColumnValues, p_missingColumnValues);
+        }
 	}
-}
+};
 
 // Getters - Give access to state data
 export const getters = {
@@ -489,7 +574,7 @@ export const getters = {
 
         // 1. Find the description for this column in the data dictionary
         if ( null !== p_state.dataDictionary.original && Object.keys(p_state.dataDictionary.original).includes(p_columnName) ) {
-            
+
             // A. Get dictionary's description string for this column
             const dictionaryDescStr = Object.keys(p_state.dataDictionary.original[p_columnName]).find(
                 (key) => key.toLowerCase() === "description");
@@ -502,6 +587,19 @@ export const getters = {
 
         return columnDescription;
     },
+
+    getGroupOfTool: (p_state) => (p_tool) => {
+
+        // Look for the group of the given tool
+        let toolGroup = null;
+        for ( const groupName in p_state.toolGroups ) {
+            if ( p_state.toolGroups[groupName].includes(p_tool) ) {
+                toolGroup = groupName;
+            }
+        }
+
+        return toolGroup;
+    },    
 
     isColumnLinkedToCategory: (p_state) => (p_matchData) => {
 
@@ -541,19 +639,51 @@ export const getters = {
 
 	isMissingValue: (p_state) => (p_columnName, p_value) => {
 
+        // Checks if a column-value combination is stored in the missingColumnValues object
+        // and returns true if it is, false otherwise
+        // if no records are stored for the entire p_columnName, then also returns false
+
 		if ( !Object.keys(p_state.missingColumnValues).includes(p_columnName) ) {
-			console.log(`WARNING: Could not find '${p_columnName}' in p_state.missingColumnValues`);
+            
+            return false;
 		}
 
-		// Value is considered missing if it is not in the store's missing values list
-		// This is determined via determineMissingValues() and later on, the user via this component
 		return ( p_state.missingColumnValues[p_columnName].includes(p_value) );
 	},
 
+    isToolGrouped: (p_state) => (p_columnName) => {
+
+        let foundTool = false;
+
+        // Look for tool name in the saved tool groups
+        for ( const groupName in p_state.toolGroups ) {
+
+            if ( p_state.toolGroups[groupName].includes(p_columnName) ) {
+                foundTool = true;
+                break;
+            }
+        }
+
+        return foundTool;
+    },    
+
+    getMissingValuesColumn: (p_state) => (p_columnName) => {
+        
+        // For a given column name returns the array of missing values the state knows about
+        // or returns null if no missing values are stored for this column name
+
+        if ( !Object.keys(p_state.missingColumnValues).includes(p_columnName) ) {
+            return null;
+        } else {
+            return p_state.missingColumnValues[p_columnName];
+        }
+    },
+
+
     valueDescription: (p_state) => (p_columnName, p_value) => {
 
-        // 0. If we do not have a data dictionary then the value description is undefined (e.g. 'null')
-        let valueDescription = null;
+        // 0. If we do not have a data dictionary then the value description is undefined (e.g. "")
+        let valueDescription = "";
 
         // 1. Find the description for this column's value in the data dictionary
         if ( null !== p_state.dataDictionary.original && Object.keys(p_state.dataDictionary.original).includes(p_columnName) ) {
@@ -577,7 +707,8 @@ export const getters = {
 
         return valueDescription;
     }
-}
+};
+
 
 // Action helpers
 function convertTsvLinesToTableData(p_tsvLines){

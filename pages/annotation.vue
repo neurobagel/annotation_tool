@@ -17,20 +17,20 @@
             I forced this block to be rendered client-side only for now and that fixed it for now
             See: https://nuxtjs.org/docs/features/nuxt-components/#the-client-only-component
         -->
-        <no-ssr>
-
+        <client-only>
             <!-- This gives us built-in keyboard navigation! -->
             <b-tabs
                 card
                 pills
                 vertical
+                nav-wrapper-class="col-2"
                 v-model="tabNavTitle">
 
                 <b-tab
                     v-for="details in annotationDetails"
                     :key="details.id"
-                    :title="details.category"
-                    :title-link-class="tabStyle(details.category)">
+                    :title="tabTitle(details)"
+                    :title-link-class="tabStyle(details)">
 
                     <b-card-text>
                         <annot-tab
@@ -38,14 +38,14 @@
                             @remove:column="unlinkColumnFromCategory($event)"
                             @remove:missingValue="removeMissingValue($event)"
                             @update:dataTable="saveAnnotatedDataTable($event)"
-                            @update:missingColumnValues="saveMissingColumnValues($event)" />
+                            @update:missingColumnValues="saveMissingColumnValues($event)"
+                            @update:missingValue="addMissingValue($event)" />
                     </b-card-text>
 
                 </b-tab>
 
-
             </b-tabs>
-        </no-ssr>
+        </client-only>
 
         <b-row>
 
@@ -78,7 +78,7 @@
     import { mapGetters } from "vuex";
 
     export default {
-    
+
         name: "AnnotationPage",
 
         data() {
@@ -100,8 +100,10 @@
             ...mapGetters([
 
                 "columnDescription",
+                "getGroupOfTool",
                 "isDataAnnotated",
                 "isMissingValue",
+                "isToolGrouped",
                 "valueDescription"
             ]),
 
@@ -113,7 +115,9 @@
                 "dataDictionary",
                 "dataTable",
                 "pageData",
-                "missingColumnValues"
+                "missingColumnValues",
+                "missingValueLabel",
+                "toolGroups"
             ]),
 
             nextPageButtonColor() {
@@ -136,7 +140,9 @@
                 columnToCategoryMap: this.columnToCategoryMap,
                 dataDictionary: this.dataDictionary,
                 dataTable: this.dataTable,
-                missingColumnValues: this.missingColumnValues
+                missingColumnValues: this.missingColumnValues,
+                missingValueLabel: this.missingValueLabel,
+                toolGroups: this.toolGroups
             };
         },
 
@@ -154,6 +160,62 @@
         },
 
         methods: {
+            
+            addMissingValue(p_event) {
+
+                // This method expects an event object with a `column` and a `value` key.
+                // It will merge the new missing value with the existing missing value array for
+                // the `column` name and save it to the global store
+
+                let columnMissingValues = {};
+
+                if ( Object.keys(this.missingColumnValues).includes(p_event.column) ) {
+
+                    // If missing values are already listed for this column, we add the new value to them
+                    // We will reconstruct the array of missing values from the store because we don't want to copy it directly
+                    // TODO: an alternative approach would be to use deepcopy from https://github.com/lodash/lodash
+                    columnMissingValues[p_event.column] = [];
+                    for ( const value of this.missingColumnValues[p_event.column] ) {
+
+                        columnMissingValues[p_event.column].push(value);
+                    }
+
+                    // We do a sanity check to see if the new missing value is already listed as missing
+                    // This should not happen unless a missing value is erroneously still being shown in the list of values to be annotated.
+                    if ( !columnMissingValues[p_event.column].includes(p_event.value) ) {
+
+                        columnMissingValues[p_event.column].push(p_event.value);
+                    } else {
+
+                        console.log(p_event.value, "is already in the list of missing values for column", p_event.column);
+                    }
+
+                } else {
+
+                    // Because no missing values were listed in the store for this column before, we just save the new one
+                    columnMissingValues[p_event.column] = [p_event.value];
+                }
+
+                this.$store.dispatch("saveMissingColumnValues", columnMissingValues);
+            },
+
+            removeMissingValue(p_event) {
+
+                // 1. Create copy of the missing values list for this column without the value to be removed
+                const missingValuesList = {};
+                missingValuesList[p_event.column] = [];
+
+                for ( const value of this.missingColumnValues[p_event.column] ) {
+
+                    // A. Do not save the given value to the new missing values list
+                    if ( value !== p_event.value ) {
+                        missingValuesList[p_event.column].push(value);
+                    }
+                }
+
+                // 2. Save the new missing value list for this column to the store
+                this.$store.dispatch("saveMissingColumnValues", missingValuesList);
+            },
 
             removeMissingValue(p_event) {
 
@@ -189,14 +251,32 @@
 
             saveMissingColumnValues(p_event) {
 
+                // TODO: Document what this thing does and expects
                 // Save the algorithm and/or user-specified missing values to the store
                 this.$store.dispatch("saveMissingColumnValues", p_event);
             },
 
-            tabStyle(p_category) {
+            tabStyle(p_details) {
 
-                // The 'title-link-class' attribute for b-tab expects a single or list of classes
-                return ["annotation-tab-nav", this.categoryClasses[p_category]];
+                // NOTE: The 'title-link-class' attribute for b-tab expects a single or list of classes
+
+                // Style assessment tool group tabs like assessment tools
+                if ( Object.hasOwn(p_details, "groupName") ) {
+
+                    return ["annotation-tab-nav", this.categoryClasses["Assessment Tool"]];
+                }
+                
+                // Else, style the tab based on the detail's category
+                return ["annotation-tab-nav", this.categoryClasses[p_details.category]];
+            },
+
+            tabTitle(p_details) {
+
+                // Return the annotation detail's tool group name if it exists,
+                // otherwise just the detail's category
+                return ( Object.hasOwn(p_details, "groupName") ) ?
+                    p_details.groupName : p_details.category;
+
             },
 
             unlinkColumnFromCategory(p_event) {
@@ -206,6 +286,25 @@
 
                 // 2. Unlink this column from its currently-assigned category
                 this.$store.dispatch("unlinkColumnFromCategory", { column: p_event.removedColumn });
+
+                // 3. If this column was a grouped tool, remove it from its group
+                if ( this.isToolGrouped(p_event.removedColumn) ) {
+
+                    // A. Remove the tool from its group
+                    const groupName = this.getGroupOfTool(p_event.removedColumn);
+                    this.$store.dispatch("removeToolFromGroup", {
+                        group: groupName,
+                        tool: p_event.removedColumn
+                    });
+
+                    // B. If its former group is now empty of tools, remove the group itself
+                    for ( const groupName in this.toolGroups ) {
+                        if ( 0 === this.toolGroups[groupName].length ) {
+
+                            this.$store.dispatch("removeToolGroup", { name: groupName });
+                        }
+                    }                    
+                }
             }
         }
     };

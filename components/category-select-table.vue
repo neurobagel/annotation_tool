@@ -88,7 +88,7 @@
                 return [opacityClass, colorClass];
             }
         }
-    }
+    };
 
 </script>
 
@@ -102,12 +102,6 @@
     .category-opaque {
 
         opacity: 1.0;
-    }
-
-    .instructions-text {
-
-        color: grey;
-        font-style: italic;
     }
 
 </style>

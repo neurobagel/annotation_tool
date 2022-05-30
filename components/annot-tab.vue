@@ -3,7 +3,7 @@
     <div>
 
         <!-- Explanation text for this annotation tab -->
-        <annot-explanation :explanation="details.explanation" />
+        <annot-explanation :explanation="details.explanation" :index="details.id" />
 
         <!-- Lists all the columns linked to the category of this annotation tab -->
         <annot-columns
@@ -13,8 +13,7 @@
 
         <!-- Lists any values determined to be missing (e.g. potentially invalid) in this tab's columns -->
         <annot-missing-values
-            :data-type="details.dataType"
-            :unique-values="uniqueValues"
+            :relevant-columns="relevantColumns"
             @remove:missingValue="$emit('remove:missingValue', $event)"
             @update:missingColumnValues="$emit('update:missingColumnValues', $event)" />
 
@@ -26,7 +25,8 @@
             :relevant-columns="relevantColumns"
             :unique-values="uniqueValues"
             @update:dataTable="$emit('update:dataTable', $event)"
-            @update:heuristics="$emit('update:heuristics', $event)" />
+            @update:heuristics="$emit('update:heuristics', $event)"
+            @update:missingValue="$emit('update:missingValue', $event)" />
 
     </div>
 
@@ -56,7 +56,7 @@
 
                 // Category of the current annotation tab
                 category: ""
-            }
+            };
         },
 
         computed: {
@@ -81,6 +81,12 @@
                 // Create and return a list of columns that are categorized with this tab's category
                 const columnList = [];
                 for ( const columnName in this.columnToCategoryMap ) {
+
+                    // If this tab is an assessment tool group, make sure this column is in its toolset
+                    if ( Object.hasOwn(this.details, "groupName") &&
+                        !(this.details.tools.includes(columnName)) ) {
+                        continue;
+                    }
 
                     if ( this.category === this.columnToCategoryMap[columnName] ) {
                         columnList.push(columnName);
@@ -112,6 +118,6 @@
             // Set the given category for this tab
             this.category = this.details.category;
         }
-    }
+    };
 
 </script>
