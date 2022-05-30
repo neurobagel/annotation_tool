@@ -9,7 +9,7 @@
             <b-card-body>
 
                 <b-table striped :items="tableItems" :fields="fields" fixed>
-                    
+
                     <!-- v-for="uniqueVal in vocabularyMapping[row.item.column_name][uniqueValues[row.item.column_name]]" -->
                     <template #cell(select_a_vocabulary_term)="row">
 
@@ -19,7 +19,7 @@
                             id="input-live"
                             v-model="row.item.select_a_vocabulary_term"
                             :placeholder="uiText.placeholderText"
-                            :state="vocabState" />                                                                              
+                            :state="vocabState" />
 
                         <!-- This will only be shown if the preceding input has an invalid state -->
                         <!--
@@ -56,7 +56,7 @@
                         :variant="saveButtonColor"
                         @click="applyAnnotation()">
                         {{ uiText.saveButton }}
-                    </b-button>                    
+                    </b-button>
                 </b-row>
 
             </b-card-body>
@@ -140,7 +140,7 @@
 
                         // Unannotated values are acceptable if they have been marked as missing
                         if ( "" === mappedValue && !this.isMissingValue(columnName, uniqueValue) ) {
-                            
+
                             hasUnmappedValues = true;
                             break;
                         }
@@ -148,13 +148,13 @@
                 }
 
                 return hasUnmappedValues;
-            },            
+            },
 
             saveButtonColor() {
 
                 // Bootstrap variant color of the button to save the annotation to the data table
                 return this.canSaveAnnotation ? "secondary" : "success";
-            }        
+            }
         },
 
         watch: {
@@ -169,7 +169,7 @@
             },
 
             tableItems: {
-      
+
                 deep: true,
                 handler(p_newValue, p_oldValue) {
 
@@ -178,7 +178,7 @@
                         this.storeMapping(row.column_name, row.raw_value, row.select_a_vocabulary_term);
                     }
                 }
-            }           
+            }
         },
 
         created() {
@@ -241,8 +241,8 @@
             //         // Column mapping may be unset
             //         if ( 0 === Object.keys(columnMappings).length ) {
             //             continue;
-            //         }                    
-                    
+            //         }
+
             //         for ( const uniqueValue in columnMappings ) {
 
             //             const mappedValue = columnMappings[uniqueValue];
@@ -252,7 +252,7 @@
             //             if ( 0 === mappedValue.trim().length &&
             //                  !this.isMissingValue(columnName, uniqueValue) ) {
             //                 return false;
-            //             }                        
+            //             }
             //         }
             //     }
 
@@ -274,7 +274,7 @@
             //     //     }
             //     // }
             //     return true;
-            // },            
+            // },
 
             declareMissing(p_row) {
 
@@ -299,7 +299,7 @@
                     column: p_row.column_name,
                     value: p_row.raw_value
                 });
-            },                     
+            },
 
             initializeMapping() {
 
@@ -364,7 +364,7 @@
                 }
 
                 return tableArray;
-            },             
+            },
 
             storeMapping(p_columnName, p_uniqueValue, p_updatedValue) {
 
@@ -387,7 +387,7 @@
             transformedValue(p_columnName, p_value) {
 
                 return this.vocabularyMapping[p_columnName][p_value];
-            }            
+            }
         }
     };
 

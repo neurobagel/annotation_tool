@@ -24,7 +24,7 @@
                             :options="options"
                             :value="valueMapping[row.item.column_name][row.item.raw_value]"
                             @input="updateMapping($event, row.item)" />
-                                                  
+
                     </template>
                     <template #cell(missing_value)="row">
                         <b-button
@@ -148,7 +148,7 @@
                             this.isMissingValue(columnName, uniqueValue) )
                     )
                 );
-            }            
+            }
         },
 
         watch: {

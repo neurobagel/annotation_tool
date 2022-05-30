@@ -9,7 +9,7 @@
             <b-card-body>
 
                 <b-table striped :items="displayTable" :fields="fields" fixed>
-                    
+
                     <template #cell(select_a_vocabulary_term)="row">
 
                         <!-- <b-form-input
@@ -26,7 +26,7 @@
                             id="input-live"
                             v-model="vocabularyMapping[row.item.column_name][uniqueValues[row.item.column_name]]"
                             :placeholder="uiText.placeholderText"
-                            :state="vocabState" />                            
+                            :state="vocabState" />
 
                         <!-- This will only be shown if the preceding input has an invalid state -->
                         <!--
@@ -104,7 +104,7 @@
                     "description",
                     "select_a_vocabulary_term",
                     "missing_value"
-                ],                
+                ],
 
                 saveButtonDisabled: true,
 
@@ -137,7 +137,7 @@
                 const tableArray = [];
 
                 // If in 'column' mode, create table entries for each of the relevant columns
-                
+
                 // 1. Make a row for each column
                 for ( const columnName of this.relevantColumns ) {
 
@@ -164,9 +164,9 @@
                     // The first time we find any mapped value that is empty
                     // or unique value that is not missing, we return a status of false
                     if ( 0 === mappedValue.trim().length &&
-                         !this.isMissingValue(columnName, mappedValue) ) {
+                        !this.isMissingValue(columnName, mappedValue) ) {
                         return false;
-                    }                        
+                    }
                 }
 
                 // for ( const [columnName, columnMappings] of Object.entries(this.vocabularyMapping) ) {
@@ -200,7 +200,7 @@
         watch: {
 
             displayTable: {
-      
+
                 deep: true,
                 handler (p_newValue, p_oldValue) {
 
@@ -210,7 +210,7 @@
                     }
 
                     // 2. Base the status of the disabled button on if annotation criteria have been met
-                    this.saveButtonDisabled = this.checkAnnotationState();                    
+                    this.saveButtonDisabled = this.checkAnnotationState();
                 }
             }
 
@@ -229,7 +229,7 @@
 
             //     // 2. Base the status of the disabled button on if annotation criteria have been met
             //     this.saveButtonDisabled = this.checkAnnotationState();
-            // }            
+            // }
         },
 
         created() {
@@ -266,7 +266,7 @@
                     column: p_row.column_name,
                     value: p_row.raw_value
                 });
-            },            
+            },
 
             initializeMapping() {
 
@@ -304,7 +304,7 @@
             transformedValue(p_columnName, p_value) {
 
                 return this.vocabularyMapping[p_columnName][p_value];
-            }            
+            }
         }
     };
 

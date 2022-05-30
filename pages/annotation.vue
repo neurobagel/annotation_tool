@@ -160,7 +160,7 @@
         },
 
         methods: {
-            
+
             addMissingValue(p_event) {
 
                 // This method expects an event object with a `column` and a `value` key.
@@ -217,24 +217,6 @@
                 this.$store.dispatch("saveMissingColumnValues", missingValuesList);
             },
 
-            removeMissingValue(p_event) {
-
-                // 1. Create copy of the missing values list for this column without the value to be removed
-                const missingValuesList = {}
-                missingValuesList[p_event.column] = [];
-
-                for ( const value of this.missingColumnValues[p_event.column] ) {
-
-                    // A. Do not save the given value to the new missing values list
-                    if ( value !== p_event.value ) {
-                        missingValuesList[p_event.column].push(value);
-                    }
-                }
-
-                // 2. Save the new missing value list for this column to the store
-                this.$store.dispatch("saveMissingColumnValues", missingValuesList);
-            },
-
             saveAnnotatedDataTable(p_event) {
 
                 // 1. Save the annotated table in the store
@@ -265,7 +247,7 @@
 
                     return ["annotation-tab-nav", this.categoryClasses["Assessment Tool"]];
                 }
-                
+
                 // Else, style the tab based on the detail's category
                 return ["annotation-tab-nav", this.categoryClasses[p_details.category]];
             },
@@ -303,7 +285,7 @@
 
                             this.$store.dispatch("removeToolGroup", { name: groupName });
                         }
-                    }                    
+                    }
                 }
             }
         }
