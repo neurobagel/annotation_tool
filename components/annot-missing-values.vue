@@ -8,12 +8,10 @@
             <b-card-header>{{ uiText.title }}</b-card-header>
 
             <b-card-body class="missing-values-card-body">
-
                 <b-table
                     striped
                     :fields="fields"
                     :items="tableItems">
-
                     <template #cell(not_missing)="data">
                         <b-button
                             variant="danger"

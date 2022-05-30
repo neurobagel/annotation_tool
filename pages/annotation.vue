@@ -160,7 +160,7 @@
         },
 
         methods: {
-            
+
             addMissingValue(p_event) {
 
                 // This method expects an event object with a `column` and a `value` key.
@@ -247,7 +247,7 @@
 
                     return ["annotation-tab-nav", this.categoryClasses["Assessment Tool"]];
                 }
-                
+
                 // Else, style the tab based on the detail's category
                 return ["annotation-tab-nav", this.categoryClasses[p_details.category]];
             },
@@ -285,7 +285,7 @@
 
                             this.$store.dispatch("removeToolGroup", { name: groupName });
                         }
-                    }                    
+                    }
                 }
             }
         }

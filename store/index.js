@@ -128,9 +128,9 @@ export const state = () => ({
     // See action nuxtServerInit() for initialization code
     annotationDetails: [],
 
-	  // Stores a list of (potentially) missing values for each column. This is determined in the missing-values
-	  // components on the annotation page, and then amended by the user as they see fit
-	  missingColumnValues: {},
+      // Stores a list of (potentially) missing values for each column. This is determined in the missing-values
+      // components on the annotation page, and then amended by the user as they see fit
+      missingColumnValues: {},
 
     // Keeps track of named assessment tool groups and their associated tools (e.g. columns in the data table)
     toolGroups: {}
@@ -173,38 +173,38 @@ export const actions = {
             "Assessment Tool"
         ];
 
-		// 0. This annotation information is default but we can swap out and reinitialize
-		// annotation data structures by calling 'initializeAnnotationDetails' with a new
-		// object containing annotation information for each category
-		const annotationDetails = [
+        // 0. This annotation information is default but we can swap out and reinitialize
+        // annotation data structures by calling 'initializeAnnotationDetails' with a new
+        // object containing annotation information for each category
+        const annotationDetails = [
 
-			{
-				id: 0,
-				category: "Age",
-				dataType: "continuous",
-				explanation: "This is an explanation for how to annotate age.",
-				options: {},
-				specializedComponent: "annot-age-values"
-			},
-			{
-				id: 1,
-				category: "Sex",
-				dataType: "categorical",
+            {
+                id: 0,
+                category: "Age",
+                dataType: "continuous",
+                explanation: "This is an explanation for how to annotate age.",
+                options: {},
+                specializedComponent: "annot-age-values"
+            },
+            {
+                id: 1,
+                category: "Sex",
+                dataType: "categorical",
                 explanation: "This is an explanation for how to annotate sex.",
-				options: ["male", "female", "other"],
-				specializedComponent: "annot-discrete-choices"
-			},
-			{
-				id: 2,
-				category: "Diagnosis",
-				dataType: "string",
-				explanation: "This is an explanation for how to annotate diagnosis.",
-				options: { mode: "row" },
-				specializedComponent: "annot-vocabulary-row"
-			},
-            
+                options: ["male", "female", "other"],
+                specializedComponent: "annot-discrete-choices"
+            },
+            {
+                id: 2,
+                category: "Diagnosis",
+                dataType: "string",
+                explanation: "This is an explanation for how to annotate diagnosis.",
+                options: { mode: "row" },
+                specializedComponent: "annot-vocabulary-row"
+            }
+
             // NOTE: Assessment tools are now only added to annotationDetails when grouped
-		];
+        ];
 
         // 1. Setup category-related data structures based on the given categories
         commit("setupCategories", categories);
@@ -304,7 +304,7 @@ export const actions = {
 
     removeToolFromGroup(p_context, p_data) {
 
-        p_context.commit("deleteToolFromGroup", p_data)
+        p_context.commit("deleteToolFromGroup", p_data);
     },
 
     removeToolGroup(p_context, p_toolGroupData) {
@@ -345,10 +345,10 @@ export const actions = {
         p_context.commit("setAnnotatedDataTable", p_newTable);
     },
 
-	saveMissingColumnValues(p_context, p_missingColumnValues) {
+    saveMissingColumnValues(p_context, p_missingColumnValues) {
 
-		p_context.commit("setMissingColumnValues", p_missingColumnValues);
-	}
+        p_context.commit("setMissingColumnValues", p_missingColumnValues);
+    }
 };
 
 // Mutations - Change state data, as called by Actions
@@ -486,9 +486,9 @@ export const mutations = {
 
         // 1. Remove this tool group from the list
         Vue.delete(p_state.toolGroups, p_toolGroupData.name);
-        
+
         // 2. Remove the toolgroup from the annotation details
-        const groupIndex = p_state.annotationDetails.findIndex(detail => 
+        const groupIndex = p_state.annotationDetails.findIndex(detail =>
             p_toolGroupData.name === detail?.groupName);
         p_state.annotationDetails.splice(groupIndex, 1);
     },
@@ -541,8 +541,8 @@ export const mutations = {
         p_state.dataTable.annotated = p_newTable;
     },
 
-	setMissingColumnValues(p_state, p_missingColumnValues) {
-        
+    setMissingColumnValues(p_state, p_missingColumnValues) {
+
         // This method merges incoming updated missingColumnValues records with the missingColumnValues
         // object in the store. Because the incoming changes can be incomplete (e.g. only contain updated
         // records of a single column), we cannot just overwrite the store object with them.
@@ -556,7 +556,7 @@ export const mutations = {
         } else {
             p_state.missingColumnValues = Object.assign({}, p_state.missingColumnValues, p_missingColumnValues);
         }
-	}
+    }
 };
 
 // Getters - Give access to state data
@@ -599,7 +599,7 @@ export const getters = {
         }
 
         return toolGroup;
-    },    
+    },
 
     isColumnLinkedToCategory: (p_state) => (p_matchData) => {
 
@@ -637,19 +637,19 @@ export const getters = {
         return ( null !== p_state.dataTable.original );
     },
 
-	isMissingValue: (p_state) => (p_columnName, p_value) => {
+    isMissingValue: (p_state) => (p_columnName, p_value) => {
 
         // Checks if a column-value combination is stored in the missingColumnValues object
         // and returns true if it is, false otherwise
         // if no records are stored for the entire p_columnName, then also returns false
 
-		if ( !Object.keys(p_state.missingColumnValues).includes(p_columnName) ) {
-            
-            return false;
-		}
+        if ( !Object.keys(p_state.missingColumnValues).includes(p_columnName) ) {
 
-		return ( p_state.missingColumnValues[p_columnName].includes(p_value) );
-	},
+            return false;
+        }
+
+        return ( p_state.missingColumnValues[p_columnName].includes(p_value) );
+    },
 
     isToolGrouped: (p_state) => (p_columnName) => {
 
@@ -665,10 +665,10 @@ export const getters = {
         }
 
         return foundTool;
-    },    
+    },
 
     getMissingValuesColumn: (p_state) => (p_columnName) => {
-        
+
         // For a given column name returns the array of missing values the state knows about
         // or returns null if no missing values are stored for this column name
 

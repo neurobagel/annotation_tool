@@ -208,7 +208,7 @@
                 // at least one tool selected
                 let ready = ( "" !== this.newToolGroupName &&
                     this.selectedTools.length > 0 );
-                
+
                 // B. Short-circuit out if this condition is not met
                 if ( !ready ) {
                     return false;
@@ -394,7 +394,7 @@
                 // 4. Deselect table row
                 this.$refs.table.clearSelected();
             },
-            
+
             refreshToolGroupTable() {
 
                 // 1. Make sure the items list is clear
@@ -465,7 +465,7 @@
                 }
             }
         }
-    }
+    };
 
 </script>
 
