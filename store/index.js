@@ -1,6 +1,6 @@
 
 // Facilitate Vue reactivity via 'Vue.set' and 'Vue.delete'
-import Vue from 'vue';
+import Vue from "vue";
 
 // Root state - Stores state data
 export const state = () => ({
@@ -200,7 +200,7 @@ export const actions = {
 				dataType: "string",
 				explanation: "This is an explanation for how to annotate diagnosis.",
 				options: { mode: "row" },
-				specializedComponent: "annot-vocabulary"
+				specializedComponent: "annot-vocabulary-row"
 			},
             
             // NOTE: Assessment tools are now only added to annotationDetails when grouped
@@ -542,14 +542,20 @@ export const mutations = {
     },
 
 	setMissingColumnValues(p_state, p_missingColumnValues) {
+        
         // This method merges incoming updated missingColumnValues records with the missingColumnValues
         // object in the store. Because the incoming changes can be incomplete (e.g. only contain updated
         // records of a single column), we cannot just overwrite the store object with them.
         // However, because of how reactivity in Vue works, we can also not simply overwrite the affected columns
         // (i.e. keys) in the object, because that will break reactivity.
         // The below pattern via assign sovles this problem. See here: https://v2.vuejs.org/v2/guide/reactivity.html
-        p_state.missingColumnValues = Object.assign({}, p_state.missingColumnValues, p_missingColumnValues);
 
+        const missingColumnKey = Object.keys(p_missingColumnValues)[0];
+        if ( 0 === p_missingColumnValues[missingColumnKey].length ) {
+            Vue.delete(p_state.missingColumnValues, missingColumnKey);
+        } else {
+            p_state.missingColumnValues = Object.assign({}, p_state.missingColumnValues, p_missingColumnValues);
+        }
 	}
 };
 
@@ -632,12 +638,13 @@ export const getters = {
     },
 
 	isMissingValue: (p_state) => (p_columnName, p_value) => {
-    // Checks if a column-value combination is stored in the missingColumnValues object
-    // and returns true if it is, false otherwise
-    // if no records are stored for the entire p_columnName, then also returns false
+
+        // Checks if a column-value combination is stored in the missingColumnValues object
+        // and returns true if it is, false otherwise
+        // if no records are stored for the entire p_columnName, then also returns false
 
 		if ( !Object.keys(p_state.missingColumnValues).includes(p_columnName) ) {
-			console.log(`WARNING: Could not find '${p_columnName}' in p_state.missingColumnValues. Will treat as not missing.`);
+            
             return false;
 		}
 
@@ -661,6 +668,7 @@ export const getters = {
     },    
 
     getMissingValuesColumn: (p_state) => (p_columnName) => {
+        
         // For a given column name returns the array of missing values the state knows about
         // or returns null if no missing values are stored for this column name
 
@@ -674,9 +682,8 @@ export const getters = {
 
     valueDescription: (p_state) => (p_columnName, p_value) => {
 
-        // 0. If we do not have a data dictionary then the value description is undefined (e.g. 'null')
-        let valueDescription = null;
-        console.log("getting description for", p_columnName, p_value);
+        // 0. If we do not have a data dictionary then the value description is undefined (e.g. "")
+        let valueDescription = "";
 
         // 1. Find the description for this column's value in the data dictionary
         if ( null !== p_state.dataDictionary.original && Object.keys(p_state.dataDictionary.original).includes(p_columnName) ) {
