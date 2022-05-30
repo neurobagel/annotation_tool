@@ -10,11 +10,6 @@
     "lint": "npx eslint --ext .vue  --ext .js .",
     "prepare": "husky install"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "npm run lint"
-    }
-  },
   "dependencies": {
     "@nuxtjs/axios": "^5.13.6",
     "bootstrap": "^4.6.1",
