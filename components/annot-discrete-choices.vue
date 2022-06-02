@@ -102,7 +102,7 @@
 
                     instructions: "Annotate each unique value",
                     saveButton: "Save Annotation",
-                    missingValueButton: "Missing Value"
+                    missingValueButton: "Mark as missing"
                 },
 
                 valueMapping: {}
