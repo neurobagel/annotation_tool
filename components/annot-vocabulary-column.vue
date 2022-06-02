@@ -12,14 +12,6 @@
 
                     <template #cell(select_a_vocabulary_term)="row">
 
-                        <!-- <b-form-input
-                            trim
-                            aria-describedby="input-live-help input-live-feedback"
-                            id="input-live"
-                            @input="updateMapping($event, row.item)"
-                            :placeholder="placeholder"
-                            :state="vocabState" /> -->
-
                         <b-form-input
                             trim
                             aria-describedby="input-live-help input-live-feedback"
@@ -74,12 +66,6 @@
 
         props: {
 
-            filteredDataTable: { type: Array, default: () => [] },
-
-            // Options contains 'mode' which is one of ["column", "row"]
-            // column: Only the column names are mapped to vocabulary terms inside the data dictionary
-            // row: The row values are mapped to vocabulary terms
-            options: { type: Object, required: true },
             relevantColumns: { type: Array, required: true },
             uniqueValues: { type: Object, required: true }
         },
@@ -169,24 +155,6 @@
                     }
                 }
 
-                // for ( const [columnName, columnMappings] of Object.entries(this.vocabularyMapping) ) {
-
-                //     // Column mapping may be unset
-                //     if ( null === columnMappings ) {
-                //         continue;
-                //     }
-
-                //     for ( const [uniqueValue, mappedValue] of Object.entries(columnMappings) ) {
-
-                //         // The first time we find any mapped value that is empty
-                //         // or unique value that is not missing, we return a status of false
-                //         if ( (mappedValue === null || mappedValue.trim().length === 0) &&
-                //              !this.isMissingValue(columnName, uniqueValue) ) {
-                //             return false;
-                //         }
-                //     }
-                // }
-
                 return true;
             },
 
@@ -213,23 +181,6 @@
                     this.saveButtonDisabled = this.checkAnnotationState();
                 }
             }
-
-            // updateMapping(p_newValue, p_tableRow) {
-
-            //     // 1. Update the mapping with the new value
-
-            //     // If this is 'row' mode
-            //     if ( "row" === this.options.mode ) {
-            //         this.storeMapping(p_tableRow.column_name, p_tableRow.raw_value, p_newValue);
-            //     }
-            //     // Else, this is 'column' mode
-            //     else if ( "column" === this.options.mode ) {
-            //         this.vocabularyMapping[p_tableRow.column_name] = p_newValue;
-            //     }
-
-            //     // 2. Base the status of the disabled button on if annotation criteria have been met
-            //     this.saveButtonDisabled = this.checkAnnotationState();
-            // }
         },
 
         created() {

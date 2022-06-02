@@ -31,8 +31,6 @@
 
         props: {
 
-            filteredDataTable: { type: Array, default: () => [] },
-            options: { type: Object, default: () => {} },
             relevantColumns: { type: Array, required: true },
             uniqueValues: { type: Object, required: true }
         },

@@ -34,6 +34,7 @@
                         </b-form-text>
 
                     </template>
+
                     <template #cell(missing_value)="row">
                         <b-button
                             variant="danger"
@@ -41,16 +42,11 @@
                             {{ uiText.missingValueButton }}
                         </b-button>
                     </template>
+
                 </b-table>
 
                 <!-- Button to save the annotated data of this tab to the store -->
                 <b-row>
-                    <!-- <b-button
-                        :disabled="!saveButtonEnabled"
-                        :variant="saveButtonColor"
-                        @click="applyAnnotation()">
-                        {{ uiText.saveButton }}
-                    </b-button> -->
                     <b-button
                         :disabled="canSaveAnnotation"
                         :variant="saveButtonColor"
@@ -73,13 +69,7 @@
 
         props: {
 
-            filteredDataTable: { type: Array, default: () => [] },
-
-            // Options contains 'mode' which is one of ["column", "row"]
-            // column: Only the column names are mapped to vocabulary terms inside the data dictionary
-            // row: The row values are mapped to vocabulary terms
-            options: { type: Object, required: true },
-            relevantColumns: { type: Array, required: true },
+            relevantColumns: { default: () => [], required: true, type: Array },
             uniqueValues: { type: Object, required: true }
         },
 
@@ -228,8 +218,6 @@
                     transformedTable: transformedTable
                 });
             },
-
-
 
             // saveButtonEnabled() {
             // hasUnmappedValues() {

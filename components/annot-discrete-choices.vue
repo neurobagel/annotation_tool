@@ -59,7 +59,6 @@
 
         props: {
 
-            filteredDataTable: { type: Array, default: () => [] },
             options: {
 
                 type: Array,

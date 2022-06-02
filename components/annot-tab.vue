@@ -20,7 +20,6 @@
         <!-- Component specializing in the particular kind of annotation for this tab's category -->
         <component
             :is="details.specializedComponent"
-            :filtered-data-table="filteredDataTable"
             :options="details.options"
             :relevant-columns="relevantColumns"
             :unique-values="uniqueValues"
