@@ -263,6 +263,12 @@
 
             refreshTableItems() {
 
+                // This method generates the unique values of the relevantColumns
+                // divided across tabs, one for each column, for the user to mark 'missing', if necessary.
+                // Only values that are not declared as missing will be shown.
+
+                // Create table entries for each value in the relevant columns
+
                 // 0. Wipe table contents
                 this.tableItems = {};
                 for ( const itemName of this.relevantColumns ) {

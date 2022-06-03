@@ -263,6 +263,12 @@
 
             refreshTableItems() {
 
+                // This method generates the unique values that will be displayed in the UI for the user to annotate.
+                // It shows the unique values of relevantColumns (e.g. for diagnosis) and lets the user annotate each.
+                // Only values that are not declared as missing will be shown.
+
+                // Create table entries for each value in the relevant columns
+
                 // 0. Wipe the table
                 this.tableItems = [];
 
