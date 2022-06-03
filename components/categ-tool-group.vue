@@ -1,6 +1,6 @@
 <template>
 
-    <b-row>
+    <b-row style="margin-bottom: 0;">
         <b-col cols="6">
 
             <!-- Heading for tool grouping component -->
@@ -64,37 +64,40 @@
 
         <b-col cols="6">
 
-            <!-- Tool grouping table -->
-            <b-table
-                bordered
-                selectable
-                head-variant="dark"
-                ref="table"
-                select-mode="single"
-                :items="assessmentToolGroups.items"
-                :fields="assessmentToolGroups.fields"
-                @row-selected="selectTableRow($event)">
+            <b-row>
+                <!-- Tool grouping table -->
+                <b-table
+                    bordered
+                    selectable
+                    head-variant="dark"
+                    ref="table"
+                    select-mode="single"
+                    :items="assessmentToolGroups.items"
+                    :fields="assessmentToolGroups.fields"
+                    @row-selected="selectTableRow($event)">
 
-                <!-- Blank row for empty table for aesthetics -->
-                <template #top-row v-if="hasNoGroups">
-                    <!-- Adding &nbsp; to the cell so that it maintains the standard cell height -->
-                    <td
-                        v-for="field in assessmentToolGroups.fields"
-                        :key="field.key">
-                            &nbsp;
-                    </td>
-                </template>
+                    <!-- Blank row for empty table for aesthetics -->
+                    <template #top-row v-if="hasNoGroups">
+                        <!-- Adding &nbsp; to the cell so that it maintains the standard cell height -->
+                        <td
+                            v-for="field in assessmentToolGroups.fields"
+                            :key="field.key">
+                                &nbsp;
+                        </td>
+                    </template>
 
-                <!-- Remove row button -->
-                <template #cell(action)="row">
-                    <b-button
-                        class="float-right"
-                        variant="danger"
-                        @click="removeToolGroup(row)">
-                        {{ uiText.removeToolGroupButton }}
-                    </b-button>
-                </template>
-            </b-table>
+                    <!-- Remove row button -->
+                    <template #cell(action)="row">
+                        <b-button
+                            class="float-right"
+                            variant="danger"
+                            @click="removeToolGroup(row)">
+                            {{ uiText.removeToolGroupButton }}
+                        </b-button>
+                    </template>
+
+                </b-table>
+            </b-row>
 
         </b-col>
 

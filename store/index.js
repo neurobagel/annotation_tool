@@ -199,8 +199,8 @@ export const actions = {
                 category: "Diagnosis",
                 dataType: "string",
                 explanation: "This is an explanation for how to annotate diagnosis.",
-                options: { mode: "row" },
-                specializedComponent: "annot-vocabulary-row"
+                options: {},
+                specializedComponent: "annot-vocabulary"
             }
 
             // NOTE: Assessment tools are now only added to annotationDetails when grouped
@@ -520,8 +520,8 @@ export const mutations = {
             dataType: "string",
             explanation: "This is an explanation for how to annotate assessments.",
             groupName: p_toolGroupData.name,
-            options: { mode: "column" },
-            specializedComponent: "annot-vocabulary",
+            options: {},
+            specializedComponent: "annot-tool-group",
             tools: p_state.toolGroups[p_toolGroupData.name]
         });
     },
@@ -588,6 +588,21 @@ export const getters = {
         return columnDescription;
     },
 
+    getColumnOfCategory: (p_state) => (p_category) => {
+
+        // If it exists in the map, retrieve the column assigned this category
+        let columnName = "";
+
+        for ( const column in p_state.columnToCategoryMap ) {
+            if ( p_category === p_state.columnToCategoryMap[column] ) {
+                columnName = column;
+                break;
+            }
+        }
+
+        return columnName;
+    },
+
     getGroupOfTool: (p_state) => (p_tool) => {
 
         // Look for the group of the given tool
@@ -609,14 +624,23 @@ export const getters = {
 
     isDataAnnotated(p_state) {
 
-        // Check to see if the annotated data table is different from the original data table
+        // 1. Check to see if the annotated data table is different from the original data table
         const tablesAreEqual = p_state.dataTable.original.every((originalTableRow, index) => {
 
             let allValuesEqual = true;
-            for ( const column in originalTableRow ) {
-                if ( originalTableRow[column] !== p_state.dataTable.annotated[index][column] ) {
-                    allValuesEqual = false;
-                    break;
+
+            // A. Tables are different if column sizes for rows are different
+            if ( Object.keys(originalTableRow).length !== Object.keys(p_state.dataTable.annotated[index]).length ) {
+                allValuesEqual = false;
+            }
+            // B. Or, check to see if values in the respective rows are different
+            else {
+
+                for ( const column in originalTableRow ) {
+                    if ( originalTableRow[column] !== p_state.dataTable.annotated[index][column] ) {
+                        allValuesEqual = false;
+                        break;
+                    }
                 }
             }
 

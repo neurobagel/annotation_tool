@@ -20,10 +20,12 @@
         <!-- Component specializing in the particular kind of annotation for this tab's category -->
         <component
             :is="details.specializedComponent"
-            :filtered-data-table="filteredDataTable"
+            :id-field="idField"
+            :details="details"
             :options="details.options"
             :relevant-columns="relevantColumns"
             :unique-values="uniqueValues"
+            :unique-values-to-subject-map="uniqueValuesToSubjectMap"
             @update:dataTable="$emit('update:dataTable', $event)"
             @update:heuristics="$emit('update:heuristics', $event)"
             @update:missingValue="$emit('update:missingValue', $event)" />
@@ -33,6 +35,9 @@
 </template>
 
 <script>
+
+    // Allows for reference to store data by creating simple, implicit getters
+    import { mapGetters } from "vuex";
 
     export default {
 
@@ -51,15 +56,23 @@
 
             return {
 
-                // Disabled state of the save annotation button
-                saveButtonDisabled: true,
-
                 // Category of the current annotation tab
-                category: ""
+                category: "",
+
+                // String name of the column assigned the 'Subject ID' category in the data table
+                idField: "",
+
+                // Disabled state of the save annotation button
+                saveButtonDisabled: true
             };
         },
 
         computed: {
+
+            ...mapGetters([
+
+                "getColumnOfCategory"
+            ]),
 
             filteredDataTable() {
 
@@ -107,6 +120,35 @@
                 }
 
                 return uniqueValuesMap;
+            },
+
+            uniqueValuesToSubjectMap() {
+
+                const valuesToSubjectMap = {};
+
+                // 1. Create a map between unique values for each column and the subjects that have those values
+
+                // A. Begin with an empty map for all values in all columns
+                for ( const column in this.uniqueValues ) {
+
+                    valuesToSubjectMap[column] = {};
+
+                    for ( const value of this.uniqueValues[column] ) {
+
+                        valuesToSubjectMap[column][value] = [];
+                    }
+                }
+
+                // B. Fill in the map with subjects that have the unique values for each column
+                for ( const row of this.dataTable.original ) {
+
+                    for ( const column in valuesToSubjectMap ) {
+
+                        valuesToSubjectMap[column][row[column]].push(row[this.idField]);
+                    }
+                }
+
+                return valuesToSubjectMap;
             }
         },
 
@@ -115,8 +157,11 @@
             // NOTE: The category must be set here in created or the components
             // for 'annot-tab' will not be initialized correctly
 
-            // Set the given category for this tab
+            // 1. Set the given category for this tab
             this.category = this.details.category;
+
+            // 2. Get column marked as subject ID
+            this.idField = this.getColumnOfCategory("Subject ID");
         }
     };
 

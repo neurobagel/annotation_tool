@@ -10,7 +10,6 @@
 
                 <b-table striped :items="tableItems" :fields="fields" fixed>
 
-                    <!-- v-for="uniqueVal in vocabularyMapping[row.item.column_name][uniqueValues[row.item.column_name]]" -->
                     <template #cell(select_a_vocabulary_term)="row">
 
                         <b-form-input
@@ -34,6 +33,7 @@
                         </b-form-text>
 
                     </template>
+
                     <template #cell(missing_value)="row">
                         <b-button
                             variant="danger"
@@ -41,16 +41,11 @@
                             {{ uiText.missingValueButton }}
                         </b-button>
                     </template>
+
                 </b-table>
 
                 <!-- Button to save the annotated data of this tab to the store -->
                 <b-row>
-                    <!-- <b-button
-                        :disabled="!saveButtonEnabled"
-                        :variant="saveButtonColor"
-                        @click="applyAnnotation()">
-                        {{ uiText.saveButton }}
-                    </b-button> -->
                     <b-button
                         :disabled="canSaveAnnotation"
                         :variant="saveButtonColor"
@@ -73,14 +68,8 @@
 
         props: {
 
-            filteredDataTable: { type: Array, default: () => [] },
-
-            // Options contains 'mode' which is one of ["column", "row"]
-            // column: Only the column names are mapped to vocabulary terms inside the data dictionary
-            // row: The row values are mapped to vocabulary terms
-            options: { type: Object, required: true },
-            relevantColumns: { type: Array, required: true },
-            uniqueValues: { type: Object, required: true }
+            relevantColumns: { default: () => [], required: true, type: Array },
+            uniqueValues: { default: () => {}, required: true, type: Object }
         },
 
         inject: [
@@ -89,10 +78,11 @@
             "dataTable",
             "isMissingValue",
             "missingColumnValues",
+            "missingValueLabel",
             "valueDescription"
         ],
 
-        name: "AnnotVocabularyRow",
+        name: "AnnotVocabulary",
 
         data() {
 
@@ -109,14 +99,13 @@
 
                 tableItems: [],
 
-                // Text for UI elements
                 uiText: {
 
                     generalInstructions: "Annotate each unique value",
+                    missingValueButton: "Mark as missing",
                     placeholderText: "e.g. Parkinson's Disease",
                     saveButton: "Save Annotation",
-                    vocabTermInstructions: "Please provide a SNOMED-CT term",
-                    missingValueButton: "Missing value"
+                    vocabTermInstructions: "Please provide a SNOMED-CT term"
                 },
 
                 vocabularyMapping: {},
@@ -129,16 +118,15 @@
 
             canSaveAnnotation() {
 
+                // 1. Look for unannotated values in the vocabulary map
                 let hasUnmappedValues = false;
-
-                // Look for unannotated values in the vocabulary map
                 for ( const columnName in this.vocabularyMapping ) {
 
                     for ( const uniqueValue in this.vocabularyMapping[columnName] ) {
 
                         const mappedValue = this.vocabularyMapping[columnName][uniqueValue];
 
-                        // Unannotated values are acceptable if they have been marked as missing
+                        // A. Unannotated values are acceptable if they have been marked as missing
                         if ( "" === mappedValue && !this.isMissingValue(columnName, uniqueValue) ) {
 
                             hasUnmappedValues = true;
@@ -164,7 +152,9 @@
                 deep: true,
                 handler(p_newValue, p_oldValue) {
 
-                    this.tableItems = this.refreshTableItems();
+                    // When missing column values are updated in the store,
+                    // Load table data from 'vocabularyMapping' and the data dictionary, if values are not missing
+                    this.refreshTableItems();
                 }
             },
 
@@ -189,15 +179,15 @@
 
         mounted() {
 
-            // Load table data
-            this.tableItems = this.refreshTableItems();
+            // Load table data from 'vocabularyMapping' and the data dictionary, if values are not missing
+            this.refreshTableItems();
         },
 
         methods: {
 
             applyAnnotation() {
 
-                // We want to use the annotated dataTable here in order to not overwrite previous
+                // NOTE: We want to use the annotated dataTable here in order to not overwrite previous
                 // annotations from other components
 
                 // 1. Create a local copy of the annotated table for transformation
@@ -209,72 +199,25 @@
 
                         if ( this.relevantColumns.includes(columnName) ) {
 
+                            // A. Either save the updated value as 'missing' or save the annotated value
                             if ( this.isMissingValue(columnName, transformedTable[index][columnName]) ) {
 
-                                // TODO: this string should be replaced by an app-wide way to designate missing values
-                                transformedTable[index][columnName] = "missing value";
+                                transformedTable[index][columnName] = this.missingValueLabel;
                             } else {
                                 transformedTable[index][columnName] = this.transformedValue(columnName, transformedTable[index][columnName]);
                             }
-
                         }
                     }
                 }
 
                 // 3. Trigger a save of this transformation to the annotated table in the store
+                // NOTE: 'transformHeuristics' are currently not being saved to the store
                 this.$emit("update:dataTable", {
 
-                    transformHeuristics: this.vocabularyMapping,
+                    // transformHeuristics: this.vocabularyMapping,
                     transformedTable: transformedTable
                 });
             },
-
-
-
-            // saveButtonEnabled() {
-            // hasUnmappedValues() {
-
-            //     for ( const columnName in this.vocabularyMapping ) {
-
-            //         const columnMappings = this.vocabularyMapping[columnName];
-
-            //         // Column mapping may be unset
-            //         if ( 0 === Object.keys(columnMappings).length ) {
-            //             continue;
-            //         }
-
-            //         for ( const uniqueValue in columnMappings ) {
-
-            //             const mappedValue = columnMappings[uniqueValue];
-
-            //             // The first time we find any mapped value that is empty
-            //             // or unique value that is not missing, we return a status of false
-            //             if ( 0 === mappedValue.trim().length &&
-            //                  !this.isMissingValue(columnName, uniqueValue) ) {
-            //                 return false;
-            //             }
-            //         }
-            //     }
-
-            //     // for ( const [columnName, columnMappings] of Object.entries(this.vocabularyMapping) ) {
-
-            //     //     // Column mapping may be unset
-            //     //     if ( null === columnMappings ) {
-            //     //         continue;
-            //     //     }
-
-            //     //     for ( const [uniqueValue, mappedValue] of Object.entries(columnMappings) ) {
-
-            //     //         // The first time we find any mapped value that is empty
-            //     //         // or unique value that is not missing, we return a status of false
-            //     //         if ( mappedValue.trim().length === 0 &&
-            //     //              !this.isMissingValue(columnName, uniqueValue) ) {
-            //     //             return false;
-            //     //         }
-            //     //     }
-            //     // }
-            //     return true;
-            // },
 
             declareMissing(p_row) {
 
@@ -303,13 +246,10 @@
 
             initializeMapping() {
 
-                // TODO: Revisit this once we have implemented the missing value components to make sure
-                // we don't break things by later turning values into missing values
-
                 // 1. Initialize the mapping as empty
                 this.vocabularyMapping = {};
 
-                // Create a mapping of the form { uniqueValue: "" } for each unique value
+                // 2. Create a mapping of the form { uniqueValue: "" } for each unique value
                 for ( const columnName in this.uniqueValues ) {
 
                     this.vocabularyMapping[columnName] = {};
@@ -323,20 +263,19 @@
 
             refreshTableItems() {
 
-                // This method generates the unique values that will be displayed in the UI for the user to annotate
-                // Two modes exist:
-                // row:     this mode shows the unique values in the relevantColumns (e.g. for diagnosis)
-                // column:  this mode shows the relevantColumn names and let's the user annotate each column
-                // In row mode, only values that are not declared as missing will be shown.
+                // This method generates the unique values that will be displayed in the UI for the user to annotate.
+                // It shows the unique values of relevantColumns (e.g. for diagnosis) and lets the user annotate each.
+                // Only values that are not declared as missing will be shown.
 
-                const tableArray = [];
+                // Create table entries for each value in the relevant columns
 
-                // In 'row' mode create table entries for each value in the relevant columns
+                // 0. Wipe the table
+                this.tableItems = [];
 
                 // 1. Make a row for each unique column value
-                for ( const columnName in this.uniqueValues ) {
+                for ( const columnName in this.vocabularyMapping ) {
 
-                    for ( const value of this.uniqueValues[columnName]) {
+                    for ( const value of Object.keys(this.vocabularyMapping[columnName]) ) {
 
                         // Only display values for annotation that are not declared as missing by the user
                         if ( !this.isMissingValue(columnName, value) ) {
@@ -352,7 +291,7 @@
                             }
 
                             // C. Save the new row entry
-                            tableArray.push({
+                            this.tableItems.push({
 
                                 column_name: columnName,
                                 description: (null === valueDescription) ? "" : valueDescription,
@@ -362,13 +301,9 @@
                         }
                     }
                 }
-
-                return tableArray;
             },
 
             storeMapping(p_columnName, p_uniqueValue, p_updatedValue) {
-
-                // TODO: the implementation here is identical to the one in annot-discrete-choices.vue
 
                 // 1. Merge the inner level (e.g. the mapping for the p_columnName)
                 const innerUpdate = Object.assign(

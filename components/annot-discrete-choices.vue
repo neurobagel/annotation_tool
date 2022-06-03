@@ -59,7 +59,6 @@
 
         props: {
 
-            filteredDataTable: { type: Array, default: () => [] },
             options: {
 
                 type: Array,
@@ -103,7 +102,7 @@
 
                     instructions: "Annotate each unique value",
                     saveButton: "Save Annotation",
-                    missingValueButton: "Missing Value"
+                    missingValueButton: "Mark as missing"
                 },
 
                 valueMapping: {}
@@ -207,9 +206,10 @@
                 }
 
                 // 3. Trigger a save of this transformation to the annotated table in the store
+                // NOTE: 'transformHeuristics' are currently not being saved to the store
                 this.$emit("update:dataTable", {
 
-                    transformHeuristics: this.valueMapping,
+                    // transformHeuristics: this.valueMapping,
                     transformedTable: transformedTable
                 });
             },

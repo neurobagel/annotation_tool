@@ -37,14 +37,17 @@
             @remove-tool-from-group="removeToolFromGroup($event)"
             @tool-group-action="toolGroupAction($event)" />
 
-        <!-- Next page button -->
+        <!-- Next page button (passed inside categ-tool-group for UI space consideration) -->
         <b-row>
+            <b-col class="text-right" cols="12">
 
-            <b-col cols="9" />
+                <!-- Optional instructions to remind user of criteria to proceed to annotation page -->
+                <p class="instructions-text" v-if="!pageData.annotation.accessible">
+                    {{ uiText.nextPageCriteria }}
+                </p>
 
-            <!-- Button to proceed to the next page -->
-            <!-- Only enabled when at least one column has been categorized -->
-            <b-col cols="3">
+                <!-- Button to proceed to the next page -->
+                <!-- Only enabled when at least one column has been categorized -->
                 <b-button
                     class="float-right"
                     :disabled="!pageData.annotation.accessible"
@@ -53,7 +56,6 @@
                     {{ uiText.nextButton }}
                 </b-button>
             </b-col>
-
         </b-row>
 
     </b-container>
@@ -94,7 +96,8 @@
 
                     categorySelectInstructions: "Click category and then corresponding column from tsv file",
                     categorySelectTitle: "Recommended Categories",
-                    nextButton: "Next step: Annotate columns"
+                    nextButton: "Next step: Annotate columns",
+                    nextPageCriteria: "One column must be categorized as 'Subject ID' and all assessment tools must be grouped to proceed"
                 }
             };
         },
@@ -183,9 +186,19 @@
                 }
                 const toolGroupingStatus = ( 0 === assessmentToolColumns.length );
 
+                // 4. Make sure one (and only one) column has been categorized as 'Subject ID'
+                let subjectIDFound = 0;
+                for ( const column in this.columnToCategoryMap ) {
+                    if ( "Subject ID" === this.columnToCategoryMap[column] ) {
+                        subjectIDFound += 1;
+                    }
+                }
+                const singleSubjectIDColumn = ( 1 === subjectIDFound );
+
                 // Annotation page is only accessible if at least one column has
                 // been categorized and all assessment tools have been grouped
-                return categorizationStatus && toolGroupingStatus;
+                // and if one (and only one) column has been categorized as 'Subject ID'
+                return categorizationStatus && toolGroupingStatus && singleSubjectIDColumn;
             },
 
             removeToolFromGroup(p_toolData) {

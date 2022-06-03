@@ -31,8 +31,6 @@
 
         props: {
 
-            filteredDataTable: { type: Array, default: () => [] },
-            options: { type: Object, default: () => {} },
             relevantColumns: { type: Array, required: true },
             uniqueValues: { type: Object, required: true }
         },
@@ -151,9 +149,10 @@
                 }
 
                 // 3. Trigger a save of this transformation to the annotated table in the store
+                // NOTE: 'transformHeuristics' are currently not being saved to the store
                 this.$emit("update:dataTable", {
 
-                    transformHeuristics: this.columnTransformHeuristics,
+                    // transformHeuristics: this.columnTransformHeuristics,
                     transformedTable: transformedTable
                 });
             },
