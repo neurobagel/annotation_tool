@@ -520,7 +520,7 @@ export const mutations = {
             dataType: "string",
             explanation: "This is an explanation for how to annotate assessments.",
             groupName: p_toolGroupData.name,
-            options: { mode: "column" },
+            options: {},
             specializedComponent: "annot-tool-group",
             tools: p_state.toolGroups[p_toolGroupData.name]
         });

@@ -40,9 +40,12 @@
         <!-- Next page button (passed inside categ-tool-group for UI space consideration) -->
         <b-row>
             <b-col class="text-right" cols="12">
-                <p class="instructions-text">
+
+                <!-- Optional instructions to remind user of criteria to proceed to annotation page -->
+                <p class="instructions-text" v-if="!pageData.annotation.accessible">
                     {{ uiText.nextPageCriteria }}
                 </p>
+
                 <!-- Button to proceed to the next page -->
                 <!-- Only enabled when at least one column has been categorized -->
                 <b-button
@@ -53,11 +56,6 @@
                     {{ uiText.nextButton }}
                 </b-button>
             </b-col>
-        </b-row>
-
-        <!-- Optional instructions to remind user of criteria to proceed to annotation page -->
-        <b-row v-if="!pageData.annotation.accessible">
-            <b-col class="text-right" />
         </b-row>
 
     </b-container>
