@@ -78,7 +78,6 @@
 
             ...mapGetters([
 
-                "getColumnsOfCategory",
                 "isDataAnnotated"
             ]),
 
