@@ -130,7 +130,7 @@
 
             fileSaverSaveAs(p_jsonData) {
 
-                var blob = new Blob([JSON.stringify(p_jsonData, null, this.jsonSpacing)], {type: "text/plain;charset=utf-8"});
+                const blob = new Blob([JSON.stringify(p_jsonData, null, this.jsonSpacing)], {type: "text/plain;charset=utf-8"});
                 saveAs(blob, this.defaultOutputFilename);
             },
 
