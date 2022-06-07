@@ -161,7 +161,7 @@
             this.category = this.details.category;
 
             // 2. Get column marked as subject ID
-            // NOTE: Subject ID is only allowed one column
+            // NOTE: the "Subject ID" category is only allowed to be applied to one column
             this.idField = this.getColumnsOfCategory("Subject ID")[0];
         }
     };
