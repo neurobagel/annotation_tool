@@ -168,7 +168,7 @@
                 // 1. Create the new subject object, key by key
                 const subjectJSON = {};
 
-                // NOTE: Currently only one column is allowed for subject ID, age, and sex
+                // NOTE: Currently the categories subject ID, age, and sex must be applied to only one column each
 
                 // A. Subject ID - This categorization is required in order to
                 // proceed to the annotation page
