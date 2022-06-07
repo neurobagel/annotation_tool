@@ -66,9 +66,6 @@
 
 <script>
 
-    // Allows for reference to store data by creating simple, implicit getters
-    import { mapGetters } from "vuex";
-
     export default {
 
         props: {
@@ -116,14 +113,6 @@
 
                 subjectAvailability: {}
             };
-        },
-
-        computed: {
-
-            ...mapGetters([
-
-                "getColumnOfCategory"
-            ])
         },
 
         watch: {

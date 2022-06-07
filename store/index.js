@@ -59,6 +59,9 @@ export const state = () => ({
         // List of data table's columns
         columns: [],
 
+        // File name of the data table tsv file
+        filename: "",
+
         // File type of the original data table file
         fileType: "",
 
@@ -73,6 +76,9 @@ export const state = () => ({
     // Data dictionary (i.e. participants.json)
 
     dataDictionary: {
+
+        // File names of the data dictionary json file
+        filename: "",
 
         // File type of the original data dictionary file
         fileType: "",
@@ -128,9 +134,9 @@ export const state = () => ({
     // See action nuxtServerInit() for initialization code
     annotationDetails: [],
 
-      // Stores a list of (potentially) missing values for each column. This is determined in the missing-values
-      // components on the annotation page, and then amended by the user as they see fit
-      missingColumnValues: {},
+    // Stores a list of (potentially) missing values for each column. This is determined in the missing-values
+    // components on the annotation page, and then amended by the user as they see fit
+    missingColumnValues: {},
 
     // Keeps track of named assessment tool groups and their associated tools (e.g. columns in the data table)
     toolGroups: {}
@@ -440,7 +446,10 @@ export const mutations = {
         // 1. Save the new data dictionary to state data
         p_state.dataDictionary.original = p_newFileData.formattedData;
 
-        // 2. Save the file type of the new data dictionary
+        // 2. Save the file name of the data dictionary json file
+        p_state.dataDictionary.filename = p_newFileData.filename;
+
+        // 3. Save the file type of the new data dictionary
         p_state.dataDictionary.fileType = p_newFileData.fileType;
     },
 
@@ -449,13 +458,16 @@ export const mutations = {
         // 1. Save the new tsv row dictionary list to state data
         p_state.dataTable.original = p_newFileData.formattedData;
 
-        // 2. Save the file type of the new data table
+        // 2. Save the file name of the tsv file
+        p_state.dataTable.filename = p_newFileData.filename;
+
+        // 3. Save the file type of the new data table
         p_state.dataTable.fileType = p_newFileData.fileType;
 
-        // 3. Save a list of the columns of this data table
+        // 4. Save a list of the columns of this data table
         p_state.dataTable.columns = p_newFileData.columns;
 
-        // 4. Make the annotated data a copy of the original
+        // 5. Make the annotated data a copy of the original
         p_state.dataTable.annotated = structuredClone(p_state.dataTable.original);
     },
 
@@ -588,19 +600,18 @@ export const getters = {
         return columnDescription;
     },
 
-    getColumnOfCategory: (p_state) => (p_category) => {
+    getColumnsOfCategory: (p_state) => (p_category) => {
 
-        // If it exists in the map, retrieve the column assigned this category
-        let columnName = "";
+        // If it exists in the map, retrieve the column(s) assigned this category
+        let columns = [];
 
         for ( const column in p_state.columnToCategoryMap ) {
             if ( p_category === p_state.columnToCategoryMap[column] ) {
-                columnName = column;
-                break;
+                columns.push(column);
             }
         }
 
-        return columnName;
+        return columns;
     },
 
     getGroupOfTool: (p_state) => (p_tool) => {

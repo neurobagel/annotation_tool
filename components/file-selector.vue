@@ -76,8 +76,15 @@
 
                         complete: results => {
 
+                            // I. Returned results inlcude data and filename
+                            const myJson = {
+
+                                data: results.data,
+                                filename: this.fileInput.name
+                            };
+
                             // I. Send the file data to the store to be processed and saved
-                            this.$emit("file-selected", results.data);
+                            this.$emit("file-selected", myJson);
                         }
                     });
                 }
@@ -85,7 +92,7 @@
                 else if ( this.knownContentTypes["json"] === this.contentType ) {
 
                     // I. Reference to this json object in this component's data
-                    let myJson;
+                    let myJson = {};
 
                     // II. Create a file reader object for reading the json file contents
                     const reader = new FileReader();
@@ -94,9 +101,12 @@
                     reader.onload = e => {
 
                         // a. Save a reference to the loaded contents
-                        myJson = e.target.result;
+                        myJson.data = e.target.result;
 
-                        // b. Send the file data to any parent/listener
+                        // b. Store the filename
+                        myJson.filename = this.fileInput.name;
+
+                        // c. Send the file data to any parent/listener
                         this.$emit("file-selected", myJson);
                     };
 

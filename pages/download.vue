@@ -26,7 +26,8 @@
                 <b-button
                     class="float-right"
                     :disabled="!isDataAnnotated"
-                    :variant="downloadButtonColor">
+                    :variant="downloadButtonColor"
+                    @click="downloadAnnotatedData">
                     {{ uiText.downloadButton }}
                 </b-button>
             </b-col>
@@ -43,6 +44,9 @@
     import { mapState } from "vuex";
     import { mapGetters } from "vuex";
 
+    // Saves file to user's computer
+    import { saveAs } from "file-saver";
+
     export default {
 
         name: "DownloadPage",
@@ -50,6 +54,10 @@
         data() {
 
             return {
+
+                categoryToColumnMap: {},
+
+                jsonSpacing: 4,
 
                 // Size of the file display textboxes
                 textArea: {
@@ -63,7 +71,6 @@
 
                     downloadButton: "Download Annotated Data"
                 }
-
             };
         },
 
@@ -76,8 +83,22 @@
 
             ...mapState([
 
-                "dataTable"
+                "columnToCategoryMap",
+                "dataTable",
+                "missingValueLabel",
+                "toolGroups"
             ]),
+
+            datasetName() {
+
+                // Dataset name is original data table filename with no extension
+                return this.dataTable.filename.split(".").slice(0, -1).join(".");
+            },
+
+            defaultOutputFilename() {
+
+                return `${this.datasetName}_annotated_${Date.now()}.json`;
+            },
 
             downloadButtonColor() {
 
@@ -88,32 +109,103 @@
 
         mounted() {
 
-            // Set the current page
+            // 1. Set the current page
             this.$store.dispatch("setCurrentPage", "download");
+
+            // 2. Create a reverse of the column to category map in the store
+            this.refreshCategoryToColumnMap();
         },
 
         methods: {
 
-            saveFile() {
+            downloadAnnotatedData() {
 
-                // 1. Create a blob out of the annotated table data
-                const data = JSON.stringify(this.dataTable.annotated);
-                const blob = new Blob([data], {type: "text/plain"});
+                // 1. Format the annotated table into propietary JSON format
+                const jsonData = this.transformAnnotatedTableToJSON();
 
-                // 2. Create an anchor tag in memory linked to the blob
-                const pseudoAnchor = document.createElement("a");
-                pseudoAnchor.download = "annotated_data.json";
-                pseudoAnchor.href = window.URL.createObjectURL(blob);
-                pseudoAnchor.dataset.downloadurl = [
-                    "text/json",
-                    pseudoAnchor.download,
-                    pseudoAnchor.href
-                ].join(':');
+                // 2. Open file dialog to prompt the user to name it and
+                // download it to their location of choice
+                this.fileSaverSaveAs(jsonData);
+            },
 
-                // 3. Dispatch a mouse click event on the in-memory anchor tag
-                const pseudoClickEvent = document.createEvent("MouseEvents");
-                pseudoClickEvent.initEvent("click", true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
-                pseudoAnchor.dispatchEvent(pseudoClickEvent);
+            fileSaverSaveAs(p_jsonData) {
+
+                const blob = new Blob([JSON.stringify(p_jsonData, null, this.jsonSpacing)], {type: "text/plain;charset=utf-8"});
+                saveAs(blob, this.defaultOutputFilename);
+            },
+
+            refreshCategoryToColumnMap() {
+
+                this.categoryToColumnMap = {};
+                for ( const column in this.columnToCategoryMap ) {
+
+                    const myCategory = this.columnToCategoryMap[column];
+
+                    // Categories may have multiple columns associated with them
+                    if ( !Object.keys(this.categoryToColumnMap).includes(myCategory) ) {
+                        this.categoryToColumnMap[myCategory] = [];
+                    }
+                    this.categoryToColumnMap[myCategory].push(column);
+                }
+            },
+
+            transformAnnotatedTableToJSON() {
+
+                // Transform the annotated data table into a new subject-centric JSON format for the output file
+                return {
+
+                    name: this.datasetName,
+                    type: "dataset",
+                    subjects: this.dataTable.annotated.map(row => this.transformAnnotatedRowToSubjectJSON(row))
+                };
+            },
+
+            transformAnnotatedRowToSubjectJSON(p_row) {
+
+                // 0. Determine all columns of the original data that have been categorized
+                const availableCategories = Object.values(this.columnToCategoryMap);
+
+                // 1. Create the new subject object, key by key
+                const subjectJSON = {};
+
+                // NOTE: Currently the categories subject ID, age, and sex must be applied to only one column each
+
+                // A. Subject ID - This categorization is required in order to
+                // proceed to the annotation page
+                subjectJSON["id"] = p_row[this.categoryToColumnMap["Subject ID"][0]];
+
+                // B. Age
+                if ( availableCategories.includes("Age") ) {
+                    subjectJSON["age"] = p_row[this.categoryToColumnMap["Age"][0]];
+                }
+
+                // C. Sex
+                if ( availableCategories.includes("Sex") ) {
+                    subjectJSON["sex"] = p_row[this.categoryToColumnMap["Sex"][0]];
+                }
+
+                // D. Diagnoses
+                if ( availableCategories.includes("Diagnosis") ) {
+
+                    // I. Create a list of values from the diagnosis columns in the annotated table row
+                    subjectJSON["diagnosis"] = this.categoryToColumnMap["Diagnosis"].map(column => p_row[column])
+                        .filter(value => this.missingValueLabel !== value);
+                }
+
+                // E. Assessment tool group availability for this subject
+                subjectJSON["assessment_tool"] = [];
+                for ( const groupName in this.toolGroups ) {
+
+                    // Availability suffix string should be in store?
+                    const columnName = groupName + "_avail";
+
+                    // Only include tool group names that are available for this subject
+                    if ( true === p_row[columnName] ) {
+                        subjectJSON["assessment_tool"].push(columnName);
+                    }
+                }
+
+                return subjectJSON;
             }
         }
     };

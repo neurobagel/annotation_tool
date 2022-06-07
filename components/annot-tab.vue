@@ -71,7 +71,7 @@
 
             ...mapGetters([
 
-                "getColumnOfCategory"
+                "getColumnsOfCategory"
             ]),
 
             filteredDataTable() {
@@ -161,7 +161,8 @@
             this.category = this.details.category;
 
             // 2. Get column marked as subject ID
-            this.idField = this.getColumnOfCategory("Subject ID");
+            // NOTE: the "Subject ID" category is only allowed to be applied to one column
+            this.idField = this.getColumnsOfCategory("Subject ID")[0];
         }
     };
 
