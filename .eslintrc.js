@@ -19,7 +19,11 @@ module.exports = {
         $nuxt: true,
 
         // 'structuredClone' is available as of ES6 (ca. 2015), but ESLint does not yet know about it
-        structuredClone: true
+        structuredClone: true,
+
+        // Cypress
+        require: true,
+        module: true
     },
 
     parserOptions: {
