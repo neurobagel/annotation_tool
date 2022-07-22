@@ -1,23 +1,25 @@
 const { defineConfig } = require("cypress");
 
 module.exports = defineConfig({
+  e2e: {
+    baseUrl: "http://localhost:3000",
 
-    e2e: {
+    component: {
+      devServer: {
+        bundler: "webpack",
+        framework: "nuxt"
+      }
+    },
 
-        baseUrl: "http://localhost:3000",
-
-        component: {
-
-            devServer: {
-
-                bundler: "webpack",
-                framework: "nuxt"
-            }
-        },
-
-        setupNodeEvents(on, config) {
-
-            // Implement node event listeners here
-        }
+    setupNodeEvents(on, config) {
+      // Implement node event listeners here
     }
+  },
+
+  component: {
+    devServer: {
+      framework: "nuxt",
+      bundler: "webpack"
+    }
+  }
 });
