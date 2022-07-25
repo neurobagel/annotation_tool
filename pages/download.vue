@@ -24,6 +24,7 @@
             <!-- Only enabled when annotation has been at least partially completed -->
             <b-col cols="3">
                 <b-button
+                    data-cy="download-button"
                     class="float-right"
                     :disabled="!isDataAnnotated"
                     :variant="downloadButtonColor"

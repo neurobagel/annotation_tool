@@ -101,6 +101,26 @@ Cypress.Commands.add("passCategorization", () => {
     cy.nextPageByButton();
 });
 
+// Go through annotation page, saving default age annotation
+Cypress.Commands.add("passAnnotation", () => {
+
+        // 1. Get past the categorization page
+        cy.passCategorization();
+
+        // 2. Click on the 'Age' tab
+        cy.get("[data-cy='annotation-category-tabs'] ul")
+            .contains("li", "Age")
+            .click();
+
+        // 3. Click on the 'Save Annotation' button
+        cy.get("button")
+          .contains("Save Annotation")
+          .click();
+
+        // 4. Click the next page button to proceed to the download page
+        cy.nextPageByButton();
+});
+
 function categorizeColumn(p_category, p_columnTableRow) {
 
     // 1. Select the given category in the categorization table
