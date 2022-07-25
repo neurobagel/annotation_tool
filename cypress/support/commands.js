@@ -29,12 +29,12 @@ Cypress.Commands.add("nextPageByButton", () => {
 
     // Click the next page button to proceed to the next page
     cy.get("[data-cy='button-nextpage']")
-        .click();   
+        .click();
 });
 
 // Go to the next page by clicking the nav bar link
 Cypress.Commands.add("nextPageByNav", (p_navItemName) => {
-    
+
     // Click the corresponding nav item to proceed to the next page
     cy.get(`[data-cy='menu-item-${p_navItemName}'] a`)
         .click();
@@ -57,7 +57,7 @@ Cypress.Commands.add("passIndex", () => {
         .contains("Choose file")
         .click()
         .selectFile("./examples/good/ds003653_participant.json");
-    
+
     // 4. Click the next page button to proceed to the categorization page
     cy.nextPageByButton();
 });
@@ -73,7 +73,7 @@ Cypress.Commands.add("passCategorization", () => {
 
     // 3. Select age category and link it to the age column
     categorizeColumn("Age", 1);
-        
+
     // 4. Select sex category and link it to the sex column
     categorizeColumn("Sex", 2);
 
@@ -82,13 +82,13 @@ Cypress.Commands.add("passCategorization", () => {
 
     // 6. Select 'Assessment Tool' category and link it to the IQ column
     categorizeColumn("Assessment Tool", 7);
-        
+
     // 7. Create a tool group label, select the column, and create a new tool group
 
     // Fill in the toolgroup name textbox
     cy.get("[data-cy='tool-name-textbox']")
         .type("Test ToolGroup 1");
-        
+
     // Select the column in the assessment tool column multi-selectbox
     cy.get("[data-cy='column-multiselect']")
         .select(0);
@@ -98,11 +98,11 @@ Cypress.Commands.add("passCategorization", () => {
         .click();
 
     // 4. Click the next page button to proceed to the annotation page
-    cy.nextPageByButton();      
+    cy.nextPageByButton();
 });
 
 function categorizeColumn(p_category, p_columnTableRow) {
-    
+
     // 1. Select the given category in the categorization table
     cy.get("[data-cy='categorization-table']")
         .contains(p_category)
@@ -111,5 +111,5 @@ function categorizeColumn(p_category, p_columnTableRow) {
     // 2. Link the category to this column in the column linking table
     cy.get("[data-cy='column-linking-table'] tbody > tr")
         .eq(p_columnTableRow)
-        .click();    
+        .click();
 }
