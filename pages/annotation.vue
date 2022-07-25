@@ -20,6 +20,7 @@
         <client-only>
             <!-- This gives us built-in keyboard navigation! -->
             <b-tabs
+                data-cy="annotation-category-tabs"
                 card
                 pills
                 vertical
@@ -55,6 +56,7 @@
             <!-- Only enabled when at least one annotation table write has been done -->
             <b-col cols="5">
                 <b-button
+                    data-cy="button-nextpage"
                     class="float-right"
                     :disabled="!pageData.download.accessible"
                     :to="'/' + pageData.download.location"
