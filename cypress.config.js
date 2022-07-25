@@ -1,5 +1,7 @@
 const { defineConfig } = require("cypress");
 
+const { isFileExist, findFiles } = require('cy-verify-downloads');
+
 module.exports = defineConfig({
   e2e: {
     baseUrl: "http://localhost:3000",
@@ -11,8 +13,13 @@ module.exports = defineConfig({
       }
     },
 
+    downloadsFolder: "cypress/downloads",
+
     setupNodeEvents(on, config) {
       // Implement node event listeners here
+
+      // cy-verify-downloads plugin
+      on('task', { isFileExist, findFiles });
     }
   },
 
@@ -21,5 +28,7 @@ module.exports = defineConfig({
       framework: "nuxt",
       bundler: "webpack"
     }
-  }
+  },
+
+  
 });

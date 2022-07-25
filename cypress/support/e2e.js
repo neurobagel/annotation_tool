@@ -18,3 +18,7 @@ import "./commands";
 
 // Alternatively you can use CommonJS syntax:
 // require('./commands')
+
+// Verify downloads plugin
+require("cy-verify-downloads").addCustomCommand();
+
