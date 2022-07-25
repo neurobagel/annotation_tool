@@ -22,6 +22,7 @@
                 <b-input-group>
                     <label for="tool-name-textbox">Group name:&nbsp;</label>
                     <b-form-input
+                        data-cy="tool-name-textbox"
                         id="tool-name-textbox"
                         v-model="newToolGroupName"
                         :placeholder="uiText.toolGroupNamePlaceholder" />
@@ -33,6 +34,7 @@
                 <b-input-group>
                     <label for="column-multiselect">Columns:&nbsp;</label>
                     <b-form-select
+                        data-cy="column-multiselect"
                         id="column-multiselect"
                         v-model="selectedTools"
                         multiple
@@ -51,6 +53,7 @@
                 </b-col>
                 <b-col class="no-padding-right" ols="8">
                     <b-button
+                        data-cy="create-toolgroup-button"
                         class="float-right"
                         :disabled="!readyToAddOrModifyToolGroup"
                         variant="info"
@@ -67,6 +70,7 @@
             <b-row>
                 <!-- Tool grouping table -->
                 <b-table
+                    data-cy="toolgroup-table"
                     bordered
                     selectable
                     head-variant="dark"
