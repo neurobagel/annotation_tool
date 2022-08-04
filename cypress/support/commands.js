@@ -24,6 +24,58 @@
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
 
+// Calls action in the Nuxt store
+Cypress.Commands.add("dispatchToNuxtStore", (p_action, p_data) => {
+
+    // Dispatch action with given data on the Nuxt store
+    cy.window().its("$nuxt.$store").then(p_store => {
+
+        p_store.dispatch(p_action, p_data);
+    });
+});
+
+// Load participants json data dictionary
+Cypress.Commands.add("loadDataDictionary", (p_sourceDirectory, p_filename) => {
+
+    cy.fixture(p_sourceDirectory + p_filename).then(function(p_fileData) {
+
+        return JSON.stringify(p_fileData);
+    }).as("dataDictionary");
+});
+
+// Load participants tsv data table into table form
+Cypress.Commands.add("loadDataTable", (p_sourceDirectory, p_filename) => {
+
+    cy.fixture(p_sourceDirectory + p_filename).then(function(p_fileData) {
+
+        let dataTable = [];
+
+        // A. Split rows by newlines
+        let lines = p_fileData.split("\n");
+
+        // B. Each table row is a list of parts split by tabs
+        for ( let index = 0; index < lines.length; index++ ) {
+
+            // I. Skip blank lines
+            if ( 0 == lines[index].trim().length ) {
+                continue;
+            }
+
+            // II. Each table row is a list consisting of parts split by tabs
+            dataTable.push([]);
+            let lineParts = lines[index].split("\t");
+            for ( let index2 = 0; index2 < lineParts.length; index2++ ) {
+
+                if ( lineParts[index2].trim().length > 0 ) {
+                    dataTable[index].push(lineParts[index2]);
+                }
+            }
+        }
+
+        return dataTable;
+    }).as("dataTable");
+});
+
 // Go to the next page by clicking the next page button
 Cypress.Commands.add("nextPageByButton", () => {
 
