@@ -93,7 +93,7 @@ Cypress.Commands.add("nextPageByNav", (p_navItemName) => {
 });
 
 // Go through index page and select participants tsv and json dictionary files, advance to categorization page
-Cypress.Commands.add("passIndex", () => {
+Cypress.Commands.add("passIndex", (p_dataTableFilepath, p_dataDictionaryFilepath) => {
 
     // 1. Go to home page
     cy.visit(".");
@@ -102,23 +102,23 @@ Cypress.Commands.add("passIndex", () => {
     cy.get("[data-cy='data-table-selector']")
         .contains("Choose file")
         .click()
-        .selectFile("./examples/good/ds003653_participant.tsv");
+        .selectFile(p_dataTableFilepath);
 
     // 3. Select participants dictionary
     cy.get("[data-cy='data-dictionary-selector']")
         .contains("Choose file")
         .click()
-        .selectFile("./examples/good/ds003653_participant.json");
+        .selectFile(p_dataDictionaryFilepath);
 
     // 4. Click the next page button to proceed to the categorization page
     cy.nextPageByButton();
 });
 
 // Go through categorization page, selecting subject ID category and linking it to first column, advance to annotation page
-Cypress.Commands.add("passCategorization", () => {
+Cypress.Commands.add("passCategorization", (p_dataTableFilepath, p_dataDictionaryFilepath) => {
 
     // 1. Pass the home page
-    cy.passIndex();
+    cy.passIndex(p_dataTableFilepath, p_dataDictionaryFilepath);
 
     // 2. Select subject ID category and link it to the participant ID column
     categorizeColumn("Subject ID", 0);
@@ -154,10 +154,10 @@ Cypress.Commands.add("passCategorization", () => {
 });
 
 // Go through annotation page, saving default age annotation
-Cypress.Commands.add("passAnnotation", () => {
+Cypress.Commands.add("passAnnotation", (p_dataTableFilepath, p_dataDictionaryFilepath) => {
 
         // 1. Get past the categorization page
-        cy.passCategorization();
+        cy.passCategorization(p_dataTableFilepath, p_dataDictionaryFilepath);
 
         // 2. Click on the 'Age' tab
         cy.get("[data-cy='annotation-category-tabs'] ul")
