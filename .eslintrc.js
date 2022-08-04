@@ -10,7 +10,8 @@ module.exports = {
     extends: [
 
         "eslint:recommended",
-        "plugin:vue/strongly-recommended"
+        "plugin:vue/strongly-recommended",
+        "plugin:cypress/recommended"
     ],
 
     // Known globals
@@ -32,7 +33,11 @@ module.exports = {
         sourceType: "module",
     },
 
-    plugins: ["vue"],
+    plugins: [
+        
+        "vue",
+        "cypress"
+    ],
 
     rules: {
 
