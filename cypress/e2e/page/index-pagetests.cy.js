@@ -1,4 +1,4 @@
-describe("tests on the index page", () => {
+describe("tests on the index page via store interaction", () => {
 
     beforeEach(() => {
 
@@ -9,7 +9,7 @@ describe("tests on the index page", () => {
         cy.viewport("macbook-13");
     });
 
-    // Categorization page tests with 'good' data files
+    // Index page tests with 'good' data files
     context("index data loading with good data", () => {
 
         beforeEach(() => {
@@ -70,7 +70,7 @@ describe("tests on the index page", () => {
             cy.get("[data-cy='menu-item-categorization'] a")
             .should("not.have.class", "disabled");
             cy.get("[data-cy='button-nextpage']")
-            .should("not.have.class", "disabled");            
+            .should("not.have.class", "disabled");
         });
 
         // Description: User selects data dictionary alone
@@ -100,9 +100,9 @@ describe("tests on the index page", () => {
             .first()
             .should('have.class', 'disabled');
             cy.get("[data-cy='button-nextpage']")
-            .should('have.class', 'disabled');            
+            .should('have.class', 'disabled');
         });
-        
+
         // Description: User selects data table and data dictionary
         // Expected results: Categorization nav and Next page button are only enabled after data table selection
         it("select both data table and dictionary", () => {
@@ -161,7 +161,7 @@ describe("tests on the index page", () => {
             cy.get("[data-cy='menu-item-categorization'] a")
             .should("not.have.class", "disabled");
             cy.get("[data-cy='button-nextpage']")
-            .should("not.have.class", "disabled");            
+            .should("not.have.class", "disabled");
         });
     });
 });

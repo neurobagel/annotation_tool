@@ -1,4 +1,4 @@
-describe("tests on categorization page via programmatic state loading", () => {
+describe("tests on categorization page via programmatic state loading and store interaction", () => {
 
     beforeEach(() => {
 
@@ -224,7 +224,7 @@ describe("tests on categorization page via programmatic state loading", () => {
 
         // Description of task: User selects non- and tool group categories, paints column with tool group paint,
         // creates tool group label, groups columns, paints columns with non-tool group categories
-        // Expected results: Annotation nav and Next page button are enabled        
+        // Expected results: Annotation nav and Next page button are enabled
         it("ordinary and toolgroup categorization", () => {
 
             // Action 1
