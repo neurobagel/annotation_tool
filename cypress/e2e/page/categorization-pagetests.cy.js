@@ -1,5 +1,11 @@
 describe("tests on categorization page via programmatic state loading and store interaction", () => {
 
+    beforeEach(() => {
+
+        // Standard app setup
+        cy.appSetup();
+    });
+
     // Categorization page tests with 'good' data files
     context("categorization with good data", () => {
 
