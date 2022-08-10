@@ -22,3 +22,6 @@ import "./commands";
 // Verify downloads plugin
 require("cy-verify-downloads").addCustomCommand();
 
+// Standard setup functionality for each collection of tests
+cy.appSetup();
+

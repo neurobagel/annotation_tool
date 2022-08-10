@@ -1,14 +1,5 @@
 describe("tests on categorization page via programmatic state loading and store interaction", () => {
 
-    beforeEach(() => {
-
-        // Standard setup for annotation tool testing
-
-        // A. Set viewport size
-        // NOTE: Standard 13-inch laptop screen to start, but this can be expanded
-        cy.viewport("macbook-13");
-    });
-
     // Categorization page tests with 'good' data files
     context("categorization with good data", () => {
 
@@ -105,11 +96,10 @@ describe("tests on categorization page via programmatic state loading and store 
 
             // Link the first column in the column select table with the subject ID category
             cy.get("[data-cy='column-linking-table'] tbody tr td")
-                .contains("participant_id")
+                .eq(1)
                 .click();
 
             // Assert 2 - Nav and next button should be enabled
-            // Assert 1
             cy.get("[data-cy='menu-item-annotation'] a")
                 .should("not.have.class", "disabled");
             cy.get("[data-cy='button-nextpage']")
@@ -137,7 +127,7 @@ describe("tests on categorization page via programmatic state loading and store 
 
             // Link the first column in the column select table with the 'Subject ID' category
             cy.get("[data-cy='column-linking-table'] tbody tr td")
-                .contains("participant_id")
+                .eq(1)
                 .click();
 
             // Assert 2 - Nav and next button should be enabled
@@ -148,14 +138,14 @@ describe("tests on categorization page via programmatic state loading and store 
 
             // Action 3
 
-            // Select 'Diagnosis' category
-            cy.get("[data-cy='categorization-table']")
-                .contains("Diagnosis")
+            // Select the next category
+            cy.get("[data-cy='categorization-table'] tbody tr")
+                .eq(2)
                 .click();
 
             // Link the second column in the column select table with the 'Diagnosis' category
             cy.get("[data-cy='column-linking-table'] tbody tr td")
-                .contains("group")
+                .eq(2)
                 .click();
 
             // Assert 3 - Nav and next button should *still* be enabled
@@ -187,7 +177,7 @@ describe("tests on categorization page via programmatic state loading and store 
 
             // Link the second column in the column select table with the 'Assessment Tool' category
             cy.get("[data-cy='column-linking-table'] tbody tr td")
-                .contains("iq")
+                .eq(1)
                 .click();
 
             // Assert 2 - Nav and next button should not be enabled
@@ -200,7 +190,7 @@ describe("tests on categorization page via programmatic state loading and store 
 
             // Fill in the toolgroup name textbox
             cy.get("[data-cy='tool-name-textbox']")
-            .type("Test ToolGroup 1");
+                .type("Test ToolGroup 1");
 
             // Select the column in the assessment tool column multi-selectbox
             cy.get("[data-cy='column-multiselect']")
@@ -231,8 +221,8 @@ describe("tests on categorization page via programmatic state loading and store 
 
             // Select 'Assessment Tool' category
             cy.get("[data-cy='categorization-table']")
-            .contains("Assessment Tool")
-            .click();
+                .contains("Assessment Tool")
+                .click();
 
             // Assert 1 - Nav and next button should not yet be enabled
             cy.get("[data-cy='menu-item-annotation'] a")
@@ -244,7 +234,7 @@ describe("tests on categorization page via programmatic state loading and store 
 
             // Link the second column in the column select table with the 'Assessment Tool' category
             cy.get("[data-cy='column-linking-table'] tbody tr td")
-                .contains("iq")
+                .eq(1)
                 .click();
 
             // Assert 2 - Nav and next button should not be enabled
@@ -257,7 +247,7 @@ describe("tests on categorization page via programmatic state loading and store 
 
             // Fill in the toolgroup name textbox
             cy.get("[data-cy='tool-name-textbox']")
-            .type("Test ToolGroup 1");
+                .type("Test ToolGroup 1");
 
             // Select the column in the assessment tool column multi-selectbox
             cy.get("[data-cy='column-multiselect']")
@@ -272,9 +262,9 @@ describe("tests on categorization page via programmatic state loading and store 
                 .contains("Subject ID")
                 .click();
 
-            // Link the second column in the column select table with the 'Assessment Tool' category
+            // Link the second column in the column select table with the 'Subject ID' category
             cy.get("[data-cy='column-linking-table'] tbody tr td")
-                .contains("session")
+                .eq(2)
                 .click();
 
             // Assert 3 - Nav and next button should now be enabled

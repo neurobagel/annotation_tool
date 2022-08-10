@@ -173,6 +173,18 @@ Cypress.Commands.add("passAnnotation", (p_dataTableFilepath, p_dataDictionaryFil
         cy.nextPageByButton();
 });
 
+// Standard setup functionality for each collection of tests
+// NOTE: In the future we will likely want to parametrize this for different
+// test setups (i.e. testing across different viewport sizes).
+Cypress.Commands.add("appSetup", () => {
+
+    // Standard setup for annotation tool testing
+
+    // A. Set viewport size
+    // NOTE: Standard 13-inch laptop screen to start, but this can be expanded
+    cy.viewport("macbook-13");
+});
+
 function categorizeColumn(p_category, p_columnTableRow) {
 
     // 1. Select the given category in the categorization table
