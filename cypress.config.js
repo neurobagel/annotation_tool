@@ -8,16 +8,8 @@ module.exports = defineConfig({
 
         baseUrl: "http://localhost:3000",
 
-        component: {
-
-            devServer: {
-
-                bundler: "webpack",
-                framework: "nuxt"
-            }
-        },
-
-        // Downloads location and behavior
+        // Every time a test runs, files (e.g. downloaded files from a download
+        // page test) from previous tests are deleted.
         downloadsFolder: "cypress/downloads",
         trashAssetsBeforeRuns: true,
 
