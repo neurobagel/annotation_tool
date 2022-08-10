@@ -13,63 +13,19 @@ describe("tests on categorization page via programmatic state loading and store 
 
             // Setup
 
-            // 1. Load test data
-
-            // A. Load configuration file with testing parameters
-            cy.fixture("tests/categorization/default-test-config.json").as("config");
-
-            // B. Load data files based on parameters
-            cy.get("@config").then(p_config => {
-
-                // I. Load participants.tsv from config parameters
-                cy.loadDataTable(p_config.source_folder, p_config.data_table)
-                    .as("dataTable");
-
-                // II. Load data dictionary from config parameters
-                cy.loadDataDictionary(p_config.source_folder, p_config.data_dictionary)
-                    .as("dataDictionary");
-            });
-
-            // 2. Open index page
+            // 1. Open index page
             // NOTE: Home is visited because some state-related store structures
             // needed for the categorization page are set up on index page creation
             cy.visit("/");
 
-            // 3. Load state for categorization page
+            // 2. Load test data
+            cy.loadTestDataIntoStore();
 
-            // A. Save data table in store
-            cy.get("@config").then(p_config => {
-
-                cy.get("@dataTable").then(p_dataTable => {
-
-                    cy.dispatchToNuxtStore("saveDataTable", {
-
-                        data: p_dataTable,
-                        filename: p_config.data_table,
-                        fileType: "tsv"
-                    });
-                });
-            });
-
-            // B. Enable access to the categorization page
+            // 3. Enable access to the categorization page
             cy.dispatchToNuxtStore("initializePage", {
 
                 enable: true,
                 pageName: "categorization"
-            });
-
-            // C. Save data dictionary in store
-            cy.get("@config").then(p_config => {
-
-                cy.get("@dataDictionary").then(p_dataDictionary => {
-
-                    cy.dispatchToNuxtStore("saveDataDictionary", {
-
-                        data: p_dataDictionary,
-                        filename: p_config.data_dictionary,
-                        fileType: "json"
-                    });
-                });
             });
 
             // 4. Move to categorization page
@@ -195,11 +151,11 @@ describe("tests on categorization page via programmatic state loading and store 
             // Action 3
 
             // Fill in the toolgroup name textbox
-            cy.get("[data-cy='tool-name-textbox']")
+            cy.get("[data-cy='toolgroup-name-textbox']")
                 .type("Test ToolGroup 1");
 
             // Select the column in the assessment tool column multi-selectbox
-            cy.get("[data-cy='column-multiselect']")
+            cy.get("[data-cy='toolgroup-column-multiselect']")
                 .select(0);
 
             // Create the tool group by clicking the 'create' button
@@ -252,11 +208,11 @@ describe("tests on categorization page via programmatic state loading and store 
             // Action 3
 
             // Fill in the toolgroup name textbox
-            cy.get("[data-cy='tool-name-textbox']")
+            cy.get("[data-cy='toolgroup-name-textbox']")
                 .type("Test ToolGroup 1");
 
             // Select the column in the assessment tool column multi-selectbox
-            cy.get("[data-cy='column-multiselect']")
+            cy.get("[data-cy='toolgroup-column-multiselect']")
                 .select(0);
 
             // Create the tool group by clicking the 'create' button

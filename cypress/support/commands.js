@@ -76,6 +76,32 @@ Cypress.Commands.add("loadDataTable", (p_sourceDirectory, p_filename) => {
     }).as("dataTable");
 });
 
+// Stock data loading function with hardcoded paths (for now)
+Cypress.Commands.add("loadTestDataIntoStore", () => {
+
+    // 1. Load data table from file and save it to the Vuex store
+    cy.loadDataTable("examples/good/", "ds003653_participant.tsv").then(dataTable => {
+
+        cy.dispatchToNuxtStore("saveDataTable", {
+
+            data: dataTable,
+            filename: "ds003653_participant.tsv",
+            fileType: "tsv"
+        });
+    });
+
+    // 2. Load data table from file and save it to the Vuex store
+    cy.loadDataDictionary("examples/good/", "ds003653_participant.json").then(dataDictionary => {
+
+        cy.dispatchToNuxtStore("saveDataDictionary", {
+
+            data: dataDictionary,
+            filename: "ds003653_participant.json",
+            fileType: "json"
+        });
+    });
+});
+
 // Go to the next page by clicking the next page button
 Cypress.Commands.add("nextPageByButton", () => {
 
