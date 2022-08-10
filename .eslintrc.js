@@ -22,9 +22,8 @@ module.exports = {
         // 'structuredClone' is available as of ES6 (ca. 2015), but ESLint does not yet know about it
         structuredClone: true,
 
-        // Cypress
-        require: true,
-        module: true
+        // Currently for Cypress plugins in support js files (see cypress/e2e/support.js)
+        require: true
     },
 
     parserOptions: {
