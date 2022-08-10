@@ -1,14 +1,5 @@
 describe("tests on the index page via store interaction", () => {
 
-    beforeEach(() => {
-
-        // Standard setup for annotation tool testing
-
-        // A. Set viewport size
-        // NOTE: Standard 13-inch laptop screen to start, but this can be expanded
-        cy.viewport("macbook-13");
-    });
-
     // Index page tests with 'good' data files
     context("index data loading with good data", () => {
 
@@ -68,9 +59,9 @@ describe("tests on the index page via store interaction", () => {
 
             // Check to see that categorization nav item and next button are enabled
             cy.get("[data-cy='menu-item-categorization'] a")
-            .should("not.have.class", "disabled");
+                .should("not.have.class", "disabled");
             cy.get("[data-cy='button-nextpage']")
-            .should("not.have.class", "disabled");
+                .should("not.have.class", "disabled");
         });
 
         // Description: User selects data dictionary alone
@@ -97,10 +88,10 @@ describe("tests on the index page via store interaction", () => {
 
             // Check to see that categorization nav item and next button are enabled
             cy.get("[data-cy='menu-item-categorization'] a")
-            .first()
-            .should('have.class', 'disabled');
+                .first()
+                .should('have.class', 'disabled');
             cy.get("[data-cy='button-nextpage']")
-            .should('have.class', 'disabled');
+                .should('have.class', 'disabled');
         });
 
         // Description: User selects data table and data dictionary
