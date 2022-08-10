@@ -4,7 +4,7 @@ describe("tests on the index page via store interaction", () => {
 
         // Standard app setup
         cy.appSetup();
-    });    
+    });
 
     // Index page tests with 'good' data files
     context("index data loading with good data", () => {

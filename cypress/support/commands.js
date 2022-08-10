@@ -138,11 +138,11 @@ Cypress.Commands.add("passCategorization", (p_dataTableFilepath, p_dataDictionar
     // 7. Create a tool group label, select the column, and create a new tool group
 
     // Fill in the toolgroup name textbox
-    cy.get("[data-cy='tool-name-textbox']")
+    cy.get("[data-cy='toolgroup-name-textbox']")
         .type("Test ToolGroup 1");
 
     // Select the column in the assessment tool column multi-selectbox
-    cy.get("[data-cy='column-multiselect']")
+    cy.get("[data-cy='toolgroup-column-multiselect']")
         .select(0);
 
     // Create the tool group by clicking the 'create' button

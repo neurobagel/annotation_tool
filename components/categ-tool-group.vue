@@ -22,7 +22,7 @@
                 <b-input-group>
                     <label for="tool-name-textbox">Group name:&nbsp;</label>
                     <b-form-input
-                        data-cy="tool-name-textbox"
+                        data-cy="toolgroup-name-textbox"
                         id="tool-name-textbox"
                         v-model="newToolGroupName"
                         :placeholder="uiText.toolGroupNamePlaceholder" />
@@ -34,7 +34,7 @@
                 <b-input-group>
                     <label for="column-multiselect">Columns:&nbsp;</label>
                     <b-form-select
-                        data-cy="column-multiselect"
+                        data-cy="toolgroup-column-multiselect"
                         id="column-multiselect"
                         v-model="selectedTools"
                         multiple
