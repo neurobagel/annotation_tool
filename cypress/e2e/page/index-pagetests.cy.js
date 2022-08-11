@@ -7,7 +7,7 @@ describe("tests on the index page via store interaction", () => {
     });
 
     // Index page tests with 'good' data files
-    context("index data loading with good data", () => {
+    context("index page tests with good data", () => {
 
         beforeEach(() => {
 

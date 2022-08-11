@@ -7,7 +7,7 @@ describe("tests on categorization page via programmatic state loading and store 
     });
 
     // Categorization page tests with 'good' data files
-    context("categorization with good data", () => {
+    context("categorization page tests with good data", () => {
 
         beforeEach(() => {
 
@@ -39,7 +39,7 @@ describe("tests on categorization page via programmatic state loading and store 
 
         // Description of task: User selects one non-tool group category and paints one column
         // Expected results: Annotation nav and Next page button are enabled
-        it("simple categorization", () => {
+        it("categorize data table column as 'Subject ID", () => {
 
             // Action 1
 
@@ -70,7 +70,7 @@ describe("tests on categorization page via programmatic state loading and store 
 
         // Description of task: User selects multiple non-tool group category and paints multiple columns
         // Expected results: Annotation nav and Next page button are enabled
-        it("multiple categorization", () => {
+        it("categorize one data table column as 'Subject ID' and another column as another category", () => {
 
             // Action 1
 
@@ -120,7 +120,7 @@ describe("tests on categorization page via programmatic state loading and store 
         // Description of task: User selects the tool group category and paints one column,
         // writes name of tool group, groups that column into that tool group by clicking column name and add
         // Expected results: Annotation nav and Next page button remain disabled
-        it("simple toolgroup categorization", () => {
+        it("categorize another data table column as 'Assessment tool' and create a toolgroup for it", () => {
 
             // Action 1
 
@@ -167,7 +167,7 @@ describe("tests on categorization page via programmatic state loading and store 
                 .children()
                 .should("have.length", 1);
 
-            // Assert 4 - Nav and next button should still be enabled
+            // Assert 4 - Nav and next button should still be disabled
             cy.get("[data-cy='menu-item-annotation'] a")
                 .should("have.class", "disabled");
             cy.get("[data-cy='button-nextpage']")
@@ -177,7 +177,8 @@ describe("tests on categorization page via programmatic state loading and store 
         // Description of task: User selects non- and tool group categories, paints column with tool group paint,
         // creates tool group label, groups columns, paints columns with non-tool group categories
         // Expected results: Annotation nav and Next page button are enabled
-        it("ordinary and toolgroup categorization", () => {
+        it("categorize data table column as 'Subject ID'" + "AND" +
+           "categorize another data table column as 'Assessment tool' and create a toolgroup for it", () => {
 
             // Action 1
 
