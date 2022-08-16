@@ -18,6 +18,7 @@
         <!-- Selects data table file (i.e. participants.tsv) -->
         <b-row>
             <file-selector
+                data-cy="data-table-selector"
                 :content-type="contentTypes.dataTable"
                 @file-selected="saveDataTable($event)" />
         </b-row>
@@ -39,6 +40,7 @@
         <b-row>
             <!-- Selects data dictionary file (i.e. participants.json) -->
             <file-selector
+                data-cy="data-dictionary-selector"
                 :content-type="contentTypes.dataDictionary"
                 @file-selected="saveDataDictionary($event)" />
         </b-row>
@@ -52,6 +54,7 @@
             <b-col cols="3">
                 <b-button
                     class="float-right"
+                    data-cy="button-nextpage"
                     :disabled="!pageData.categorization.accessible"
                     :to="'/' + pageData.categorization.location"
                     :variant="nextPageButtonColor">

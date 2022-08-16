@@ -10,7 +10,8 @@ module.exports = {
     extends: [
 
         "eslint:recommended",
-        "plugin:vue/strongly-recommended"
+        "plugin:vue/strongly-recommended",
+        "plugin:cypress/recommended"
     ],
 
     // Known globals
@@ -19,7 +20,10 @@ module.exports = {
         $nuxt: true,
 
         // 'structuredClone' is available as of ES6 (ca. 2015), but ESLint does not yet know about it
-        structuredClone: true
+        structuredClone: true,
+
+        // Currently for Cypress plugins in support js files (see cypress/e2e/support.js)
+        require: true
     },
 
     parserOptions: {
@@ -28,7 +32,11 @@ module.exports = {
         sourceType: "module",
     },
 
-    plugins: ["vue"],
+    plugins: [
+        
+        "vue",
+        "cypress"
+    ],
 
     rules: {
 

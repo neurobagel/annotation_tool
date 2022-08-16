@@ -22,6 +22,7 @@
                     <b-nav-item
                         v-for="(navItem, _key) in navItems"
                         :active="pageName === navItem.fullName"
+                        :data-cy="'menu-item-' + navItem.pageName"
                         :disabled="!navItem.accessible"
                         :key="navItem.pageName"
                         :to="navItem.location"

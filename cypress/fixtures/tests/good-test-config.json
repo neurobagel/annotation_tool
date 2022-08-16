@@ -1,0 +1,6 @@
+{
+    "source_folder": "examples/good/",
+    "data_table": "ds003653_participant.tsv",
+    "data_dictionary": "ds003653_participant.json",
+    "description": "good"
+}

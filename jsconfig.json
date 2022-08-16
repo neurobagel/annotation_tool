@@ -6,7 +6,8 @@
       "@/*": ["./*"],
       "~~/*": ["./*"],
       "@@/*": ["./*"]
-    }
+    },
+    "types": ["cypress", "cy-verify-downloads"]
   },
   "exclude": ["node_modules", ".nuxt", "dist"]
 }

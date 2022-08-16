@@ -8,6 +8,7 @@
             <!-- Category selection table -->
             <b-col cols="4">
                 <category-select-table
+                    data-cy="categorization-table"
                     :categories="categories"
                     :category-classes="categoryClasses"
                     :instructions="uiText.categorySelectInstructions"
@@ -18,6 +19,7 @@
             <!-- Category to column linking table -->
             <b-col cols="8">
                 <column-linking-table
+                    data-cy="column-linking-table"
                     :category-classes="categoryClasses"
                     :column-to-category-map="columnToCategoryMap"
                     :fields="columnLinkingTable.fields"
@@ -50,6 +52,7 @@
                 <!-- Only enabled when at least one column has been categorized -->
                 <b-button
                     class="float-right"
+                    data-cy="button-nextpage"
                     :disabled="!pageData.annotation.accessible"
                     :to="'/' + pageData.annotation.location"
                     :variant="nextPageButtonColor">
