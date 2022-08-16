@@ -24,6 +24,41 @@
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
 
+// Standard setup functionality for each collection of tests
+// NOTE: In the future we will likely want to parametrize this for different
+// test setups (i.e. testing across different viewport sizes).
+Cypress.Commands.add("appSetup", () => {
+
+    // Standard setup for annotation tool testing
+
+    // A. Set viewport size
+    // NOTE: Standard 13-inch laptop screen to start, but this can be expanded
+    cy.viewport("macbook-13");
+});
+
+Cypress.Commands.add("assertNextPageAccess", (p_pageName, p_enabled) => {
+
+    let chainer = ( p_enabled ) ? "not.have.class" : "have.class";
+
+    cy.get("[data-cy='menu-item-" + p_pageName + "'] a")
+        .should(chainer, "disabled");
+    cy.get("[data-cy='button-nextpage']")
+        .should(chainer, "disabled");
+});
+
+Cypress.Commands.add("categorizeColumn", (p_category, p_columnTableRow) => {
+
+    // 1. Select the given category in the categorization table
+    cy.get("[data-cy='categorization-table']")
+        .contains(p_category)
+        .click();
+
+    // 2. Link the category to this column in the column linking table
+    cy.get("[data-cy='column-linking-table'] tbody > tr > td")
+        .eq(p_columnTableRow)
+        .click();
+});
+
 // Calls action in the Nuxt store
 Cypress.Commands.add("dispatchToNuxtStore", (p_action, p_data) => {
 
@@ -117,109 +152,3 @@ Cypress.Commands.add("nextPageByNav", (p_navItemName) => {
     cy.get(`[data-cy='menu-item-${p_navItemName}'] a`)
         .click();
 });
-
-// Go through index page and select participants tsv and json dictionary files, advance to categorization page
-Cypress.Commands.add("passIndex", (p_dataTableFilepath, p_dataDictionaryFilepath) => {
-
-    // 1. Go to home page
-    cy.visit(".");
-
-    // 2. Select participants file
-    cy.get("[data-cy='data-table-selector']")
-        .contains("Choose file")
-        .click()
-        .selectFile(p_dataTableFilepath);
-
-    // 3. Select participants dictionary
-    cy.get("[data-cy='data-dictionary-selector']")
-        .contains("Choose file")
-        .click()
-        .selectFile(p_dataDictionaryFilepath);
-
-    // 4. Click the next page button to proceed to the categorization page
-    cy.nextPageByButton();
-});
-
-// Go through categorization page, selecting subject ID category and linking it to first column, advance to annotation page
-Cypress.Commands.add("passCategorization", (p_dataTableFilepath, p_dataDictionaryFilepath) => {
-
-    // 1. Pass the home page
-    cy.passIndex(p_dataTableFilepath, p_dataDictionaryFilepath);
-
-    // 2. Select subject ID category and link it to the participant ID column
-    categorizeColumn("Subject ID", 0);
-
-    // 3. Select age category and link it to the age column
-    categorizeColumn("Age", 1);
-
-    // 4. Select sex category and link it to the sex column
-    categorizeColumn("Sex", 2);
-
-    // 5. Select diagnosis category and link it to a diagnosis column
-    categorizeColumn("Diagnosis", 4);
-
-    // 6. Select 'Assessment Tool' category and link it to the IQ column
-    categorizeColumn("Assessment Tool", 7);
-
-    // 7. Create a tool group label, select the column, and create a new tool group
-
-    // Fill in the toolgroup name textbox
-    cy.get("[data-cy='toolgroup-name-textbox']")
-        .type("Test ToolGroup 1");
-
-    // Select the column in the assessment tool column multi-selectbox
-    cy.get("[data-cy='toolgroup-column-multiselect']")
-        .select(0);
-
-    // Create the tool group by clicking the 'create' button
-    cy.get("[data-cy='create-toolgroup-button']")
-        .click();
-
-    // 4. Click the next page button to proceed to the annotation page
-    cy.nextPageByButton();
-});
-
-// Go through annotation page, saving default age annotation
-Cypress.Commands.add("passAnnotation", (p_dataTableFilepath, p_dataDictionaryFilepath) => {
-
-        // 1. Get past the categorization page
-        cy.passCategorization(p_dataTableFilepath, p_dataDictionaryFilepath);
-
-        // 2. Click on the 'Age' tab
-        cy.get("[data-cy='annotation-category-tabs'] ul")
-            .contains("li", "Age")
-            .click();
-
-        // 3. Click on the 'Save Annotation' button
-        cy.get("button")
-          .contains("Save Annotation")
-          .click();
-
-        // 4. Click the next page button to proceed to the download page
-        cy.nextPageByButton();
-});
-
-// Standard setup functionality for each collection of tests
-// NOTE: In the future we will likely want to parametrize this for different
-// test setups (i.e. testing across different viewport sizes).
-Cypress.Commands.add("appSetup", () => {
-
-    // Standard setup for annotation tool testing
-
-    // A. Set viewport size
-    // NOTE: Standard 13-inch laptop screen to start, but this can be expanded
-    cy.viewport("macbook-13");
-});
-
-function categorizeColumn(p_category, p_columnTableRow) {
-
-    // 1. Select the given category in the categorization table
-    cy.get("[data-cy='categorization-table']")
-        .contains(p_category)
-        .click();
-
-    // 2. Link the category to this column in the column linking table
-    cy.get("[data-cy='column-linking-table'] tbody > tr")
-        .eq(p_columnTableRow)
-        .click();
-}
