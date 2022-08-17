@@ -1,4 +1,4 @@
-describe("tests on categorization page via programmatic state loading and store interaction", () => {
+describe("tests on categorization page ui via programmatic state loading and store interaction", () => {
 
     // List of datasets to use for these tests
     const datasets = [
@@ -29,7 +29,7 @@ describe("tests on categorization page via programmatic state loading and store 
                 cy.visit("/");
 
                 // 2. Load test data
-                cy.loadTestDataIntoStore();
+                cy.loadTestDataIntoStore(p_dataset);
 
                 // 3. Enable access to the categorization page
                 cy.dispatchToNuxtStore("initializePage", {
