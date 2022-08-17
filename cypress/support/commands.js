@@ -157,18 +157,20 @@ Cypress.Commands.add("nextPageByNav", (p_navItemName) => {
 // for the given page
 Cypress.Commands.add("setProgrammaticState", (p_pageName, p_pageData) => {
 
-    if ( "categorization" == p_pageName ) {        
+    if ( "categorization" == p_pageName ) {
+
+        // Load state for categorization page
 
     } else if ( "annotation" == p_pageName ) {
 
         // NOTE: Modeled off of code from 'tableClick' in categorization.vue
-        
+
         // 1. Link all given category column pairs and initialize
         for ( const [category, column] of p_pageData.categoryColumnPairs ) {
 
             // A. Link the column to this category
             cy.dispatchToNuxtStore("linkColumnWithCategory", {
-            
+
                 category: category,
                 column: column
             });
@@ -179,9 +181,10 @@ Cypress.Commands.add("setProgrammaticState", (p_pageName, p_pageData) => {
                 pageName: "annotation",
                 enable: true
             });
-        }        
+        }
 
     } else if ( "download" == p_pageName ) {
 
+        // Load state for download page
     }
 });
