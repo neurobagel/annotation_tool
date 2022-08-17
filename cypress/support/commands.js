@@ -111,27 +111,27 @@ Cypress.Commands.add("loadDataTable", (p_sourceDirectory, p_filename) => {
     }).as("dataTable");
 });
 
-// Stock data loading function with hardcoded paths (for now)
-Cypress.Commands.add("loadTestDataIntoStore", () => {
+// Load data table and data dictionary given dataset config (See 'fixtures/test')
+Cypress.Commands.add("loadTestDataIntoStore", (p_dataset) => {
 
     // 1. Load data table from file and save it to the Vuex store
-    cy.loadDataTable("examples/good/", "ds003653_participant.tsv").then(dataTable => {
+    cy.loadDataTable(p_dataset.source_folder, p_dataset.data_table).then(dataTable => {
 
         cy.dispatchToNuxtStore("saveDataTable", {
 
             data: dataTable,
-            filename: "ds003653_participant.tsv",
+            filename: p_dataset.data_table,
             fileType: "tsv"
         });
     });
 
     // 2. Load data table from file and save it to the Vuex store
-    cy.loadDataDictionary("examples/good/", "ds003653_participant.json").then(dataDictionary => {
+    cy.loadDataDictionary(p_dataset.source_folder, p_dataset.data_dictionary).then(dataDictionary => {
 
         cy.dispatchToNuxtStore("saveDataDictionary", {
 
             data: dataDictionary,
-            filename: "ds003653_participant.json",
+            filename: p_dataset.data_dictionary,
             fileType: "json"
         });
     });
@@ -151,4 +151,37 @@ Cypress.Commands.add("nextPageByNav", (p_navItemName) => {
     // Click the corresponding nav item to proceed to the next page
     cy.get(`[data-cy='menu-item-${p_navItemName}'] a`)
         .click();
+});
+
+// Takes given data and executes the logic needed to programmatically load state
+// for the given page
+Cypress.Commands.add("setProgrammaticState", (p_pageName, p_pageData) => {
+
+    if ( "categorization" == p_pageName ) {        
+
+    } else if ( "annotation" == p_pageName ) {
+
+        // NOTE: Modeled off of code from 'tableClick' in categorization.vue
+        
+        // 1. Link all given category column pairs and initialize
+        for ( const [category, column] of p_pageData.categoryColumnPairs ) {
+
+            // A. Link the column to this category
+            cy.dispatchToNuxtStore("linkColumnWithCategory", {
+            
+                category: category,
+                column: column
+            });
+
+            // B. Call page initialization store function for the annotation page
+            cy.dispatchToNuxtStore("initializePage", {
+
+                pageName: "annotation",
+                enable: true
+            });
+        }        
+
+    } else if ( "download" == p_pageName ) {
+
+    }
 });
