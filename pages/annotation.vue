@@ -36,6 +36,7 @@
                     <b-card-text>
                         <annot-tab
                             :details="details"
+                            :title="tabTitle(details)"
                             @remove:column="unlinkColumnFromCategory($event)"
                             @remove:missingValue="removeMissingValue($event)"
                             @update:dataTable="saveAnnotatedDataTable($event)"

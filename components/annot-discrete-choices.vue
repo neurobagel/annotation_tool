@@ -21,6 +21,7 @@
                             event without replacing the original event payload -->
 
                         <v-select
+                            :data-cy="'discrete-select-' + title + '-' + row.index"
                             :options="options"
                             :value="valueMapping[row.item.column_name][row.item.raw_value]"
                             @input="updateMapping($event, row.item)" />
@@ -72,6 +73,7 @@
                 required: true
             },
             relevantColumns: { type: Array, required: true },
+            title: { type: String, required: true },
             uniqueValues: { type: Object, required: true }
         },
 
