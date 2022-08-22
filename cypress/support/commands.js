@@ -69,6 +69,55 @@ Cypress.Commands.add("dispatchToNuxtStore", (p_action, p_data) => {
     });
 });
 
+// Takes given data and executes the logic needed to programmatically load state
+// for the given page
+Cypress.Commands.add("loadAppState", (p_pageName, p_pageData) => {
+
+    if ( "categorization" == p_pageName ) {
+
+        // Load state for categorization page
+
+    } else if ( "annotation" == p_pageName ) {
+
+        // NOTE: Modeled off of code from 'tableClick' in categorization.vue
+
+        // 1. Link all given category column pairs and initialize
+        for ( const [category, column] of p_pageData.categoryColumnPairs ) {
+
+            // A. Link the column to this category
+            cy.dispatchToNuxtStore("linkColumnWithCategory", {
+
+                category: category,
+                column: column
+            });
+
+            // B. Create assessment tool groups if given
+            if ( "toolGroups" in Object.keys(p_pageData) ) {
+
+                for ( let index = 0; index < p_pageData.toolGroups.length; index++ ) {
+
+                    cy.dispatchToNuxtStore("createToolGroup", {
+
+                        name: p_pageData.toolGroups[index].name,
+                        tools: p_pageData.toolGroups[index].tools
+                    });
+                }
+            }
+
+            // B. Call page initialization store function for the annotation page
+            cy.dispatchToNuxtStore("initializePage", {
+
+                pageName: "annotation",
+                enable: true
+            });
+        }
+
+    } else if ( "download" == p_pageName ) {
+
+        // Load state for download page
+    }
+});
+
 // Load participants json data dictionary
 Cypress.Commands.add("loadDataDictionary", (p_sourceDirectory, p_filename) => {
 
@@ -151,40 +200,4 @@ Cypress.Commands.add("nextPageByNav", (p_navItemName) => {
     // Click the corresponding nav item to proceed to the next page
     cy.get(`[data-cy='menu-item-${p_navItemName}'] a`)
         .click();
-});
-
-// Takes given data and executes the logic needed to programmatically load state
-// for the given page
-Cypress.Commands.add("setProgrammaticState", (p_pageName, p_pageData) => {
-
-    if ( "categorization" == p_pageName ) {
-
-        // Load state for categorization page
-
-    } else if ( "annotation" == p_pageName ) {
-
-        // NOTE: Modeled off of code from 'tableClick' in categorization.vue
-
-        // 1. Link all given category column pairs and initialize
-        for ( const [category, column] of p_pageData.categoryColumnPairs ) {
-
-            // A. Link the column to this category
-            cy.dispatchToNuxtStore("linkColumnWithCategory", {
-
-                category: category,
-                column: column
-            });
-
-            // B. Call page initialization store function for the annotation page
-            cy.dispatchToNuxtStore("initializePage", {
-
-                pageName: "annotation",
-                enable: true
-            });
-        }
-
-    } else if ( "download" == p_pageName ) {
-
-        // Load state for download page
-    }
 });

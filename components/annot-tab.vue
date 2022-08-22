@@ -24,6 +24,7 @@
             :details="details"
             :options="details.options"
             :relevant-columns="relevantColumns"
+            :title="title"
             :unique-values="uniqueValues"
             :unique-values-to-subject-map="uniqueValuesToSubjectMap"
             @update:dataTable="$emit('update:dataTable', $event)"
@@ -43,7 +44,8 @@
 
         props: {
 
-            details: { type: Object, required: true }
+            details: { type: Object, required: true },
+            title: { type: String, required: true }
         },
 
         inject: [

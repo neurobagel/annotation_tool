@@ -31,22 +31,7 @@ describe("tests on annotation page ui with programmatic state loading and store 
                 // 2. Load test data
                 cy.loadTestDataIntoStore(p_dataset);
 
-                // 3. Programmatically link categories to columns here
-                cy.setProgrammaticState("annotation", {
-
-                    categoryColumnPairs: [
-
-                        ["Subject ID", "participant_id"],
-                        ["Age", "age"],
-                        ["Sex", "sex"],
-                        ["Diagnosis", "group"],
-                        ["Assessment Tool", "iq"]
-                    ]
-                });
-
-                // 4. Assessment tool linking and group creation here
-
-                // 5. Move to the annotation page
+                // 3. Move to the annotation page
                 // NOTE: Routing to the page prevents the Vuex store from being wiped
                 // when a page is 'visited' by Cypress
                 cy.window().its("$nuxt.$router").then(router => {
@@ -58,10 +43,20 @@ describe("tests on annotation page ui with programmatic state loading and store 
 
             it("simple age annotation", () => {
 
-                // 1. Assert annotation nav and next page button are disabled
+                // 1. Link 'Subject ID' and 'Age' to data table columns
+                cy.loadAppState("annotation", {
+
+                    categoryColumnPairs: [
+
+                        ["Subject ID", "participant_id"],
+                        ["Age", "age"]
+                    ]
+                });
+
+                // 2. Assert annotation nav and next page button are disabled
                 cy.assertNextPageAccess("download", false);
 
-                // 2. Annotate 'Age'-categorized columns
+                // 3. Annotate 'Age'-categorized columns
 
                 // A. Click on the 'Age' tab
                 cy.get("[data-cy='annotation-category-tabs'] ul")
@@ -73,25 +68,154 @@ describe("tests on annotation page ui with programmatic state loading and store 
                     .contains("Save Annotation")
                     .click();
 
-                // 1. Assert annotation nav and next page button are enabled
+                // 4. Assert annotation nav and next page button are enabled
                 cy.assertNextPageAccess("download", true);
             });
 
-            // it("", () => {
+            it("simple sex annotation", () => {
 
-            // });
+                // 1. Link 'Subject ID' and 'Sex' to data table columns
+                cy.loadAppState("annotation", {
 
-            // it("", () => {
+                    categoryColumnPairs: [
 
-            // });
+                        ["Subject ID", "participant_id"],
+                        ["Sex", "sex"]
+                    ]
+                });
 
-            // it("", () => {
+                // 2. Assert annotation nav and next page button are disabled
+                cy.assertNextPageAccess("download", false);
 
-            // });
+                // 3. Annotate 'Age'-categorized columns
 
-            // it("", () => {
+                // A. Click on the 'Sex' tab
+                cy.get("[data-cy='annotation-category-tabs'] ul")
+                    .contains("li", "Sex")
+                    .click();
 
-            // });
+                // B. Select annotation choices for 'Sex' column values
+                cy.get("[data-cy='discrete-select-Sex-0']").click().type("male{enter}");
+                cy.get("[data-cy='discrete-select-Sex-1']").click().type("female{enter}");
+
+                // C. Click on the 'Save Annotation' button
+                cy.get("button")
+                    .contains("Save Annotation")
+                    .click();
+
+                // 4. Assert annotation nav and next page button are enabled
+                cy.assertNextPageAccess("download", true);
+            });
+
+            it("simple diagnosis annotation", () => {
+
+                // 1. Link 'Subject ID' and 'Diagnosis' to data table columns
+                cy.loadAppState("annotation", {
+
+                    categoryColumnPairs: [
+
+                        ["Subject ID", "participant_id"],
+                        ["Diagnosis", "group"]
+                    ]
+                });
+
+            });
+
+            it("single-column assessment tool group annotation", () => {
+
+                // 1. Programmatically link categories to columns here
+                cy.loadAppState("annotation", {
+
+                    categoryColumnPairs: [
+
+                        ["Subject ID", "participant_id"],
+                        ["Age", "age"]
+                    ],
+
+                    toolGroups: [
+
+                        {
+                            name: "My Tool Group",
+                            tools: ["iq"]
+                        }
+                    ]
+                });
+            });
+
+            it("multi-column assessment tool group annotation", () => {
+
+                // 1. Programmatically link categories to columns here
+                cy.loadAppState("annotation", {
+
+                    categoryColumnPairs: [
+
+                        ["Subject ID", "participant_id"],
+                        ["Age", "age"],
+                        ["Sex", "sex"],
+                        ["Diagnosis", "group"]
+                    ],
+
+                    toolGroups: [
+
+                        {
+                            name: "My Tool Group",
+                            tools: ["iq"]
+                        }
+                    ]
+                });
+            });
+
+            it("all category + multi-column assessment tool group annotation", () => {
+
+                // 1. Programmatically link categories to columns here
+                cy.loadAppState("annotation", {
+
+                    categoryColumnPairs: [
+
+                        ["Subject ID", "participant_id"],
+                        ["Age", "age"],
+                        ["Sex", "sex"],
+                        ["Diagnosis", "group"]
+                    ],
+
+                    toolGroups: [
+
+                        {
+                            name: "My Tool Group",
+                            tools: ["iq", "session"]
+                        }
+                    ]
+                });
+
+            });
+
+            it("all category + multi-group assessment tool group annotation", () => {
+
+                // 1. Programmatically link categories to columns here
+                cy.loadAppState("annotation", {
+
+                    categoryColumnPairs: [
+
+                        ["Subject ID", "participant_id"],
+                        ["Age", "age"],
+                        ["Sex", "sex"],
+                        ["Diagnosis", "group"]
+                    ],
+
+                    toolGroups: [
+
+                        {
+                            name: "My Tool Group",
+                            tools: ["iq"]
+                        },
+
+                        {
+                            name: "My Other Tool Group",
+                            tools: ["session"]
+                        }
+                    ]
+                });
+            });
         });
 
     });
