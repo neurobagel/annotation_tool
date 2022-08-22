@@ -99,8 +99,7 @@ describe("tests on annotation page ui with programmatic state loading and store 
                 cy.get("[data-cy='discrete-select-Sex-1']").click().type("female{enter}");
 
                 // C. Click on the 'Save Annotation' button
-                cy.get("button")
-                    .contains("Save Annotation")
+                cy.get("[data-cy='save-button-Sex']")
                     .click();
 
                 // 4. Assert annotation nav and next page button are enabled

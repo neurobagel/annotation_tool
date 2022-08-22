@@ -39,6 +39,7 @@
                 <!-- Button to save the annotated data of this tab to the store -->
                 <b-row>
                     <b-button
+                        :data-cy="'save-button-' + title"
                         :disabled="!saveButtonEnabled"
                         :variant="saveButtonColor"
                         @click="applyAnnotation">
