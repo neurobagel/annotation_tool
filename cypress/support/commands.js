@@ -69,6 +69,12 @@ Cypress.Commands.add("dispatchToNuxtStore", (p_action, p_data) => {
     });
 });
 
+// Retrieves store value via getters
+Cypress.Commands.add("getNuxtStoreValue", (p_storeVariableName) => {
+
+    return cy.window().its("$nuxt.$store.getters." + p_storeVariableName);
+});
+
 // Takes given data and executes the logic needed to programmatically load state
 // for the given page
 Cypress.Commands.add("loadAppState", (p_pageName, p_pageData) => {
@@ -90,27 +96,27 @@ Cypress.Commands.add("loadAppState", (p_pageName, p_pageData) => {
                 category: category,
                 column: column
             });
-
-            // B. Create assessment tool groups if given
-            if ( "toolGroups" in Object.keys(p_pageData) ) {
-
-                for ( let index = 0; index < p_pageData.toolGroups.length; index++ ) {
-
-                    cy.dispatchToNuxtStore("createToolGroup", {
-
-                        name: p_pageData.toolGroups[index].name,
-                        tools: p_pageData.toolGroups[index].tools
-                    });
-                }
-            }
-
-            // B. Call page initialization store function for the annotation page
-            cy.dispatchToNuxtStore("initializePage", {
-
-                pageName: "annotation",
-                enable: true
-            });
         }
+
+        // 2. Create assessment tool groups if given
+        if ( "toolGroups" in p_pageData ) {
+
+            for ( let index = 0; index < p_pageData.toolGroups.length; index++ ) {
+
+                cy.dispatchToNuxtStore("createToolGroup", {
+
+                    name: p_pageData.toolGroups[index].name,
+                    tools: p_pageData.toolGroups[index].tools
+                });
+            }
+        }
+
+        // 3. Call page initialization store function for the annotation page
+        cy.dispatchToNuxtStore("initializePage", {
+
+            pageName: "annotation",
+            enable: true
+        });
 
     } else if ( "download" == p_pageName ) {
 
