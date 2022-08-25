@@ -15,6 +15,7 @@
                         <b-form-input
                             trim
                             aria-describedby="input-live-help input-live-feedback"
+                            :data-cy="'vocab-term-' + title + '-' + row.index"
                             id="input-live"
                             v-model="row.item.select_a_vocabulary_term"
                             :placeholder="uiText.placeholderText"
@@ -47,6 +48,7 @@
                 <!-- Button to save the annotated data of this tab to the store -->
                 <b-row>
                     <b-button
+                        :data-cy="'save-button-' + title"
                         :disabled="canSaveAnnotation"
                         :variant="saveButtonColor"
                         @click="applyAnnotation()">
@@ -69,6 +71,7 @@
         props: {
 
             relevantColumns: { default: () => [], required: true, type: Array },
+            title: { type: String, required: true },
             uniqueValues: { default: () => {}, required: true, type: Object }
         },
 

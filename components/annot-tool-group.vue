@@ -55,6 +55,7 @@
         <!-- Button to save the annotated data of all group items to the store -->
         <b-row>
             <b-button
+                :data-cy="'save-button-' + title"
                 variant="success"
                 @click="applyAnnotation()">
                 {{ uiText.saveButton }}
@@ -73,6 +74,7 @@
             details: { default: () => {}, required: true, type: Object },
             idField: { default: () => {}, required: true, type: String },
             relevantColumns: { default: () => [], required: true, type: Array },
+            title: { type: String, required: true },
             uniqueValues: { default: () => {}, required: true, type: Object },
             uniqueValuesToSubjectMap: { default: () => {}, required: true, type: Object }
         },

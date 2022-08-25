@@ -38,7 +38,6 @@ describe("tests on annotation page ui with programmatic state loading and store 
 
                     router.push({ path: "/annotation" });
                 });
-
             });
 
             it("simple age annotation", () => {
@@ -56,7 +55,7 @@ describe("tests on annotation page ui with programmatic state loading and store 
                 // 2. Assert annotation nav and next page button are disabled
                 cy.assertNextPageAccess("download", false);
 
-                // 3. Annotate 'Age'-categorized columns
+                // 3. Annotate 'Age'-categorized column
 
                 // A. Click on the 'Age' tab
                 cy.get("[data-cy='annotation-category-tabs'] ul")
@@ -64,12 +63,12 @@ describe("tests on annotation page ui with programmatic state loading and store 
                     .click();
 
                 // B. Click on the 'Save Annotation' button
-                cy.get("button")
-                    .contains("Save Annotation")
+                cy.get("[data-cy='save-button-Age']")
                     .click();
 
                 // 4. Assert annotation nav and next page button are enabled
                 cy.assertNextPageAccess("download", true);
+                //});
             });
 
             it("simple sex annotation", () => {
@@ -87,7 +86,7 @@ describe("tests on annotation page ui with programmatic state loading and store 
                 // 2. Assert annotation nav and next page button are disabled
                 cy.assertNextPageAccess("download", false);
 
-                // 3. Annotate 'Age'-categorized columns
+                // 3. Annotate 'Age'-categorized column
 
                 // A. Click on the 'Sex' tab
                 cy.get("[data-cy='annotation-category-tabs'] ul")
@@ -118,17 +117,45 @@ describe("tests on annotation page ui with programmatic state loading and store 
                     ]
                 });
 
+                // 2. Assert annotation nav and next page button are disabled
+                cy.assertNextPageAccess("download", false);
+
+                // 3. Annotate 'Diagnosis'-categorized column
+
+                // A. Click on the 'Diagnosis' tab
+                cy.get("[data-cy='annotation-category-tabs'] ul")
+                    .contains("li", "Diagnosis")
+                    .click();
+
+
+                // B. Enter annotated values for each unique value in the 'Diagnosis'-categorized column
+                const uniqueValueCount = 3;
+                for ( let index = 0; index < uniqueValueCount; index++ ) {
+
+                    cy.get("[data-cy='vocab-term-Diagnosis-" + parseInt(index) + "']")
+                        .click()
+                        .type("Annotated value " +  parseInt(index));
+                }
+
+                // C. Click on the 'Save Annotation' button
+                cy.get("[data-cy='save-button-Diagnosis']")
+                    .click();
+
+                // 4. Assert annotation nav and next page button are enabled
+                cy.assertNextPageAccess("download", true);
+
             });
 
             it("single-column assessment tool group annotation", () => {
 
-                // 1. Programmatically link categories to columns here
+                // 1. Link 'Subject ID' and 'Assessment Tool' to data table columns,
+                // and create a single-column tool group
                 cy.loadAppState("annotation", {
 
                     categoryColumnPairs: [
 
                         ["Subject ID", "participant_id"],
-                        ["Age", "age"]
+                        ["Assessment Tool", "iq"]
                     ],
 
                     toolGroups: [
@@ -139,6 +166,23 @@ describe("tests on annotation page ui with programmatic state loading and store 
                         }
                     ]
                 });
+
+                // 2. Assert annotation nav and next page button are disabled
+                cy.assertNextPageAccess("download", false);
+
+                // 3. Annotate 'Assessment Tool'-categorized column
+
+                // A. Click on the tool group's tab
+                cy.get("[data-cy='annotation-category-tabs'] ul")
+                    .contains("li", "My Tool Group")
+                    .click();
+
+                // B. Click on the 'Save Annotation' button
+                cy.get("[data-cy='save-button-My Tool Group']")
+                    .click();
+
+                // 4. Assert annotation nav and next page button are enabled
+                cy.assertNextPageAccess("download", true);
             });
 
             it("multi-column assessment tool group annotation", () => {
@@ -162,6 +206,23 @@ describe("tests on annotation page ui with programmatic state loading and store 
                         }
                     ]
                 });
+
+                // 2. Assert annotation nav and next page button are disabled
+                cy.assertNextPageAccess("download", false);
+
+                // 3. Annotate 'Assessment Tool'-categorized column
+
+                // A. Click on the tool group's tab
+                cy.get("[data-cy='annotation-category-tabs'] ul")
+                    .contains("li", "My Tool Group")
+                    .click();
+
+                // B. Click on the 'Save Annotation' button
+                cy.get("[data-cy='save-button-My Tool Group']")
+                    .click();
+
+                // 4. Assert annotation nav and next page button are enabled
+                cy.assertNextPageAccess("download", true);
             });
 
             it("all category + multi-column assessment tool group annotation", () => {
@@ -186,6 +247,22 @@ describe("tests on annotation page ui with programmatic state loading and store 
                     ]
                 });
 
+                // 2. Assert annotation nav and next page button are disabled
+                cy.assertNextPageAccess("download", false);
+
+                // 3. Annotate the 'Assessment Tool'-categorized column
+
+                // A. Click on the tool group's tab
+                cy.get("[data-cy='annotation-category-tabs'] ul")
+                    .contains("li", "My Tool Group")
+                    .click();
+
+                // B. Click on the 'Save Annotation' button
+                cy.get("[data-cy='save-button-My Tool Group']")
+                    .click();
+
+                // 4. Assert annotation nav and next page button is enabled
+                cy.assertNextPageAccess("download", true);
             });
 
             it("all category + multi-group assessment tool group annotation", () => {
@@ -214,9 +291,38 @@ describe("tests on annotation page ui with programmatic state loading and store 
                         }
                     ]
                 });
+
+                // 2. Assert annotation nav and next page button are disabled
+                cy.assertNextPageAccess("download", false);
+
+                // 3. Annotate the the first 'Assessment Tool'-categorized column
+
+                // A. Click on the tool group's tab
+                cy.get("[data-cy='annotation-category-tabs'] ul")
+                    .contains("li", "My Tool Group")
+                    .click();
+
+                // B. Click on the 'Save Annotation' button
+                cy.get("[data-cy='save-button-My Tool Group']")
+                    .click();
+
+                // 4. Assert annotation nav and next page button is enabled
+                cy.assertNextPageAccess("download", true);
+
+                // 5. Annotate the the second 'Assessment Tool'-categorized column
+
+                // A. Click on the tool group's tab
+                cy.get("[data-cy='annotation-category-tabs'] ul")
+                    .contains("li", "My Other Tool Group")
+                    .click();
+
+                // B. Click on the 'Save Annotation' button
+                cy.get("[data-cy='save-button-My Other Tool Group']")
+                    .click();
+
+                // 6. Assert annotation nav and next page button is still enabled
+                cy.assertNextPageAccess("download", true);
             });
         });
-
     });
-
 });

@@ -14,6 +14,7 @@
         <!-- Button to save the annotated data of this tab to the store -->
         <b-row>
             <b-button
+                :data-cy="'save-button-' + title"
                 :disabled="saveButtonDisabled"
                 :variant="saveButtonColor"
                 @click="applyAnnotation">
@@ -32,6 +33,7 @@
         props: {
 
             relevantColumns: { type: Array, required: true },
+            title: { type: String, required: true },
             uniqueValues: { type: Object, required: true }
         },
 
