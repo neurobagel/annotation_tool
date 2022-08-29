@@ -29,6 +29,7 @@
                         :title="itemName">
 
                         <b-table
+                            :data-cy="'annot-tool-group-table-' + title"
                             fixed
                             striped
                             :fields="fields"

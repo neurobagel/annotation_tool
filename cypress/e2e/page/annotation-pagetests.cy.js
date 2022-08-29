@@ -52,10 +52,13 @@ describe("tests on annotation page ui with programmatic state loading and store 
                     ]
                 });
 
-                // 2. Assert annotation nav and next page button are disabled
+                // 2. Pause until 'Age' tab (the default annotation tab) components are loaded
+                cy.get("[data-cy='annot-expl-Age']").should("be.visible");
+
+                // 3. Assert annotation nav and next page button are disabled
                 cy.assertNextPageAccess("download", false);
 
-                // 3. Annotate 'Age'-categorized column
+                // 4. Annotate 'Age'-categorized column
 
                 // A. Click on the 'Age' tab
                 cy.get("[data-cy='annotation-category-tabs'] ul")
@@ -66,9 +69,8 @@ describe("tests on annotation page ui with programmatic state loading and store 
                 cy.get("[data-cy='save-button-Age']")
                     .click();
 
-                // 4. Assert annotation nav and next page button are enabled
+                // 5. Assert annotation nav and next page button are enabled
                 cy.assertNextPageAccess("download", true);
-                //});
             });
 
             it("simple sex annotation", () => {
@@ -83,10 +85,13 @@ describe("tests on annotation page ui with programmatic state loading and store 
                     ]
                 });
 
-                // 2. Assert annotation nav and next page button are disabled
+                // 2. Pause until 'Age' tab (the default annotation tab) components are loaded
+                cy.get("[data-cy='annot-expl-Age']").should("be.visible");
+
+                // 3. Assert annotation nav and next page button are disabled
                 cy.assertNextPageAccess("download", false);
 
-                // 3. Annotate 'Age'-categorized column
+                // 4. Annotate 'Age'-categorized column
 
                 // A. Click on the 'Sex' tab
                 cy.get("[data-cy='annotation-category-tabs'] ul")
@@ -101,7 +106,7 @@ describe("tests on annotation page ui with programmatic state loading and store 
                 cy.get("[data-cy='save-button-Sex']")
                     .click();
 
-                // 4. Assert annotation nav and next page button are enabled
+                // 5. Assert annotation nav and next page button are enabled
                 cy.assertNextPageAccess("download", true);
             });
 
@@ -117,10 +122,13 @@ describe("tests on annotation page ui with programmatic state loading and store 
                     ]
                 });
 
-                // 2. Assert annotation nav and next page button are disabled
+                // 2. Pause until 'Age' tab (the default annotation tab) components are loaded
+                cy.get("[data-cy='annot-expl-Age']").should("be.visible");
+
+                // 3. Assert annotation nav and next page button are disabled
                 cy.assertNextPageAccess("download", false);
 
-                // 3. Annotate 'Diagnosis'-categorized column
+                // 4. Annotate 'Diagnosis'-categorized column
 
                 // A. Click on the 'Diagnosis' tab
                 cy.get("[data-cy='annotation-category-tabs'] ul")
@@ -141,7 +149,7 @@ describe("tests on annotation page ui with programmatic state loading and store 
                 cy.get("[data-cy='save-button-Diagnosis']")
                     .click();
 
-                // 4. Assert annotation nav and next page button are enabled
+                // 5. Assert annotation nav and next page button are enabled
                 cy.assertNextPageAccess("download", true);
 
             });
@@ -167,7 +175,10 @@ describe("tests on annotation page ui with programmatic state loading and store 
                     ]
                 });
 
-                // 2. Assert annotation nav and next page button are disabled
+                // 2. Pause until 'Age' tab (the default annotation tab) components are loaded
+                cy.get("[data-cy='annot-expl-Age']").should("be.visible");
+
+                // 3. Assert annotation nav and next page button are disabled
                 cy.assertNextPageAccess("download", false);
 
                 // 3. Annotate 'Assessment Tool'-categorized column
@@ -177,7 +188,10 @@ describe("tests on annotation page ui with programmatic state loading and store 
                     .contains("li", "My Tool Group")
                     .click();
 
-                // B. Click on the 'Save Annotation' button
+                // B. Pause until assessment tool group tabbed table is visible
+                cy.get("[data-cy='annot-tool-group-table-My Tool Group']").should("be.visible");
+
+                // C. Click on the 'Save Annotation' button
                 cy.get("[data-cy='save-button-My Tool Group']")
                     .click();
 
@@ -195,7 +209,8 @@ describe("tests on annotation page ui with programmatic state loading and store 
                         ["Subject ID", "participant_id"],
                         ["Age", "age"],
                         ["Sex", "sex"],
-                        ["Diagnosis", "group"]
+                        ["Diagnosis", "group"],
+                        ["Assessment Tool", "iq"]
                     ],
 
                     toolGroups: [
@@ -207,21 +222,27 @@ describe("tests on annotation page ui with programmatic state loading and store 
                     ]
                 });
 
-                // 2. Assert annotation nav and next page button are disabled
+                // 2. Pause until 'Age' tab (the default annotation tab) components are loaded
+                cy.get("[data-cy='annot-expl-Age']").should("be.visible");
+
+                // 3. Assert annotation nav and next page button are disabled
                 cy.assertNextPageAccess("download", false);
 
-                // 3. Annotate 'Assessment Tool'-categorized column
+                // 4. Annotate 'Assessment Tool'-categorized column
 
                 // A. Click on the tool group's tab
                 cy.get("[data-cy='annotation-category-tabs'] ul")
                     .contains("li", "My Tool Group")
                     .click();
 
-                // B. Click on the 'Save Annotation' button
+                // B. Pause until assessment tool group tabbed table is visible
+                cy.get("[data-cy='annot-tool-group-table-My Tool Group']").should("be.visible");
+
+                // C. Click on the 'Save Annotation' button
                 cy.get("[data-cy='save-button-My Tool Group']")
                     .click();
 
-                // 4. Assert annotation nav and next page button are enabled
+                // 5. Assert annotation nav and next page button are enabled
                 cy.assertNextPageAccess("download", true);
             });
 
@@ -235,7 +256,8 @@ describe("tests on annotation page ui with programmatic state loading and store 
                         ["Subject ID", "participant_id"],
                         ["Age", "age"],
                         ["Sex", "sex"],
-                        ["Diagnosis", "group"]
+                        ["Diagnosis", "group"],
+                        ["Assessment Tool", "iq"]
                     ],
 
                     toolGroups: [
@@ -247,21 +269,27 @@ describe("tests on annotation page ui with programmatic state loading and store 
                     ]
                 });
 
-                // 2. Assert annotation nav and next page button are disabled
+                // 2. Pause until 'Age' tab (the default annotation tab) components are loaded
+                cy.get("[data-cy='annot-expl-Age']").should("be.visible");
+
+                // 3. Assert annotation nav and next page button are disabled
                 cy.assertNextPageAccess("download", false);
 
-                // 3. Annotate the 'Assessment Tool'-categorized column
+                // 4. Annotate the 'Assessment Tool'-categorized column
 
                 // A. Click on the tool group's tab
                 cy.get("[data-cy='annotation-category-tabs'] ul")
                     .contains("li", "My Tool Group")
                     .click();
 
+                // B. Pause until the assessment tool group tabbed table is visible
+                cy.get("[data-cy='annot-tool-group-table-My Tool Group']").should("be.visible");
+
                 // B. Click on the 'Save Annotation' button
                 cy.get("[data-cy='save-button-My Tool Group']")
                     .click();
 
-                // 4. Assert annotation nav and next page button is enabled
+                // 5. Assert annotation nav and next page button is enabled
                 cy.assertNextPageAccess("download", true);
             });
 
@@ -275,7 +303,9 @@ describe("tests on annotation page ui with programmatic state loading and store 
                         ["Subject ID", "participant_id"],
                         ["Age", "age"],
                         ["Sex", "sex"],
-                        ["Diagnosis", "group"]
+                        ["Diagnosis", "group"],
+                        ["Assessment Tool", "iq"],
+                        ["Assessment Tool", "session"]
                     ],
 
                     toolGroups: [
@@ -292,35 +322,44 @@ describe("tests on annotation page ui with programmatic state loading and store 
                     ]
                 });
 
-                // 2. Assert annotation nav and next page button are disabled
+                // 3. Pause until 'Age' tab (the default annotation tab) components are loaded
+                cy.get("[data-cy='annot-expl-Age']").should("be.visible");
+
+                // 4. Assert annotation nav and next page button are disabled
                 cy.assertNextPageAccess("download", false);
 
-                // 3. Annotate the the first 'Assessment Tool'-categorized column
+                // 5. Annotate the the first 'Assessment Tool'-categorized column
 
                 // A. Click on the tool group's tab
                 cy.get("[data-cy='annotation-category-tabs'] ul")
                     .contains("li", "My Tool Group")
                     .click();
 
+                // B. Pause until the first assessment tool group tabbed table is visible
+                cy.get("[data-cy='annot-tool-group-table-My Tool Group']").should("be.visible");
+
                 // B. Click on the 'Save Annotation' button
                 cy.get("[data-cy='save-button-My Tool Group']")
                     .click();
 
-                // 4. Assert annotation nav and next page button is enabled
+                // 6. Assert annotation nav and next page button is enabled
                 cy.assertNextPageAccess("download", true);
 
-                // 5. Annotate the the second 'Assessment Tool'-categorized column
+                // 7. Annotate the the second 'Assessment Tool'-categorized column
 
                 // A. Click on the tool group's tab
                 cy.get("[data-cy='annotation-category-tabs'] ul")
                     .contains("li", "My Other Tool Group")
                     .click();
 
-                // B. Click on the 'Save Annotation' button
+                // B. Pause until the second assessment tool group tabbed table is visible
+                cy.get("[data-cy='annot-tool-group-table-My Other Tool Group']").should("be.visible");
+
+                // C. Click on the 'Save Annotation' button
                 cy.get("[data-cy='save-button-My Other Tool Group']")
                     .click();
 
-                // 6. Assert annotation nav and next page button is still enabled
+                // 9. Assert annotation nav and next page button is still enabled
                 cy.assertNextPageAccess("download", true);
             });
         });

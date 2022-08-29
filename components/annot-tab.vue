@@ -3,7 +3,7 @@
     <div>
 
         <!-- Explanation text for this annotation tab -->
-        <annot-explanation :explanation="details.explanation" :index="details.id" />
+        <annot-explanation :explanation="details.explanation" :index="details.id" :data-cy="'annot-expl-' + title" />
 
         <!-- Lists all the columns linked to the category of this annotation tab -->
         <annot-columns
