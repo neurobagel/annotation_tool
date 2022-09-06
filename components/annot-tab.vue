@@ -20,6 +20,7 @@
         <!-- Component specializing in the particular kind of annotation for this tab's category -->
         <component
             :is="details.specializedComponent"
+            :data-cy="'annot-component-' + title"
             :id-field="idField"
             :details="details"
             :options="details.options"

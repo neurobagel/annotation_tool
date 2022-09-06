@@ -1,6 +1,5 @@
 describe("tests on annotation page ui with programmatic state loading and store interaction", () => {
 
-    // List of datasets to use for these tests
     const datasets = [
 
         // Good data
@@ -17,350 +16,336 @@ describe("tests on annotation page ui with programmatic state loading and store 
 
     datasets.forEach((p_dataset) => {
 
-        context("annotation page tests with " + p_dataset.description + " data", () => {
+        context("Annotation page tests with " + p_dataset.description + " data", () => {
 
             beforeEach(() => {
 
-                // Setup
+                // NOTE: Home is visited because some state-related store
+                // structures needed for the categorization page are set up on
+                // index page creation. Routing to the annotation page then
+                // prevents the Vuex store from being wiped when a page is
+                // 'visited' by Cypress.
+                // This is to be fixed by issues #179 and #180, after which we
+                // should revert to 'cy.visit' for all page visits in tests.
 
                 // 1. Open index page
-                // NOTE: Home is visited because some state-related store structures
-                // needed for the categorization page are set up on index page creation
                 cy.visit("/");
 
                 // 2. Load test data
                 cy.loadTestDataIntoStore(p_dataset);
 
                 // 3. Move to the annotation page
-                // NOTE: Routing to the page prevents the Vuex store from being wiped
-                // when a page is 'visited' by Cypress
                 cy.window().its("$nuxt.$router").then(router => {
 
                     router.push({ path: "/annotation" });
                 });
             });
 
-            it("simple age annotation", () => {
+            it("Annotate age column; default age format transformations", () => {
 
-                // 1. Link 'Subject ID' and 'Age' to data table columns
-                cy.loadAppState("annotation", {
+                // 0. Categories required for this test and the number of required columns for each category
+                const testCriteria = {
 
-                    categoryColumnPairs: [
+                    categories: [
 
-                        ["Subject ID", "participant_id"],
-                        ["Age", "age"]
+                        ["Subject ID", 1],
+                        ["Age", 1]
                     ]
-                });
+                };
 
-                // 2. Pause until 'Age' tab (the default annotation tab) components are loaded
-                cy.get("[data-cy='annot-expl-Age']").should("be.visible");
+                if ( cy.datasetMeetsTestCriteria("annotation", p_dataset, testCriteria) ) {
 
-                // 3. Assert annotation nav and next page button are disabled
-                cy.assertNextPageAccess("download", false);
+                    // 1. Load the app with test criteria using the dataset
+                    cy.loadAppState("annotation", p_dataset, testCriteria);
 
-                // 4. Annotate 'Age'-categorized column
+                    // 2. Pause until 'Age' tab (the default annotation tab) components are loaded
+                    // NOTE: This DOM check is possible because the annotation tool uses server-side rendering
+                    // See https://docs.cypress.io/guides/core-concepts/conditional-testing#Server-side-rendering
+                    cy.get("[data-cy='annot-component-Age']").should("be.visible");
 
-                // A. Click on the 'Age' tab
-                cy.get("[data-cy='annotation-category-tabs'] ul")
-                    .contains("li", "Age")
-                    .click();
+                    // 3. Assert annotation nav and next page button are disabled
+                    cy.assertNextPageAccess("download", false);
 
-                // B. Click on the 'Save Annotation' button
-                cy.get("[data-cy='save-button-Age']")
-                    .click();
+                    // 4. Annotate the 'Age'-categorized table column
 
-                // 5. Assert annotation nav and next page button are enabled
-                cy.assertNextPageAccess("download", true);
-            });
+                    // A. Click on the 'Age' tab
+                    cy.get("[data-cy='annotation-category-tabs'] ul")
+                        .contains("li", "Age")
+                        .click();
 
-            it("simple sex annotation", () => {
+                    // B. Click on the 'Save Annotation' button
+                    cy.get("[data-cy='save-button-Age']")
+                        .click();
 
-                // 1. Link 'Subject ID' and 'Sex' to data table columns
-                cy.loadAppState("annotation", {
-
-                    categoryColumnPairs: [
-
-                        ["Subject ID", "participant_id"],
-                        ["Sex", "sex"]
-                    ]
-                });
-
-                // 2. Pause until 'Age' tab (the default annotation tab) components are loaded
-                cy.get("[data-cy='annot-expl-Age']").should("be.visible");
-
-                // 3. Assert annotation nav and next page button are disabled
-                cy.assertNextPageAccess("download", false);
-
-                // 4. Annotate 'Age'-categorized column
-
-                // A. Click on the 'Sex' tab
-                cy.get("[data-cy='annotation-category-tabs'] ul")
-                    .contains("li", "Sex")
-                    .click();
-
-                // B. Select annotation choices for 'Sex' column values
-                cy.get("[data-cy='discrete-select-Sex-0']").click().type("male{enter}");
-                cy.get("[data-cy='discrete-select-Sex-1']").click().type("female{enter}");
-
-                // C. Click on the 'Save Annotation' button
-                cy.get("[data-cy='save-button-Sex']")
-                    .click();
-
-                // 5. Assert annotation nav and next page button are enabled
-                cy.assertNextPageAccess("download", true);
-            });
-
-            it("simple diagnosis annotation", () => {
-
-                // 1. Link 'Subject ID' and 'Diagnosis' to data table columns
-                cy.loadAppState("annotation", {
-
-                    categoryColumnPairs: [
-
-                        ["Subject ID", "participant_id"],
-                        ["Diagnosis", "group"]
-                    ]
-                });
-
-                // 2. Pause until 'Age' tab (the default annotation tab) components are loaded
-                cy.get("[data-cy='annot-expl-Age']").should("be.visible");
-
-                // 3. Assert annotation nav and next page button are disabled
-                cy.assertNextPageAccess("download", false);
-
-                // 4. Annotate 'Diagnosis'-categorized column
-
-                // A. Click on the 'Diagnosis' tab
-                cy.get("[data-cy='annotation-category-tabs'] ul")
-                    .contains("li", "Diagnosis")
-                    .click();
-
-
-                // B. Enter annotated values for each unique value in the 'Diagnosis'-categorized column
-                const uniqueValueCount = 3;
-                for ( let index = 0; index < uniqueValueCount; index++ ) {
-
-                    cy.get("[data-cy='vocab-term-Diagnosis-" + parseInt(index) + "']")
-                        .click()
-                        .type("Annotated value " +  parseInt(index));
+                    // 5. Assert annotation nav and next page button are enabled
+                    cy.assertNextPageAccess("download", true);
                 }
-
-                // C. Click on the 'Save Annotation' button
-                cy.get("[data-cy='save-button-Diagnosis']")
-                    .click();
-
-                // 5. Assert annotation nav and next page button are enabled
-                cy.assertNextPageAccess("download", true);
-
             });
 
-            it("single-column assessment tool group annotation", () => {
+            it("Annotate sex column; simple male, female annotation", () => {
 
-                // 1. Link 'Subject ID' and 'Assessment Tool' to data table columns,
-                // and create a single-column tool group
-                cy.loadAppState("annotation", {
+                // 0. Categories required for this test and the number of required columns for each category
+                const testCriteria = {
 
-                    categoryColumnPairs: [
+                    categories: [
 
-                        ["Subject ID", "participant_id"],
-                        ["Assessment Tool", "iq"]
+                        ["Subject ID", 1],
+                        ["Sex", 1]
+                    ]
+                };
+
+                if ( cy.datasetMeetsTestCriteria("annotation", p_dataset, testCriteria) ) {
+
+                    // 1. Load the app with test criteria using the dataset
+                    cy.loadAppState("annotation", p_dataset, testCriteria);
+
+                    // 2. Pause until 'Age' tab (the default annotation tab) components are loaded
+                    // NOTE: This DOM check is possible because the annotation tool uses server-side rendering
+                    // See https://docs.cypress.io/guides/core-concepts/conditional-testing#Server-side-rendering
+                    cy.get("[data-cy='annot-component-Age']").should("be.visible");
+
+                    // 3. Assert annotation nav and next page button are disabled
+                    cy.assertNextPageAccess("download", false);
+
+                    // 4. Annotate 'Sex'-categorized column
+
+                    // A. Click on the 'Sex' tab
+                    cy.get("[data-cy='annotation-category-tabs'] ul")
+                        .contains("li", "Sex")
+                        .click();
+
+                    // B. Select annotation choices for 'Sex' column values
+                    cy.get("[data-cy='discrete-select-Sex-0']").click().type("male{enter}");
+                    cy.get("[data-cy='discrete-select-Sex-1']").click().type("female{enter}");
+
+                    // C. Click on the 'Save Annotation' button
+                    cy.get("[data-cy='save-button-Sex']")
+                        .click();
+
+                    // 5. Assert annotation nav and next page button are enabled
+                    cy.assertNextPageAccess("download", true);
+                }
+            });
+
+            it("Annotate diagnosis column; fill out all diagnosis column values", () => {
+
+                // 0. Categories required for this test and the number of required columns for each category
+                const testCriteria = {
+
+                    categories: [
+
+                        ["Subject ID", 1],
+                        ["Diagnosis", 1]
+                    ]
+                };
+
+                if ( cy.datasetMeetsTestCriteria("annotation", p_dataset, testCriteria) ) {
+
+                    // 1. Load the app with test criteria using the dataset
+                    cy.loadAppState("annotation", p_dataset, testCriteria);
+
+                    // 2. Pause until 'Age' tab (the default annotation tab) components are loaded
+                    // NOTE: This DOM check is possible because the annotation tool uses server-side rendering
+                    // See https://docs.cypress.io/guides/core-concepts/conditional-testing#Server-side-rendering
+                    cy.get("[data-cy='annot-component-Age']").should("be.visible");
+
+                    // 3. Assert annotation nav and next page button are disabled
+                    cy.assertNextPageAccess("download", false);
+
+                    // 4. Annotate 'Diagnosis'-categorized column
+
+                    // A. Click on the 'Diagnosis' tab
+                    cy.get("[data-cy='annotation-category-tabs'] ul")
+                        .contains("li", "Diagnosis")
+                        .click();
+
+                    // B. Enter annotated values for each unique value in the 'Diagnosis'-categorized column
+                    // NOTE: This value of '3' should be pulled from the interface via the number of unique diagnosis values returned
+                    const uniqueValueCount = 3;
+                    for ( let index = 0; index < uniqueValueCount; index++ ) {
+
+                        cy.get("[data-cy='vocab-term-Diagnosis-" + parseInt(index) + "']")
+                            .click()
+                            .type("Annotated value " +  parseInt(index));
+                    }
+
+                    // C. Click on the 'Save Annotation' button
+                    cy.get("[data-cy='save-button-Diagnosis']")
+                        .click();
+
+                    // 5. Assert annotation nav and next page button are enabled
+                    cy.assertNextPageAccess("download", true);
+                }
+            });
+
+            it("Annotate single tool group with single assessment tool column; no missing values", () => {
+
+                // 0. Categories and tool groups required for this test and the number of required columns for each category
+                const testCriteria = {
+
+                    categories: [
+
+                        ["Subject ID", 1],
+                        ["Diagnosis", 1],
+                        ["Assessment Tool", 1]
                     ],
 
                     toolGroups: [
 
-                        {
-                            name: "My Tool Group",
-                            tools: ["iq"]
-                        }
+                        ["My Tool Group", 1]
                     ]
-                });
+                };
 
-                // 2. Pause until 'Age' tab (the default annotation tab) components are loaded
-                cy.get("[data-cy='annot-expl-Age']").should("be.visible");
+                if ( cy.datasetMeetsTestCriteria("annotation", p_dataset, testCriteria) ) {
 
-                // 3. Assert annotation nav and next page button are disabled
-                cy.assertNextPageAccess("download", false);
+                    // 1. Load the app with test criteria using the dataset
+                    cy.loadAppState("annotation", p_dataset, testCriteria);
 
-                // 3. Annotate 'Assessment Tool'-categorized column
+                    // 2. Pause until 'Age' tab (the default annotation tab) components are loaded
+                    // NOTE: This DOM check is possible because the annotation tool uses server-side rendering
+                    // See https://docs.cypress.io/guides/core-concepts/conditional-testing#Server-side-rendering
+                    cy.get("[data-cy='annot-component-Age']").should("be.visible");
 
-                // A. Click on the tool group's tab
-                cy.get("[data-cy='annotation-category-tabs'] ul")
-                    .contains("li", "My Tool Group")
-                    .click();
+                    // 3. Assert annotation nav and next page button are disabled
+                    cy.assertNextPageAccess("download", false);
 
-                // B. Pause until assessment tool group tabbed table is visible
-                cy.get("[data-cy='annot-tool-group-table-My Tool Group']").should("be.visible");
+                    // 4. Annotate 'Assessment Tool'-categorized column
 
-                // C. Click on the 'Save Annotation' button
-                cy.get("[data-cy='save-button-My Tool Group']")
-                    .click();
+                    // A. Click on the tool group's tab
+                    cy.get("[data-cy='annotation-category-tabs'] ul")
+                        .contains("li", testCriteria.toolGroups[0][0])
+                        .click();
 
-                // 4. Assert annotation nav and next page button are enabled
-                cy.assertNextPageAccess("download", true);
+                    // B. Pause until assessment tool group tabbed table is visible
+                    cy.get(`[data-cy='annot-tool-group-table-${testCriteria.toolGroups[0][0]}']`).should("be.visible");
+
+                    // C. Click on the 'Save Annotation' button
+                    cy.get(`[data-cy='save-button-${testCriteria.toolGroups[0][0]}']`)
+                        .click();
+
+                    // 5. Assert annotation nav and next page button are enabled
+                    cy.assertNextPageAccess("download", true);
+                }
             });
 
-            it("multi-column assessment tool group annotation", () => {
+            it("Annotate single tool group with multi-assessment tool column; no missing values", () => {
 
-                // 1. Programmatically link categories to columns here
-                cy.loadAppState("annotation", {
+                // 0. Categories and tool groups required for this test and the number of required columns for each category
+                const testCriteria = {
 
-                    categoryColumnPairs: [
+                    categories: [
 
-                        ["Subject ID", "participant_id"],
-                        ["Age", "age"],
-                        ["Sex", "sex"],
-                        ["Diagnosis", "group"],
-                        ["Assessment Tool", "iq"]
+                        ["Subject ID", 1],
+                        ["Age", 1],
+                        ["Assessment Tool", 2]
                     ],
 
                     toolGroups: [
 
-                        {
-                            name: "My Tool Group",
-                            tools: ["iq"]
-                        }
+                        ["My Tool Group", 2]
                     ]
-                });
+                };
 
-                // 2. Pause until 'Age' tab (the default annotation tab) components are loaded
-                cy.get("[data-cy='annot-expl-Age']").should("be.visible");
+                if ( cy.datasetMeetsTestCriteria("annotation", p_dataset, testCriteria) ) {
 
-                // 3. Assert annotation nav and next page button are disabled
-                cy.assertNextPageAccess("download", false);
+                    // 1. Load the app with test criteria using the dataset
+                    cy.loadAppState("annotation", p_dataset, testCriteria);
 
-                // 4. Annotate 'Assessment Tool'-categorized column
+                    // 2. Pause until 'Age' tab (the default annotation tab) components are loaded
+                    // NOTE: This DOM check is possible because the annotation tool uses server-side rendering
+                    // See https://docs.cypress.io/guides/core-concepts/conditional-testing#Server-side-rendering
+                    cy.get("[data-cy='annot-component-Age']").should("be.visible");
 
-                // A. Click on the tool group's tab
-                cy.get("[data-cy='annotation-category-tabs'] ul")
-                    .contains("li", "My Tool Group")
-                    .click();
+                    // 3. Assert annotation nav and next page button are disabled
+                    cy.assertNextPageAccess("download", false);
 
-                // B. Pause until assessment tool group tabbed table is visible
-                cy.get("[data-cy='annot-tool-group-table-My Tool Group']").should("be.visible");
+                    // 4. Annotate the 'Assessment Tool'-categorized column
 
-                // C. Click on the 'Save Annotation' button
-                cy.get("[data-cy='save-button-My Tool Group']")
-                    .click();
+                    // A. Click on the tool group's tab
+                    cy.get("[data-cy='annotation-category-tabs'] ul")
+                        .contains("li", testCriteria.toolGroups[0][0])
+                        .click();
 
-                // 5. Assert annotation nav and next page button are enabled
-                cy.assertNextPageAccess("download", true);
+                    // B. Pause until assessment tool group tabbed table is visible
+                    cy.get(`[data-cy='annot-tool-group-table-${testCriteria.toolGroups[0][0]}']`).should("be.visible");
+
+                    // C. Click on the 'Save Annotation' button
+                    cy.get(`[data-cy='save-button-${testCriteria.toolGroups[0][0]}']`)
+                        .click();
+
+                    // 5. Assert annotation nav and next page button are enabled
+                    cy.assertNextPageAccess("download", true);
+                }
             });
 
-            it("all category + multi-column assessment tool group annotation", () => {
+            it("Annotate two tool groups with single assessment tool column; no missing values", () => {
 
-                // 1. Programmatically link categories to columns here
-                cy.loadAppState("annotation", {
+                // 0. Categories and tool groups required for this test and the number of required columns for each category
+                const testCriteria = {
 
-                    categoryColumnPairs: [
+                    categories: [
 
-                        ["Subject ID", "participant_id"],
-                        ["Age", "age"],
-                        ["Sex", "sex"],
-                        ["Diagnosis", "group"],
-                        ["Assessment Tool", "iq"]
+                        ["Subject ID", 1],
+                        ["Age", 1],
+                        ["Sex", 1],
+                        ["Diagnosis", 1],
+                        ["Assessment Tool", 2]
                     ],
 
                     toolGroups: [
 
-                        {
-                            name: "My Tool Group",
-                            tools: ["iq", "session"]
-                        }
+                        ["My Tool Group", 1],
+                        ["My Other Tool Group", 1]
                     ]
-                });
+                };
 
-                // 2. Pause until 'Age' tab (the default annotation tab) components are loaded
-                cy.get("[data-cy='annot-expl-Age']").should("be.visible");
+                if ( cy.datasetMeetsTestCriteria("annotation", p_dataset, testCriteria) ) {
 
-                // 3. Assert annotation nav and next page button are disabled
-                cy.assertNextPageAccess("download", false);
+                    // 1. Load the app with test criteria using the dataset
+                    cy.loadAppState("annotation", p_dataset, testCriteria);
 
-                // 4. Annotate the 'Assessment Tool'-categorized column
+                    // 2. Pause until 'Age' tab (the default annotation tab) components are loaded
+                    // NOTE: This DOM check is possible because the annotation tool uses server-side rendering
+                    // See https://docs.cypress.io/guides/core-concepts/conditional-testing#Server-side-rendering
+                    cy.get("[data-cy='annot-component-Age']").should("be.visible");
 
-                // A. Click on the tool group's tab
-                cy.get("[data-cy='annotation-category-tabs'] ul")
-                    .contains("li", "My Tool Group")
-                    .click();
+                    // 3. Assert annotation nav and next page button are disabled
+                    cy.assertNextPageAccess("download", false);
 
-                // B. Pause until the assessment tool group tabbed table is visible
-                cy.get("[data-cy='annot-tool-group-table-My Tool Group']").should("be.visible");
+                    // 4. Annotate the the first 'Assessment Tool'-categorized column
 
-                // B. Click on the 'Save Annotation' button
-                cy.get("[data-cy='save-button-My Tool Group']")
-                    .click();
+                    // A. Click on the first tool group's tab
+                    cy.get("[data-cy='annotation-category-tabs'] ul")
+                        .contains("li", testCriteria.toolGroups[0][0])
+                        .click();
 
-                // 5. Assert annotation nav and next page button is enabled
-                cy.assertNextPageAccess("download", true);
-            });
+                    // B. Pause until assessment tool group tabbed table is visible
+                    cy.get(`[data-cy='annot-tool-group-table-${testCriteria.toolGroups[0][0]}']`).should("be.visible");
 
-            it("all category + multi-group assessment tool group annotation", () => {
+                    // C. Click on the 'Save Annotation' button
+                    cy.get(`[data-cy='save-button-${testCriteria.toolGroups[0][0]}']`)
+                        .click();
 
-                // 1. Programmatically link categories to columns here
-                cy.loadAppState("annotation", {
+                    // 5. Assert annotation nav and next page button is enabled
+                    cy.assertNextPageAccess("download", true);
 
-                    categoryColumnPairs: [
+                    // 6. Annotate the the second 'Assessment Tool'-categorized column
 
-                        ["Subject ID", "participant_id"],
-                        ["Age", "age"],
-                        ["Sex", "sex"],
-                        ["Diagnosis", "group"],
-                        ["Assessment Tool", "iq"],
-                        ["Assessment Tool", "session"]
-                    ],
+                    // A. Click on the first tool group's tab
+                    cy.get("[data-cy='annotation-category-tabs'] ul")
+                        .contains("li", testCriteria.toolGroups[1][0])
+                        .click();
 
-                    toolGroups: [
+                    // B. Pause until the second assessment tool group tabbed table is visible
+                    cy.get(`[data-cy='annot-tool-group-table-${testCriteria.toolGroups[1][0]}']`).should("be.visible");
 
-                        {
-                            name: "My Tool Group",
-                            tools: ["iq"]
-                        },
+                    // C. Click on the 'Save Annotation' button
+                    cy.get(`[data-cy='save-button-${testCriteria.toolGroups[1][0]}']`)
+                        .click();
 
-                        {
-                            name: "My Other Tool Group",
-                            tools: ["session"]
-                        }
-                    ]
-                });
-
-                // 3. Pause until 'Age' tab (the default annotation tab) components are loaded
-                cy.get("[data-cy='annot-expl-Age']").should("be.visible");
-
-                // 4. Assert annotation nav and next page button are disabled
-                cy.assertNextPageAccess("download", false);
-
-                // 5. Annotate the the first 'Assessment Tool'-categorized column
-
-                // A. Click on the tool group's tab
-                cy.get("[data-cy='annotation-category-tabs'] ul")
-                    .contains("li", "My Tool Group")
-                    .click();
-
-                // B. Pause until the first assessment tool group tabbed table is visible
-                cy.get("[data-cy='annot-tool-group-table-My Tool Group']").should("be.visible");
-
-                // B. Click on the 'Save Annotation' button
-                cy.get("[data-cy='save-button-My Tool Group']")
-                    .click();
-
-                // 6. Assert annotation nav and next page button is enabled
-                cy.assertNextPageAccess("download", true);
-
-                // 7. Annotate the the second 'Assessment Tool'-categorized column
-
-                // A. Click on the tool group's tab
-                cy.get("[data-cy='annotation-category-tabs'] ul")
-                    .contains("li", "My Other Tool Group")
-                    .click();
-
-                // B. Pause until the second assessment tool group tabbed table is visible
-                cy.get("[data-cy='annot-tool-group-table-My Other Tool Group']").should("be.visible");
-
-                // C. Click on the 'Save Annotation' button
-                cy.get("[data-cy='save-button-My Other Tool Group']")
-                    .click();
-
-                // 9. Assert annotation nav and next page button is still enabled
-                cy.assertNextPageAccess("download", true);
+                    // 7. Assert annotation nav and next page button is still enabled
+                    cy.assertNextPageAccess("download", true);
+                }
             });
         });
     });
