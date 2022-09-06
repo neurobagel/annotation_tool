@@ -27,75 +27,88 @@ describe("End to end test using a simple UI path through the app", () => {
 
         it("simple end to end test with " + p_dataset.description + " data", () => {
 
-            // 1. Go through index page, selecting participants tsv and json dictionary files
+            // 0. Categories required for this test and the number of required columns for each category
+            const testCriteria = {
 
-            // A. Assert that categorization nav item and next button are disabled
-            cy.assertNextPageAccess("categorization", false);
+                categories: [
 
-            // B. Select data table file
-            cy.get("[data-cy='data-table-selector']")
-                .contains("Choose file")
-                .click()
-                .selectFile(dataFolder + p_dataset.data_table);
+                    ["Subject ID", 1],
+                    ["Age", 1]
+                ]
+            };
 
-            // C. Assert that categorization nav item and next button are enabled
-            cy.assertNextPageAccess("categorization", true);
+            if ( cy.datasetMeetsTestCriteria("annotation", p_dataset, testCriteria) ) {
 
-            // D. Select participants dictionary
-            cy.get("[data-cy='data-dictionary-selector']")
-                .contains("Choose file")
-                .click()
-                .selectFile(dataFolder + p_dataset.data_dictionary);
+                // 1. Go through index page, selecting participants tsv and json dictionary files
 
-            // E. Click the next page button to proceed to the categorization page
-            cy.nextPageByButton();
+                // A. Assert that categorization nav item and next button are disabled
+                cy.assertNextPageAccess("categorization", false);
 
-            // 2. Go through categorization page, categorizing subject ID and age columns in the table
+                // B. Select data table file
+                cy.get("[data-cy='data-table-selector']")
+                    .contains("Choose file")
+                    .click()
+                    .selectFile(dataFolder + p_dataset.data_table);
 
-            // A. Assert nav and next button are not yet be enabled
-            cy.assertNextPageAccess("annotation", false);
+                // C. Assert that categorization nav item and next button are enabled
+                cy.assertNextPageAccess("categorization", true);
 
-            // B. Categorize "participant_id" as "Subject ID"
-            cy.categorizeColumn("Subject ID", 1);
+                // D. Select participants dictionary
+                cy.get("[data-cy='data-dictionary-selector']")
+                    .contains("Choose file")
+                    .click()
+                    .selectFile(dataFolder + p_dataset.data_dictionary);
 
-            // C. Assert nav and next button are enabled
-            cy.assertNextPageAccess("annotation", true);
+                // E. Click the next page button to proceed to the categorization page
+                cy.nextPageByButton();
 
-            // D. Categorize "age" as "Age"
-            cy.categorizeColumn("Age", 2);
+                // 2. Go through categorization page, categorizing subject ID and age columns in the table
 
-            // E. Click the next page button to proceed to the categorization page
-            cy.nextPageByButton();
+                // A. Assert nav and next button are not yet be enabled
+                cy.assertNextPageAccess("annotation", false);
 
-            // 3. Go through annotation page, saving default age annotation
+                // B. Categorize "participant_id" as "Subject ID"
+                cy.categorizeColumn("Subject ID", p_dataset["category_columns"]["Subject ID"][0]);
 
-            // A. Assert that next page nav and button are disabled for download page
-            cy.assertNextPageAccess("download", false);
+                // C. Assert nav and next button are enabled
+                cy.assertNextPageAccess("annotation", true);
 
-            // B. Click on the 'Age' tab
-            cy.get("[data-cy='annotation-category-tabs'] ul")
-                .contains("li", "Age")
-                .click();
+                // D. Categorize "age" as "Age"
+                cy.categorizeColumn("Age", p_dataset["category_columns"]["Age"][0]);
 
-            // C. Click on the 'Save Annotation' button
-            cy.get("button")
-                .contains("Save Annotation")
-                .click();
+                // E. Click the next page button to proceed to the categorization page
+                cy.nextPageByButton();
 
-            // D. Assert that next page nav and button are enabled for download page
-            cy.assertNextPageAccess("download", true);
+                // 3. Go through annotation page, saving default age annotation
 
-            // E. Click the next page button to proceed to the download page
-            cy.nextPageByButton();
+                // A. Assert that next page nav and button are disabled for download page
+                cy.assertNextPageAccess("download", false);
 
-            // 4. Go through the download page, downloading the output annotation file
+                // B. Click on the 'Age' tab
+                cy.get("[data-cy='annotation-category-tabs'] ul")
+                    .contains("li", "Age")
+                    .click();
 
-            // A. Click the download button
-            cy.get("[data-cy='download-button']")
-                .click();
+                // C. Click on the 'Save Annotation' button
+                cy.get("button")
+                    .contains("Save Annotation")
+                    .click();
 
-            // B. Assert that csv file has downloaded
-            // cy.verifyDownload(".json", { contains: true });
+                // D. Assert that next page nav and button are enabled for download page
+                cy.assertNextPageAccess("download", true);
+
+                // E. Click the next page button to proceed to the download page
+                cy.nextPageByButton();
+
+                // 4. Go through the download page, downloading the output annotation file
+
+                // A. Click the download button
+                cy.get("[data-cy='download-button']")
+                    .click();
+
+                // B. Assert that csv file has downloaded
+                // cy.verifyDownload(".json", { contains: true });
+            }
         });
     });
 });
