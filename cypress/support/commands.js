@@ -46,7 +46,7 @@ Cypress.Commands.add("assertNextPageAccess", (p_pageName, p_enabled) => {
         .should(chainer, "disabled");
 });
 
-Cypress.Commands.add("categorizeColumn", (p_category, p_columnTableRow) => {
+Cypress.Commands.add("categorizeColumn", (p_category, p_columnName) => {
 
     // 1. Select the given category in the categorization table
     cy.get("[data-cy='categorization-table']")
@@ -55,8 +55,57 @@ Cypress.Commands.add("categorizeColumn", (p_category, p_columnTableRow) => {
 
     // 2. Link the category to this column in the column linking table
     cy.get("[data-cy='column-linking-table'] tbody > tr > td")
-        .eq(p_columnTableRow)
+        .contains(p_columnName)
         .click();
+});
+
+Cypress.Commands.add("datasetMeetsTestCriteria", (p_pageName, p_datasetConfig, p_testCriteria) => {
+
+    if ( "categorization" === p_pageName ) {
+
+        // 1. Check to see if the categorization requirements of a test are met by a dataset
+        for ( const [category, columnCount] of p_testCriteria.categories ) {
+
+            // A. Failure #1: A test category is missing from the dataset category to column map
+            if ( !Object.keys(p_datasetConfig["category_columns"]).includes(category) )
+                return false;
+            // B. Failure #2: The number of columns in dataset config does not meet the minimum required for the test
+            else if ( columnCount > p_datasetConfig["category_columns"][category].length )
+                return false;
+        }
+    }
+    else if ( "annotation" === p_pageName ) {
+
+        // 1. Check to see if the categorization requirements of a test are met by a dataset
+        for ( const [category, columnCount] of p_testCriteria.categories ) {
+
+            // A. Failure #1: A test category is missing from the dataset category to column map
+            if ( !Object.keys(p_datasetConfig["category_columns"]).includes(category) )
+                return false;
+            // B. Failure #2: The number of columns in dataset config does not meet the minimum required for the test
+            else if ( columnCount > p_datasetConfig["category_columns"][category].length )
+                return false;
+        }
+
+        // 2. Check to see if the tool group categorization requirements of a test are met by a dataset
+        if ( "toolGroups" in p_testCriteria ) {
+
+            // A. Failure #1: Dataset does not have an 'Assessment Tool' category
+            if ( !Object.keys(p_datasetConfig["category_columns"]).includes("Assessment Tool") )
+                return false;
+
+            // B. Failure #2: Test tool count requirement is more than the # of tools available in dataset
+            const datasetToolCount = p_datasetConfig["category_columns"]["Assessment Tool"].length;
+            let testToolCount = 0;
+            for ( const [/*groupName*/, columnCount] of p_testCriteria.toolGroups ) {
+                testToolCount += columnCount;
+            }
+            if ( testToolCount > datasetToolCount )
+                return false;
+        }
+    }
+
+    return true;
 });
 
 // Calls action in the Nuxt store
@@ -77,7 +126,7 @@ Cypress.Commands.add("getNuxtStoreValue", (p_storeVariableName) => {
 
 // Takes given data and executes the logic needed to programmatically load state
 // for the given page
-Cypress.Commands.add("loadAppState", (p_pageName, p_pageData) => {
+Cypress.Commands.add("loadAppState", (p_pageName, p_dataset, p_pageData) => {
 
     if ( "categorization" == p_pageName ) {
 
@@ -88,25 +137,43 @@ Cypress.Commands.add("loadAppState", (p_pageName, p_pageData) => {
         // NOTE: Modeled off of code from 'tableClick' in categorization.vue
 
         // 1. Link all given category column pairs and initialize
-        for ( const [category, column] of p_pageData.categoryColumnPairs ) {
+        for ( const [category, columnCount] of p_pageData.categories ) {
 
-            // A. Link the column to this category
-            cy.dispatchToNuxtStore("linkColumnWithCategory", {
+            for ( let index = 0; index < columnCount; index++ ) {
 
-                category: category,
-                column: column
-            });
+                // A. Link the column to this category
+                cy.dispatchToNuxtStore("linkColumnWithCategory", {
+
+                    category: category,
+                    column: p_dataset["category_columns"][category][index]
+                });
+            }
         }
 
         // 2. Create assessment tool groups if given
         if ( "toolGroups" in p_pageData ) {
 
+            const toolGroupData = {};
+
+            // A. For each tool group, create a list of tools from the dataset for each tool group
             for ( let index = 0; index < p_pageData.toolGroups.length; index++ ) {
+
+                const [groupName, columnCount] = p_pageData.toolGroups[index];
+
+                toolGroupData[groupName] = [];
+                for ( let index = 0; index < p_dataset["category_columns"]["Assessment Tool"].length; index += columnCount + 1) {
+
+                    toolGroupData[groupName] = p_dataset["category_columns"]["Assessment Tool"].slice(index, index + columnCount);
+                }
+            }
+
+            // B. Add each tool group to the store
+            for ( const groupName in toolGroupData ) {
 
                 cy.dispatchToNuxtStore("createToolGroup", {
 
-                    name: p_pageData.toolGroups[index].name,
-                    tools: p_pageData.toolGroups[index].tools
+                    name: groupName,
+                    tools: toolGroupData[groupName]
                 });
             }
         }
