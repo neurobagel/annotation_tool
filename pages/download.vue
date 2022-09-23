@@ -157,7 +157,7 @@
 
                     name: this.datasetName,
                     type: "dataset",
-                    subjects: this.dataTable.annotated.map(row => this.transformAnnotatedRowToSubjectJSON(row))
+                    hasSamples: this.dataTable.annotated.map(row => this.transformAnnotatedRowToSubjectJSON(row))
                 };
             },
 
@@ -173,7 +173,7 @@
 
                 // A. Subject ID - This categorization is required in order to
                 // proceed to the annotation page
-                subjectJSON["id"] = p_row[this.categoryToColumnMap["Subject ID"][0]];
+                subjectJSON["label"] = p_row[this.categoryToColumnMap["Subject ID"][0]];
 
                 // B. Age
                 if ( availableCategories.includes("Age") ) {
@@ -189,8 +189,10 @@
                 if ( availableCategories.includes("Diagnosis") ) {
 
                     // I. Create a list of values from the diagnosis columns in the annotated table row
-                    subjectJSON["diagnosis"] = this.categoryToColumnMap["Diagnosis"].map(column => p_row[column])
-                        .filter(value => this.missingValueLabel !== value);
+                    subjectJSON["diagnosis"] = this.categoryToColumnMap["Diagnosis"].map(column => {
+                        return {identifier: p_row[column]};
+                    })
+                        .filter(value => this.missingValueLabel !== value.identifier);
                 }
 
                 // E. Assessment tool group availability for this subject
