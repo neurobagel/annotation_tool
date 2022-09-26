@@ -627,6 +627,20 @@ export const getters = {
         return toolGroup;
     },
 
+    getOriginalColumnValue: (p_state) => (p_subjectID, p_columnName) => {
+
+        for ( let index = 0; index < p_state.dataTable.original.length; index++ ) {
+
+            if ( p_subjectID === p_state.dataTable.original[index]["participant_id"] ) {
+
+                return p_state.dataTable.original[index][p_columnName];
+            }
+        }
+
+        return null;
+    },
+
+
     isColumnLinkedToCategory: (p_state) => (p_matchData) => {
 
         // Check to see if the given column has been linked to the given category
