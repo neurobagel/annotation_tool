@@ -57,6 +57,9 @@
 
 <script>
 
+    // Allows for reference to store data by creating simple, implicit getters
+    import { mapGetters } from "vuex";
+
     export default {
 
         props: {
@@ -100,6 +103,8 @@
                     "missing_value"
                 ],
 
+                hasNewAnnotation: false,
+
                 // Text for UI elements
                 uiText: {
 
@@ -113,6 +118,11 @@
         },
 
         computed: {
+
+            ...mapGetters([
+
+                "getOriginalColumnValue"
+            ]),
 
             displayTable() {
 
@@ -142,7 +152,7 @@
 
             saveButtonEnabled() {
 
-                return this.relevantColumns.every(
+                let allValidValues = this.relevantColumns.every(
 
                     columnName => this.uniqueValues[columnName].every(
                         uniqueValue => (
@@ -150,6 +160,8 @@
                             this.isMissingValue(columnName, uniqueValue) )
                     )
                 );
+
+                return this.hasNewAnnotation && allValidValues;
             }
         },
 
@@ -199,10 +211,12 @@
                         if ( this.relevantColumns.includes(columnName) ) {
 
                             if ( this.isMissingValue(columnName, transformedTable[index][columnName]) ) {
+
                                 // TODO: this string should be replaced by an app-wide way to designate missing values
                                 transformedTable[index][columnName] = this.missingValueLabel;
                             } else {
-                                transformedTable[index][columnName] = this.transformedValue(columnName, transformedTable[index][columnName]);
+
+                                transformedTable[index][columnName] = this.transformedValue(columnName, this.getOriginalColumnValue(transformedTable[index]["participant_id"], columnName));
                             }
                         }
                     }
@@ -215,6 +229,9 @@
                     // transformHeuristics: this.valueMapping,
                     transformedTable: transformedTable
                 });
+
+                // 4. Indicate that the entered annotation has been saved and there are no new entered annotation values
+                this.hasNewAnnotation = false;
             },
 
             initializeMapping() {
@@ -224,10 +241,10 @@
 
                 // Initialize the mapping as empty
                 this.valueMapping = {};
-                for ( const [colName, uniqueValues] of Object.entries(this.uniqueValues) ) {
+                for ( const [columnName, uniqueValues] of Object.entries(this.uniqueValues) ) {
 
                     // Now we will create a mapping of the form { uniqueVale: "" } for each unique value
-                    this.valueMapping[colName] = Object.fromEntries(
+                    this.valueMapping[columnName] = Object.fromEntries(
                         uniqueValues.map((uniqueValue) => [uniqueValue, ""])
                     );
                 }
@@ -267,6 +284,9 @@
                     this.valueMapping,
                     { [p_row.column_name]: innerUpdate }
                 );
+
+                // 3. Indicate that there a new annotation value has been entered
+                this.hasNewAnnotation = true;
             }
         }
     };
