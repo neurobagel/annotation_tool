@@ -36,12 +36,22 @@ Cypress.Commands.add("appSetup", () => {
     cy.viewport("macbook-13");
 });
 
-Cypress.Commands.add("assertNextPageAccess", (p_pageName, p_enabled) => {
+Cypress.Commands.add("assertButtonStatus", (p_buttonName, p_enabled) => {
 
     let chainer = ( p_enabled ) ? "not.have.class" : "have.class";
 
-    cy.get("[data-cy='menu-item-" + p_pageName + "'] a")
+    cy.get("[data-cy='" + p_buttonName + "']")
         .should(chainer, "disabled");
+});
+
+Cypress.Commands.add("assertNextPageAccess", (p_pageName, p_enabled, p_checkMenu=true) => {
+
+    let chainer = ( p_enabled ) ? "not.have.class" : "have.class";
+
+    if ( p_checkMenu ) {
+        cy.get("[data-cy='menu-item-" + p_pageName + "'] a")
+            .should(chainer, "disabled");
+    }
     cy.get("[data-cy='button-nextpage']")
         .should(chainer, "disabled");
 });

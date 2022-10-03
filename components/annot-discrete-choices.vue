@@ -103,6 +103,8 @@
                     "missing_value"
                 ],
 
+                // This field is used to ensure the save annotation button is
+                // disabled after new annotation data has been saved by the user
                 hasNewAnnotation: false,
 
                 // Text for UI elements
@@ -204,20 +206,18 @@
                 // 1. Create a local copy of the annotated table for transformation
                 const transformedTable = structuredClone(this.dataTable.annotated);
 
-                // 2. Transform all values in columns categorized as 'age' columns
-                for ( let index = 0; index < transformedTable.length; index++ ) {
-                    for ( const columnName in transformedTable[index] ) {
+                // 2. Transform all values in columns categorized as columns selected for this discrete choices component
+                for ( let index = 0; index < this.dataTable.original.length; index++ ) {
 
-                        if ( this.relevantColumns.includes(columnName) ) {
+                    for ( const columnName of this.relevantColumns ) {
 
-                            if ( this.isMissingValue(columnName, transformedTable[index][columnName]) ) {
+                        if ( this.isMissingValue(columnName, transformedTable[index][columnName]) ) {
 
-                                // TODO: this string should be replaced by an app-wide way to designate missing values
-                                transformedTable[index][columnName] = this.missingValueLabel;
-                            } else {
+                            // TODO: this string should be replaced by an app-wide way to designate missing values
+                            transformedTable[index][columnName] = this.missingValueLabel;
+                        } else {
 
-                                transformedTable[index][columnName] = this.transformedValue(columnName, this.getOriginalColumnValue(transformedTable[index]["participant_id"], columnName));
-                            }
+                            transformedTable[index][columnName] = this.transformedValue(columnName, this.dataTable.original[index][columnName]);
                         }
                     }
                 }
@@ -285,7 +285,8 @@
                     { [p_row.column_name]: innerUpdate }
                 );
 
-                // 3. Indicate that there a new annotation value has been entered
+                // 3. Indicate that there a new annotation value has been
+                // entered, ensuring the save annotation button is enabled
                 this.hasNewAnnotation = true;
             }
         }
