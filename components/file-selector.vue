@@ -50,6 +50,7 @@
 
             fileName() {
 
+                // null - No file has been selected yet
                 return ( null === this.fileInput ) ? "" : this.fileInput.name;
             }
         },
@@ -58,14 +59,14 @@
 
             onFileSelected(p_event){
 
-                // 1. Save the file name
-                this.fileInput = p_event.target.files[0];
+                // 0. Do nothing if no file selected (e.g. file dialog cancellation)
+                if ( 0 === p_event.target.files.length ) {
 
-                // A. If no file selected, emit a no file selected message
-                if ( "undefined" === typeof this.fileInput ) {
-                    this.$emit("file-selected", "none");
                     return;
                 }
+
+                // 1. Save the file name
+                this.fileInput = p_event.target.files[0];
 
                 // 2. Parse the whole file and save the lines
 
