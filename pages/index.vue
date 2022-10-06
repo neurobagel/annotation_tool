@@ -173,8 +173,8 @@
                 // NOTE: Defaults to json for now
                 this.$store.dispatch("saveDataDictionary", {
 
-                    data: ( "none" === p_fileData ) ? null : p_fileData.data,
-                    filename: ( "none" === p_fileData ) ? "" : p_fileData.filename,
+                    data: p_fileData.data,
+                    filename: p_fileData.filename,
                     fileType: "json"
                 });
             },
@@ -185,8 +185,8 @@
                 // NOTE: Defaults to tsv for now
                 this.$store.dispatch("saveDataTable", {
 
-                    data: ( null === p_fileData || 0 === p_fileData.data.length ) ? null : p_fileData.data,
-                    filename: ( null === p_fileData ) ? "" : p_fileData.filename,
+                    data: ( 0 === p_fileData.data.length ) ? null : p_fileData.data,
+                    filename: p_fileData.filename,
                     fileType: "tsv"
                 });
 
