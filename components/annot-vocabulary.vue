@@ -19,7 +19,8 @@
                             id="input-live"
                             v-model="row.item.select_a_vocabulary_term"
                             :placeholder="uiText.placeholderText"
-                            :state="vocabState" />
+                            :state="vocabState"
+                            lazy/>
 
                         <!-- This will only be shown if the preceding input has an invalid state -->
                         <!--

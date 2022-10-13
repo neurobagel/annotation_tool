@@ -24,7 +24,8 @@
                             :data-cy="'discrete-select-' + title + '-' + row.index"
                             :options="options"
                             :value="valueMapping[row.item.column_name][row.item.raw_value]"
-                            @input="updateMapping($event, row.item)" />
+                            @input="updateMapping($event, row.item)"
+                            lazy/>
 
                     </template>
                     <template #cell(missing_value)="row">
