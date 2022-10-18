@@ -87,9 +87,24 @@
                     );
                 });
 
+                const annotatedFilteredTable = this.dataTable.annotated.map((row) => {
+
+                    return Object.fromEntries(
+                        Object.entries(row).filter(([columnName, rowValue]) =>
+                            this.relevantColumns.includes(columnName))
+                    );
+                });
+
+                let hasAnnotations = false;
+                for ( let index = 0; index < annotatedFilteredTable.length; index++ ) {
+                    if ( "" !== annotatedFilteredTable[index][1] ) {
+                        hasAnnotations = true;
+                    }
+                }
+
                 // Return a data table where each row is filtered to only show the columns that are mapped to the given category
                 // NOTE: The original data table is used here because we want to display the original raw values
-                return filteredTable;
+                return ( hasAnnotations ) ? annotatedFilteredTable : filteredTable;
             },
 
             relevantColumns() {
