@@ -5,12 +5,12 @@
         <b-card no-body class="mb-1">
 
             <b-card-header class="p-1" header-tag="header" role="tab">
-                <b-button block v-b-toggle="'accordion-explanation-' + index" variant="info">
-                    {{ uiText.cardTitle }}
+                <b-button block v-b-toggle="'explanation-' + uniqueID" variant="info">
+                    {{ cardTitle }}
                 </b-button>
             </b-card-header>
 
-            <b-collapse :id="'accordion-explanation-' + index" accordion="my-accordion" role="tabpanel">
+            <b-collapse :id="'explanation-' + uniqueID" accordion="explanation-accordion" role="tabpanel">
                 <b-card-body>
                     <b-card-text>{{ explanation }}</b-card-text>
                 </b-card-body>
@@ -23,6 +23,7 @@
 </template>
 
 <script>
+    import { v4 as uuidv4 } from 'uuid';
 
     export default {
 
@@ -32,12 +33,6 @@
 
                 type: String,
                 default: "No explanation has been provided yet."
-            },
-
-            index: {
-
-                type: Number,
-                default: 0
             }
         },
 
@@ -47,11 +42,11 @@
 
             return {
 
-                // Text for UI elements
-                uiText: {
+                cardTitle: "Explanation",
 
-                    cardTitle: "Explanation"
-                }
+                // If we have multiple instances of the accoridion,
+                // the unique ID ensures that their behaviours don't interfere
+                uniqueID: uuidv4()
             };
         }
     };
