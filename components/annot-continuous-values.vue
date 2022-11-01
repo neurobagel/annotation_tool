@@ -1,29 +1,36 @@
 <template>
 
-    <b-table
-        hover
-        striped
-        id="annotation-table"
-        :items="items">
+    <b-card
+        no-body
+        class="annotation-card">
+        <b-card-header>{{ uiText.instructions }}</b-card-header>
+        <b-card-body class="continuous-values-card-body">
 
-        <!-- TODO: implement a way for the user to edit the transformed values -->
-        <!--
-            <template #[column]="row">
-                 <b-button variant="info" >{{row.item.raw}} </b-button>
-            </template>
-        -->
+            <v-select
+                :data-cy="selectTransform"
+                :options="transformChoices"
+                @input="dispatchHeuristic($event)" />
 
-    </b-table>
+            <b-table
+                hover
+                striped
+                id="annotation-table"
+                :items="validationItems" />
+
+        </b-card-body>
+    </b-card>
+
 
 </template>
 
 <script>
+    import {mapActions, mapGetters} from "vuex";
 
     export default {
 
         props: {
 
-            items: { type: Array, default: () => [] }
+            activeCategory: {type: String, required: true}
         },
 
         name: "ContinuousTable",
@@ -32,9 +39,57 @@
 
             return {
 
-                column: "cell(raw)"
+                uiText: {
+
+                    instructions: "Review the age harmonization",
+                    saveButton: "Save Annotation"
+                }
             };
+        },
+        computed: {
+            ...mapGetters([
+                "getPreviewValues",
+                "getHarmonizedPreview",
+                "getTransformHeuristics"
+            ]),
+            transformChoices() {
+                return this.getTransformHeuristics(this.activeCategory);
+            },
+            validationItems() {
+                // A table generated from the unique values provided by the
+                // store for columns assigned to the activeCategory.
+                return Object.entries(
+                    this.getPreviewValues(this.activeCategory)
+                ).map(([column, values]) => {
+                    return values.map(value => {
+                        return {
+                            rawValue: value,
+                            column: column,
+                            preview: this.getHarmonizedPreview(column, value)
+                        };
+                    });
+                }).flat();
+            }
+        },
+        methods: {
+            ...mapActions([
+                "setHeuristic"
+            ]),
+            dispatchHeuristic(selectedHeuristic) {
+                this.setHeuristic(selectedHeuristic);
+            }
         }
     };
 
 </script>
+
+<style scoped>
+
+.continuous-values-card-body {
+
+    height: 300px;
+    overflow-y: scroll;
+    position: relative;
+}
+
+</style>
