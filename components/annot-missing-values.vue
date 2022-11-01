@@ -15,7 +15,8 @@
                     <template #cell(not_missing)="data">
                         <b-button
                             variant="danger"
-                            @click="removeColumn(data.item)">
+                            :data-cy="'not-missing-button-' + data.item.column + '-' + data.item.value"
+                            @click="removeValue(data.item)">
                             {{ uiText.notMissingButton }}
                         </b-button>
                     </template>
@@ -32,7 +33,7 @@
 <script>
 
     // Allows for reference to store data by creating simple, implicit getters
-    import {mapGetters} from "vuex";
+    import {mapGetters, mapMutations} from "vuex";
 
     export default {
 
@@ -91,11 +92,14 @@
         },
 
         methods: {
+            ...mapMutations([
+                "declareNotMissing"
+            ]),
 
-            removeColumn(p_tableItem) {
+            removeValue(tableItem) {
 
                 // Remove this value from the column's missing value list in the store
-                this.$emit('remove:missingValue', p_tableItem);
+                this.declareNotMissing({column: tableItem.column, value: tableItem.value});
             }
         }
     };

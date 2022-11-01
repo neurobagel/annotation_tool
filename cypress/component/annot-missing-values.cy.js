@@ -28,13 +28,30 @@ describe("missing values", () => {
             }
         );
 
-    it.only('handles lack of description gracefully', () => {
-            cy.mount(annotMissingValues, {
-                    propsData: props,
-                    computed: Object.assign(getters, {valueDescription: () => (col, mis) => null })
-                }
-            );
-        }
-    );
+        it('handles lack of description gracefully', () => {
+                cy.mount(annotMissingValues, {
+                        propsData: props,
+                        computed: Object.assign(getters, {valueDescription: () => (col, mis) => null})
+                    }
+                );
+            }
+        );
+
+        it("can be declared 'not missing' by clicking the 'Not Missing' button", () => {
+                const mockStore = {commit: () => {}};
+                cy.spy(mockStore, 'commit').as('commitSpy');
+
+                cy.mount(annotMissingValues, {
+                        propsData: props,
+                        computed: getters,
+                        mocks: {
+                            $store: mockStore
+                        }
+                    }
+                );
+                cy.get("[data-cy='not-missing-button-column1-val1']").click();
+                cy.get("@commitSpy").should('have.been.calledWith', "declareNotMissing", {column: "column1", value: "val1"});
+            }
+        );
     }
 );
