@@ -32,15 +32,16 @@
 <script>
 
     // Allows for reference to store data by creating simple, implicit getters
-    import { mapGetters, mapState } from "vuex";
+    import {mapGetters} from "vuex";
 
     export default {
 
         name: "AnnotMissingValues",
 
         props: {
-
-            relevantColumns: { type: Array, required: true }
+            // We need to know what category we are being called for,
+            // so that we can go and ask the store for the correct data
+            activeCategory: { type: String, required: true }
         },
 
         data() {
@@ -49,10 +50,10 @@
 
                 fields: [
 
-                    { key: "column" },
-                    { key: "description"},
-                    { key: "value"},
-                    { key: "not_missing"}
+                    {key: "column"},
+                    {key: "description"},
+                    {key: "value"},
+                    {key: "not_missing"}
                 ],
 
                 uiText: {
@@ -67,39 +68,25 @@
 
             ...mapGetters([
 
+                "missingValues",
                 "valueDescription"
             ]),
 
-            ...mapState([
-
-                "missingColumnValues"
-            ]),
-
             tableItems() {
-
-                let missingValueArray = [];
-
-                // Create a table of missing values along with their column and data dictionary description
-                for ( let column of this.relevantColumns ) {
-
-                    if ( Object.keys(this.missingColumnValues).includes(column) ) {
-
-                        for ( let missingValue of this.missingColumnValues[column] ) {
-
-                            const description = this.valueDescription(column, missingValue);
-
-                            missingValueArray.push({
-
-                                column: column,
-                                description: description === null ? "" : description,
-                                value: missingValue
-                            });
-
-                        }
-                    }
+                // Returns an array of objects, with one object for each missing value
+                // in the columns assigned to the activeCategory
+                // for display in the missing Value Table
+                return Object.entries(this.missingValues(this.activeCategory)).map(([column, missingValues]) => {
+                    return missingValues.map(missingValue => {
+                        const description = this.valueDescription(column, missingValue);
+                        return {
+                            column: column,
+                            description: description === null ? "" : description,
+                            value: missingValue
+                        };
+                    });
                 }
-
-                return missingValueArray;
+                ).flat();
             }
         },
 
@@ -117,10 +104,10 @@
 
 <style>
 
-    .missing-values-card-body {
+.missing-values-card-body {
 
-        height: 30vh;
-        overflow-y: scroll;
-    }
+    height: 30vh;
+    overflow-y: scroll;
+}
 
 </style>
