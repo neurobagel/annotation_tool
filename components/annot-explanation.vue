@@ -6,7 +6,7 @@
 
             <b-card-header class="p-1" header-tag="header" role="tab">
                 <b-button block v-b-toggle="'explanation-' + uniqueID" variant="info">
-                    {{ cardTitle }}
+                    {{ uiText.cardTitle }}
                 </b-button>
             </b-card-header>
 
@@ -42,7 +42,10 @@
 
             return {
 
-                cardTitle: "Explanation",
+                uiText: {
+
+                    cardTitle: "Explanation"
+                },
 
                 // If we have multiple instances of the accoridion,
                 // the unique ID ensures that their behaviours don't interfere
