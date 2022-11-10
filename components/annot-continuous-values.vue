@@ -9,6 +9,7 @@
             <v-select
                 :data-cy="selectTransform"
                 :options="transformChoices"
+                :value="getActiveHeuristic(this.activeCategory)"
                 @input="dispatchHeuristic($event)" />
 
             <b-table
@@ -50,7 +51,8 @@
             ...mapGetters([
                 "getPreviewValues",
                 "getHarmonizedPreview",
-                "getTransformHeuristics"
+                "getTransformHeuristics",
+                "getActiveHeuristic"
             ]),
             transformChoices() {
                 return this.getTransformHeuristics(this.activeCategory);
@@ -75,8 +77,8 @@
             ...mapActions([
                 "setHeuristic"
             ]),
-            dispatchHeuristic(selectedHeuristic) {
-                this.setHeuristic(selectedHeuristic);
+            dispatchHeuristic(heuristic) {
+                this.setHeuristic(this.activeCategory, heuristic);
             }
         }
     };

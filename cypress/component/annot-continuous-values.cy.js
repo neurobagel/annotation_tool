@@ -1,18 +1,22 @@
 import annotContinuousValues from "~/components/annot-continuous-values";
 
 
-const getters = {
-    getPreviewValues: () => (activeCategory) => {
-        return {
-            "column1": ["val1", "val11"],
-            "column2": ["val2", "val22"]
-        };
-    },
-    getHarmonizedPreview: () => (column, missingValue) => column + "-" + missingValue + "-harmonized",
-    getTransformHeuristics: () => (activeCategory) => {
-        return ["float", "bounded", "euro", "range", "int", "string", "isoyear"];
+const store = {
+    getters: {
+        getPreviewValues: () => (activeCategory) => {
+            return {
+                "column1": ["1Y", "11Y"],
+                "column2": ["2,1", "22,1"]
+            };
+        },
+        getHarmonizedPreview: () => (column, missingValue) => null,
+        getTransformHeuristics: () => (activeCategory) => {
+            return ["float", "bounded", "euro", "range", "int", "string", "isoyear"];
+        },
+        getActiveHeuristic: () => (activeCategory) => null
     }
 };
+
 
 const props = {
     activeCategory: "category1"
@@ -22,17 +26,16 @@ describe("continuous-values-component", () => {
         it("correctly displays preview values provided by the store", () => {
                 cy.mount(annotContinuousValues, {
                     propsData: props,
-                    computed: getters,
+                    computed: store.getters,
                     plugins: ["vue-select"]
                 });
                 cy.get('.table').then(table => {
                     // TODO: find a pattern to iterate over the values directly
-                    expect(table).to.contain("val1");
-                    expect(table).to.contain("val11");
-                    expect(table).to.contain("val2");
-                    expect(table).to.contain("val22");
+                    expect(table).to.contain("1Y");
+                    expect(table).to.contain("11Y");
+                    expect(table).to.contain("2,1");
+                    expect(table).to.contain("22,1");
                 });
-
             }
         );
 
@@ -45,7 +48,7 @@ describe("continuous-values-component", () => {
 
                 cy.mount(annotContinuousValues, {
                     propsData: props,
-                    computed: getters,
+                    computed: store.getters,
                     mocks: {
                         $store: mockStore
                     },
@@ -53,7 +56,27 @@ describe("continuous-values-component", () => {
                 });
                 cy.get(".v-select").click();
                 cy.get(".v-select").find("li").contains('float').click();
-                cy.get("@dispatchSpy").should('have.been.calledWith', "setHeuristic", "float");
+                cy.get("@dispatchSpy").should('have.been.calledWith', "setHeuristic", "category1", "float");
+            }
+        );
+
+        it("applies a selected heuristic and previews transformed values", () => {
+                cy.mount(annotContinuousValues, {
+                        propsData: props,
+                        computed: Object.assign(store.getters, {
+                            getActiveHeuristic: () => (activeCategory) => "float",
+                            getHarmonizedPreview: () => (column, missingValue) => column + "-" + missingValue + "-harmonized"
+                        })
+                    }
+                );
+            cy.get(".v-select").contains("float");
+            cy.get('.table').then(table => {
+                // TODO: find a pattern to iterate over the values directly
+                expect(table).to.contain("column1-1Y-harmonized");
+                expect(table).to.contain("column1-11Y-harmonized");
+                expect(table).to.contain("column2-2,1-harmonized");
+                expect(table).to.contain("column2-22,1-harmonized");
+            });
             }
         );
     }
