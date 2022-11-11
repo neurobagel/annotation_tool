@@ -1,0 +1,19 @@
+name: Cypress component tests
+
+on: [push]
+
+jobs:
+  cypress-run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout 🔍
+        uses: actions/checkout@v2
+      # Install NPM dependencies, cache them correctly
+      # and run all Cypress End to End tests
+      - name: Run End to End tests 🧪
+        uses: cypress-io/github-action@v4
+        with:
+          build: npm run build
+          start: npm start
+          component: false
+
