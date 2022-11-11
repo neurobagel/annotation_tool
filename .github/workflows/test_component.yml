@@ -1,4 +1,4 @@
-name: Cypress Tests
+name: Component tests (Cypress)
 
 on: [push]
 
