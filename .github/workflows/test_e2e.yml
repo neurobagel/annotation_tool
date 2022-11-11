@@ -1,4 +1,4 @@
-name: Cypress component tests
+name: End to end tests (Cypress)
 
 on: [push]
 
