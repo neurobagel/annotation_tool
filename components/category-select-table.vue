@@ -1,58 +1,59 @@
 <template>
 
-    <b-container fluid>
-
-        <!-- Heading for category select component -->
-        <b-row>
-            <h3>{{ title }}</h3>
-        </b-row>
-
-        <!-- Instructions prompting the user how to link categories and columns -->
-        <b-row>
-            <p class="instructions-text">
-                {{ instructions }}
-            </p>
-        </b-row>
+    <div>
 
         <!-- Category selection table -->
-        <b-row>
-            <b-table
-                outlined
-                selectable
-                head-variant="dark"
-                :items="categoryTable"
-                @row-selected="selectCategory"
-                select-mode="single"
-                selected-variant=""
-                :tbody-tr-class="styleTableRow"
-                thead-class="hidden" />
+        <b-row class="no-padding-row">
+
+            <b-col cols="12" class="no-padding-col">
+                <b-table
+                    outlined
+                    selectable
+                    head-variant="dark"
+                    :items="categoryTable"
+                    @row-selected="selectCategory"
+                    select-mode="single"
+                    selected-variant=""
+                    :tbody-tr-class="styleTableRow"
+                    thead-class="hidden" />
+                <b-icon-plus-circle
+                    style="display: block; margin-left: auto; margin-right: auto;"
+                    @click="addCustomCategory" />
+            </b-col>
         </b-row>
 
-    </b-container>
+    </div>
 
 </template>
 
 <script>
 
+    // Allows for reference to store data by creating simple, implicit getters
+    import { mapGetters } from "vuex";
+
     export default {
-
-        props: {
-
-            categories: { type: Array, required: true },
-            categoryClasses: { type: Object, required: true },
-            instructions: { type: String, required: true },
-            title: { type: String, required: true }
-        },
 
         data() {
 
             return {
 
-                selectedCategory: this.categories[0]
+                selectedCategory: ""
             };
         },
 
+        created() {
+
+            // Set the first given category as the selected one
+            this.selectedCategory = this.categories[0];
+        },
+
         computed: {
+
+            ...mapGetters([
+
+                "categories",
+                "categoryClasses"
+            ]),
 
             categoryTable() {
 
