@@ -16,9 +16,6 @@
                     selected-variant=""
                     :tbody-tr-class="styleTableRow"
                     thead-class="hidden" />
-                <b-icon-plus-circle
-                    style="display: block; margin-left: auto; margin-right: auto;"
-                    @click="addCustomCategory" />
             </b-col>
         </b-row>
 
