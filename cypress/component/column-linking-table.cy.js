@@ -3,6 +3,8 @@ import ColumnLinkingTable from "~/components/column-linking-table.vue";
 // Documentation for testing Vue events of components
 // https://docs.cypress.io/guides/component-testing/events-vue
 
+// Mocks
+
 const store = {
 
     state: {
@@ -110,14 +112,11 @@ const props = {
     selectedCategory: "Subject ID"
 };
 
+// Tests
 
 describe("Tests basic functionality of the table that links categories with data table columns", () => {
 
-    // setupStore();
-
-    it("Link and unlink one column from the currently selected category", () => {
-
-        console.log(JSON.stringify(store.state));
+    it("Link one column from the currently selected category", () => {
 
         // 1. Arrange - Set up the spy, mount the component, and bind the spy to it
         const onColumnNameSelectedSpy = cy.spy().as("onColumnNameSelectedSpy");
@@ -138,21 +137,59 @@ describe("Tests basic functionality of the table that links categories with data
         // 2. Action: Link the first column to the current category
         cy.get("[data-cy='column-linking-table-table'] tbody > :nth-child(1) > [aria-colindex='1']")
             .contains(store.state.dataTable.columns[0])
-            .click();
+            .click()
+            .then(() => {
 
-        // Link the first column to the first category
-        // This mimics the 'addColumnCategorization' mutation in the store
+                // This mimics the 'addColumnCategorization' mutation in the store
+                store.state.columnToCategoryMap[store.state.dataTable.columns[0]] = store.state.categories[0];
+            });
+
+        // 3. Assert - Make sure the column linking component emitted the correct column data
+        cy.get("@onColumnNameSelectedSpy").should("have.been.calledWith", {
+
+            column: store.state.dataTable.columns[0]
+        });
+    });
+
+    it("Unlink one column from the currently selected category", () => {
+
+        // 1. Arrange
+
+        // A. Make it as if the first column and first category have been linked
         store.state.columnToCategoryMap[store.state.dataTable.columns[0]] = store.state.categories[0];
 
-        // 3. Assert
+        // B. Set up the spy, mount the component, and bind the spy to it
+        const onColumnNameSelectedSpy = cy.spy().as("onColumnNameSelectedSpy");
+        cy.mount(ColumnLinkingTable, {
 
-        // A. Class of table row matches first color class
-        cy.get("[data-cy='column-linking-table-table'] tbody > :nth-child(1)")
-            .should("have.class", store.state.toolColorPalette.color1);
+            computed: store.getters,
 
-        // B. Make sure the column linking component emitted the correct column data
-        cy.get("@onColumnNameSelectedSpy").should(
-            "have.been.calledWith",
-            { column: store.state.dataTable.columns[0] });
+            listeners: {
+
+                "column-name-selected": onColumnNameSelectedSpy
+            },
+
+            plugins: ["bootstrap-vue"],
+
+            propsData: props
+        });
+
+        // 2. Action: Unlink the first column to the current category
+        cy.get("[data-cy='column-linking-table-table'] tbody > :nth-child(1) > [aria-colindex='1']")
+            .contains(store.state.dataTable.columns[0])
+            .click()
+            .then(() => {
+
+                // This mimics the 'removeColumnCategorization' mutation in the store
+                store.state.columnToCategoryMap[store.state.dataTable.columns[0]] = null;
+            });
+
+        // store.state.columnToCategoryMap[store.state.dataTable.columns[0]] = store.state.categories[0];
+
+        // 3. Assert - Make sure the column linking component emitted the correct column data
+        cy.get("@onColumnNameSelectedSpy").should("have.been.calledWith", {
+
+            column: store.state.dataTable.columns[0]
+        });
     });
 });
