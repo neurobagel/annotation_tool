@@ -16,15 +16,41 @@ const store = {
             "Assessment Tool"
         ],
 
-        categoryClasses: {},
+        categoryClasses: {
 
-        categoryToColorMap: {},
+            "Subject ID": "category-style-0",
+            "Age": "category-style-1",
+            "Sex": "category-style-2",
+            "Diagnosis": "category-style-3",
+            "Assessment Tool": "category-style-4"
+        },
 
-        columnToCategoryMap: {},
+        columnToCategoryMap: {
+
+            "participant_id": null,
+            "age": null,
+            "sex": null,
+            "group": null,
+            "group_dx": null,
+            "number_comorbid_dx": null,
+            "medload": null,
+            "iq": null,
+            "session": null
+        },
 
         dataDictionary: {
 
-            original: {}
+            original: {
+
+                "age": { "Description": "age of the participant" },
+                "sex": { "Description": "sex of the participant as reported by the participant" },
+                "group": { "Description": "diagnostic status determined by the study clinician at baseline" },
+                "group_dx": { "Description": "specific diagnosis determined by the study clinician at baseline" },
+                "number_comorbid_dx": { "Description": "a number of diagnoses comorbid with UD (e.g., GAD, PTSD)" },
+                "medload": { "Description": "reflects the number of dosage of psychotropic medications taken by participants. Higher numbers correspond to more medications and/or higher medication dosage " },
+                "iq": { "Description": "IQ derived based on the NART assessment." },
+                "session": { "Description": "scanning session" }
+            }
         },
 
         dataTable: {
@@ -41,7 +67,19 @@ const store = {
                 "iq",
                 "session"
             ],
-            original: []
+
+            original: [{
+
+                "participant_id": "",
+                "age": "",
+                "sex": "",
+                "group": "",
+                "group_dx": "",
+                "number_comorbid_dx": "",
+                "medload": "",
+                "iq": "",
+                "session": ""
+            }]
         },
 
         toolColorPalette: {
@@ -53,7 +91,6 @@ const store = {
             color5: "category-style-4",
             colorDefault: "category-style-default"
         }
-
     },
 
     getters: {}
@@ -73,90 +110,10 @@ const props = {
     selectedCategory: "Subject ID"
 };
 
-function setupColumnToCategoryMap() {
-
-    // NOTE: Map will be wiped if ever category data structures are re-initialized
-
-    // Only proceed if map is not yet created.
-    if ( Object.keys(store.state.columnToCategoryMap).length !== 0 )
-        return;
-
-    // Column to category map lists all columns as keys with default value of null
-    store.state.columnToCategoryMap =
-        Object.fromEntries(store.state.dataTable.columns.map((columnName) => [columnName, null]));
-}
-
-function setupDataTableAndDictionary() {
-
-    store.state.dataTable.original.push({});
-
-    for ( const column of store.state.dataTable.columns ) {
-
-        store.state.dataTable.original[0][column] = "";
-
-        store.state.dataDictionary.original[column] = { description: `${column} description text` };
-    }
-}
-
-// const plugins = ["bootstrap-vue", "vue-select"];
-
-function setupCategoryClasses() {
-
-    // 1. Get color keys from tool color palette
-    const colorKeys = Object.keys(store.state.toolColorPalette);
-
-    // 2. Create the category to color map
-    let assignedCategories = 0;
-    for ( let index = 0; index < store.state.categories.length &&
-            index < colorKeys.length; index++ ) {
-
-        // A. Stop when the default color key has been reached
-        if ( "colorDefault" === colorKeys[index] )
-            break;
-
-        // B. Map this category to color key
-        store.state.categoryToColorMap[store.state.categories[index]] = colorKeys[index];
-
-        // C. Keep track of how many categories have been assigned color keys
-        assignedCategories += 1;
-    }
-    // D. Issue warning if there are not enough color keys for the given category set
-    if ( store.state.categories.length > assignedCategories ) {
-        console.log("WARNING: Not all categories have been assigned color keys!");
-    }
-
-    // 4. Set up the category to CSS class map
-
-    // A. Create a map between category names and color classes
-    const mapArray = [];
-    for ( let index = 0; index < store.state.categories.length; index++ ) {
-
-        const category = store.state.categories[index];
-        const colorID = store.state.categoryToColorMap[category];
-        const colorClass = store.state.toolColorPalette[colorID];
-
-        mapArray.push([category, colorClass]);
-    }
-
-    // B. Save the new category to class map
-    store.state.categoryClasses = Object.fromEntries(mapArray);
-}
-
-function setupStore() {
-
-    // 1. Setup category classes in the mock store
-    setupCategoryClasses();
-
-    // 2. Setup data table for category-column linking
-    setupDataTableAndDictionary();
-
-    // 3. Setup column to category map based on data table
-    setupColumnToCategoryMap();
-}
 
 describe("Tests basic functionality of the table that links categories with data table columns", () => {
 
-    setupStore();
+    // setupStore();
 
     it("Link and unlink one column from the currently selected category", () => {
 
@@ -179,17 +136,21 @@ describe("Tests basic functionality of the table that links categories with data
         });
 
         // 2. Action: Link the first column to the current category
-        cy.get("[data-cy='column-linking-table-table'] tbody > tr:first-child > td")
+        cy.get("[data-cy='column-linking-table-table'] tbody > :nth-child(1) > [aria-colindex='1']")
             .contains(store.state.dataTable.columns[0])
             .click();
 
+        // Link the first column to the first category
+        // This mimics the 'addColumnCategorization' mutation in the store
+        store.state.columnToCategoryMap[store.state.dataTable.columns[0]] = store.state.categories[0];
+
         // 3. Assert
 
-        // A. color of table row matches first color class
-        cy.get("[data-cy='column-linking-table-table'] tbody > tr:first-child > td")
+        // A. Class of table row matches first color class
+        cy.get("[data-cy='column-linking-table-table'] tbody > :nth-child(1)")
             .should("have.class", store.state.toolColorPalette.color1);
 
-        // B. \
+        // B. Make sure the column linking component emitted the correct column data
         cy.get("@onColumnNameSelectedSpy").should(
             "have.been.calledWith",
             { column: store.state.dataTable.columns[0] });
