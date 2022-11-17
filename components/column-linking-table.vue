@@ -74,8 +74,6 @@
 
             setupColumnToCategoryTable() {
 
-                console.log("setupColumnToCategoryTable");
-
                 // 0. Check that there is at least a data table and data dictionary in the data store
                 if ( null === this.dataTable.original )
                     return;
@@ -133,13 +131,9 @@
                         }
                     }
                 }
-
-                console.log(`columnToCategoryTable: ${this.columnToCategoryTable}`);
             },
 
             styleTableRow(p_row, p_rowType) {
-
-                console.log(`columnToCategoryMap: ${JSON.stringify(this.columnToCategoryMap)}`);
 
                 // Check to see what category has been assigned to this row's column, if any
                 const assignedCategory = this.columnToCategoryMap[p_row.column];
