@@ -95,6 +95,11 @@ const store = {
         }
     },
 
+    actions: {
+
+        dispatch: (p_actionName, p_payload) => { }
+    },
+
     getters: {}
 };
 
@@ -119,14 +124,20 @@ describe("Tests basic functionality of the table that links categories with data
     it("Link one column from the currently selected category", () => {
 
         // 1. Arrange - Set up the spy, mount the component, and bind the spy to it
-        const onColumnNameSelectedSpy = cy.spy().as("onColumnNameSelectedSpy");
+        const onColumnNameClickedSpy = cy.spy().as("onColumnNameClickedSpy");
+        cy.spy(store.actions, "dispatch").as("dispatchSpy");
         cy.mount(ColumnLinkingTable, {
+
+            mocks: {
+
+                $store: store.actions
+            },
 
             computed: store.getters,
 
             listeners: {
 
-                "column-name-selected": onColumnNameSelectedSpy
+                "column-name-clicked": onColumnNameClickedSpy
             },
 
             plugins: ["bootstrap-vue"],
@@ -144,8 +155,17 @@ describe("Tests basic functionality of the table that links categories with data
                 store.state.columnToCategoryMap[store.state.dataTable.columns[0]] = store.state.categories[0];
             });
 
-        // 3. Assert - Make sure the column linking component emitted the correct column data
-        cy.get("@onColumnNameSelectedSpy").should("have.been.calledWith", {
+        // 3. Assert
+
+        // A. Make sure linking action is dispatched to the store
+        cy.get("@dispatchSpy").should("have.been.calledWith",
+
+            "linkColumnWithCategory",
+            { column: store.state.dataTable.columns[0], category: store.state.categories[0] }
+        );
+
+        // B. Make sure the column linking component emitted the correct column data
+        cy.get("@onColumnNameClickedSpy").should("have.been.calledWith", {
 
             column: store.state.dataTable.columns[0]
         });
@@ -159,14 +179,20 @@ describe("Tests basic functionality of the table that links categories with data
         store.state.columnToCategoryMap[store.state.dataTable.columns[0]] = store.state.categories[0];
 
         // B. Set up the spy, mount the component, and bind the spy to it
-        const onColumnNameSelectedSpy = cy.spy().as("onColumnNameSelectedSpy");
+        const onColumnNameClickedSpy = cy.spy().as("onColumnNameClickedSpy");
+        cy.spy(store.actions, "dispatch").as("dispatchSpy");
         cy.mount(ColumnLinkingTable, {
+
+            mocks: {
+
+                $store: store.actions
+            },
 
             computed: store.getters,
 
             listeners: {
 
-                "column-name-selected": onColumnNameSelectedSpy
+                "column-name-clicked": onColumnNameClickedSpy
             },
 
             plugins: ["bootstrap-vue"],
@@ -184,10 +210,17 @@ describe("Tests basic functionality of the table that links categories with data
                 store.state.columnToCategoryMap[store.state.dataTable.columns[0]] = null;
             });
 
-        // store.state.columnToCategoryMap[store.state.dataTable.columns[0]] = store.state.categories[0];
+        // 3. Assert
 
-        // 3. Assert - Make sure the column linking component emitted the correct column data
-        cy.get("@onColumnNameSelectedSpy").should("have.been.calledWith", {
+        // A. Make sure linking action is dispatched to the store
+        cy.get("@dispatchSpy").should("have.been.calledWith",
+
+            "unlinkColumnFromCategory",
+            { column: store.state.dataTable.columns[0] }
+        );
+
+        // B. Make sure the column linking component emitted the correct column data
+        cy.get("@onColumnNameClickedSpy").should("have.been.calledWith", {
 
             column: store.state.dataTable.columns[0]
         });
