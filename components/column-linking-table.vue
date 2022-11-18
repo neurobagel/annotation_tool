@@ -23,6 +23,9 @@
     // Fields listed in mapState below can be found in the store (index.js)
     import { mapState } from "vuex";
 
+    // Allows for reference to store actions (index.js)
+    import { mapActions } from "vuex";
+
     export default {
 
         props: {
@@ -66,10 +69,27 @@
 
         methods: {
 
+            ...mapActions([
+
+                "linkColumnWithCategory",
+                "unlinkColumnFromCategory"
+            ]),
+
             applyCategory(p_row, p_index, p_event) {
 
-                // Tell the parent page that a column has been linked with a category
-                this.$emit("column-name-selected", { column: p_row.column });
+                const dataForStore = { column: p_row.column };
+
+                // 1. Link or unlink the currently-selected category and the clicked column
+                if ( this.selectedCategory !== this.columnToCategoryMap[p_row.column] ) {
+
+                    this.linkColumnWithCategory({...dataForStore, category: this.selectedCategory});
+                } else {
+
+                    this.unlinkColumnFromCategory(dataForStore);
+                }
+
+                // 2. Tell the categorization page a column has been clicked
+                this.$emit("column-name-clicked", dataForStore);
             },
 
             setupColumnToCategoryTable() {
