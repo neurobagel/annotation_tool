@@ -3,17 +3,17 @@ import annotContinuousValues from "~/components/annot-continuous-values";
 
 const store = {
     getters: {
+        getActiveHeuristic: () => (activeCategory) => null,
+        getHarmonizedPreview: () => (column, missingValue) => null,
         getPreviewValues: () => (activeCategory) => {
             return {
                 "column1": ["1Y", "11Y"],
                 "column2": ["2,1", "22,1"]
             };
         },
-        getHarmonizedPreview: () => (column, missingValue) => null,
         getTransformHeuristics: () => (activeCategory) => {
             return ["float", "bounded", "euro", "range", "int", "string", "isoyear"];
-        },
-        getActiveHeuristic: () => (activeCategory) => null
+        }
     }
 };
 
