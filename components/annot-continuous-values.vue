@@ -7,7 +7,7 @@
         <b-card-body class="continuous-values-card-body">
 
             <v-select
-                :data-cy="selectTransform"
+                data-cy="selectTransform"
                 :options="transformChoices"
                 :value="getActiveHeuristic(this.activeCategory)"
                 @input="dispatchHeuristic($event)" />
@@ -16,6 +16,7 @@
                 hover
                 striped
                 id="annotation-table"
+                data-cy="dataTable"
                 :items="validationItems" />
 
         </b-card-body>

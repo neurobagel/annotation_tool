@@ -29,7 +29,7 @@ describe("continuous-values-component", () => {
                     computed: store.getters,
                     plugins: ["vue-select"]
                 });
-                cy.get('.table').then(table => {
+                cy.get("[data-cy='dataTable']").then(table => {
                     // TODO: find a pattern to iterate over the values directly
                     expect(table).to.contain("1Y");
                     expect(table).to.contain("11Y");
@@ -54,8 +54,8 @@ describe("continuous-values-component", () => {
                     },
                     plugins: ["vue-select"]
                 });
-                cy.get(".v-select").click();
-                cy.get(".v-select").find("li").contains('float').click();
+                cy.get("[data-cy='selectTransform']").click();
+                cy.get("[data-cy='selectTransform']").find("li").contains('float').click();
                 cy.get("@dispatchSpy").should('have.been.calledWith', "setHeuristic", "category1", "float");
             }
         );
@@ -69,8 +69,8 @@ describe("continuous-values-component", () => {
                         })
                     }
                 );
-            cy.get(".v-select").contains("float");
-            cy.get('.table').then(table => {
+            cy.get("[data-cy='selectTransform']").contains("float");
+            cy.get("[data-cy='dataTable']").then(table => {
                 // TODO: find a pattern to iterate over the values directly
                 expect(table).to.contain("column1-1Y-harmonized");
                 expect(table).to.contain("column1-11Y-harmonized");
