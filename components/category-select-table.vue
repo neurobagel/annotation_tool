@@ -1,58 +1,47 @@
 <template>
 
-    <b-container fluid>
-
-        <!-- Heading for category select component -->
-        <b-row>
-            <h3>{{ title }}</h3>
-        </b-row>
-
-        <!-- Instructions prompting the user how to link categories and columns -->
-        <b-row>
-            <p class="instructions-text">
-                {{ instructions }}
-            </p>
-        </b-row>
+    <div>
 
         <!-- Category selection table -->
-        <b-row>
-            <b-table
-                outlined
-                selectable
-                head-variant="dark"
-                :items="categoryTable"
-                @row-selected="selectCategory"
-                select-mode="single"
-                selected-variant=""
-                :tbody-tr-class="styleTableRow"
-                thead-class="hidden" />
+        <b-row class="no-padding-row">
+
+            <b-col cols="12" class="no-padding-col">
+                <b-table
+                    outlined
+                    selectable
+                    head-variant="dark"
+                    :items="categoryTable"
+                    @row-selected="selectCategory"
+                    select-mode="single"
+                    selected-variant=""
+                    :tbody-tr-class="styleTableRow"
+                    thead-class="hidden" />
+            </b-col>
         </b-row>
 
-    </b-container>
+    </div>
 
 </template>
 
 <script>
 
+    // Allows for reference to store data by creating simple, implicit getters
+    import { mapGetters } from "vuex";
+
     export default {
 
         props: {
 
-            categories: { type: Array, required: true },
-            categoryClasses: { type: Object, required: true },
-            instructions: { type: String, required: true },
-            title: { type: String, required: true }
-        },
-
-        data() {
-
-            return {
-
-                selectedCategory: this.categories[0]
-            };
+            selectedCategory: { type: String, required: true }
         },
 
         computed: {
+
+            ...mapGetters([
+
+                "categories",
+                "categoryClasses"
+            ]),
 
             categoryTable() {
 
@@ -68,11 +57,8 @@
                 // If a new category was selected...
                 if ( 0 !== p_row.length ) {
 
-                    // 1. Save the newly selected category, if given
-                    this.selectedCategory = p_row[0].category;
-
-                    // 2. Tell the parent page about the category selction
-                    this.$emit("category-select", { category: this.selectedCategory });
+                    // Tell the parent page about the category selction
+                    this.$emit("category-select", { category: p_row[0].category });
                 }
             },
 
