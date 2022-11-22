@@ -30,18 +30,9 @@
 
     export default {
 
-        data() {
+        props: {
 
-            return {
-
-                selectedCategory: ""
-            };
-        },
-
-        created() {
-
-            // Set the first given category as the selected one
-            this.selectedCategory = this.categories[0];
+            selectedCategory: { type: String, required: true }
         },
 
         computed: {
@@ -66,11 +57,8 @@
                 // If a new category was selected...
                 if ( 0 !== p_row.length ) {
 
-                    // 1. Save the newly selected category, if given
-                    this.selectedCategory = p_row[0].category;
-
-                    // 2. Tell the parent page about the category selction
-                    this.$emit("category-select", { category: this.selectedCategory });
+                    // Tell the parent page about the category selction
+                    this.$emit("category-select", { category: p_row[0].category });
                 }
             },
 
