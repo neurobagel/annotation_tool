@@ -100,35 +100,21 @@ describe("Tests basic functionality of the table that links categories with data
 
             computed: store.getters,
 
-            listeners: {
-
-                "column-name-clicked": onColumnNameClickedSpy
-            },
-
             plugins: ["bootstrap-vue"],
 
             propsData: props
         });
 
-        // 2. Action: Link the first column to the current category
+        // 2. Action - Link the first column to the current category
         cy.get("[data-cy='column-linking-table-table'] tbody > :nth-child(1) > [aria-colindex='1']")
             .contains(participantIDColumn)
             .click();
 
-        // 3. Assert
-
-        // A. Make sure linking action is dispatched to the store
+        // 3. Assert - Make sure linking action is dispatched to the store
         cy.get("@dispatchSpy").should("have.been.calledWith",
 
             "alterColumnCategoryRelation",
             { category: subjectIDCategory, column: participantIDColumn  }
         );
-
-        // B. Make sure the column linking component emitted the correct column data
-        cy.get("@onColumnNameClickedSpy").should("have.been.calledWith", {
-
-            category: subjectIDCategory,
-            column: participantIDColumn
-        });
     });
 });

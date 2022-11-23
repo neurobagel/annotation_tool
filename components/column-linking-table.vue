@@ -86,8 +86,8 @@
                 // 1. Link or unlink the currently-selected category and the clicked column
                 this.alterColumnCategoryRelation(payload);
 
-                // 2. Tell the categorization page a column has been clicked
-                this.$emit("column-name-clicked", payload);
+                // NOTE: Component emitted column linking info back to
+                // categorization page here for possible next page accessibility
             },
 
             styleTableRow(p_row, p_rowType) {
