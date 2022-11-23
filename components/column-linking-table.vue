@@ -4,11 +4,12 @@
 
         <!-- Category to column linking table -->
         <b-table
+            data-cy="column-linking-table-table"
             bordered
             outlined
-            :fields="fields"
+            :fields="uiText.tableFields"
             head-variant="dark"
-            :items="tableData"
+            :items="tableRows"
             @row-clicked="applyCategory"
             :tbody-tr-class="styleTableRow" />
 
@@ -18,23 +19,75 @@
 
 <script>
 
+    // Allows for reference to store actions (index.js)
+    import { mapActions } from "vuex";
+
+    // Allows for reference to store data by creating simple, implicit getters
+    import { mapGetters } from "vuex";
+
     export default {
 
         props: {
 
-            categoryClasses: { type: Object, required: true },
-            columnToCategoryMap: { type: Object, required: true },
-            fields: { type: Array, required: true },
-            selectedCategory: { type: String, required: true },
-            tableData: { type: Array, required: true }
+            selectedCategory: { type: String, required: true }
+        },
+
+        data() {
+
+            return {
+
+                uiText: {
+
+                    tableFields: [
+
+                        { key: "column" },
+                        { key: "description" },
+                        { key: "category" }
+                    ]
+                }
+            };
+        },
+
+        computed: {
+
+            ...mapGetters([
+
+                "categoryClasses",
+                "columns",
+                "columnToCategoryMap"
+            ]),
+
+            tableRows() {
+
+                return this.columns.map(column => ({
+
+                    category: this.columnToCategoryMap[column],
+                    column: column.name,
+                    description: column.description
+                }));
+            }
         },
 
         methods: {
 
+            ...mapActions([
+
+                "alterColumnCategoryRelation"
+            ]),
+
             applyCategory(p_row, p_index, p_event) {
 
-                // Tell the parent page that a column has been linked with a category
-                this.$emit("column-name-selected", { column: p_row.column });
+                const payload = {
+
+                    category: this.selectedCategory,
+                    column: p_row.column
+                };
+
+                // 1. Link or unlink the currently-selected category and the clicked column
+                this.alterColumnCategoryRelation(payload);
+
+                // NOTE: Component emitted column linking info back to
+                // categorization page here for possible next page accessibility
             },
 
             styleTableRow(p_row, p_rowType) {
