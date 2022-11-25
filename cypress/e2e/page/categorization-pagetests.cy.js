@@ -31,14 +31,7 @@ describe("tests on categorization page ui via programmatic state loading and sto
                 // 2. Load test data
                 cy.loadTestDataIntoStore(p_dataset);
 
-                // 3. Enable access to the categorization page
-                cy.dispatchToNuxtStore("initializePage", {
-
-                    enable: true,
-                    pageName: "categorization"
-                });
-
-                // 4. Move to categorization page
+                // 3. Move to categorization page
                 // NOTE: Routing to the page prevents the Vuex store from being wiped
                 // when a page is 'visited' by Cypress
                 cy.window().its("$nuxt.$router").then(router => {

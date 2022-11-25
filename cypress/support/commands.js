@@ -152,7 +152,7 @@ Cypress.Commands.add("loadAppState", (p_pageName, p_dataset, p_pageData) => {
             for ( let index = 0; index < columnCount; index++ ) {
 
                 // A. Link the column to this category
-                cy.dispatchToNuxtStore("linkColumnWithCategory", {
+                cy.dispatchToNuxtStore("alterColumnCategoryRelation", {
 
                     category: category,
                     column: p_dataset["category_columns"][category][index]
@@ -187,14 +187,6 @@ Cypress.Commands.add("loadAppState", (p_pageName, p_dataset, p_pageData) => {
                 });
             }
         }
-
-        // 3. Call page initialization store function for the annotation page
-        cy.dispatchToNuxtStore("initializePage", {
-
-            pageName: "annotation",
-            enable: true
-        });
-
     } else if ( "download" == p_pageName ) {
 
         // Load state for download page
