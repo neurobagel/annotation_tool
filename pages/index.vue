@@ -10,8 +10,8 @@
         <!-- Shows file contents -->
         <b-row>
             <textarea
-                :rows="textArea.width"
                 :cols="textArea.height"
+                :rows="textArea.width"
                 v-model="stringifiedDataTable" />
         </b-row>
 
@@ -32,8 +32,8 @@
         <!-- Shows file contents -->
         <b-row>
             <textarea
-                :rows="textArea.width"
                 :cols="textArea.height"
+                :rows="textArea.width"
                 v-model="stringifiedDataDictionary" />
         </b-row>
 
@@ -45,30 +45,17 @@
                 @file-selected="saveDataDictionary($event)" />
         </b-row>
 
-        <b-row>
-
-            <b-col cols="9" />
-
-            <!-- Button to proceed to the next page -->
-            <!-- Only enabled when file content has been loaded -->
-            <b-col cols="3">
-                <b-button
-                    class="float-right"
-                    data-cy="button-nextpage"
-                    :disabled="!pageData.categorization.accessible"
-                    :to="'/' + pageData.categorization.location"
-                    :variant="nextPageButtonColor">
-                    {{ uiText.nextButton }}
-                </b-button>
-            </b-col>
-
-        </b-row>
-
     </b-container>
 
 </template>
 
 <script>
+
+    // Allows for calls to store actions
+    import { mapActions } from "vuex";
+
+    // Allows for direct mutations of store data
+    import { mapMutations } from "vuex";
 
     // Allows for reference to store data by creating simple, implicit getters
     import { mapState } from "vuex";
@@ -91,16 +78,15 @@
                 // Size of the file display textboxes
                 textArea: {
 
-                    width: 5,
-                    height: 200
+                    height: 200,
+                    width: 5
                 },
 
                 // Text for UI elements
                 uiText: {
 
                     dataTableHeader: "Data table",
-                    dataDictionaryHeader: "Data dictionary",
-                    nextButton: "Next step: Categorize columns"
+                    dataDictionaryHeader: "Data dictionary"
                 }
             };
         },
@@ -114,16 +100,11 @@
                 "pageData"
             ]),
 
-            nextPageButtonColor() {
-
-                // Bootstrap variant color of the button leading to the categorization page
-                return this.pageData.categorization.accessible ? "success" : "secondary";
-            },
-
             stringifiedDataDictionary() {
 
                 // 0. Return a blank string if there is no loaded data dictionary file
                 if ( !this.$store.getters.isDataDictionaryLoaded ) {
+
                     return "";
                 }
 
@@ -136,6 +117,7 @@
 
                 // 0. Return a blank string is there is no loaded data table
                 if ( !this.$store.getters.isDataTableLoaded ) {
+
                     return "";
                 }
 
@@ -143,6 +125,7 @@
                 // NOTE: Defaults to tsv for now
                 const textAreaArray = [Object.keys(this.dataTable.original[0]).join("\t")];
                 for ( let index = 0; index < Object.keys(this.dataTable.original[0]).length; index++ ) {
+
                     textAreaArray.push(Object.values(this.dataTable.original[index]).join("\t"));
                 }
 
@@ -153,25 +136,29 @@
 
         mounted() {
 
-            // 1. Set the current page name
-            this.$store.dispatch("setCurrentPage", "home");
-
-            // 2. If a data table has been loaded,
-            // enable access to the categorization page and perform setup actions for it
-            this.$store.dispatch("initializePage", {
-
-                pageName: "categorization",
-                enable: this.$store.getters.isDataTableLoaded
-            });
+            // Set the current page name
+            this.setCurrentPage("home");
         },
 
         methods: {
+
+            ...mapActions([
+
+                "saveDataDictionary",
+                "saveDataTable"
+            ]),
+
+            ...mapMutations([
+
+                "createColumnToCategoryMap",
+                "setCurrentPage"
+            ]),
 
             saveDataDictionary(p_fileData) {
 
                 // Update the store with json file data
                 // NOTE: Defaults to json for now
-                this.$store.dispatch("saveDataDictionary", {
+                this.saveDataDictionary({
 
                     data: p_fileData.data,
                     filename: p_fileData.filename,
@@ -183,19 +170,15 @@
 
                 // 1. Update the store with tsv file data
                 // NOTE: Defaults to tsv for now
-                this.$store.dispatch("saveDataTable", {
+                this.saveDataTable({
 
                     data: ( 0 === p_fileData.data.length ) ? null : p_fileData.data,
                     filename: p_fileData.filename,
                     fileType: "tsv"
                 });
 
-                // 2. Enable access to the categorization page and perform setup actions for it
-                this.$store.dispatch("initializePage", {
-
-                    pageName: "categorization",
-                    enable: true
-                });
+                // 2. Create a new map for linking table columns to annotation categories
+                this.createColumnToCategoryMap();
             }
         }
     };
