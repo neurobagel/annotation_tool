@@ -75,12 +75,6 @@
             };
         },
 
-        mounted() {
-
-            // Create a reverse of the column to category map in the store
-            this.refreshCategoryToColumnMap();
-        },
-
         computed: {
 
             ...mapGetters([
