@@ -203,11 +203,12 @@
                 for ( const groupName in this.toolGroups ) {
 
                     // NOTE: Availability suffix string should be in store?
-                    const columnName = groupName + "_avail";
+                    const column = groupName + "_avail";
 
                     // Only include tool group names that are available for this subject
-                    if ( true === p_row[columnName] ) {
-                        subjectJSON["assessment_tool"].push(columnName);
+                    if ( true === p_row[column] ) {
+
+                        subjectJSON["assessment_tool"].push(column);
                     }
                 }
 

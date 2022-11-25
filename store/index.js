@@ -221,11 +221,6 @@ export const actions = {
 
     // Tool navigation
 
-    enablePageNavigation(p_context, p_navData) {
-
-        p_context.commit("setPageNavigationAccess", p_navData);
-    },
-
     // Landing page actions
 
     saveDataDictionary(p_context, p_newFileData) {
@@ -286,11 +281,6 @@ export const actions = {
         p_context.commit("changeToolGroup", p_toolGroupData);
     },
 
-    removeToolFromGroup(p_context, p_data) {
-
-        p_context.commit("deleteToolFromGroup", p_data);
-    },
-
     removeToolGroup(p_context, p_toolGroupData) {
 
         p_context.commit("deleteToolGroup", p_toolGroupData);
@@ -298,7 +288,7 @@ export const actions = {
 
     // Annotation page actions
 
-    revertColumnToOriginal(p_context, p_columnName) {
+    revertColumnToOriginal(p_context, p_column) {
 
         // NOTE: Reverts a column of annotated data to its original set of values
         // Currently used when a user decouples a column from a category,
@@ -308,20 +298,15 @@ export const actions = {
         // Gather original table column values in row-order
         const originalValues = [];
         for ( let index = 0; index < p_context.state.dataTable.original.length; index++ ){
-            originalValues.push(p_context.state.dataTable.original[index][p_columnName]);
+            originalValues.push(p_context.state.dataTable.original[index][p_column]);
         }
 
         p_context.commit("changeColumnValues", {
 
-            columnName: p_columnName,
+            column: p_column,
             tableToChange: p_context.state.dataTable.annotated,
             newValues: originalValues
         });
-    },
-
-    saveAnnotatedDataTable(p_context, p_newTable) {
-
-        p_context.commit("setAnnotatedDataTable", p_newTable);
     },
 
     saveMissingColumnValues(p_context, p_missingColumnValues) {
@@ -339,7 +324,7 @@ export const mutations = {
 
         // Column to category map lists all columns as keys with default value of null
         p_state.columnToCategoryMap =
-            Object.fromEntries(p_state.dataTable.columns.map((columnName) => [columnName, null]));
+            Object.fromEntries(p_state.dataTable.columns.map((column) => [column, null]));
     },
 
     setupAnnotationDetails(p_state, p_details) {
@@ -394,12 +379,6 @@ export const mutations = {
 
     // Tool navigation
 
-    setPageNavigationAccess(p_state, p_navData) {
-
-        // Enable or disable access to this page
-        p_state.pageData[p_navData.pageName].accessible = p_navData.enable;
-    },
-
     setCurrentPage(p_state, p_pageName) {
 
         // Set the current page for the layout navbar
@@ -440,10 +419,10 @@ export const mutations = {
 
     // Categorization page
 
-    addColumnCategorization(p_state, p_columnName, p_category) {
+    addColumnCategorization(p_state, p_column, p_category) {
 
         // Save the categorization-column link in the annotated table
-        p_state.columnToCategoryMap[p_columnName] = p_category;
+        p_state.columnToCategoryMap[p_column] = p_category;
     },
 
     changeToolGroup(p_state, p_toolGroupData) {
@@ -472,10 +451,10 @@ export const mutations = {
         p_state.annotationDetails.splice(groupIndex, 1);
     },
 
-    removeColumnCategorization(p_state, p_columnName) {
+    removeColumnCategorization(p_state, p_column) {
 
         // Disassociate the column with this category it was linked to
-        p_state.columnToCategoryMap[p_columnName] = null;
+        p_state.columnToCategoryMap[p_column] = null;
     },
 
     deleteToolFromGroup(p_state, p_data) {
@@ -511,7 +490,8 @@ export const mutations = {
 
         // Change the values in the given table's column
         for ( let index = 0; index < p_changeInfo.tableToChange.length; index++ ) {
-            p_changeInfo.tableToChange[index][p_changeInfo.columnName] = p_changeInfo.newValues[index];
+
+            p_changeInfo.tableToChange[index][p_changeInfo.column] = p_changeInfo.newValues[index];
         }
     },
 
@@ -541,21 +521,21 @@ export const mutations = {
 // Getters - Give access to state data
 export const getters = {
 
-    columnDescription: (p_state) => (p_columnName) => {
+    columnDescription: (p_state) => (p_column) => {
 
         // 0. If we do not have a data dictionary then the column description is undefined (e.g. 'null')
         let columnDescription = null;
 
         // 1. Find the description for this column in the data dictionary
-        if ( null !== p_state.dataDictionary.original && Object.keys(p_state.dataDictionary.original).includes(p_columnName) ) {
+        if ( null !== p_state.dataDictionary.original && Object.keys(p_state.dataDictionary.original).includes(p_column) ) {
 
             // A. Get dictionary's description string for this column
-            const dictionaryDescStr = Object.keys(p_state.dataDictionary.original[p_columnName]).find(
+            const dictionaryDescStr = Object.keys(p_state.dataDictionary.original[p_column]).find(
                 (key) => key.toLowerCase() === "description");
 
             // B. Get the column description if the description key was found
             if ( dictionaryDescStr ) {
-                columnDescription = p_state.dataDictionary.original[p_columnName][dictionaryDescStr];
+                columnDescription = p_state.dataDictionary.original[p_column][dictionaryDescStr];
             }
         }
 
@@ -598,13 +578,13 @@ export const getters = {
         return toolGroup;
     },
 
-    getOriginalColumnValue: (p_state) => (p_subjectID, p_columnName) => {
+    getOriginalColumnValue: (p_state) => (p_subjectID, p_column) => {
 
         for ( let index = 0; index < p_state.dataTable.original.length; index++ ) {
 
             if ( p_subjectID === p_state.dataTable.original[index]["participant_id"] ) {
 
-                return p_state.dataTable.original[index][p_columnName];
+                return p_state.dataTable.original[index][p_column];
             }
         }
 
@@ -656,28 +636,28 @@ export const getters = {
         return ( null !== p_state.dataTable.original );
     },
 
-    isMissingValue: (p_state) => (p_columnName, p_value) => {
+    isMissingValue: (p_state) => (p_column, p_value) => {
 
         // Checks if a column-value combination is stored in the missingColumnValues object
         // and returns true if it is, false otherwise
-        // if no records are stored for the entire p_columnName, then also returns false
+        // if no records are stored for the entire p_column, then also returns false
 
-        if ( !Object.keys(p_state.missingColumnValues).includes(p_columnName) ) {
+        if ( !Object.keys(p_state.missingColumnValues).includes(p_column) ) {
 
             return false;
         }
 
-        return ( p_state.missingColumnValues[p_columnName].includes(p_value) );
+        return ( p_state.missingColumnValues[p_column].includes(p_value) );
     },
 
-    isToolGrouped: (p_state) => (p_columnName) => {
+    isToolGrouped: (p_state) => (p_column) => {
 
         let foundTool = false;
 
         // Look for tool name in the saved tool groups
         for ( const groupName in p_state.toolGroups ) {
 
-            if ( p_state.toolGroups[groupName].includes(p_columnName) ) {
+            if ( p_state.toolGroups[groupName].includes(p_column) ) {
                 foundTool = true;
                 break;
             }
@@ -686,15 +666,15 @@ export const getters = {
         return foundTool;
     },
 
-    getMissingValuesColumn: (p_state) => (p_columnName) => {
+    getMissingValuesColumn: (p_state) => (p_column) => {
 
         // For a given column name returns the array of missing values the state knows about
         // or returns null if no missing values are stored for this column name
 
-        if ( !Object.keys(p_state.missingColumnValues).includes(p_columnName) ) {
+        if ( !Object.keys(p_state.missingColumnValues).includes(p_column) ) {
             return null;
         } else {
-            return p_state.missingColumnValues[p_columnName];
+            return p_state.missingColumnValues[p_column];
         }
     },
 
@@ -808,27 +788,27 @@ export const getters = {
         return pageAccessible;
     },
 
-    valueDescription: (p_state) => (p_columnName, p_value) => {
+    valueDescription: (p_state) => (p_column, p_value) => {
 
         // 0. If we do not have a data dictionary then the value description is undefined (e.g. "")
         let valueDescription = "";
 
         // 1. Find the description for this column's value in the data dictionary
-        if ( null !== p_state.dataDictionary.original && Object.keys(p_state.dataDictionary.original).includes(p_columnName) ) {
+        if ( null !== p_state.dataDictionary.original && Object.keys(p_state.dataDictionary.original).includes(p_column) ) {
 
             // A. Get dictionary's levels string for this column
-            const dictionaryLevelsStr = Object.keys(p_state.dataDictionary.original[p_columnName]).find((key) => key.toLowerCase() === "levels");
+            const dictionaryLevelsStr = Object.keys(p_state.dataDictionary.original[p_column]).find((key) => key.toLowerCase() === "levels");
 
             // B. Attempt to get the value string in this 'levels' object
             if ( dictionaryLevelsStr ) {
 
                 // I. Get the dictionary's value string for this column's value
-                const dictionaryValueStr = Object.keys(p_state.dataDictionary.original[p_columnName][dictionaryLevelsStr]).find(
+                const dictionaryValueStr = Object.keys(p_state.dataDictionary.original[p_column][dictionaryLevelsStr]).find(
                     (key) => key.toLowerCase() === p_value.toLowerCase());
 
                 // II. Get the value description
                 if ( dictionaryValueStr ) {
-                    valueDescription = p_state.dataDictionary.original[p_columnName][dictionaryLevelsStr][dictionaryValueStr];
+                    valueDescription = p_state.dataDictionary.original[p_column][dictionaryLevelsStr][dictionaryValueStr];
                 }
             }
         }
