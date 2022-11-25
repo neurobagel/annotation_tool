@@ -9,6 +9,8 @@ export const state = () => ({
 
     currentPage: "home",
 
+    columns: [],
+
     pageData: {
 
         home: {
@@ -130,6 +132,9 @@ export const state = () => ({
     // The string label applied to values designated as "missing values" when the data are annotated.
     missingValueLabel: "missing value",
 
+    // Counter for the number of annotations that have been done
+    annotationCount: 0,
+
     // Keeps track of textual- and component-related information for the annotation of each category
     // See action nuxtServerInit() for initialization code
     annotationDetails: [],
@@ -147,11 +152,6 @@ export const state = () => ({
 export const actions = {
 
     // Initializations
-
-    createColumnToCategoryMap(p_context) {
-
-        p_context.commit("setupColumnToCategoryMap");
-    },
 
     initializeAnnotationDetails(p_context, p_details) {
 
@@ -226,33 +226,6 @@ export const actions = {
         p_context.commit("setPageNavigationAccess", p_navData);
     },
 
-    initializePage(p_context, p_navData) {
-
-        // 1. Unlock the given page
-        p_context.dispatch("enablePageNavigation", p_navData);
-
-        // 2. Perform the setup actions for the given page
-        switch ( p_navData.pageName ) {
-
-            case "categorization":
-
-                // Create the new annotated table for categorization now that access is enabled
-                p_context.dispatch("createColumnToCategoryMap");
-                break;
-
-            case "annotation":
-                break;
-
-            case "download":
-                break;
-        }
-    },
-
-    setCurrentPage(p_context, p_pageDataKey) {
-
-        p_context.commit("setCurrentPageNav", p_pageDataKey);
-    },
-
     // Landing page actions
 
     saveDataDictionary(p_context, p_newFileData) {
@@ -288,14 +261,19 @@ export const actions = {
 
     // Categorization page actions
 
-    linkColumnWithCategory(p_context, p_linkingData) {
+    alterColumnCategoryRelation(p_context, p_relationData) {
 
-        // Commit the new data to the store
-        p_context.commit("addColumnCategorization", {
+        // Category not set or categor is not the same as input category
+        if ( null === p_context.state.columnToCategoryMap[p_relationData.column] ||
+             p_relationData.category !== p_context.state.columnToCategoryMap[p_relationData.column] ) {
 
-            column: p_linkingData.column,
-            category: p_linkingData.category
-        });
+            p_context.commit("addColumnCategorization", p_relationData.column, p_relationData.category);
+        }
+        // Else, category is the same as input category
+        else {
+
+            p_context.commit("removeColumnCategorization", p_relationData.column);
+        }
     },
 
     createToolGroup(p_context, p_toolGroupData) {
@@ -316,11 +294,6 @@ export const actions = {
     removeToolGroup(p_context, p_toolGroupData) {
 
         p_context.commit("deleteToolGroup", p_toolGroupData);
-    },
-
-    unlinkColumnFromCategory(p_context, p_linkingData) {
-
-        p_context.commit("removeColumnCategorization", p_linkingData.column);
     },
 
     // Annotation page actions
@@ -361,6 +334,13 @@ export const actions = {
 export const mutations = {
 
     // Initialization
+
+    createColumnToCategoryMap(p_state) {
+
+        // Column to category map lists all columns as keys with default value of null
+        p_state.columnToCategoryMap =
+            Object.fromEntries(p_state.dataTable.columns.map((columnName) => [columnName, null]));
+    },
 
     setupAnnotationDetails(p_state, p_details) {
 
@@ -412,19 +392,6 @@ export const mutations = {
         p_state.categoryClasses = Object.fromEntries(mapArray);
     },
 
-    setupColumnToCategoryMap(p_state) {
-
-        // NOTE: Map will be wiped if ever category data structures are re-initialized
-
-        // Only proceed if map is not yet created.
-        if ( Object.keys(p_state.columnToCategoryMap).length !== 0 )
-            return;
-
-        // Column to category map lists all columns as keys with default value of null
-        p_state.columnToCategoryMap =
-            Object.fromEntries(p_state.dataTable.columns.map((columnName) => [columnName, null]));
-    },
-
     // Tool navigation
 
     setPageNavigationAccess(p_state, p_navData) {
@@ -433,10 +400,10 @@ export const mutations = {
         p_state.pageData[p_navData.pageName].accessible = p_navData.enable;
     },
 
-    setCurrentPageNav(p_state, p_pageDataKey) {
+    setCurrentPage(p_state, p_pageName) {
 
         // Set the current page for the layout navbar
-        p_state.currentPage = p_pageDataKey;
+        p_state.currentPage = p_pageName;
     },
 
     // Landing page
@@ -473,10 +440,10 @@ export const mutations = {
 
     // Categorization page
 
-    addColumnCategorization(p_state, p_data) {
+    addColumnCategorization(p_state, p_columnName, p_category) {
 
         // Save the categorization-column link in the annotated table
-        p_state.columnToCategoryMap[p_data.column] = p_data.category;
+        p_state.columnToCategoryMap[p_columnName] = p_category;
     },
 
     changeToolGroup(p_state, p_toolGroupData) {
@@ -574,11 +541,6 @@ export const mutations = {
 // Getters - Give access to state data
 export const getters = {
 
-    categories(p_state) {
-
-        return p_state.categories;
-    },
-
     columnDescription: (p_state) => (p_columnName) => {
 
         // 0. If we do not have a data dictionary then the column description is undefined (e.g. 'null')
@@ -598,6 +560,15 @@ export const getters = {
         }
 
         return columnDescription;
+    },
+
+    columns(p_state, p_getters) {
+
+        return p_state.dataTable.columns.map(column => ({
+
+            name: column,
+            description: p_getters.columnDescription(column)
+        }));
     },
 
     getColumnsOfCategory: (p_state) => (p_category) => {
@@ -639,7 +610,6 @@ export const getters = {
 
         return null;
     },
-
 
     isColumnLinkedToCategory: (p_state) => (p_matchData) => {
 
@@ -728,6 +698,115 @@ export const getters = {
         }
     },
 
+    nextPage(p_state) {
+
+        let nextPage = "";
+
+        switch ( p_state.currentPage ) {
+
+            case "home":
+                nextPage = "categorization";
+                break;
+            case "categorization":
+                nextPage = "annotation";
+                break;
+            case "annotation":
+                nextPage = "download";
+                break;
+        }
+
+        return nextPage;
+    },
+
+    nextPageAccessible: (p_state, p_getters) => {
+
+        let nextPage = "";
+
+        switch ( p_state.currentPage ) {
+
+            case "home":
+                nextPage = "categorization";
+                break;
+            case "categorization":
+                nextPage = "annotation";
+                break;
+            case "annotation":
+                nextPage = "download";
+                break;
+        }
+
+        return p_getters.pageAccessible(nextPage);
+    },
+
+    pageAccessible: (p_state, p_getters) => (p_pageName) => {
+
+        let pageAccessible = false;
+
+        switch ( p_pageName ) {
+
+            case "home":
+
+                // Landing page is always accessible
+                pageAccessible = true;
+                break;
+
+            case "categorization":
+
+                // Categorization page is accessible if a data table has been uploaded
+                pageAccessible = p_getters.isDataTableLoaded;
+
+                break;
+
+            case "annotation": {
+
+                // 1. Determine if at least one column has been linked to a category
+                const linkCount = Object.values(p_state.columnToCategoryMap).filter(
+                    category => ( null !== category )).length;
+                const categorizationStatus = linkCount > 0;
+
+                // 2. Determine if all columns assigned the 'Assessment Tool' category have been grouped
+                const assessmentToolColumns = [];
+                for ( const column in p_state.columnToCategoryMap ) {
+                    if ( "Assessment Tool" === p_state.columnToCategoryMap[column] ) {
+                        assessmentToolColumns.push(column);
+                    }
+                }
+
+                // 3. Make sure all assessment tool columns are grouped
+                for ( const toolGroup in p_state.toolGroups ) {
+                    for ( const tool of p_state.toolGroups[toolGroup] ) {
+                        const columnIndex = assessmentToolColumns.indexOf(tool);
+                        assessmentToolColumns.splice(columnIndex, 1);
+                    }
+                }
+                const toolGroupingStatus = ( 0 === assessmentToolColumns.length );
+
+                // 4. Make sure one (and only one) column has been categorized as 'Subject ID'
+                let subjectIDFound = 0;
+                for ( const column in p_state.columnToCategoryMap ) {
+                    if ( "Subject ID" === p_state.columnToCategoryMap[column] ) {
+                        subjectIDFound += 1;
+                    }
+                }
+                const singleSubjectIDColumn = ( 1 === subjectIDFound );
+
+                // Annotation page is only accessible if at least one column has
+                // been categorized and all assessment tools have been grouped
+                // and if one (and only one) column has been categorized as 'Subject ID'
+                pageAccessible = categorizationStatus && toolGroupingStatus && singleSubjectIDColumn;
+
+                break;
+            }
+
+            case "download":
+
+                pageAccessible = p_state.annotationCount > 1;
+
+                break;
+        }
+
+        return pageAccessible;
+    },
 
     valueDescription: (p_state) => (p_columnName, p_value) => {
 
