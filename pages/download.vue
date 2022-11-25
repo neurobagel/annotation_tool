@@ -44,9 +44,6 @@
     // Allows for reference to store data by creating simple, implicit getters
     import { mapGetters } from "vuex";
 
-    // Allows for direct mutations of store data
-    import { mapMutations } from "vuex";
-
     // Fields listed in mapState below can be found in the store (index.js)
     import { mapState } from "vuex";
 
@@ -80,10 +77,7 @@
 
         mounted() {
 
-            // 1. Set the current page
-            this.setCurrentPage("download");
-
-            // 2. Create a reverse of the column to category map in the store
+            // Create a reverse of the column to category map in the store
             this.refreshCategoryToColumnMap();
         },
 
@@ -141,11 +135,6 @@
         },
 
         methods: {
-
-            ...mapMutations([
-
-                "setCurrentPage"
-            ]),
 
             downloadAnnotatedData() {
 

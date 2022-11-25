@@ -217,6 +217,9 @@ export const actions = {
 
         // 2. Setup annotation-related data structures based on the given categories\
         commit("setupAnnotationDetails", annotationDetails);
+
+        // 3. Set the current page as the landing page
+        commit("setCurrentPage", "home");
     },
 
     // Tool navigation

@@ -96,12 +96,6 @@
             ])
         },
 
-        mounted() {
-
-            // Set the current page name
-            this.setCurrentPage("annotation");
-        },
-
         methods: {
 
             ...mapActions([
@@ -114,7 +108,6 @@
                 "deleteToolFromGroup",
                 "removeColumnCategorization",
                 "setAnnotatedDataTable",
-                "setCurrentPage",
                 "setMissingColumnValues"
             ]),
 

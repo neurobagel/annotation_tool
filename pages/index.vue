@@ -134,12 +134,6 @@
             }
         },
 
-        mounted() {
-
-            // Set the current page name
-            this.setCurrentPage("home");
-        },
-
         methods: {
 
             ...mapActions([
@@ -150,8 +144,7 @@
 
             ...mapMutations([
 
-                "createColumnToCategoryMap",
-                "setCurrentPage"
+                "createColumnToCategoryMap"
             ]),
 
             saveDataDictionary(p_fileData) {

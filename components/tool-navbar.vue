@@ -26,7 +26,8 @@
                         :data-cy="'menu-item-' + navItem.pageName"
                         :disabled="!pageAccessible(navItem.pageName)"
                         :key="navItem.pageName"
-                        :to="navItem.location">
+                        :to="navItem.location"
+                        @click="setCurrentPage(navItem.pageName)">
                         {{ navItem.fullName }}
                     </b-nav-item>
 
@@ -44,6 +45,9 @@
 
     // Allows for reference to store data by creating simple, implicit getters
     import { mapGetters } from "vuex";
+
+    // Allows for direct mutations of store data
+    import { mapMutations } from "vuex";
 
     // Fields listed in mapState below can be found in the store (index.js)
     import { mapState } from "vuex";
@@ -82,6 +86,11 @@
         },
 
         methods: {
+
+            ...mapMutations([
+
+                "setCurrentPage"
+            ]),
 
             getNavItemColor(p_navItemData) {
 

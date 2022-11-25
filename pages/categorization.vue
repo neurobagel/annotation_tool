@@ -41,9 +41,6 @@
 
 <script>
 
-    // Allows for direct mutations of store data
-    import { mapMutations } from "vuex";
-
     // Fields listed in mapState below can be found in the store (index.js)
     import { mapState } from "vuex";
 
@@ -77,19 +74,11 @@
 
         mounted() {
 
-            // 1. Set the current page name
-            this.setCurrentPage("categorization");
-
-            // 2. Set selected category to the first category by default
+            // Set selected category to the first category by default
             this.setSelectedCategory(this.categories[0]);
         },
 
         methods: {
-
-            ...mapMutations([
-
-                "setCurrentPage"
-            ]),
 
             setSelectedCategory(p_category) {
 
