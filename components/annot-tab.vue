@@ -17,7 +17,7 @@
             :data-cy="(getAnnotationComponent(activeCategory) + '-' + activeCategory)"
             :active-category="activeCategory"
             :id-field="idField"
-            :title="title" />
+            :title="('annotate_' + activeCategory)" />
 
     </div>
 
@@ -32,14 +32,6 @@
 
         props: {
             activeCategory: { type: String, required: true }
-        },
-
-        data() {
-
-            return {
-
-                title: "hello"
-            };
         },
 
         computed: {
