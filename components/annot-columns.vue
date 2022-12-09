@@ -16,6 +16,7 @@
                     v-for="columnName of getMappedColumns(activeCategory)">
                     {{ columnName }} {{ getColumnDescription(columnName) }}
                     <b-button
+                        :data-cy="'remove_' + columnName"
                         variant="danger"
                         @click="removeColumn(columnName)">
                         {{ uiText.removeButton }}
@@ -31,7 +32,7 @@
 <script>
 
     // Allows for reference to store data by creating simple, implicit getters
-    import { mapGetters } from "vuex";
+    import { mapGetters, mapMutations } from "vuex";
 
     export default {
 
@@ -62,15 +63,9 @@
         },
 
         methods: {
-
-            removeColumn(columnName) {
-
-                // Trigger an unlinking of this column from its previously assigned category in the store
-                this.$emit("remove:column", {
-
-                    removedColumn: columnName
-                });
-            }
+            ...mapMutations([
+                "removeColumn"
+            ])
         }
     };
 

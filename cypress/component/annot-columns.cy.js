@@ -14,6 +14,9 @@ const store = {
         getColumnDescription: () => (columnName) => {
             return "descr_" + columnName;
         }
+    },
+    mutations: {
+        removeColumn: () => (columnName) => {}
     }
 };
 
@@ -35,6 +38,18 @@ describe("columns annotation", () =>  {
             cy.get("[data-cy='mappedColumns']").contains("descr_" + column);
         });
 
+    });
+    it("displays remove button and informs the store when a column is removed/unlinked at the click of the button", () => {
+        cy.spy(store, 'commit').as('commitSpy');
+        cy.mount(AnnotatePartAnnotatedColumns, {
+            computed: store.getters,
+            propsData: props,
+            mocks: {
+                $store: store
+            }
+        });
+        cy.get("[data-cy='remove_column2']").click();
+        cy.get("@commitSpy").should("have.been.calledOnceWith", "removeColumn", "column2");
     });
 });
 
