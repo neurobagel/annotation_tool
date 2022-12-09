@@ -10,10 +10,11 @@
         <b-card-body class="columns-card-body">
             <b-list-group>
                 <b-list-group-item
+                    data-cy="mappedColumns"
                     class="d-flex justify-content-between align-items-center"
                     :key="columnName"
-                    v-for="columnName of relevantColumns">
-                    {{ columnName }} {{ retrieveColumnDescription(columnName) }}
+                    v-for="columnName of getMappedColumns(activeCategory)">
+                    {{ columnName }} {{ getColumnDescription(columnName) }}
                     <b-button
                         variant="danger"
                         @click="removeColumn(columnName)">
@@ -29,14 +30,15 @@
 
 <script>
 
+    // Allows for reference to store data by creating simple, implicit getters
+    import { mapGetters } from "vuex";
+
     export default {
 
         props: {
 
-            relevantColumns: { type: Array, required: true }
+            activeCategory: { type: String, required: true }
         },
-
-        inject: ["columnDescription"],
 
         name: "AnnotatePartAnnotatedColumns",
 
@@ -52,6 +54,13 @@
             };
         },
 
+        computed: {
+            ...mapGetters([
+                "getMappedColumns",
+                "getColumnDescription"
+            ])
+        },
+
         methods: {
 
             removeColumn(columnName) {
@@ -61,15 +70,6 @@
 
                     removedColumn: columnName
                 });
-            },
-
-            retrieveColumnDescription(p_columnName) {
-
-                // Attempt to get the description of this column from the data dictionary
-                const columnDescription = this.columnDescription(p_columnName);
-
-                // Return the column description if it exists, otherwise return blank string
-                return ( null !== columnDescription ) ? ` - ${columnDescription}` : "";
             }
         }
     };
