@@ -1,4 +1,4 @@
-import AnnotatePartAnnotatedColumns from "~/components/annot-columns.vue";
+import annotColumns from "~/components/annot-columns.vue";
 
 
 const store = {
@@ -16,7 +16,7 @@ const store = {
         }
     },
     mutations: {
-        removeColumn: () => (columnName) => {}
+        removeColumn: () => (activeCategory, columnName) => {}
     }
 };
 
@@ -27,7 +27,7 @@ const props = {
 
 describe("columns annotation", () =>  {
     it("displays columns mapped to the current category and their descriptions", () => {
-        cy.mount(AnnotatePartAnnotatedColumns, {
+        cy.mount(annotColumns, {
             computed: store.getters,
             propsData: props
 
@@ -41,7 +41,7 @@ describe("columns annotation", () =>  {
     });
     it("displays remove button and informs the store when a column is removed/unlinked at the click of the button", () => {
         cy.spy(store, 'commit').as('commitSpy');
-        cy.mount(AnnotatePartAnnotatedColumns, {
+        cy.mount(annotColumns, {
             computed: store.getters,
             propsData: props,
             mocks: {
@@ -49,7 +49,7 @@ describe("columns annotation", () =>  {
             }
         });
         cy.get("[data-cy='remove_column2']").click();
-        cy.get("@commitSpy").should("have.been.calledOnceWith", "removeColumn", "column2");
+        cy.get("@commitSpy").should("have.been.calledOnceWith", "removeColumn", "someCategory", "column2");
     });
 });
 
