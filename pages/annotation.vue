@@ -20,10 +20,10 @@
         <client-only>
             <!-- This gives us built-in keyboard navigation! -->
             <b-tabs
-                data-cy="annotation-category-tabs"
                 card
                 pills
                 vertical
+                data-cy="annotation-category-tabs"
                 nav-wrapper-class="col-2"
                 v-model="tabNavTitle">
 
@@ -39,8 +39,8 @@
                             :title="tabTitle(details)"
                             @remove:column="unlinkColumnFromCategory($event)"
                             @remove:missingValue="removeMissingValue($event)"
-                            @update:dataTable="saveAnnotatedDataTable($event)"
-                            @update:missingColumnValues="saveMissingColumnValues($event)"
+                            @update:dataTable="setAnnotatedDataTable($event.transformedTable)"
+                            @update:missingColumnValues="setMissingColumnValues($event)"
                             @update:missingValue="addMissingValue($event)" />
                     </b-card-text>
 
@@ -49,36 +49,23 @@
             </b-tabs>
         </client-only>
 
-        <b-row>
-
-            <b-col cols="7" />
-
-            <!-- Button to proceed to the next page -->
-            <!-- Only enabled when at least one annotation table write has been done -->
-            <b-col cols="5">
-                <b-button
-                    data-cy="button-nextpage"
-                    class="float-right"
-                    :disabled="!pageData.download.accessible"
-                    :to="'/' + pageData.download.location"
-                    :variant="nextPageButtonColor">
-                    {{ uiText.nextButton }}
-                </b-button>
-            </b-col>
-
-        </b-row>
-
     </b-container>
 
 </template>
 
 <script>
 
-    // Fields listed in mapState below can be found in the store (index.js)
-    import { mapState } from "vuex";
+    // Allows for reference to store actions (index.js)
+    import { mapActions } from "vuex";
 
     // Allows for reference to store data by creating simple, implicit getters
     import { mapGetters } from "vuex";
+
+    // Allows for direct mutations of store data
+    import { mapMutations } from "vuex";
+
+    // Fields listed in mapState below can be found in the store (index.js)
+    import { mapState } from "vuex";
 
     export default {
 
@@ -88,13 +75,7 @@
 
             return {
 
-                tabNavTitle: 0,
-
-                // Text for UI elements
-                uiText: {
-
-                    nextButton: "Next step: Review and download harmonized data"
-                }
+                tabNavTitle: 0
             };
         },
 
@@ -102,67 +83,33 @@
 
             ...mapGetters([
 
-                "columnDescription",
                 "getGroupOfTool",
-                "isDataAnnotated",
-                "isMissingValue",
-                "isToolGrouped",
-                "valueDescription"
+                "isToolGrouped"
             ]),
 
             ...mapState([
 
                 "annotationDetails",
                 "categoryClasses",
-                "columnToCategoryMap",
-                "dataDictionary",
-                "dataTable",
-                "pageData",
                 "missingColumnValues",
-                "missingValueLabel",
                 "toolGroups"
-            ]),
-
-            nextPageButtonColor() {
-
-                // Bootstrap variant color of the button leading to the download page
-                return this.pageData.download.accessible ? "success" : "secondary";
-            }
-        },
-
-        provide() {
-
-            return {
-
-                // Getters
-                columnDescription: this.columnDescription,
-                isMissingValue: this.isMissingValue,
-                valueDescription: this.valueDescription,
-
-                // Store fields
-                columnToCategoryMap: this.columnToCategoryMap,
-                dataDictionary: this.dataDictionary,
-                dataTable: this.dataTable,
-                missingColumnValues: this.missingColumnValues,
-                missingValueLabel: this.missingValueLabel,
-                toolGroups: this.toolGroups
-            };
-        },
-
-        mounted() {
-
-            // 1. Set the current page name
-            this.$store.dispatch("setCurrentPage", "annotation");
-
-            // 2. If any data has been annotated, enable the download page and perform setup actions
-            this.$store.dispatch("initializePage", {
-
-                pageName: "download",
-                enable: this.isDataAnnotated
-            });
+            ])
         },
 
         methods: {
+
+            ...mapActions([
+
+                "revertColumnToOriginal"
+            ]),
+
+            ...mapMutations([
+
+                "deleteToolFromGroup",
+                "removeColumnCategorization",
+                "setAnnotatedDataTable",
+                "setMissingColumnValues"
+            ]),
 
             addMissingValue(p_event) {
 
@@ -199,7 +146,7 @@
                     columnMissingValues[p_event.column] = [p_event.value];
                 }
 
-                this.$store.dispatch("saveMissingColumnValues", columnMissingValues);
+                this.setMissingColumnValues(columnMissingValues);
             },
 
             removeMissingValue(p_event) {
@@ -217,28 +164,7 @@
                 }
 
                 // 2. Save the new missing value list for this column to the store
-                this.$store.dispatch("saveMissingColumnValues", missingValuesList);
-            },
-
-            saveAnnotatedDataTable(p_event) {
-
-                // 1. Save the annotated table in the store
-                this.$store.dispatch("saveAnnotatedDataTable", p_event.transformedTable);
-
-                // 2. Enable or disable the download page when the annotated data table has been written,
-                // depending on whether or not an annotation has occurred
-                this.$store.dispatch("initializePage", {
-
-                    pageName: "download",
-                    enable: this.isDataAnnotated
-                });
-            },
-
-            saveMissingColumnValues(p_event) {
-
-                // TODO: Document what this thing does and expects
-                // Save the algorithm and/or user-specified missing values to the store
-                this.$store.dispatch("saveMissingColumnValues", p_event);
+                this.setMissingColumnValues(missingValuesList);
             },
 
             tabStyle(p_details) {
@@ -267,17 +193,18 @@
             unlinkColumnFromCategory(p_event) {
 
                 // 1. Undo annotation for this column
-                this.$store.dispatch("revertColumnToOriginal", p_event.removedColumn);
+                this.revertColumnToOriginal(p_event.removedColumn);
 
                 // 2. Unlink this column from its currently-assigned category
-                this.$store.dispatch("unlinkColumnFromCategory", { column: p_event.removedColumn });
+                this.removeColumnCategorization(p_event.removedColumn);
 
                 // 3. If this column was a grouped tool, remove it from its group
                 if ( this.isToolGrouped(p_event.removedColumn) ) {
 
                     // A. Remove the tool from its group
                     const groupName = this.getGroupOfTool(p_event.removedColumn);
-                    this.$store.dispatch("removeToolFromGroup", {
+                    this.deleteToolFromGroup({
+
                         group: groupName,
                         tool: p_event.removedColumn
                     });
@@ -286,7 +213,7 @@
                     for ( const groupName in this.toolGroups ) {
                         if ( 0 === this.toolGroups[groupName].length ) {
 
-                            this.$store.dispatch("removeToolGroup", { name: groupName });
+                            this.deleteToolFromGroup({ name: groupName });
                         }
                     }
                 }

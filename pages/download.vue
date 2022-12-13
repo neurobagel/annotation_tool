@@ -24,8 +24,8 @@
             <!-- Only enabled when annotation has been at least partially completed -->
             <b-col cols="3">
                 <b-button
-                    data-cy="download-button"
                     class="float-right"
+                    data-cy="download-button"
                     :disabled="!isDataAnnotated"
                     :variant="downloadButtonColor"
                     @click="downloadAnnotatedData">
@@ -42,8 +42,10 @@
 <script>
 
     // Allows for reference to store data by creating simple, implicit getters
-    import { mapState } from "vuex";
     import { mapGetters } from "vuex";
+
+    // Fields listed in mapState below can be found in the store (index.js)
+    import { mapState } from "vuex";
 
     // Saves file to user's computer
     import { saveAs } from "file-saver";
@@ -56,15 +58,13 @@
 
             return {
 
-                categoryToColumnMap: {},
-
                 jsonSpacing: 4,
 
                 // Size of the file display textboxes
                 textArea: {
 
-                    width: 5,
-                    height: 800
+                    height: 800,
+                    width: 5
                 },
 
                 // Text for UI elements
@@ -90,6 +90,26 @@
                 "toolGroups"
             ]),
 
+            categoryToColumnMap() {
+
+                // Create a reverse lookup map of the columnToCategory map in the store
+                const categoryToColumnMap = {};
+                for ( const column in this.columnToCategoryMap ) {
+
+                    const category = this.columnToCategoryMap[column];
+
+                    // Categories may have multiple columns associated with them
+                    if ( !Object.keys(categoryToColumnMap).includes(category) ) {
+
+                        categoryToColumnMap[category] = [];
+                    }
+
+                    categoryToColumnMap[category].push(column);
+                }
+
+                return categoryToColumnMap;
+            },
+
             datasetName() {
 
                 // Dataset name is original data table filename with no extension
@@ -106,15 +126,6 @@
                 // Bootstrap variant color of the button leading to the output download
                 return this.isDataAnnotated ? "success" : "secondary";
             }
-        },
-
-        mounted() {
-
-            // 1. Set the current page
-            this.$store.dispatch("setCurrentPage", "download");
-
-            // 2. Create a reverse of the column to category map in the store
-            this.refreshCategoryToColumnMap();
         },
 
         methods: {
@@ -135,32 +146,6 @@
                 saveAs(blob, this.defaultOutputFilename);
             },
 
-            refreshCategoryToColumnMap() {
-
-                this.categoryToColumnMap = {};
-                for ( const column in this.columnToCategoryMap ) {
-
-                    const myCategory = this.columnToCategoryMap[column];
-
-                    // Categories may have multiple columns associated with them
-                    if ( !Object.keys(this.categoryToColumnMap).includes(myCategory) ) {
-                        this.categoryToColumnMap[myCategory] = [];
-                    }
-                    this.categoryToColumnMap[myCategory].push(column);
-                }
-            },
-
-            transformAnnotatedTableToJSON() {
-
-                // Transform the annotated data table into a new subject-centric JSON format for the output file
-                return {
-
-                    name: this.datasetName,
-                    type: "dataset",
-                    hasSamples: this.dataTable.annotated.map(row => this.transformAnnotatedRowToSubjectJSON(row))
-                };
-            },
-
             transformAnnotatedRowToSubjectJSON(p_row) {
 
                 // 0. Determine all columns of the original data that have been categorized
@@ -177,11 +162,13 @@
 
                 // B. Age
                 if ( availableCategories.includes("Age") ) {
+
                     subjectJSON["age"] = p_row[this.categoryToColumnMap["Age"][0]];
                 }
 
                 // C. Sex
                 if ( availableCategories.includes("Sex") ) {
+
                     subjectJSON["sex"] = p_row[this.categoryToColumnMap["Sex"][0]];
                 }
 
@@ -189,9 +176,8 @@
                 if ( availableCategories.includes("Diagnosis") ) {
 
                     // I. Create a list of values from the diagnosis columns in the annotated table row
-                    subjectJSON["diagnosis"] = this.categoryToColumnMap["Diagnosis"].map(column => {
-                        return {identifier: p_row[column]};
-                    })
+                    subjectJSON["diagnosis"] = this.categoryToColumnMap["Diagnosis"]
+                        .map(column => { return {identifier: p_row[column]}; })
                         .filter(value => this.missingValueLabel !== value.identifier);
                 }
 
@@ -199,16 +185,28 @@
                 subjectJSON["assessment_tool"] = [];
                 for ( const groupName in this.toolGroups ) {
 
-                    // Availability suffix string should be in store?
-                    const columnName = groupName + "_avail";
+                    // NOTE: Availability suffix string should be in store?
+                    const column = groupName + "_avail";
 
                     // Only include tool group names that are available for this subject
-                    if ( true === p_row[columnName] ) {
-                        subjectJSON["assessment_tool"].push(columnName);
+                    if ( true === p_row[column] ) {
+
+                        subjectJSON["assessment_tool"].push(column);
                     }
                 }
 
                 return subjectJSON;
+            },
+
+            transformAnnotatedTableToJSON() {
+
+                // Transform the annotated data table into a new subject-centric JSON format for the output file
+                return {
+
+                    name: this.datasetName,
+                    type: "dataset",
+                    hasSamples: this.dataTable.annotated.map(row => this.transformAnnotatedRowToSubjectJSON(row))
+                };
             }
         }
     };

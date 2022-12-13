@@ -9,6 +9,8 @@ export const state = () => ({
 
     currentPage: "home",
 
+    columns: [],
+
     pageData: {
 
         home: {
@@ -130,6 +132,9 @@ export const state = () => ({
     // The string label applied to values designated as "missing values" when the data are annotated.
     missingValueLabel: "missing value",
 
+    // Counter for the number of annotations that have been done
+    annotationCount: 0,
+
     // Keeps track of textual- and component-related information for the annotation of each category
     // See action nuxtServerInit() for initialization code
     annotationDetails: [],
@@ -147,11 +152,6 @@ export const state = () => ({
 export const actions = {
 
     // Initializations
-
-    createColumnToCategoryMap(p_context) {
-
-        p_context.commit("setupColumnToCategoryMap");
-    },
 
     initializeAnnotationDetails(p_context, p_details) {
 
@@ -217,41 +217,12 @@ export const actions = {
 
         // 2. Setup annotation-related data structures based on the given categories\
         commit("setupAnnotationDetails", annotationDetails);
+
+        // 3. Set the current page as the landing page
+        commit("setCurrentPage", "home");
     },
 
     // Tool navigation
-
-    enablePageNavigation(p_context, p_navData) {
-
-        p_context.commit("setPageNavigationAccess", p_navData);
-    },
-
-    initializePage(p_context, p_navData) {
-
-        // 1. Unlock the given page
-        p_context.dispatch("enablePageNavigation", p_navData);
-
-        // 2. Perform the setup actions for the given page
-        switch ( p_navData.pageName ) {
-
-            case "categorization":
-
-                // Create the new annotated table for categorization now that access is enabled
-                p_context.dispatch("createColumnToCategoryMap");
-                break;
-
-            case "annotation":
-                break;
-
-            case "download":
-                break;
-        }
-    },
-
-    setCurrentPage(p_context, p_pageDataKey) {
-
-        p_context.commit("setCurrentPageNav", p_pageDataKey);
-    },
 
     // Landing page actions
 
@@ -288,14 +259,19 @@ export const actions = {
 
     // Categorization page actions
 
-    linkColumnWithCategory(p_context, p_linkingData) {
+    alterColumnCategoryRelation(p_context, p_relationData) {
 
-        // Commit the new data to the store
-        p_context.commit("addColumnCategorization", {
+        // Category not set or categor is not the same as input category
+        if ( null === p_context.state.columnToCategoryMap[p_relationData.column] ||
+             p_relationData.category !== p_context.state.columnToCategoryMap[p_relationData.column] ) {
 
-            column: p_linkingData.column,
-            category: p_linkingData.category
-        });
+            p_context.commit("addColumnCategorization", p_relationData.column, p_relationData.category);
+        }
+        // Else, category is the same as input category
+        else {
+
+            p_context.commit("removeColumnCategorization", p_relationData.column);
+        }
     },
 
     createToolGroup(p_context, p_toolGroupData) {
@@ -308,24 +284,14 @@ export const actions = {
         p_context.commit("changeToolGroup", p_toolGroupData);
     },
 
-    removeToolFromGroup(p_context, p_data) {
-
-        p_context.commit("deleteToolFromGroup", p_data);
-    },
-
     removeToolGroup(p_context, p_toolGroupData) {
 
         p_context.commit("deleteToolGroup", p_toolGroupData);
     },
 
-    unlinkColumnFromCategory(p_context, p_linkingData) {
-
-        p_context.commit("removeColumnCategorization", p_linkingData.column);
-    },
-
     // Annotation page actions
 
-    revertColumnToOriginal(p_context, p_columnName) {
+    revertColumnToOriginal(p_context, p_column) {
 
         // NOTE: Reverts a column of annotated data to its original set of values
         // Currently used when a user decouples a column from a category,
@@ -335,20 +301,15 @@ export const actions = {
         // Gather original table column values in row-order
         const originalValues = [];
         for ( let index = 0; index < p_context.state.dataTable.original.length; index++ ){
-            originalValues.push(p_context.state.dataTable.original[index][p_columnName]);
+            originalValues.push(p_context.state.dataTable.original[index][p_column]);
         }
 
         p_context.commit("changeColumnValues", {
 
-            columnName: p_columnName,
+            column: p_column,
             tableToChange: p_context.state.dataTable.annotated,
             newValues: originalValues
         });
-    },
-
-    saveAnnotatedDataTable(p_context, p_newTable) {
-
-        p_context.commit("setAnnotatedDataTable", p_newTable);
     },
 
     saveMissingColumnValues(p_context, p_missingColumnValues) {
@@ -361,6 +322,13 @@ export const actions = {
 export const mutations = {
 
     // Initialization
+
+    createColumnToCategoryMap(p_state) {
+
+        // Column to category map lists all columns as keys with default value of null
+        p_state.columnToCategoryMap =
+            Object.fromEntries(p_state.dataTable.columns.map((column) => [column, null]));
+    },
 
     setupAnnotationDetails(p_state, p_details) {
 
@@ -412,31 +380,12 @@ export const mutations = {
         p_state.categoryClasses = Object.fromEntries(mapArray);
     },
 
-    setupColumnToCategoryMap(p_state) {
-
-        // NOTE: Map will be wiped if ever category data structures are re-initialized
-
-        // Only proceed if map is not yet created.
-        if ( Object.keys(p_state.columnToCategoryMap).length !== 0 )
-            return;
-
-        // Column to category map lists all columns as keys with default value of null
-        p_state.columnToCategoryMap =
-            Object.fromEntries(p_state.dataTable.columns.map((columnName) => [columnName, null]));
-    },
-
     // Tool navigation
 
-    setPageNavigationAccess(p_state, p_navData) {
-
-        // Enable or disable access to this page
-        p_state.pageData[p_navData.pageName].accessible = p_navData.enable;
-    },
-
-    setCurrentPageNav(p_state, p_pageDataKey) {
+    setCurrentPage(p_state, p_pageName) {
 
         // Set the current page for the layout navbar
-        p_state.currentPage = p_pageDataKey;
+        p_state.currentPage = p_pageName;
     },
 
     // Landing page
@@ -473,10 +422,10 @@ export const mutations = {
 
     // Categorization page
 
-    addColumnCategorization(p_state, p_data) {
+    addColumnCategorization(p_state, p_column, p_category) {
 
         // Save the categorization-column link in the annotated table
-        p_state.columnToCategoryMap[p_data.column] = p_data.category;
+        p_state.columnToCategoryMap[p_column] = p_category;
     },
 
     changeToolGroup(p_state, p_toolGroupData) {
@@ -505,10 +454,10 @@ export const mutations = {
         p_state.annotationDetails.splice(groupIndex, 1);
     },
 
-    removeColumnCategorization(p_state, p_columnName) {
+    removeColumnCategorization(p_state, p_column) {
 
         // Disassociate the column with this category it was linked to
-        p_state.columnToCategoryMap[p_columnName] = null;
+        p_state.columnToCategoryMap[p_column] = null;
     },
 
     deleteToolFromGroup(p_state, p_data) {
@@ -544,7 +493,8 @@ export const mutations = {
 
         // Change the values in the given table's column
         for ( let index = 0; index < p_changeInfo.tableToChange.length; index++ ) {
-            p_changeInfo.tableToChange[index][p_changeInfo.columnName] = p_changeInfo.newValues[index];
+
+            p_changeInfo.tableToChange[index][p_changeInfo.column] = p_changeInfo.newValues[index];
         }
     },
 
@@ -574,30 +524,34 @@ export const mutations = {
 // Getters - Give access to state data
 export const getters = {
 
-    categories(p_state) {
-
-        return p_state.categories;
-    },
-
-    columnDescription: (p_state) => (p_columnName) => {
+    columnDescription: (p_state) => (p_column) => {
 
         // 0. If we do not have a data dictionary then the column description is undefined (e.g. 'null')
         let columnDescription = null;
 
         // 1. Find the description for this column in the data dictionary
-        if ( null !== p_state.dataDictionary.original && Object.keys(p_state.dataDictionary.original).includes(p_columnName) ) {
+        if ( null !== p_state.dataDictionary.original && Object.keys(p_state.dataDictionary.original).includes(p_column) ) {
 
             // A. Get dictionary's description string for this column
-            const dictionaryDescStr = Object.keys(p_state.dataDictionary.original[p_columnName]).find(
+            const dictionaryDescStr = Object.keys(p_state.dataDictionary.original[p_column]).find(
                 (key) => key.toLowerCase() === "description");
 
             // B. Get the column description if the description key was found
             if ( dictionaryDescStr ) {
-                columnDescription = p_state.dataDictionary.original[p_columnName][dictionaryDescStr];
+                columnDescription = p_state.dataDictionary.original[p_column][dictionaryDescStr];
             }
         }
 
         return columnDescription;
+    },
+
+    columns(p_state, p_getters) {
+
+        return p_state.dataTable.columns.map(column => ({
+
+            name: column,
+            description: p_getters.columnDescription(column)
+        }));
     },
 
     getColumnsOfCategory: (p_state) => (p_category) => {
@@ -627,19 +581,18 @@ export const getters = {
         return toolGroup;
     },
 
-    getOriginalColumnValue: (p_state) => (p_subjectID, p_columnName) => {
+    getOriginalColumnValue: (p_state) => (p_subjectID, p_column) => {
 
         for ( let index = 0; index < p_state.dataTable.original.length; index++ ) {
 
             if ( p_subjectID === p_state.dataTable.original[index]["participant_id"] ) {
 
-                return p_state.dataTable.original[index][p_columnName];
+                return p_state.dataTable.original[index][p_column];
             }
         }
 
         return null;
     },
-
 
     isColumnLinkedToCategory: (p_state) => (p_matchData) => {
 
@@ -686,28 +639,28 @@ export const getters = {
         return ( null !== p_state.dataTable.original );
     },
 
-    isMissingValue: (p_state) => (p_columnName, p_value) => {
+    isMissingValue: (p_state) => (p_column, p_value) => {
 
         // Checks if a column-value combination is stored in the missingColumnValues object
         // and returns true if it is, false otherwise
-        // if no records are stored for the entire p_columnName, then also returns false
+        // if no records are stored for the entire p_column, then also returns false
 
-        if ( !Object.keys(p_state.missingColumnValues).includes(p_columnName) ) {
+        if ( !Object.keys(p_state.missingColumnValues).includes(p_column) ) {
 
             return false;
         }
 
-        return ( p_state.missingColumnValues[p_columnName].includes(p_value) );
+        return ( p_state.missingColumnValues[p_column].includes(p_value) );
     },
 
-    isToolGrouped: (p_state) => (p_columnName) => {
+    isToolGrouped: (p_state) => (p_column) => {
 
         let foundTool = false;
 
         // Look for tool name in the saved tool groups
         for ( const groupName in p_state.toolGroups ) {
 
-            if ( p_state.toolGroups[groupName].includes(p_columnName) ) {
+            if ( p_state.toolGroups[groupName].includes(p_column) ) {
                 foundTool = true;
                 break;
             }
@@ -716,40 +669,149 @@ export const getters = {
         return foundTool;
     },
 
-    getMissingValuesColumn: (p_state) => (p_columnName) => {
+    getMissingValuesColumn: (p_state) => (p_column) => {
 
         // For a given column name returns the array of missing values the state knows about
         // or returns null if no missing values are stored for this column name
 
-        if ( !Object.keys(p_state.missingColumnValues).includes(p_columnName) ) {
+        if ( !Object.keys(p_state.missingColumnValues).includes(p_column) ) {
             return null;
         } else {
-            return p_state.missingColumnValues[p_columnName];
+            return p_state.missingColumnValues[p_column];
         }
     },
 
+    nextPage(p_state) {
 
-    valueDescription: (p_state) => (p_columnName, p_value) => {
+        let nextPage = "";
+
+        switch ( p_state.currentPage ) {
+
+            case "home":
+                nextPage = "categorization";
+                break;
+            case "categorization":
+                nextPage = "annotation";
+                break;
+            case "annotation":
+                nextPage = "download";
+                break;
+        }
+
+        return nextPage;
+    },
+
+    nextPageAccessible: (p_state, p_getters) => {
+
+        let nextPage = "";
+
+        switch ( p_state.currentPage ) {
+
+            case "home":
+                nextPage = "categorization";
+                break;
+            case "categorization":
+                nextPage = "annotation";
+                break;
+            case "annotation":
+                nextPage = "download";
+                break;
+        }
+
+        return p_getters.pageAccessible(nextPage);
+    },
+
+    pageAccessible: (p_state, p_getters) => (p_pageName) => {
+
+        let pageAccessible = false;
+
+        switch ( p_pageName ) {
+
+            case "home":
+
+                // Landing page is always accessible
+                pageAccessible = true;
+                break;
+
+            case "categorization":
+
+                // Categorization page is accessible if a data table has been uploaded
+                pageAccessible = p_getters.isDataTableLoaded;
+
+                break;
+
+            case "annotation": {
+
+                // 1. Determine if at least one column has been linked to a category
+                const linkCount = Object.values(p_state.columnToCategoryMap).filter(
+                    category => ( null !== category )).length;
+                const categorizationStatus = linkCount > 0;
+
+                // 2. Determine if all columns assigned the 'Assessment Tool' category have been grouped
+                const assessmentToolColumns = [];
+                for ( const column in p_state.columnToCategoryMap ) {
+                    if ( "Assessment Tool" === p_state.columnToCategoryMap[column] ) {
+                        assessmentToolColumns.push(column);
+                    }
+                }
+
+                // 3. Make sure all assessment tool columns are grouped
+                for ( const toolGroup in p_state.toolGroups ) {
+                    for ( const tool of p_state.toolGroups[toolGroup] ) {
+                        const columnIndex = assessmentToolColumns.indexOf(tool);
+                        assessmentToolColumns.splice(columnIndex, 1);
+                    }
+                }
+                const toolGroupingStatus = ( 0 === assessmentToolColumns.length );
+
+                // 4. Make sure one (and only one) column has been categorized as 'Subject ID'
+                let subjectIDFound = 0;
+                for ( const column in p_state.columnToCategoryMap ) {
+                    if ( "Subject ID" === p_state.columnToCategoryMap[column] ) {
+                        subjectIDFound += 1;
+                    }
+                }
+                const singleSubjectIDColumn = ( 1 === subjectIDFound );
+
+                // Annotation page is only accessible if at least one column has
+                // been categorized and all assessment tools have been grouped
+                // and if one (and only one) column has been categorized as 'Subject ID'
+                pageAccessible = categorizationStatus && toolGroupingStatus && singleSubjectIDColumn;
+
+                break;
+            }
+
+            case "download":
+
+                pageAccessible = p_state.annotationCount > 1;
+
+                break;
+        }
+
+        return pageAccessible;
+    },
+
+    valueDescription: (p_state) => (p_column, p_value) => {
 
         // 0. If we do not have a data dictionary then the value description is undefined (e.g. "")
         let valueDescription = "";
 
         // 1. Find the description for this column's value in the data dictionary
-        if ( null !== p_state.dataDictionary.original && Object.keys(p_state.dataDictionary.original).includes(p_columnName) ) {
+        if ( null !== p_state.dataDictionary.original && Object.keys(p_state.dataDictionary.original).includes(p_column) ) {
 
             // A. Get dictionary's levels string for this column
-            const dictionaryLevelsStr = Object.keys(p_state.dataDictionary.original[p_columnName]).find((key) => key.toLowerCase() === "levels");
+            const dictionaryLevelsStr = Object.keys(p_state.dataDictionary.original[p_column]).find((key) => key.toLowerCase() === "levels");
 
             // B. Attempt to get the value string in this 'levels' object
             if ( dictionaryLevelsStr ) {
 
                 // I. Get the dictionary's value string for this column's value
-                const dictionaryValueStr = Object.keys(p_state.dataDictionary.original[p_columnName][dictionaryLevelsStr]).find(
+                const dictionaryValueStr = Object.keys(p_state.dataDictionary.original[p_column][dictionaryLevelsStr]).find(
                     (key) => key.toLowerCase() === p_value.toLowerCase());
 
                 // II. Get the value description
                 if ( dictionaryValueStr ) {
-                    valueDescription = p_state.dataDictionary.original[p_columnName][dictionaryLevelsStr][dictionaryValueStr];
+                    valueDescription = p_state.dataDictionary.original[p_column][dictionaryLevelsStr][dictionaryValueStr];
                 }
             }
         }
