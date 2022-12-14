@@ -701,26 +701,6 @@ export const getters = {
         return nextPage;
     },
 
-    nextPageAccessible: (p_state, p_getters) => {
-
-        let nextPage = "";
-
-        switch ( p_state.currentPage ) {
-
-            case "home":
-                nextPage = "categorization";
-                break;
-            case "categorization":
-                nextPage = "annotation";
-                break;
-            case "annotation":
-                nextPage = "download";
-                break;
-        }
-
-        return p_getters.pageAccessible(nextPage);
-    },
-
     pageAccessible: (p_state, p_getters) => (p_pageName) => {
 
         let pageAccessible = false;

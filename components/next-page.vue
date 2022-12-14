@@ -66,7 +66,6 @@
             ...mapGetters([
 
                 "nextPage",
-                "nextPageAccessible",
                 "pageAccessible"
             ]),
 
@@ -79,7 +78,7 @@
             nextPageButtonColor() {
 
                 // Bootstrap variant color of the button leading to the next page
-                return this.nextPageAccessible ? "success" : "secondary";
+                return this.pageAccessible(this.nextPage) ? "success" : "secondary";
             }
         },
 
