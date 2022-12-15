@@ -12,6 +12,12 @@ export const getters = {
 
 export const mutations = {
     alterColumnCategoryMapping(p_state, activeCategory, columnName) {
-        p_state.columnToCategoryMapping[columnName] = activeCategory;
+        if (p_state.columnToCategoryMapping[columnName] === activeCategory) {
+            p_state.columnToCategoryMapping[columnName] = null;
+        }
+        else {
+            p_state.columnToCategoryMapping[columnName] = activeCategory;
+        }
+
     }
 };
