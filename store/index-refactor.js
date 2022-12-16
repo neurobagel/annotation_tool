@@ -2,10 +2,19 @@
 import Vue from "vue";
 
 export const state = () => ({
-    columnToCategoryMapping: {}
+    columnToCategoryMapping: {},
+    categories: {}
 });
 
 export const getters = {
+
+    getCategories (p_state) {
+        return [
+            "category1",
+            "category2",
+            "myCatIsCool"
+        ];
+    }
 
 };
 
