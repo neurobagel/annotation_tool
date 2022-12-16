@@ -18,7 +18,7 @@
                     <b-button
                         :data-cy="'remove_' + columnName"
                         variant="danger"
-                        @click="removeColumn(activeCategory, columnName)">
+                        @click="alterColumnCategoryMapping(activeCategory, columnName)">
                         {{ uiText.removeButton }}
                     </b-button>
                 </b-list-group-item>
@@ -41,7 +41,7 @@
             activeCategory: { type: String, required: true }
         },
 
-        name: "annotColumns",
+        name: "AnnotColumns",
 
         data() {
 
@@ -64,7 +64,7 @@
 
         methods: {
             ...mapMutations([
-                "removeColumn"
+                "alterColumnCategoryMapping"
             ])
         }
     };

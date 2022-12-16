@@ -19,8 +19,8 @@
 
 <script>
 
-    // Allows for reference to store actions (index.js)
-    import { mapActions } from "vuex";
+    // Allows for reference to store mutations (index.js)
+    import { mapMutations } from "vuex";
 
     // Allows for reference to store data by creating simple, implicit getters
     import { mapGetters } from "vuex";
@@ -29,7 +29,7 @@
 
         props: {
 
-            selectedCategory: { type: String, required: true }
+            activeCategory: { type: String, required: true }
         },
 
         data() {
@@ -41,8 +41,7 @@
                     tableFields: [
 
                         { key: "column" },
-                        { key: "description" },
-                        { key: "category" }
+                        { key: "description" }
                     ]
                 }
             };
@@ -70,24 +69,14 @@
 
         methods: {
 
-            ...mapActions([
+            ...mapMutations([
 
-                "alterColumnCategoryRelation"
+                "alterColumnCategoryMapping"
             ]),
 
             applyCategory(p_row, p_index, p_event) {
-
-                const payload = {
-
-                    category: this.selectedCategory,
-                    column: p_row.column
-                };
-
-                // 1. Link or unlink the currently-selected category and the clicked column
-                this.alterColumnCategoryRelation(payload);
-
-                // NOTE: Component emitted column linking info back to
-                // categorization page here for possible next page accessibility
+                // 1. Link or unlink the currently-selected/active category and the clicked column
+                this.alterColumnCategoryMapping(this.activeCategory, p_row.column);
             },
 
             styleTableRow(p_row, p_rowType) {

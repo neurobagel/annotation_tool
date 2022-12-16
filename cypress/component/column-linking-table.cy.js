@@ -7,12 +7,7 @@ import ColumnLinkingTable from "~/components/column-linking-table.vue";
 // Mocks
 
 const store = {
-
-    actions: {
-
-        dispatch: (p_actionName, p_payload) => {}
-    },
-
+    commit: () => {},
     getters: {
 
         categories: () => {
@@ -70,12 +65,16 @@ const store = {
                 "session": null
             };
         }
+    },
+
+    mutations: {
+        alterColumnCategoryMapping: () => (activeCategory, columnName) => {}
     }
 };
 
 const props = {
 
-    selectedCategory: "Subject ID"
+    activeCategory: "Subject ID"
 };
 
 // Tests
@@ -90,12 +89,12 @@ describe("Tests basic functionality of the table that links categories with data
 
         // 1. Arrange - Set up the spy, mount the component, and bind the spy to it
         const onColumnNameClickedSpy = cy.spy().as("onColumnNameClickedSpy");
-        cy.spy(store.actions, "dispatch").as("dispatchSpy");
+        cy.spy(store, 'commit').as('commitSpy');
         cy.mount(ColumnLinkingTable, {
 
             mocks: {
 
-                $store: store.actions
+                $store: store
             },
 
             computed: store.getters,
@@ -110,11 +109,7 @@ describe("Tests basic functionality of the table that links categories with data
             .contains(participantIDColumn)
             .click();
 
-        // 3. Assert - Make sure linking action is dispatched to the store
-        cy.get("@dispatchSpy").should("have.been.calledWith",
-
-            "alterColumnCategoryRelation",
-            { category: subjectIDCategory, column: participantIDColumn  }
-        );
+        // 3. Assert - Make sure linking mutation is commited to the store
+        cy.get("@commitSpy").should("have.been.calledWith", "alterColumnCategoryMapping", subjectIDCategory, participantIDColumn);
     });
 });
