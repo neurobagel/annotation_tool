@@ -41,7 +41,7 @@
             activeCategory: { type: String, required: true }
         },
 
-        name: "annotColumns",
+        name: "AnnotColumns",
 
         data() {
 

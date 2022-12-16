@@ -77,9 +77,6 @@
             applyCategory(p_row, p_index, p_event) {
                 // 1. Link or unlink the currently-selected/active category and the clicked column
                 this.alterColumnCategoryMapping(this.activeCategory, p_row.column);
-
-                // NOTE: Component emitted column linking info back to
-                // categorization page here for possible next page accessibility
             },
 
             styleTableRow(p_row, p_rowType) {

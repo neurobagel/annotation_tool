@@ -86,7 +86,6 @@ describe("Tests basic functionality of the table that links categories with data
         // 0. The first category and column
         const participantIDColumn = store.getters.columns()[0].name;
         const subjectIDCategory = store.getters.categories()[0];
-        console.log(participantIDColumn, subjectIDCategory);
 
         // 1. Arrange - Set up the spy, mount the component, and bind the spy to it
         const onColumnNameClickedSpy = cy.spy().as("onColumnNameClickedSpy");
