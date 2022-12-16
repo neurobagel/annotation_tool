@@ -3,7 +3,6 @@
     <b-container fluid>
 
         <!-- Category to column linking table -->
-        <!-- Is there a way to pass the colum directly to alterColumnCategoryMapping? like alterColumnCategoryMapping(activeCategory, p_row.column)-->
         <b-table
             data-cy="column-linking-table-table"
             bordered
