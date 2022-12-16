@@ -41,8 +41,7 @@
                     tableFields: [
 
                         { key: "column" },
-                        { key: "description" },
-                        { key: "category" }
+                        { key: "description" }
                     ]
                 }
             };
