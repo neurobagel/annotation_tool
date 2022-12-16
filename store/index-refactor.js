@@ -9,11 +9,7 @@ export const state = () => ({
 export const getters = {
 
     getCategories (p_state) {
-        return [
-            "category1",
-            "category2",
-            "myCatIsCool"
-        ];
+        return Object.keys(p_state.categories);
     }
 
 };
