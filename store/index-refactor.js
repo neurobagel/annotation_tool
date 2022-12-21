@@ -3,7 +3,8 @@ import Vue from "vue";
 
 export const state = () => ({
     categories: {},
-    columnToCategoryMapping: {}
+    columnToCategoryMapping: {},
+    dataDictionary: {}
 
 });
 
@@ -11,8 +12,10 @@ export const getters = {
 
     getCategoryNames (p_state) {
         return Object.keys(p_state.categories);
+    },
+    getValueDescription (p_state, p_columnName, p_value) {
+        return p_state.dataDictionary.annotated[p_columnName].levels[p_value].description;
     }
-
 };
 
 
