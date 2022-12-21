@@ -2,10 +2,16 @@
 import Vue from "vue";
 
 export const state = () => ({
+    categories: {},
     columnToCategoryMapping: {}
+
 });
 
 export const getters = {
+
+    getCategoryNames (p_state) {
+        return Object.keys(p_state.categories);
+    }
 
 };
 
@@ -14,12 +20,12 @@ export const mutations = {
 
 
     /**
-     * Change the mapping between a column and a category.
-     * If the two are already mapped, the column should be unlinked.
-     * Otherwise the column is mapped to a different category.
+     * Change the mapping between a column and a category
+     * If the two are already mapped, the column should be unlinked
+     * Otherwise the column is mapped to a different category
      *
-     * @param {string} targetCategory Category the column should be mapped to.
-     * @param {string} columnName Column that will be mapped to the category.
+     * @param {string} targetCategory Category the column should be mapped to
+     * @param {string} columnName Column that will be mapped to the category
      */
     alterColumnCategoryMapping(p_state, targetCategory, columnName) {
         if (p_state.columnToCategoryMapping[columnName] === targetCategory) {

@@ -2,7 +2,6 @@
 
     <div>
 
-        <!-- Category selection table -->
         <b-row class="no-padding-row">
 
             <b-col cols="12" class="no-padding-col">
@@ -30,6 +29,8 @@
 
     export default {
 
+        name: "CategorySelectTable",
+
         props: {
 
             selectedCategory: { type: String, required: true }
@@ -39,14 +40,14 @@
 
             ...mapGetters([
 
-                "categories",
+                "getCategoryNames",
                 "categoryClasses"
             ]),
 
             categoryTable() {
 
                 // Return a list of dicts for each category in the table
-                return this.categories.map((name) => ({ category: name }));
+                return this.getCategoryNames.map((name) => ({ category: name }));
             }
         },
 
