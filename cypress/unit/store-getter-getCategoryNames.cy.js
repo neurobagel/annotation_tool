@@ -1,7 +1,7 @@
 import { getters } from "~/store/index-refactor";
 
-describe('getCategories', () => {
-    it('returns an array of existing categories', () => {
+describe('getCategoryNames', () => {
+    it('returns an array of existing category names', () => {
         const state = {
             categories : {
                 category1: {},
@@ -9,7 +9,7 @@ describe('getCategories', () => {
                 myCatIsCool: {}
             }
         };
-        const result = getters.getCategories(state);
+        const result = getters.getCategoryNames(state);
         expect(result).to.be.deep.equal([
             "category1",
             "category2",

@@ -40,14 +40,14 @@
 
             ...mapGetters([
 
-                "getCategories",
+                "getCategoryNames",
                 "categoryClasses"
             ]),
 
             categoryTable() {
 
                 // Return a list of dicts for each category in the table
-                return this.getCategories.map((name) => ({ category: name }));
+                return this.getCategoryNames.map((name) => ({ category: name }));
             }
         },
 

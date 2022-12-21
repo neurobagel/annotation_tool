@@ -6,7 +6,7 @@ const state = {
 
     getters: {
 
-        getCategories: () => {
+        getCategoryNames: () => {
 
             return [
 
@@ -52,16 +52,16 @@ describe("Table for selecting categories to linking to table columns on the cate
         });
 
         // Test each row in the category select table
-        for ( let index = 0; index < state.getters.getCategories().length; index++ ) {
+        for ( let index = 0; index < state.getters.getCategoryNames().length; index++ ) {
 
             // 2. Act
             cy.get("td")
-                .contains(state.getters.getCategories()[index])
+                .contains(state.getters.getCategoryNames()[index])
                 .click();
 
             // 3. Assert
             cy.get("@onCategorySelectSpy")
-                .should("have.been.calledWith", { category: state.getters.getCategories()[index] });
+                .should("have.been.calledWith", { category: state.getters.getCategoryNames()[index] });
         }
     });
 });
