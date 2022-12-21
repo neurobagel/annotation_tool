@@ -14,7 +14,13 @@ export const getters = {
         return Object.keys(p_state.categories);
     },
     getValueDescription (p_state, p_columnName, p_value) {
-        return p_state.dataDictionary.annotated[p_columnName].levels[p_value].description;
+        // Returns the description of a value in a column, if that description exists
+        // Otherwise it returns an empty string
+        const description = p_state.dataDictionary.annotated[p_columnName].levels?.[p_value]?.description;
+        if ( typeof description  === "undefined" ) {
+            return "";
+        }
+        return description;
     }
 };
 

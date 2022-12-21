@@ -30,5 +30,10 @@ describe("getValueDescription", () => {
         const result = getters.getValueDescription(state, "goodColumn", "value1");
         expect(result).to.be.equal("my description");
     });
-
+    it("returns an empty string if the value does not have a description", () => {
+        const resultNoValue = getters.getValueDescription(state, "levelsButNothingElse", "notExistValue");
+        expect(resultNoValue).to.be.empty;
+        const resultNoLevels = getters.getValueDescription(state, "badColumn", "notExistValue");
+        expect(resultNoLevels).to.be.empty;
+    });
 });
