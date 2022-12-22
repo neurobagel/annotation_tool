@@ -21,7 +21,7 @@ const store = {
                 }
             ];
         },
-        getDescription: () => (column, cellValue) => {
+        getValueDescription: () => (column, cellValue) => {
             return "descr_" + column + "_" + cellValue;
         },
         getOptions: () => (category) => {
