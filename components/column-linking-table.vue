@@ -53,6 +53,7 @@
 
                 "categoryClasses",
                 "columns",
+                "getColumnDescription",
                 "columnToCategoryMap"
             ]),
 
@@ -62,7 +63,7 @@
 
                     category: this.columnToCategoryMap[column],
                     column: column.name,
-                    description: column.description
+                    description: this.getColumnDescription(column.name)
                 }));
             }
         },
