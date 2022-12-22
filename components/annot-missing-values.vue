@@ -70,7 +70,7 @@
             ...mapGetters([
 
                 "missingValues",
-                "valueDescription"
+                "getValueDescription"
             ]),
 
             tableItems() {
@@ -79,10 +79,9 @@
                 // for display in the missing Value Table
                 return Object.entries(this.missingValues(this.activeCategory)).map(([column, missingValues]) => {
                     return missingValues.map(missingValue => {
-                        const description = this.valueDescription(column, missingValue);
                         return {
                             column: column,
-                            description: description === null ? "" : description,
+                            description: this.getValueDescription(column, missingValue),
                             value: missingValue
                         };
                     });

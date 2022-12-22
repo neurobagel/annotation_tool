@@ -4,7 +4,7 @@ import annotMissingValues from "~/components/annot-missing-values";
 // Mocked Store getters
 const store = {
     getters: {
-        valueDescription: () => (column, missingValue) => missingValue + " from " + column,
+        getValueDescription: () => (column, missingValue) => missingValue + " from " + column,
         missingValues: () => (category) => {
             return {
                 "column1": ["val1", "val2"],

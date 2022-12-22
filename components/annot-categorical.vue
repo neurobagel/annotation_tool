@@ -91,7 +91,7 @@
             ...mapGetters([
 
                 "getUniqueValues",
-                "getDescription",
+                "getValueDescription",
                 "getOptions",
                 "getSelectedOption"
             ]),
@@ -101,12 +101,10 @@
                 const tableData = [];
                 for ( const row of this.getUniqueValues(this.activeCategory) ) {
 
-                    const description = this.getDescription(row.columnName, row.rawValue);
-
                     tableData.push({
                         columnName: row.columnName,
                         rawValue: row.rawValue,
-                        description: description
+                        description: this.getValueDescription(row.columnName, row.rawValue)
                     });
                 }
                 return tableData;
