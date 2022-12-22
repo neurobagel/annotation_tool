@@ -2,16 +2,21 @@
 import Vue from "vue";
 
 export const state = () => ({
+
     categories: {},
+
     columnToCategoryMapping: {},
+
     dataDictionary: {
+
         // stores the data dictionary loaded by the user (if available) in userProvided
         // and stores the extended version created during annotation in annotated.
         // We use this both as a state object and as the template for the downloadable data dictionary
         userProvided: {},
         annotated: {}
-    }
+    },
 
+    dataTable: []
 });
 
 export const getters = {
@@ -19,6 +24,7 @@ export const getters = {
     getCategoryNames (p_state) {
         return Object.keys(p_state.categories);
     },
+
     getColumnDescription (p_state, p_columnName) {
         if ( Object.hasOwn(p_state.dataDictionary.annotated[p_columnName], "description") ) {
             return p_state.dataDictionary.annotated[p_columnName].description;
@@ -27,6 +33,13 @@ export const getters = {
             return "";
         }
     },
+
+    getColumnNames(p_state) {
+
+        // Returns list of columns from the loaded data table
+        return ( 0 === p_state.dataTable.length ) ? [] : Object.keys(p_state.dataTable[0]);
+    },
+
     getValueDescription (p_state, p_columnName, p_value) {
         // Returns the description of a value in a column, if that description exists
         // Otherwise it returns an empty string
@@ -40,7 +53,6 @@ export const getters = {
 
 
 export const mutations = {
-
 
     /**
      * Change the mapping between a column and a category
@@ -58,5 +70,12 @@ export const mutations = {
             p_state.columnToCategoryMapping[columnName] = targetCategory;
         }
 
+    },
+
+    createColumnToCategoryMap(p_state) {
+
+        // Column to category map lists all columns as keys with default value of null
+        p_state.columnToCategoryMapping =
+            Object.fromEntries(p_state.getColumnNames().map((column) => [column, null]));
     }
 };
