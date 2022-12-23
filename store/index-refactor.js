@@ -48,7 +48,12 @@ export const getters = {
             return "";
         }
         return description;
+    },
+
+    getColumnNames(p_state) {
+        return (0 === p_state.dataTable.length) ? [] : Object.keys(p_state.dataTable[0]);
     }
+
 };
 
 
