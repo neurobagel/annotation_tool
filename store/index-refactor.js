@@ -72,10 +72,10 @@ export const mutations = {
 
     },
 
-    createColumnToCategoryMap(p_state) {
+    initializeColumnToCategoryMap(p_state, p_columns) {
 
         // Column to category map lists all columns as keys with default value of null
         p_state.columnToCategoryMapping =
-            Object.fromEntries(p_state.getColumnNames().map((column) => [column, null]));
+            Object.fromEntries(p_columns.map((column) => [column, null]));
     }
 };
