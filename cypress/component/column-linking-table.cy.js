@@ -98,7 +98,6 @@ describe("The column-linking-table component", () => {
 
         // 0. The first category and column
         const participantIDColumn = store.getters.getColumnNames()[0];
-        console.log(participantIDColumn);
         const subjectIDCategory = store.getters.categories()[0];
 
         // 1. Arrange - Set up the spy, mount the component, and bind the spy to it
