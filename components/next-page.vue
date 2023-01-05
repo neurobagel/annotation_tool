@@ -14,10 +14,10 @@
             <b-button
                 class="float-right"
                 data-cy="button-nextpage"
-                :disabled="!pageData[nextPage].accessible"
-                :to="'/' + pageData[nextPage].location"
-                :variant="nextPageButtonColor"
-                @click="setCurrentPage(nextPage)">
+                :disabled="!pageData[getNextPage].accessible"
+                :to="'/' + pageData[getNextPage].location"
+                :variant="getNextPageButtonColor"
+                @click="setCurrentPage(getNextPage)">
                 {{ uiText.button[currentPage] }}
             </b-button>
         </b-col>
@@ -65,7 +65,7 @@
 
             ...mapGetters([
 
-                "nextPage",
+                "getNextPage",
                 "pageAccessible"
             ]),
 
