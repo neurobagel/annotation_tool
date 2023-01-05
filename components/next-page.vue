@@ -5,7 +5,7 @@
         <b-col class="text-right" cols="4">
 
             <!-- Optional instructions to remind user of criteria to proceed to the next page -->
-            <p class="instructions-text" v-if="!pageAccessible(currentPage)">
+            <p class="instructions-text" v-if="!isPageAccessible(currentPage)">
                 {{ uiText.instructions[currentPage] }}
             </p>
 
@@ -65,8 +65,8 @@
 
             ...mapGetters([
 
-                "nextPage",
-                "pageAccessible"
+                "isPageAccessible",
+                "nextPage"
             ]),
 
             ...mapState([
@@ -78,7 +78,7 @@
             nextPageButtonColor() {
 
                 // Bootstrap variant color of the button leading to the next page
-                return this.pageAccessible(this.nextPage) ? "success" : "secondary";
+                return this.isPageAccessible(this.nextPage) ? "success" : "secondary";
             }
         },
 
