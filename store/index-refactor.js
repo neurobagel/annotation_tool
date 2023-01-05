@@ -48,6 +48,58 @@ export const getters = {
             return "";
         }
         return description;
+    },
+
+    isPageAccessible: (p_state, p_pageName) => {
+
+        let pageAccessible = false;
+
+        switch ( p_pageName ) {
+
+            case "home":
+
+                // Landing page is always accessible
+                pageAccessible = true;
+                break;
+
+            case "categorization":
+
+                // Categorization page is accessible if a data table has been uploaded
+                pageAccessible = p_state.dataTable.length > 0;
+
+                break;
+
+            case "annotation": {
+
+                // 1. Determine if at least one column has been linked to a category
+                const linkCount = Object.values(p_state.columnToCategoryMapping).filter(
+                    category => ( null !== category )).length;
+                const categorizationStatus = linkCount > 0;
+
+                // 2. Make sure one (and only one) column has been categorized as 'Subject ID'
+                let subjectIDFound = 0;
+                for ( const column in p_state.columnToCategoryMapping ) {
+                    if ( "Subject ID" === p_state.columnToCategoryMapping[column] ) {
+                        subjectIDFound += 1;
+                    }
+                }
+                const singleSubjectIDColumn = ( 1 === subjectIDFound );
+
+                // Annotation page is only accessible if at least one column has
+                // been categorized and if one (and only one) column has been categorized as 'Subject ID'
+                pageAccessible = categorizationStatus && singleSubjectIDColumn;
+
+                break;
+            }
+
+            case "download":
+
+                pageAccessible = p_state.annotationCount > 0;
+
+                break;
+        }
+
+        return pageAccessible;
     }
 };
 
