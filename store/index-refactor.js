@@ -34,12 +34,6 @@ export const getters = {
         }
     },
 
-    getColumnNames(p_state) {
-
-        // Returns list of columns from the loaded data table
-        return ( 0 === p_state.dataTable.length ) ? [] : Object.keys(p_state.dataTable[0]);
-    },
-
     getValueDescription (p_state, p_columnName, p_value) {
         // Returns the description of a value in a column, if that description exists
         // Otherwise it returns an empty string
