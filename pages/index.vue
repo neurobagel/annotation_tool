@@ -98,7 +98,9 @@
 
             ...mapGetters([
 
-                "getColumnNames"
+                "getColumnNames",
+                "isDataDictionaryLoaded",
+                "isDataTableLoaded"
             ]),
 
             ...mapState([
@@ -111,7 +113,7 @@
             stringifiedDataDictionary() {
 
                 // 0. Return a blank string if there is no loaded data dictionary file
-                if ( !this.$store.getters.isDataDictionaryLoaded ) {
+                if ( !this.isDataDictionaryLoaded ) {
 
                     return "";
                 }
@@ -124,7 +126,7 @@
             stringifiedDataTable() {
 
                 // 0. Return a blank string is there is no loaded data table
-                if ( !this.$store.getters.isDataTableLoaded ) {
+                if ( !this.isDataTableLoaded ) {
 
                     return "";
                 }
