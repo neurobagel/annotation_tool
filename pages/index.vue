@@ -20,7 +20,7 @@
             <file-selector
                 data-cy="data-table-selector"
                 :content-type="contentTypes.dataTable"
-                @file-selected="saveDataTable($event)" />
+                @file-selected="setDataTable($event)" />
         </b-row>
 
 
@@ -42,7 +42,7 @@
             <file-selector
                 data-cy="data-dictionary-selector"
                 :content-type="contentTypes.dataDictionary"
-                @file-selected="saveDataDictionary($event)" />
+                @file-selected="setDataDictionary($event)" />
         </b-row>
 
     </b-container>
@@ -53,6 +53,9 @@
 
     // Allows for calls to store actions
     import { mapActions } from "vuex";
+
+    // Allows for reference to store data by creating simple, implicit getters
+    import { mapGetters } from "vuex";
 
     // Allows for direct mutations of store data
     import { mapMutations } from "vuex";
@@ -92,6 +95,11 @@
         },
 
         computed: {
+
+            ...mapGetters([
+
+                "getColumnNames"
+            ]),
 
             ...mapState([
 
@@ -147,7 +155,7 @@
                 "createColumnToCategoryMap"
             ]),
 
-            saveDataDictionary(p_fileData) {
+            setDataDictionary(p_fileData) {
 
                 // Update the store with json file data
                 // NOTE: Defaults to json for now
@@ -159,7 +167,7 @@
                 });
             },
 
-            saveDataTable(p_fileData) {
+            setDataTable(p_fileData) {
 
                 // 1. Update the store with tsv file data
                 // NOTE: Defaults to tsv for now
@@ -171,7 +179,7 @@
                 });
 
                 // 2. Create a new map for linking table columns to annotation categories
-                this.createColumnToCategoryMap();
+                this.initializeColumnToCategoryMap(this.getColumnNames);
             }
         }
     };
