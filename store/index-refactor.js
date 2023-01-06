@@ -103,5 +103,34 @@ export const mutations = {
     setCurrentPage(p_state, p_pageName) {
 
         p_state.currentPage = p_pageName;
+    },
+
+    setDataTable(p_state, p_dataTable) {
+
+        const columnNames = p_dataTable[0];
+        let dataTable = [];
+        
+        for ( const [rowIndex, row] of p_dataTable.slice(1).entries() ) {
+            // If the row is empty, we don't want it in our dataTable
+            if ( "" === row.join("").trim() ) {
+                continue;
+            } else if ( row.length < columnNames.length ) {
+                console.warn("WARNING: tsv row " + parseInt(rowIndex) + " has fewer columns than the tsv header!");
+            }
+
+            let rowArray = [];
+            for ( const [colIndex, value] of row.entries() ) {
+                // Rows that are longer than the header should be truncated
+                if ( colIndex >= columnNames.length ) {
+                    console.warn("WARNING: tsv row " + parseInt(rowIndex) + " has more columns than the tsv header!");
+                    continue;
+                        }
+
+                rowArray.push([columnNames[colIndex], value]);
+                    }
+            dataTable.push(Object.fromEntries(rowArray));
+        }
+
+        p_state.dataTable = dataTable;
     }
 };
