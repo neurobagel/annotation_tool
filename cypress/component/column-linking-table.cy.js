@@ -37,13 +37,12 @@ describe("The column-linking-table component", () => {
                     };
                 },
 
-                columns: () => {
+                getColumnNames: () => {
 
                     return [
-
-                        { name: "participant_id" },
-                        { name: "age" },
-                        { name: "sex" }
+                        "participant_id",
+                        "age",
+                        "sex"
                     ];
                 },
 
@@ -98,7 +97,7 @@ describe("The column-linking-table component", () => {
     it("can alter link relation (add/remove) between a column and a category", () => {
 
         // 0. The first category and column
-        const participantIDColumn = store.getters.columns()[0].name;
+        const participantIDColumn = store.getters.getColumnNames()[0];
         const subjectIDCategory = store.getters.categories()[0];
 
         // 1. Arrange - Set up the spy, mount the component, and bind the spy to it
