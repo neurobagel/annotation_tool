@@ -11,6 +11,7 @@ const stubs = {
 describe("The index page", () => {
     beforeEach(() => {
         store = {
+            dispatch: () => {},
             getters: {
                 getColumnNames: () => [
                         "col1",
@@ -69,7 +70,46 @@ describe("The index page", () => {
         cy.get("[data-cy='data-dictionary-display']").should('include.value', '"col1": "something"');
 
     });
+
+    // 2. Upload a data table and watch it come out as an action
+    it("dispatches an action when a dataTable is loaded", () => {
+        store.state.dataTable = [];
+        cy.fixture("examples/good/example_short.tsv").as("exampleTable");
+        cy.spy(store, 'dispatch').as('dispatchSpy');
+        cy.mount(indexPage, {
+            mocks: {
+                $store: store
+            },
+            computed: store.getters,
+            stubs: stubs,
+            plugins: ["bootstrap-vue"]
+        });
+        cy.get("[data-cy='data-table-selector']").contains("Choose file").click().selectFile("@exampleTable");
+        cy.get("@dispatchSpy").should("have.been.calledWith", "setDataTable", {
+            "data": [
+                [
+                    "participant_id",
+                    "age",
+                    "sex"
+                ],
+                [
+                    "sub-1",
+                    "026Y",
+                    "1"
+                ],
+                [
+                    "sub-2",
+                    "024Y",
+                    "2"
+                ]
+            ],
+            "filename": "example_short.tsv"
+        });
+        cy.get("[data-cy='data-table-selector']").contains("example_short.tsv");
+    });
 });
-// 2. Upload a data table and watch it come out as an action
+
+
+
 // 3. Upload a data dictionary and watch it come out as an action
-// 4. Also make sure all of this is accurately represented in the UI.
+

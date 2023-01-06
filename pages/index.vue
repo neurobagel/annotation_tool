@@ -129,12 +129,12 @@
             ...mapActions([
 
                 "saveDataDictionary",
-                "saveDataTable"
+                "setDataTable"
             ]),
 
             ...mapMutations([
 
-                "createColumnToCategoryMap"
+                "initializeColumnToCategoryMap"
             ]),
 
             setDataDictionary(p_fileData) {
@@ -147,21 +147,6 @@
                     filename: p_fileData.filename,
                     fileType: "json"
                 });
-            },
-
-            setDataTable(p_fileData) {
-
-                // 1. Update the store with tsv file data
-                // NOTE: Defaults to tsv for now
-                this.saveDataTable({
-
-                    data: ( 0 === p_fileData.data.length ) ? null : p_fileData.data,
-                    filename: p_fileData.filename,
-                    fileType: "tsv"
-                });
-
-                // 2. Create a new map for linking table columns to annotation categories
-                this.initializeColumnToCategoryMap(this.getColumnNames);
             }
         }
     };
