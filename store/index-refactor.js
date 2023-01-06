@@ -72,18 +72,13 @@ export const getters = {
             case "annotation": {
 
                 // 1. Determine if at least one column has been linked to a category
-                const linkCount = Object.values(p_state.columnToCategoryMapping).filter(
-                    category => ( null !== category )).length;
-                const categorizationStatus = linkCount > 0;
+                const categorizationStatus = Object.values(p_state.columnToCategoryMapping)
+                                                   .some(category =>  null !== category );
 
                 // 2. Make sure one (and only one) column has been categorized as 'Subject ID'
-                let subjectIDFound = 0;
-                for ( const column in p_state.columnToCategoryMapping ) {
-                    if ( "Subject ID" === p_state.columnToCategoryMapping[column] ) {
-                        subjectIDFound += 1;
-                    }
-                }
-                const singleSubjectIDColumn = ( 1 === subjectIDFound );
+                const singleSubjectIDColumn = ( 1 === Object.values(p_state.columnToCategoryMapping)
+                                                            .filter(category => "Subject ID" === category)
+                                                            .length );
 
                 // Annotation page is only accessible if at least one column has
                 // been categorized and if one (and only one) column has been categorized as 'Subject ID'
