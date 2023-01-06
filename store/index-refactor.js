@@ -7,6 +7,8 @@ export const state = () => ({
 
     columnToCategoryMapping: {},
 
+    currentPage: "home",
+
     dataDictionary: {
 
         // stores the data dictionary loaded by the user (if available) in userProvided
@@ -32,12 +34,6 @@ export const getters = {
         else {
             return "";
         }
-    },
-
-    getColumnNames(p_state) {
-
-        // Returns list of columns from the loaded data table
-        return ( 0 === p_state.dataTable.length ) ? [] : Object.keys(p_state.dataTable[0]);
     },
 
     getNextPage(p_state) {
@@ -68,7 +64,12 @@ export const getters = {
             return "";
         }
         return description;
+    },
+
+    getColumnNames(p_state) {
+        return (0 === p_state.dataTable.length) ? [] : Object.keys(p_state.dataTable[0]);
     }
+
 };
 
 
@@ -97,5 +98,10 @@ export const mutations = {
         // Column to category map lists all columns as keys with default value of null
         p_state.columnToCategoryMapping =
             Object.fromEntries(p_columns.map((column) => [column, null]));
+    },
+
+    setCurrentPage(p_state, p_pageName) {
+
+        p_state.currentPage = p_pageName;
     }
 };

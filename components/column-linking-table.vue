@@ -52,17 +52,17 @@
             ...mapGetters([
 
                 "categoryClasses",
-                "columns",
+                "getColumnNames",
                 "getColumnDescription",
                 "columnToCategoryMap"
             ]),
 
             tableRows() {
 
-                return this.columns.map(column => ({
+                return this.getColumnNames.map(column => ({
 
                     category: this.columnToCategoryMap[column],
-                    column: column.name,
+                    column: column,
                     description: this.getColumnDescription(column.name)
                 }));
             }
