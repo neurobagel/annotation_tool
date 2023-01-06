@@ -7,6 +7,8 @@ export const state = () => ({
 
     columnToCategoryMapping: {},
 
+    currentPage: "home",
+
     dataDictionary: {
 
         // stores the data dictionary loaded by the user (if available) in userProvided
@@ -76,5 +78,10 @@ export const mutations = {
         // Column to category map lists all columns as keys with default value of null
         p_state.columnToCategoryMapping =
             Object.fromEntries(p_columns.map((column) => [column, null]));
+    },
+
+    setCurrentPage(p_state, p_pageName) {
+
+        p_state.currentPage = p_pageName;
     }
 };
