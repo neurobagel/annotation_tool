@@ -52,18 +52,7 @@
 </template>
 
 <script>
-
-    // Allows for calls to store actions
-    import { mapActions } from "vuex";
-
-    // Allows for reference to store data by creating simple, implicit getters
-    import { mapGetters } from "vuex";
-
-    // Allows for direct mutations of store data
-    import { mapMutations } from "vuex";
-
-    // Allows for reference to store data by creating simple, implicit getters
-    import { mapState } from "vuex";
+    import { mapActions, mapState } from "vuex";
 
     export default {
 
@@ -98,16 +87,10 @@
 
         computed: {
 
-            ...mapGetters([
-
-                "getColumnNames"
-            ]),
-
             ...mapState([
 
                 "dataDictionary",
-                "dataTable",
-                "pageData"
+                "dataTable"
             ]),
 
             stringifiedDataDictionary() {
@@ -130,11 +113,6 @@
 
                 "setDataDictionary",
                 "setDataTable"
-            ]),
-
-            ...mapMutations([
-
-                "initializeColumnToCategoryMap"
             ])
         }
     };
