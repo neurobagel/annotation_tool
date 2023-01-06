@@ -16,7 +16,7 @@
                 data-cy="button-nextpage"
                 :disabled="!pageData[getNextPage].accessible"
                 :to="'/' + pageData[getNextPage].location"
-                :variant="getNextPageButtonColor"
+                :variant="nextPageButtonColor"
                 @click="setCurrentPage(getNextPage)">
                 {{ uiText.button[currentPage] }}
             </b-button>
