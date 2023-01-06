@@ -100,9 +100,7 @@
 
             ...mapGetters([
 
-                "getColumnNames",
-                "isDataDictionaryLoaded",
-                "isDataTableLoaded"
+                "getColumnNames"
             ]),
 
             ...mapState([
@@ -114,35 +112,15 @@
 
             stringifiedDataDictionary() {
 
-                // 0. Return a blank string if there is no loaded data dictionary file
-                if ( !this.isDataDictionaryLoaded ) {
-
-                    return "";
-                }
-
-                // 1. Return a string version of the data dictionary file
-                // NOTE: Defaults to json for now
-                return JSON.stringify(this.dataDictionary.original, null, 4);
+                return JSON.stringify(this.dataDictionary, null, 4);
             },
 
             stringifiedDataTable() {
 
-                // 0. Return a blank string is there is no loaded data table
-                if ( !this.isDataTableLoaded ) {
-
-                    return "";
-                }
-
-                // 1. Convert the tsv file data into a list of strings
-                // NOTE: Defaults to tsv for now
-                const textAreaArray = [Object.keys(this.dataTable.original[0]).join("\t")];
-                for ( let index = 0; index < Object.keys(this.dataTable.original[0]).length; index++ ) {
-
-                    textAreaArray.push(Object.values(this.dataTable.original[index]).join("\t"));
-                }
-
-                // 2. Return the tsv file data joined as one string
-                return textAreaArray.join("\n");
+                // Returns only the cell values of the table as a formatted string (no column names)
+                return this.dataTable.map(row => {
+                    return Object.values(row).join("\t");
+                }).join("\n");
             }
         },
 
