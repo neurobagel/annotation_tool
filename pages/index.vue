@@ -128,26 +128,14 @@
 
             ...mapActions([
 
-                "saveDataDictionary",
+                "setDataDictionary",
                 "setDataTable"
             ]),
 
             ...mapMutations([
 
                 "initializeColumnToCategoryMap"
-            ]),
-
-            setDataDictionary(p_fileData) {
-
-                // Update the store with json file data
-                // NOTE: Defaults to json for now
-                this.saveDataDictionary({
-
-                    data: p_fileData.data,
-                    filename: p_fileData.filename,
-                    fileType: "json"
-                });
-            }
+            ])
         }
     };
 

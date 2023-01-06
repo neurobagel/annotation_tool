@@ -71,7 +71,6 @@ describe("The index page", () => {
 
     });
 
-    // 2. Upload a data table and watch it come out as an action
     it("dispatches an action when a dataTable is loaded", () => {
         store.state.dataTable = [];
         cy.fixture("examples/good/example_short.tsv").as("exampleTable");
@@ -107,9 +106,27 @@ describe("The index page", () => {
         });
         cy.get("[data-cy='data-table-selector']").contains("example_short.tsv");
     });
+
+    it("dispatches an action when a dataDictionary is loaded", () => {
+
+        store.state.dataDictionary = {};
+        cy.fixture("examples/good/example_short.json").as("exampleDictionary");
+        cy.spy(store, "dispatch").as("dispatchSpy");
+        cy.mount(indexPage, {
+            mocks: {
+                $store: store
+            },
+            computed: store.getters,
+            stubs: stubs,
+            plugins: ["bootstrap-vue"]
+        });
+
+        cy.get("[data-cy='data-dictionary-selector']").contains("Choose file").click().selectFile("@exampleDictionary");
+        cy.get("@dispatchSpy").should("have.been.calledWith", "setDataDictionary", {
+            "data": "{\"age\":{\"Description\":\"age of the participant\",\"Units\":\"years\"},\"sex\":{\"Description\":\"sex of the participant as reported by the participant\",\"Levels\":{\"M\":\"male\",\"F\":\"female\"}},\"group\":{\"Description\":\"diagnostic status determined by the study clinician at baseline\",\"Levels\":{\"AD\":\"individuals with Alzheimer's Disease\",\"HC\":\"healthy controls\",\"MCI\":\"individuals with Mild Cognitive Impairment\"}}}",
+            "filename": "example_short.json"
+        });
+
+        cy.get("[data-cy='data-dictionary-selector']").contains("example_short.json");
+    });
 });
-
-
-
-// 3. Upload a data dictionary and watch it come out as an action
-
