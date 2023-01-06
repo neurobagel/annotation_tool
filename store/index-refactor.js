@@ -36,6 +36,26 @@ export const getters = {
         }
     },
 
+    getNextPage(p_state) {
+
+        let nextPage = "";
+
+        switch ( p_state.currentPage ) {
+
+            case "home":
+                nextPage = "categorization";
+                break;
+            case "categorization":
+                nextPage = "annotation";
+                break;
+            case "annotation":
+                nextPage = "download";
+                break;
+        }
+
+        return nextPage;
+    },
+
     getValueDescription (p_state, p_columnName, p_value) {
         // Returns the description of a value in a column, if that description exists
         // Otherwise it returns an empty string
