@@ -35,7 +35,12 @@ export const getters = {
             return "";
         }
     },
-
+    
+    getColumnNames(p_state) {
+    
+        return ( 0 === p_state.dataTable.length) ? [] : Object.keys(p_state.dataTable[0] );
+    },
+    
     getNextPage(p_state) {
 
         let nextPage = "";
@@ -66,10 +71,52 @@ export const getters = {
         return description;
     },
 
-    getColumnNames(p_state) {
-        return (0 === p_state.dataTable.length) ? [] : Object.keys(p_state.dataTable[0]);
-    }
+    isPageAccessible: (p_state, p_pageName) => {
 
+        let pageAccessible = false;
+
+        switch ( p_pageName ) {
+
+            case "home":
+
+                // Landing page is always accessible
+                pageAccessible = true;
+                break;
+
+            case "categorization":
+
+                // Categorization page is accessible if a data table has been uploaded
+                pageAccessible = p_state.dataTable.length > 0;
+
+                break;
+
+            case "annotation": {
+
+                // 1. Determine if at least one column has been linked to a category
+                const categorizationStatus = Object.values(p_state.columnToCategoryMapping)
+                                                   .some(category =>  null !== category );
+
+                // 2. Make sure one (and only one) column has been categorized as 'Subject ID'
+                const singleSubjectIDColumn = ( 1 === Object.values(p_state.columnToCategoryMapping)
+                                                            .filter(category => "Subject ID" === category)
+                                                            .length );
+
+                // Annotation page is only accessible if at least one column has
+                // been categorized and if one (and only one) column has been categorized as 'Subject ID'
+                pageAccessible = categorizationStatus && singleSubjectIDColumn;
+
+                break;
+            }
+
+            case "download":
+
+                pageAccessible = p_state.annotationCount > 0;
+
+                break;
+        }
+
+        return pageAccessible;
+    }
 };
 
 
