@@ -12,7 +12,8 @@
             <textarea
                 :cols="textArea.height"
                 :rows="textArea.width"
-                v-model="stringifiedDataTable" />
+                v-model="stringifiedDataTable"
+                data-cy="data-table-display" />
         </b-row>
 
         <!-- Selects data table file (i.e. participants.tsv) -->
@@ -34,7 +35,8 @@
             <textarea
                 :cols="textArea.height"
                 :rows="textArea.width"
-                v-model="stringifiedDataDictionary" />
+                v-model="stringifiedDataDictionary"
+                data-cy="data-dictionary-display" />
         </b-row>
 
         <b-row>
