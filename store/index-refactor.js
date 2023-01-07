@@ -147,6 +147,15 @@ export const mutations = {
             Object.fromEntries(p_columns.map((column) => [column, null]));
     },
 
+    initializeDataDictionary(p_state) {
+
+        let dataDictionary = {};
+        for ( const columnName of Object.keys(p_state.dataTable[0]) ) {
+            dataDictionary[columnName] = {"description": ""};
+        }
+        p_state.dataDictionary.annotated = Object.assign({}, dataDictionary);
+    },
+
     setCurrentPage(p_state, p_pageName) {
 
         p_state.currentPage = p_pageName;
