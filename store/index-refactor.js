@@ -120,6 +120,20 @@ export const getters = {
 };
 
 
+export const actions = {
+
+    processDataTable( { state, commit, getters }, { data, filename }) {
+
+        // This action is dispatched when a new dataTable is loaded by the user.
+        // This indicates to us that the user wants to reset the app and begin a new
+        // annotation procedure from scratch. The needed steps are handled by this action.
+
+        commit("setDataTable", data);
+        commit("initializeColumnToCategoryMap", getters.getColumnNames);
+        commit("initializeDataDictionary");
+    }
+};
+
 export const mutations = {
 
     /**
@@ -165,7 +179,7 @@ export const mutations = {
 
         const columnNames = p_dataTable[0];
         let dataTable = [];
-        
+
         for ( const [rowIndex, row] of p_dataTable.slice(1).entries() ) {
             // If the row is empty, we don't want it in our dataTable
             if ( "" === row.join("").trim() ) {
@@ -180,10 +194,10 @@ export const mutations = {
                 if ( colIndex >= columnNames.length ) {
                     console.warn("WARNING: tsv row " + parseInt(rowIndex) + " has more columns than the tsv header!");
                     continue;
-                        }
+                }
 
                 rowArray.push([columnNames[colIndex], value]);
-                    }
+            }
             dataTable.push(Object.fromEntries(rowArray));
         }
 
