@@ -35,12 +35,12 @@ export const getters = {
             return "";
         }
     },
-    
+
     getColumnNames(p_state) {
-    
+
         return ( 0 === p_state.dataTable.length) ? [] : Object.keys(p_state.dataTable[0] );
     },
-    
+
     getNextPage(p_state) {
 
         let nextPage = "";
@@ -122,6 +122,11 @@ export const getters = {
 
 export const actions = {
 
+    processDataDictionary( { state, commit, getters }, { data, filename }) {
+
+        commit("setDataDictionary", data, getters.getColumnNames);
+    },
+
     processDataTable( { state, commit, getters }, { data, filename }) {
 
         // This action is dispatched when a new dataTable is loaded by the user.
@@ -164,15 +169,58 @@ export const mutations = {
     initializeDataDictionary(p_state) {
 
         let dataDictionary = {};
+
         for ( const columnName of Object.keys(p_state.dataTable[0]) ) {
+
             dataDictionary[columnName] = {"description": ""};
         }
+
         p_state.dataDictionary.annotated = Object.assign({}, dataDictionary);
     },
 
     setCurrentPage(p_state, p_pageName) {
 
         p_state.currentPage = p_pageName;
+    },
+
+    setDataDictionary(p_state, p_newDataDictionary, p_storeColumns) {
+
+        console.log("In setDataDictionary");
+
+        // Add any new values from the new, uploaded dictionary for existing
+        // keys in the store dictionary
+        // NOTE: Currently only looks two levels deep in the data dictionary
+        for ( const column of p_storeColumns ) {
+
+            console.log(`Looking at column: ${column}`);
+
+            if ( column in p_newDataDictionary ) {
+
+                console.log(`Shared column ${column}`);
+
+                // Level 1
+                for ( const key in p_newDataDictionary.column ) {
+
+                    console.log(`Looking at newDataDictionary.${column}`);
+
+                    if ( !(key in p_storeColumns.column) ) {
+
+                        Vue.set(state.dataDictionary.column, key, p_newDataDictionary.column.key);
+                    }
+
+                    // Level 2
+                    for ( const subkey in p_newDataDictionary.column.key ) {
+
+                        if ( !(subkey in p_newDataDictionary.column.key) ) {
+
+                            Vue.set(state.dataDictionary.column.key, subkey, p_newDataDictionary.column.key.subkey);
+                        }
+                    }
+                }
+            }
+        }
+
+        console.log(`After setDataDictionary, dataDictionary: ${JSON.stringify(p_state.dataDictionary)}`);
     },
 
     setDataTable(p_state, p_dataTable) {
