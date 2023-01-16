@@ -124,7 +124,7 @@ export const actions = {
 
     processDataDictionary( { state, commit, getters }, { data, filename }) {
 
-        commit("setDataDictionary", data, getters.getColumnNames);
+        commit("setDataDictionary", JSON.parse(data), getters.getColumnNames);
     },
 
     processDataTable( { state, commit, getters }, { data, filename }) {
@@ -168,13 +168,17 @@ export const mutations = {
 
     initializeDataDictionary(p_state) {
 
+        // 1. Create a skeleton data dictionary based on the data table's columns
         let dataDictionary = {};
-
         for ( const columnName of Object.keys(p_state.dataTable[0]) ) {
 
             dataDictionary[columnName] = {"description": ""};
         }
 
+        // 2. Create a copy of the data dictionary to save as an original
+        p_state.dataDictionary.provided = Object.assign({}, dataDictionary);
+
+        // 3. Create a copy of the data dcitionary to use for annotation
         p_state.dataDictionary.annotated = Object.assign({}, dataDictionary);
     },
 
@@ -188,13 +192,10 @@ export const mutations = {
         // Update values to existing columns in the data dictionary, but ignore any new columns
         for ( const column of p_storeColumns ) {
 
-            if ( column in p_newDataDictionary ) {
-
-                for ( const key in p_newDataDictionary[column] ) {
-
-                    Vue.set(p_state.dataDictionary[column], key, p_newDataDictionary[column][key]);
-                }
-            }
+            p_state.dataDictionary.annotated[column] =
+                Object.assign({},
+                              p_state.dataDictionary.annotated[column],
+                              p_newDataDictionary[column]);
         }
     },
 
