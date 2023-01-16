@@ -178,7 +178,7 @@ export const mutations = {
         // 2. Create a copy of the data dictionary to save as an original
         p_state.dataDictionary.provided = Object.assign({}, dataDictionary);
 
-        // 3. Create a copy of the data dcitionary to use for annotation
+        // 3. Create a copy of the data dictionary to use for annotation
         p_state.dataDictionary.annotated = Object.assign({}, dataDictionary);
     },
 
