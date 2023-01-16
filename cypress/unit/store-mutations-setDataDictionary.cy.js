@@ -38,7 +38,7 @@ describe("setDataDictionary", () => {
         };
     });
 
-    it("Are new key/value pairs in the uploaded dictionary not added to the data dictionary?", () => {
+    it("New columns in the uploaded dictionary should not be added to the state data dictionary?", () => {
 
         // Act
         mutations.setDataDictionary(state,
@@ -49,7 +49,7 @@ describe("setDataDictionary", () => {
         expect(state.dataDictionary).to.not.contain.keys("group");
     });
 
-    it("Has every new key/value pair at least one level deep in the uploaded dictionary been added to the state dictionary, if the key was already present in the state dictionary", () => {
+    it("New string/string key/value pairs for columns should replace values in the state data dictionary", () => {
 
         // Act
         mutations.setDataDictionary(state,
@@ -57,17 +57,19 @@ describe("setDataDictionary", () => {
             ["age", "sex"]);
 
         // Assert
-        expect(state.dataDictionary.age["Units"]).to.equal("minutes");
+        expect(state.dataDictionary["age"]["Units"]).to.equal("minutes");
     });
 
-    it("Has every new key/value pair two levels deep in the uploaded dictionary been added to the state dictionary, if the key was already present in the state dictionary", () => {
+    it("New string/object key/value pairs in the uploaded dictionary should update/retain values in the state data dictionary", () => {
 
         // Act
         mutations.setDataDictionary(state,
-            { "sex": { "Levels": { "NB": "Non-binary" }} },
+            { "sex": { "Levels": { "M": "male", "F": "female", "NB": "non-binary" }} },
             ["age", "sex"]);
 
         // Assert
-        expect(state.dataDictionary.sex["Levels"]).to.contain.keys("NB");
+        expect(state.dataDictionary["sex"]["Levels"]).to.contain.keys("M");
+        expect(state.dataDictionary["sex"]["Levels"]).to.contain.keys("F");
+        expect(state.dataDictionary["sex"]["Levels"]).to.contain.keys("NB");
     });
 });

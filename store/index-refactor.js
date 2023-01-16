@@ -185,42 +185,17 @@ export const mutations = {
 
     setDataDictionary(p_state, p_newDataDictionary, p_storeColumns) {
 
-        console.log("In setDataDictionary");
-
-        // Add any new values from the new, uploaded dictionary for existing
-        // keys in the store dictionary
-        // NOTE: Currently only looks two levels deep in the data dictionary
+        // Update values to existing columns in the data dictionary, but ignore any new columns
         for ( const column of p_storeColumns ) {
-
-            console.log(`Looking at column: ${column}`);
 
             if ( column in p_newDataDictionary ) {
 
-                console.log(`Shared column ${column}`);
+                for ( const key in p_newDataDictionary[column] ) {
 
-                // Level 1
-                for ( const key in p_newDataDictionary.column ) {
-
-                    console.log(`Looking at newDataDictionary.${column}`);
-
-                    if ( !(key in p_storeColumns.column) ) {
-
-                        Vue.set(state.dataDictionary.column, key, p_newDataDictionary.column.key);
-                    }
-
-                    // Level 2
-                    for ( const subkey in p_newDataDictionary.column.key ) {
-
-                        if ( !(subkey in p_newDataDictionary.column.key) ) {
-
-                            Vue.set(state.dataDictionary.column.key, subkey, p_newDataDictionary.column.key.subkey);
-                        }
-                    }
+                    Vue.set(p_state.dataDictionary[column], key, p_newDataDictionary[column][key]);
                 }
             }
         }
-
-        console.log(`After setDataDictionary, dataDictionary: ${JSON.stringify(p_state.dataDictionary)}`);
     },
 
     setDataTable(p_state, p_dataTable) {
