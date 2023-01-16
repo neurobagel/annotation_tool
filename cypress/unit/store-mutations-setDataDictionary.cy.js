@@ -4,7 +4,6 @@ let columns;
 let newDataDictionary;
 let state = {};
 
-
 describe("setDataDictionary", () => {
 
     beforeEach(() => {
@@ -31,22 +30,7 @@ describe("setDataDictionary", () => {
                     }
                 },
 
-                annotated: {
-
-                    "age": {
-
-                        "Description": "age of the participant",
-                        "Units": "years"
-                    },
-                    "sex": {
-
-                        "Description": "sex of the participant as reported by the participant",
-                        "Levels": {
-                            "M": "male",
-                            "F": "female"
-                        }
-                    }
-                }
+                annotated: {}
             },
 
             dataTable: [
@@ -61,7 +45,24 @@ describe("setDataDictionary", () => {
         };
 
         columns = Object.keys(state.dataTable[0]);
-        newDataDictionary = Object.assign({}, state.dataDictionary.provided);
+        state.dataDictionary.annotated = JSON.parse(JSON.stringify(state.dataDictionary.provided));
+
+        newDataDictionary = {
+
+            "age": {
+
+                "Description": "age of the participant",
+                "Units": "years"
+            },
+            "sex": {
+
+                "Description": "sex of the participant as reported by the participant",
+                "Levels": {
+                    "M": "male",
+                    "F": "female"
+                }
+            }
+        };
     });
 
     it("New columns in the uploaded dictionary should not be added to the state data dictionary?", () => {

@@ -175,11 +175,8 @@ export const mutations = {
             dataDictionary[columnName] = {"description": ""};
         }
 
-        // 2. Create a copy of the data dictionary to save as an original
-        p_state.dataDictionary.provided = Object.assign({}, dataDictionary);
-
-        // 3. Create a copy of the data dcitionary to use for annotation
-        p_state.dataDictionary.annotated = Object.assign({}, dataDictionary);
+        // 2. Set the newly provided skeleton dictionary
+        p_state.setDataDictionary(p_state, dataDictionary, Object.keys(p_state.dataTable[0]));
     },
 
     setCurrentPage(p_state, p_pageName) {
@@ -189,9 +186,17 @@ export const mutations = {
 
     setDataDictionary(p_state, p_newDataDictionary, p_storeColumns) {
 
-        // Update values to existing columns in the data dictionary, but ignore any new columns
+        // 1. Update values to existing columns in the data dictionary, but ignore any new columns
         for ( const column of p_storeColumns ) {
 
+            // A. Provided data dictionary is updated with new keys/values
+            p_state.dataDictionary.provided[column] =
+                Object.assign({},
+                              p_state.dataDictionary.provided[column],
+                              p_newDataDictionary[column]);
+
+            // B. Annotated data dictionary is similarly update with new keys/values,
+            // but ensuring no annotations are removed (unless bashed by the new data dictionary)
             p_state.dataDictionary.annotated[column] =
                 Object.assign({},
                               p_state.dataDictionary.annotated[column],
