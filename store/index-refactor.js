@@ -35,12 +35,12 @@ export const getters = {
             return "";
         }
     },
-    
+
     getColumnNames(p_state) {
-    
+
         return ( 0 === p_state.dataTable.length) ? [] : Object.keys(p_state.dataTable[0] );
     },
-    
+
     getNextPage(p_state) {
 
         let nextPage = "";
@@ -122,6 +122,11 @@ export const getters = {
 
 export const actions = {
 
+    processDataDictionary( { state, commit, getters }, { data, filename }) {
+
+        commit("setDataDictionary", JSON.parse(data), getters.getColumnNames);
+    },
+
     processDataTable( { state, commit, getters }, { data, filename }) {
 
         // This action is dispatched when a new dataTable is loaded by the user.
@@ -163,16 +168,42 @@ export const mutations = {
 
     initializeDataDictionary(p_state) {
 
-        let dataDictionary = {};
+        // 0. Wipe the current provided data dictionary
+        p_state.dataDictionary.userProvided = {};
+
+        // 1. Create a skeleton data dictionary based on the data table's columns
         for ( const columnName of Object.keys(p_state.dataTable[0]) ) {
-            dataDictionary[columnName] = {"description": ""};
+
+            p_state.dataDictionary.userProvided[columnName] = { "description": "" };
         }
-        p_state.dataDictionary.annotated = Object.assign({}, dataDictionary);
+
+        // 2. Make a copy of the newly provided skeleton dictionary for annotation
+        p_state.dataDictionary.annotated = JSON.parse(JSON.stringify(p_state.dataDictionary.userProvided));
     },
 
     setCurrentPage(p_state, p_pageName) {
 
         p_state.currentPage = p_pageName;
+    },
+
+    setDataDictionary(p_state, p_newDataDictionary, p_storeColumns) {
+
+        // 1. Update values to existing columns in the data dictionary, but ignore any new columns
+        for ( const column of p_storeColumns ) {
+
+            // A. Provided data dictionary is updated with new keys/values
+            p_state.dataDictionary.userProvided[column] =
+                Object.assign({},
+                              p_state.dataDictionary.userProvided[column],
+                              p_newDataDictionary[column]);
+
+            // B. Annotated data dictionary is similarly update with new keys/values,
+            // but ensuring no annotations are removed (unless bashed by the new data dictionary)
+            p_state.dataDictionary.annotated[column] =
+                Object.assign({},
+                              p_state.dataDictionary.annotated[column],
+                              p_newDataDictionary[column]);
+        }
     },
 
     setDataTable(p_state, p_dataTable) {
