@@ -168,15 +168,17 @@ export const mutations = {
 
     initializeDataDictionary(p_state) {
 
+        // 0. Wipe the current provided data dictionary
+        p_state.dataDictionary.userProvided = {};
+
         // 1. Create a skeleton data dictionary based on the data table's columns
-        let dataDictionary = {};
         for ( const columnName of Object.keys(p_state.dataTable[0]) ) {
 
-            dataDictionary[columnName] = {"description": ""};
+            p_state.dataDictionary.userProvided[columnName] = { "description": "" };
         }
 
-        // 2. Set the newly provided skeleton dictionary
-        p_state.setDataDictionary(p_state, dataDictionary, Object.keys(p_state.dataTable[0]));
+        // 2. Make a copy of the newly provided skeleton dictionary for annotation
+        p_state.dataDictionary.annotated = JSON.parse(JSON.stringify(p_state.dataDictionary.userProvided));
     },
 
     setCurrentPage(p_state, p_pageName) {
@@ -190,9 +192,9 @@ export const mutations = {
         for ( const column of p_storeColumns ) {
 
             // A. Provided data dictionary is updated with new keys/values
-            p_state.dataDictionary.provided[column] =
+            p_state.dataDictionary.userProvided[column] =
                 Object.assign({},
-                              p_state.dataDictionary.provided[column],
+                              p_state.dataDictionary.userProvided[column],
                               p_newDataDictionary[column]);
 
             // B. Annotated data dictionary is similarly update with new keys/values,

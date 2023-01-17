@@ -13,7 +13,7 @@ describe("setDataDictionary", () => {
 
             dataDictionary: {
 
-                provided: {
+                userProvided: {
 
                     "age": {
 
@@ -45,7 +45,7 @@ describe("setDataDictionary", () => {
         };
 
         columns = Object.keys(state.dataTable[0]);
-        state.dataDictionary.annotated = JSON.parse(JSON.stringify(state.dataDictionary.provided));
+        state.dataDictionary.annotated = JSON.parse(JSON.stringify(state.dataDictionary.userProvided));
 
         newDataDictionary = {
 
@@ -77,7 +77,7 @@ describe("setDataDictionary", () => {
         expect(state.dataDictionary.annotated).to.not.contain.keys("group");
     });
 
-    it("New string/string key/value pairs for columns should replace values in the state data dictionary", () => {
+    it("New string/string key/value pairs for existing columns should replace values in the state data dictionary", () => {
 
         // Setup
         newDataDictionary["age"]["Units"] = "minutes";
