@@ -25,11 +25,13 @@
     // Allows for reference to store data by creating simple, implicit getters
     import { mapGetters } from "vuex";
 
+    import { mapState } from "vuex";
+
     export default {
 
         props: {
 
-            activeCategory: { type: String, required: true }
+            selectedCategory: { type: String, required: true }
         },
 
         data() {
@@ -53,7 +55,11 @@
 
                 "categoryClasses",
                 "getColumnNames",
-                "getColumnDescription",
+                "getColumnDescription"
+            ]),
+
+            ...mapState([
+
                 "columnToCategoryMap"
             ]),
 
@@ -76,8 +82,9 @@
             ]),
 
             applyCategory(p_row, p_index, p_event) {
+
                 // 1. Link or unlink the currently-selected/active category and the clicked column
-                this.alterColumnCategoryMapping(this.activeCategory, p_row.column);
+                this.alterColumnCategoryMapping(this.selectedCategory, p_row.column);
             },
 
             styleTableRow(p_row, p_rowType) {

@@ -9,7 +9,7 @@ describe("initializeColumnToCategoryMap", () => {
         // Setup
         state = {
 
-            columnToCategoryMapping: {},
+            columnToCategoryMap: {},
 
             dataTable: [
 
@@ -29,19 +29,19 @@ describe("initializeColumnToCategoryMap", () => {
         mutations.initializeColumnToCategoryMap(state, ["column1Name", "column2Name"]);
 
         // Assert
-        expect(state.columnToCategoryMapping).to.eql({"column1Name": null, "column2Name": null});
+        expect(state.columnToCategoryMap).to.eql({"column1Name": null, "column2Name": null});
     });
 
     it("Make sure that old columns are removed from newly updated map", () => {
 
         // Setup
-        state.columnToCategoryMapping["oldColumn1"] = "category1";
-        state.columnToCategoryMapping["oldColumn2"] = "category2";
+        state.columnToCategoryMap["oldColumn1"] = "category1";
+        state.columnToCategoryMap["oldColumn2"] = "category2";
 
         // Act
         mutations.initializeColumnToCategoryMap(state, ["column1Name", "column2Name"]);
 
         // Assert
-        expect(state.columnToCategoryMapping).to.eql({"column1Name": null, "column2Name": null});
+        expect(state.columnToCategoryMap).to.eql({"column1Name": null, "column2Name": null});
     });
 });
