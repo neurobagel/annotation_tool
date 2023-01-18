@@ -21,7 +21,8 @@
             <file-selector
                 data-cy="data-table-selector"
                 :content-type="contentTypes.dataTable"
-                @file-selected="setDataTable($event)" />
+                @file-selected="setDataTable($event)"
+                :enabled="true" />
         </b-row>
 
 
@@ -44,7 +45,8 @@
             <file-selector
                 data-cy="data-dictionary-selector"
                 :content-type="contentTypes.dataDictionary"
-                @file-selected="setDataDictionary($event)" />
+                @file-selected="mySet($event.data, getColumnNames)"
+                :enabled="dataTableSelected" />
         </b-row>
 
     </b-container>
@@ -52,7 +54,7 @@
 </template>
 
 <script>
-    import { mapActions, mapState } from "vuex";
+    import { mapGetters, mapMutations, mapState } from "vuex";
 
     export default {
 
@@ -87,15 +89,26 @@
 
         computed: {
 
+            ...mapGetters([
+
+                "getColumnNames"
+            ]),
+
             ...mapState([
 
                 "dataDictionary",
                 "dataTable"
             ]),
 
+            dataTableSelected() {
+
+                return ( this.dataTable.length > 0 );
+            },
+
             stringifiedDataDictionary() {
 
-                return JSON.stringify(this.dataDictionary, null, 4);
+                return ( 0 === Object.keys(this.dataDictionary.userProvided).length ) ? "" :
+                    JSON.stringify(this.dataDictionary.userProvided, null, 4);
             },
 
             stringifiedDataTable() {
@@ -109,11 +122,16 @@
 
         methods: {
 
-            ...mapActions([
+            ...mapMutations([
 
                 "setDataDictionary",
                 "setDataTable"
-            ])
+            ]),
+
+            mySet(p_eventData, p_columnNames) {
+
+                this.setDataDictionary({ newDataDictionary: p_eventData, columnNames: p_columnNames });
+            }
         }
     };
 
