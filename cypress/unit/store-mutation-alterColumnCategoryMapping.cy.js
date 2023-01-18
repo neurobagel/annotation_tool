@@ -1,4 +1,4 @@
-import { mutations } from "~/store/index-refactor";
+import { mutations } from "~/store/index";
 
 describe('alterColumnCategoryMapping', () => {
     it('Removes the mapping of column to category if they\'re already mapped', () => {

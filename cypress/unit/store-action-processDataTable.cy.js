@@ -1,4 +1,4 @@
-import { actions, getters, mutations } from "~/store/index-refactor";
+import { actions, getters, mutations } from "~/store/index";
 
 const context = {
     commit: () => {},

@@ -1,4 +1,4 @@
-import { getters } from "~/store/index-refactor";
+import { getters } from "~/store/index";
 
 describe('getCategoryNames', () => {
     it('returns an array of existing category names', () => {

@@ -1,4 +1,4 @@
-import { getters } from "~/store/index-refactor";
+import { getters } from "~/store/index";
 
 let state = {};
 
