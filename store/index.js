@@ -3,9 +3,44 @@ import Vue from "vue";
 
 export const state = () => ({
 
-    categories: {},
+    categories: {
 
-    columnToCategoryMapping: {},
+        "Subject ID": {
+
+        },
+        "Age": {
+
+        },
+        "Sex": {
+
+        },
+        "Diagnosis": {
+
+        }
+    },
+
+    colorInfo: {
+
+        colorPalette: {
+
+            color1: "category-style-1",
+            color2: "category-style-2",
+            color3: "category-style-3",
+            color4: "category-style-4",
+            color5: "category-style-5",
+            colorDefault: "category-style-default"
+        },
+
+        categoryToColorMap: {
+
+        },
+
+        categoryClasses: {
+
+        }
+    },
+
+    columnToCategoryMap: {},
 
     currentPage: "home",
 
@@ -134,11 +169,11 @@ export const getters = {
             case "annotation": {
 
                 // 1. Determine if at least one column has been linked to a category
-                const categorizationStatus = Object.values(p_state.columnToCategoryMapping)
+                const categorizationStatus = Object.values(p_state.columnToCategoryMap)
                                                    .some(category =>  null !== category );
 
                 // 2. Make sure one (and only one) column has been categorized as 'Subject ID'
-                const singleSubjectIDColumn = ( 1 === Object.values(p_state.columnToCategoryMapping)
+                const singleSubjectIDColumn = ( 1 === Object.values(p_state.columnToCategoryMap)
                                                             .filter(category => "Subject ID" === category)
                                                             .length );
 
@@ -163,6 +198,13 @@ export const getters = {
 
 export const actions = {
 
+    nuxtServerInit({ commit }) {
+
+        console.log("In nuxtServerInit");
+
+        commit("setupCategoryColorMaps");
+    },
+
     processDataDictionary( { state, commit, getters }, { data, filename }) {
 
         commit("setDataDictionary", JSON.parse(data), getters.getColumnNames);
@@ -177,6 +219,16 @@ export const actions = {
         commit("setDataTable", data);
         commit("initializeColumnToCategoryMap", getters.getColumnNames);
         commit("initializeDataDictionary");
+    },
+
+    updatePageDataAccessibility({ state, commit, getters }) {
+
+        console.log("In updatePageDataAccesibility");
+
+        for ( const pageName in Object.keys(state.pageData) ) {
+
+            state.pageData.accessible = getters.isPageAccessible(pageName);
+        }
     }
 };
 
@@ -191,11 +243,11 @@ export const mutations = {
      * @param {string} columnName Column that will be mapped to the category
      */
     alterColumnCategoryMapping(p_state, targetCategory, columnName) {
-        if (p_state.columnToCategoryMapping[columnName] === targetCategory) {
-            p_state.columnToCategoryMapping[columnName] = null;
+        if (p_state.columnToCategoryMap[columnName] === targetCategory) {
+            p_state.columnToCategoryMap[columnName] = null;
         }
         else {
-            p_state.columnToCategoryMapping[columnName] = targetCategory;
+            p_state.columnToCategoryMap[columnName] = targetCategory;
         }
 
     },
@@ -203,7 +255,7 @@ export const mutations = {
     initializeColumnToCategoryMap(p_state, p_columns) {
 
         // Column to category map lists all columns as keys with default value of null
-        p_state.columnToCategoryMapping =
+        p_state.columnToCategoryMap =
             Object.fromEntries(p_columns.map((column) => [column, null]));
     },
 
@@ -288,5 +340,62 @@ export const mutations = {
 
         // 2. Save a reference to the newly created data table in the store
         p_state.dataTable = transformedTable;
+    },
+
+    setupCategoryColorMaps(p_state) {
+
+        console.log("HERE 1");
+
+        // 0. Create a simple list of the categories
+        const categories = Object.keys(p_state.categories);
+
+        // 1. Get color keys from tool color palette
+        const colorKeys = Object.keys(p_state.colorInfo.colorPalette);
+
+        console.log("HERE 2");
+
+        // 2. Create the category to color map
+        let assignedCategories = 0;
+        for ( let index = 0; index < categories.length && index < colorKeys.length; index++ ) {
+
+            console.log("HERE 3");
+
+            // A. Stop when the default color key has been reached
+            if ( "colorDefault" === colorKeys[index] )
+                break;
+
+            // B. Map this category to color key
+            p_state.colorInfo.categoryToColorMap[categories[index]] = colorKeys[index];
+
+            // C. Keep track of how many categories have been assigned color keys
+            assignedCategories += 1;
+        }
+
+        console.log("HERE 4");
+
+        // D. Issue warning if there are not enough color keys for the given category set
+        if ( categories.length > assignedCategories ) {
+
+            console.log("WARNING: Not all categories have been assigned color keys!");
+        }
+
+        console.log("HERE 5");
+
+        // 3. Set up the category to CSS class map
+
+        // A. Create a map between category names and color classes
+        const mapArray = [];
+        for ( const category in categories ) {
+
+            const colorID = p_state.colorInfo.categoryToColorMap[category];
+            const colorClass = p_state.colorInfo.colorPalette[colorID];
+
+            mapArray.push([category, colorClass]);
+        }
+
+        console.log("HERE 6");
+
+        // B. Save the new category to class map
+        p_state.colorInfo.categoryClasses = Object.fromEntries(mapArray);
     }
 };
