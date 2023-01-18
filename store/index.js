@@ -1,15 +1,24 @@
-
 // Facilitate Vue reactivity via 'Vue.set' and 'Vue.delete'
 import Vue from "vue";
 
-// Root state - Stores state data
 export const state = () => ({
 
-    // Page-related data
+    categories: {},
+
+    columnToCategoryMapping: {},
 
     currentPage: "home",
 
-    columns: [],
+    dataDictionary: {
+
+        // Stores the data dictionary loaded by the user (if available) in userProvided
+        // and stores the extended version created during annotation in annotated.
+        // We use this both as a state object and as the template for the downloadable data dictionary
+        userProvided: {},
+        annotated: {}
+    },
+
+    dataTable: [],
 
     pageData: {
 
@@ -44,644 +53,34 @@ export const state = () => ({
             location: "download",
             pageName: "download"
         }
-    },
-
-    pageOrder: [
-
-        "home",
-        "categorization",
-        "annotation",
-        "download"
-    ],
-
-    // Data table (i.e. participants.tsv file)
-
-    dataTable: {
-
-        // List of data table's columns
-        columns: [],
-
-        // File name of the data table tsv file
-        filename: "",
-
-        // File type of the original data table file
-        fileType: "",
-
-        // Participants.tsv file data
-        // For format see 'convertTsvLinesToTableData' in index.js
-        original: null,
-
-        // Version of table data for annotation page
-        annotated: null
-    },
-
-    // Data dictionary (i.e. participants.json)
-
-    dataDictionary: {
-
-        // File names of the data dictionary json file
-        filename: "",
-
-        // File type of the original data dictionary file
-        fileType: "",
-
-        // Original data dictionary file data
-        original: null,
-
-        // User-amended data dictionary file data
-        amended: {}
-    },
-
-    // Stores table data in format ready for Bootstrap table
-    // This is an array of objects. See the mutation
-    // 'setupColumnToCategoryMap' for exact format
-    columnToCategoryMap: {
-
-    },
-
-    // Hardcoded list of categories used on the categorization page
-    // and possibly elsewhere in the tool
-    categories: [],
-
-    // This is a computed direct map between current categories and CSS classes
-    // See getter 'categoryClasses'
-    categoryClasses: null,
-
-    // The following fields are only accessed by store methods
-
-    // Maps our categories in 'categories' to colors in 'toolColorPalette'
-    // (Final class names pending). This way colors can be swappable and
-    // rearrangeable for categories.
-    categoryToColorMap: {},
-
-    // Map of the tools colors to CSS classes containing color (and possibly
-    // other style) values. More palettes could be defined here, either out of
-    // user preference or if we ever decided to code a light/dark mode feature
-    toolColorPalette: {
-
-        color1: "category-style-0",
-        color2: "category-style-1",
-        color3: "category-style-2",
-        color4: "category-style-3",
-        color5: "category-style-4",
-        colorDefault: "category-style-default"
-    },
-
-    // Annotation page-specific fields
-
-    // The string label applied to values designated as "missing values" when the data are annotated.
-    missingValueLabel: "missing value",
-
-    // Counter for the number of annotations that have been done
-    annotationCount: 0,
-
-    // Keeps track of textual- and component-related information for the annotation of each category
-    // See action nuxtServerInit() for initialization code
-    annotationDetails: [],
-
-    // Stores a list of (potentially) missing values for each column. This is determined in the missing-values
-    // components on the annotation page, and then amended by the user as they see fit
-    missingColumnValues: {},
-
-    // Keeps track of named assessment tool groups and their associated tools (e.g. columns in the data table)
-    toolGroups: {}
+    }
 });
 
-// Actions - Call mutations to change state data in order to maintain trace of
-// what component changed state data and when
-export const actions = {
-
-    // Initializations
-
-    initializeAnnotationDetails(p_context, p_details) {
-
-        p_context.commit("setupAnnotationDetails", p_details);
-    },
-
-    initializeCategories(p_context, p_categories) {
-
-        p_context.commit("setupCategories", p_categories);
-    },
-
-    nuxtServerInit({ commit }) {
-
-        // This function is called on Nuxt server startup
-
-        // 0. This list is default but we can swap out and reinitialize category
-        // data structures by calling store action 'initializeCategories' with
-        // a new list of categories
-        const categories = [
-
-            "Subject ID",
-            "Age",
-            "Sex",
-            "Diagnosis",
-            "Assessment Tool"
-        ];
-
-        // 0. This annotation information is default but we can swap out and reinitialize
-        // annotation data structures by calling 'initializeAnnotationDetails' with a new
-        // object containing annotation information for each category
-        const annotationDetails = [
-
-            {
-                id: 0,
-                category: "Age",
-                dataType: "continuous",
-                explanation: "This is an explanation for how to annotate age.",
-                options: {},
-                specializedComponent: "annot-age-values"
-            },
-            {
-                id: 1,
-                category: "Sex",
-                dataType: "categorical",
-                explanation: "This is an explanation for how to annotate sex.",
-                options: ["male", "female", "other"],
-                specializedComponent: "annot-discrete-choices"
-            },
-            {
-                id: 2,
-                category: "Diagnosis",
-                dataType: "string",
-                explanation: "This is an explanation for how to annotate diagnosis.",
-                options: {},
-                specializedComponent: "annot-vocabulary"
-            }
-
-            // NOTE: Assessment tools are now only added to annotationDetails when grouped
-        ];
-
-        // 1. Setup category-related data structures based on the given categories
-        commit("setupCategories", categories);
-
-        // 2. Setup annotation-related data structures based on the given categories\
-        commit("setupAnnotationDetails", annotationDetails);
-
-        // 3. Set the current page as the landing page
-        commit("setCurrentPage", "home");
-    },
-
-    // Tool navigation
-
-    // Landing page actions
-
-    saveDataDictionary(p_context, p_newFileData) {
-
-        // 1. Attempt to transform the string data into JSON if valid data given
-        if ( "json" === p_newFileData.fileType ) {
-
-            if ( null !== p_newFileData.data )
-                p_newFileData.formattedData = JSON.parse(p_newFileData.data);
-        }
-
-        // 2. Save either an empty object or the JSON dict to state data
-        p_context.commit("setDataDictionary", p_newFileData);
-    },
-
-    saveDataTable(p_context, p_newFileData) {
-
-        // 1. Attempt to convert the tsv lines into a dict for each line if valid data given
-        if ( "tsv"  === p_newFileData.fileType ) {
-
-            // 1. Save new table data, formatted for the Vue table element
-            if ( null !== p_newFileData.data )
-                p_newFileData.formattedData = convertTsvLinesToTableData(p_newFileData.data);
-
-            // 2. Save a list of the columns of this new table data
-            if ( p_newFileData.formattedData.length > 0 )
-                p_newFileData.columns = Object.keys(p_newFileData.formattedData[0]);
-        }
-
-        // 2. Save either an empty array or array of tsv dictionaries to state data
-        p_context.commit("setDataTable", p_newFileData);
-    },
-
-    // Categorization page actions
-
-    alterColumnCategoryRelation(p_context, p_relationData) {
-
-        // Category not set or categor is not the same as input category
-        if ( null === p_context.state.columnToCategoryMap[p_relationData.column] ||
-             p_relationData.category !== p_context.state.columnToCategoryMap[p_relationData.column] ) {
-
-            p_context.commit("addColumnCategorization", p_relationData.column, p_relationData.category);
-        }
-        // Else, category is the same as input category
-        else {
-
-            p_context.commit("removeColumnCategorization", p_relationData.column);
-        }
-    },
-
-    createToolGroup(p_context, p_toolGroupData) {
-
-        p_context.commit("saveToolGroup", p_toolGroupData);
-    },
-
-    modifyToolGroup(p_context, p_toolGroupData) {
-
-        p_context.commit("changeToolGroup", p_toolGroupData);
-    },
-
-    removeToolGroup(p_context, p_toolGroupData) {
-
-        p_context.commit("deleteToolGroup", p_toolGroupData);
-    },
-
-    // Annotation page actions
-
-    revertColumnToOriginal(p_context, p_column) {
-
-        // NOTE: Reverts a column of annotated data to its original set of values
-        // Currently used when a user decouples a column from a category,
-        // but could also have use if an 'Undo Annotation' button is implemented
-        // on the annotation page.
-
-        // Gather original table column values in row-order
-        const originalValues = [];
-        for ( let index = 0; index < p_context.state.dataTable.original.length; index++ ){
-            originalValues.push(p_context.state.dataTable.original[index][p_column]);
-        }
-
-        p_context.commit("changeColumnValues", {
-
-            column: p_column,
-            tableToChange: p_context.state.dataTable.annotated,
-            newValues: originalValues
-        });
-    },
-
-    saveMissingColumnValues(p_context, p_missingColumnValues) {
-
-        p_context.commit("setMissingColumnValues", p_missingColumnValues);
-    }
-};
-
-// Mutations - Change state data, as called by Actions
-export const mutations = {
-
-    // Initialization
-
-    createColumnToCategoryMap(p_state) {
-
-        // Column to category map lists all columns as keys with default value of null
-        p_state.columnToCategoryMap =
-            Object.fromEntries(p_state.dataTable.columns.map((column) => [column, null]));
-    },
-
-    setupAnnotationDetails(p_state, p_details) {
-
-        p_state.annotationDetails = p_details;
-    },
-
-    setupCategories(p_state, p_categories) {
-
-        // 1. Save the given category list
-        p_state.categories = p_categories;
-
-        // 2. Get color keys from tool color palette
-        const colorKeys = Object.keys(p_state.toolColorPalette);
-
-        // 3. Create the category to color map
-        let assignedCategories = 0;
-        for ( let index = 0; index < p_categories.length &&
-                index < colorKeys.length; index++ ) {
-
-            // A. Stop when the default color key has been reached
-            if ( "colorDefault" === colorKeys[index] )
-                break;
-
-            // B. Map this category to color key
-            p_state.categoryToColorMap[p_categories[index]] = colorKeys[index];
-
-            // C. Keep track of how many categories have been assigned color keys
-            assignedCategories += 1;
-        }
-        // D. Issue warning if there are not enough color keys for the given category set
-        if ( p_categories.length > assignedCategories ) {
-            console.log("WARNING: Not all categories have been assigned color keys!");
-        }
-
-        // 4. Set up the category to CSS class map
-
-        // A. Create a map between category names and color classes
-        const mapArray = [];
-        for ( let index = 0; index < p_state.categories.length; index++ ) {
-
-            const category = p_state.categories[index];
-            const colorID = p_state.categoryToColorMap[category];
-            const colorClass = p_state.toolColorPalette[colorID];
-
-            mapArray.push([category, colorClass]);
-        }
-
-        // B. Save the new category to class map
-        p_state.categoryClasses = Object.fromEntries(mapArray);
-    },
-
-    // Tool navigation
-
-    setCurrentPage(p_state, p_pageName) {
-
-        // Set the current page for the layout navbar
-        p_state.currentPage = p_pageName;
-    },
-
-    // Landing page
-
-    setDataDictionary(p_state, p_newFileData) {
-
-        // 1. Save the new data dictionary to state data
-        p_state.dataDictionary.original = p_newFileData.formattedData;
-
-        // 2. Save the file name of the data dictionary json file
-        p_state.dataDictionary.filename = p_newFileData.filename;
-
-        // 3. Save the file type of the new data dictionary
-        p_state.dataDictionary.fileType = p_newFileData.fileType;
-    },
-
-    setDataTable(p_state, p_newFileData) {
-
-        // 1. Save the new tsv row dictionary list to state data
-        p_state.dataTable.original = p_newFileData.formattedData;
-
-        // 2. Save the file name of the tsv file
-        p_state.dataTable.filename = p_newFileData.filename;
-
-        // 3. Save the file type of the new data table
-        p_state.dataTable.fileType = p_newFileData.fileType;
-
-        // 4. Save a list of the columns of this data table
-        p_state.dataTable.columns = p_newFileData.columns;
-
-        // 5. Make the annotated data a copy of the original
-        p_state.dataTable.annotated = structuredClone(p_state.dataTable.original);
-    },
-
-    // Categorization page
-
-    addColumnCategorization(p_state, p_column, p_category) {
-
-        // Save the categorization-column link in the annotated table
-        p_state.columnToCategoryMap[p_column] = p_category;
-    },
-
-    changeToolGroup(p_state, p_toolGroupData) {
-
-        // 1. Remove the old group from the tool group object
-        Vue.delete(p_state.toolGroups, p_toolGroupData.previousName);
-
-        // 2. Add the new group to the tool group object
-        Vue.set(p_state.toolGroups, p_toolGroupData.name, p_toolGroupData.tools);
-
-        // 3. Alter the annotation details to reflect this change
-        const detailIndex = p_state.annotationDetails.findIndex(
-            detail => p_toolGroupData.previousName === detail.groupName);
-        p_state.annotationDetails[detailIndex].groupName = p_toolGroupData.name;
-        p_state.annotationDetails[detailIndex].tools = p_toolGroupData.tools;
-    },
-
-    deleteToolGroup(p_state, p_toolGroupData) {
-
-        // 1. Remove this tool group from the list
-        Vue.delete(p_state.toolGroups, p_toolGroupData.name);
-
-        // 2. Remove the toolgroup from the annotation details
-        const groupIndex = p_state.annotationDetails.findIndex(detail =>
-            p_toolGroupData.name === detail?.groupName);
-        p_state.annotationDetails.splice(groupIndex, 1);
-    },
-
-    removeColumnCategorization(p_state, p_column) {
-
-        // Disassociate the column with this category it was linked to
-        p_state.columnToCategoryMap[p_column] = null;
-    },
-
-    deleteToolFromGroup(p_state, p_data) {
-
-        // Remove the tool from the given tool group
-        p_state.toolGroups[p_data.group].splice(
-            p_state.toolGroups[p_data.group].findIndex(element => element === p_data.tool), 1);
-    },
-
-    saveToolGroup(p_state, p_toolGroupData) {
-
-        // 1. Save this group to the tool group map
-        // p_state.set(p_state.toolGroups, p_toolGroupData.name, p_toolGroupData.tools);
-        Vue.set(p_state.toolGroups, p_toolGroupData.name, [...p_toolGroupData.tools]);
-
-        // 2. Add a new assessment tool item to the annotation details list for this tool group
-        p_state.annotationDetails.push({
-
-            id: p_state.annotationDetails.length,
-            category: "Assessment Tool",
-            dataType: "string",
-            explanation: "This is an explanation for how to annotate assessments.",
-            groupName: p_toolGroupData.name,
-            options: {},
-            specializedComponent: "annot-tool-group",
-            tools: p_state.toolGroups[p_toolGroupData.name]
-        });
-    },
-
-    // Annotation page
-
-    changeColumnValues(p_state, p_changeInfo) {
-
-        // Change the values in the given table's column
-        for ( let index = 0; index < p_changeInfo.tableToChange.length; index++ ) {
-
-            p_changeInfo.tableToChange[index][p_changeInfo.column] = p_changeInfo.newValues[index];
-        }
-    },
-
-    setAnnotatedDataTable(p_state, p_newTable) {
-
-        p_state.dataTable.annotated = p_newTable;
-    },
-
-    setMissingColumnValues(p_state, p_missingColumnValues) {
-
-        // This method merges incoming updated missingColumnValues records with the missingColumnValues
-        // object in the store. Because the incoming changes can be incomplete (e.g. only contain updated
-        // records of a single column), we cannot just overwrite the store object with them.
-        // However, because of how reactivity in Vue works, we can also not simply overwrite the affected columns
-        // (i.e. keys) in the object, because that will break reactivity.
-        // The below pattern via assign sovles this problem. See here: https://v2.vuejs.org/v2/guide/reactivity.html
-
-        const missingColumnKey = Object.keys(p_missingColumnValues)[0];
-        if ( 0 === p_missingColumnValues[missingColumnKey].length ) {
-            Vue.delete(p_state.missingColumnValues, missingColumnKey);
-        } else {
-            p_state.missingColumnValues = Object.assign({}, p_state.missingColumnValues, p_missingColumnValues);
-        }
-    }
-};
-
-// Getters - Give access to state data
 export const getters = {
 
-    columnDescription: (p_state) => (p_column) => {
+    // (p_state) => (p_column) => {
 
-        // 0. If we do not have a data dictionary then the column description is undefined (e.g. 'null')
-        let columnDescription = null;
+    getCategoryNames(p_state) {
 
-        // 1. Find the description for this column in the data dictionary
-        if ( null !== p_state.dataDictionary.original && Object.keys(p_state.dataDictionary.original).includes(p_column) ) {
+        return Object.keys(p_state.categories);
+    },
 
-            // A. Get dictionary's description string for this column
-            const dictionaryDescStr = Object.keys(p_state.dataDictionary.original[p_column]).find(
-                (key) => key.toLowerCase() === "description");
+    getColumnDescription: (p_state) => (p_columnName) => {
 
-            // B. Get the column description if the description key was found
-            if ( dictionaryDescStr ) {
-                columnDescription = p_state.dataDictionary.original[p_column][dictionaryDescStr];
-            }
+        if ( Object.hasOwn(p_state.dataDictionary.annotated[p_columnName], "description") ) {
+            return p_state.dataDictionary.annotated[p_columnName].description;
         }
-
-        return columnDescription;
-    },
-
-    columns(p_state, p_getters) {
-
-        return p_state.dataTable.columns.map(column => ({
-
-            name: column,
-            description: p_getters.columnDescription(column)
-        }));
-    },
-
-    getColumnsOfCategory: (p_state) => (p_category) => {
-
-        // If it exists in the map, retrieve the column(s) assigned this category
-        let columns = [];
-
-        for ( const column in p_state.columnToCategoryMap ) {
-            if ( p_category === p_state.columnToCategoryMap[column] ) {
-                columns.push(column);
-            }
-        }
-
-        return columns;
-    },
-
-    getGroupOfTool: (p_state) => (p_tool) => {
-
-        // Look for the group of the given tool
-        let toolGroup = null;
-        for ( const groupName in p_state.toolGroups ) {
-            if ( p_state.toolGroups[groupName].includes(p_tool) ) {
-                toolGroup = groupName;
-            }
-        }
-
-        return toolGroup;
-    },
-
-    getOriginalColumnValue: (p_state) => (p_subjectID, p_column) => {
-
-        for ( let index = 0; index < p_state.dataTable.original.length; index++ ) {
-
-            if ( p_subjectID === p_state.dataTable.original[index]["participant_id"] ) {
-
-                return p_state.dataTable.original[index][p_column];
-            }
-        }
-
-        return null;
-    },
-
-    isColumnLinkedToCategory: (p_state) => (p_matchData) => {
-
-        // Check to see if the given column has been linked to the given category
-        return ( p_matchData.category === p_state.columnToCategoryMap[p_matchData.column] );
-    },
-
-    isDataAnnotated(p_state) {
-
-        // 1. Check to see if the annotated data table is different from the original data table
-        const tablesAreEqual = p_state.dataTable.original.every((originalTableRow, index) => {
-
-            let allValuesEqual = true;
-
-            // A. Tables are different if column sizes for rows are different
-            if ( Object.keys(originalTableRow).length !== Object.keys(p_state.dataTable.annotated[index]).length ) {
-                allValuesEqual = false;
-            }
-            // B. Or, check to see if values in the respective rows are different
-            else {
-
-                for ( const column in originalTableRow ) {
-                    if ( originalTableRow[column] !== p_state.dataTable.annotated[index][column] ) {
-                        allValuesEqual = false;
-                        break;
-                    }
-                }
-            }
-
-            return allValuesEqual;
-        });
-
-        // Annotation has not occurred if both tables are equal
-        return !tablesAreEqual;
-    },
-
-    isDataDictionaryLoaded(p_state) {
-
-        return ( null !== p_state.dataDictionary.original );
-    },
-
-    isDataTableLoaded(p_state) {
-
-        return ( null !== p_state.dataTable.original );
-    },
-
-    isMissingValue: (p_state) => (p_column, p_value) => {
-
-        // Checks if a column-value combination is stored in the missingColumnValues object
-        // and returns true if it is, false otherwise
-        // if no records are stored for the entire p_column, then also returns false
-
-        if ( !Object.keys(p_state.missingColumnValues).includes(p_column) ) {
-
-            return false;
-        }
-
-        return ( p_state.missingColumnValues[p_column].includes(p_value) );
-    },
-
-    isToolGrouped: (p_state) => (p_column) => {
-
-        let foundTool = false;
-
-        // Look for tool name in the saved tool groups
-        for ( const groupName in p_state.toolGroups ) {
-
-            if ( p_state.toolGroups[groupName].includes(p_column) ) {
-                foundTool = true;
-                break;
-            }
-        }
-
-        return foundTool;
-    },
-
-    getMissingValuesColumn: (p_state) => (p_column) => {
-
-        // For a given column name returns the array of missing values the state knows about
-        // or returns null if no missing values are stored for this column name
-
-        if ( !Object.keys(p_state.missingColumnValues).includes(p_column) ) {
-            return null;
-        } else {
-            return p_state.missingColumnValues[p_column];
+        else {
+            return "";
         }
     },
 
-    nextPage(p_state) {
+    getColumnNames(p_state) {
+
+        return ( 0 === p_state.dataTable.length) ? [] : Object.keys(p_state.dataTable[0]);
+    },
+
+    getNextPage(p_state) {
 
         let nextPage = "";
 
@@ -701,7 +100,19 @@ export const getters = {
         return nextPage;
     },
 
-    pageAccessible: (p_state, p_getters) => (p_pageName) => {
+    getValueDescription: (p_state) => (p_columnName, p_value) => {
+
+        // Returns the description of a value in a column, if that description exists
+        // Otherwise it returns an empty string
+        const description = p_state.dataDictionary.annotated[p_columnName].levels?.[p_value]?.description;
+        if ( typeof description  === "undefined" ) {
+            return "";
+        }
+
+        return description;
+    },
+
+    isPageAccessible: (p_state) => (p_pageName) => {
 
         let pageAccessible = false;
 
@@ -716,133 +127,166 @@ export const getters = {
             case "categorization":
 
                 // Categorization page is accessible if a data table has been uploaded
-                pageAccessible = p_getters.isDataTableLoaded;
+                pageAccessible = p_state.dataTable.length > 0;
 
                 break;
 
             case "annotation": {
 
                 // 1. Determine if at least one column has been linked to a category
-                const linkCount = Object.values(p_state.columnToCategoryMap).filter(
-                    category => ( null !== category )).length;
-                const categorizationStatus = linkCount > 0;
+                const categorizationStatus = Object.values(p_state.columnToCategoryMapping)
+                                                   .some(category =>  null !== category );
 
-                // 2. Determine if all columns assigned the 'Assessment Tool' category have been grouped
-                const assessmentToolColumns = [];
-                for ( const column in p_state.columnToCategoryMap ) {
-                    if ( "Assessment Tool" === p_state.columnToCategoryMap[column] ) {
-                        assessmentToolColumns.push(column);
-                    }
-                }
-
-                // 3. Make sure all assessment tool columns are grouped
-                for ( const toolGroup in p_state.toolGroups ) {
-                    for ( const tool of p_state.toolGroups[toolGroup] ) {
-                        const columnIndex = assessmentToolColumns.indexOf(tool);
-                        assessmentToolColumns.splice(columnIndex, 1);
-                    }
-                }
-                const toolGroupingStatus = ( 0 === assessmentToolColumns.length );
-
-                // 4. Make sure one (and only one) column has been categorized as 'Subject ID'
-                let subjectIDFound = 0;
-                for ( const column in p_state.columnToCategoryMap ) {
-                    if ( "Subject ID" === p_state.columnToCategoryMap[column] ) {
-                        subjectIDFound += 1;
-                    }
-                }
-                const singleSubjectIDColumn = ( 1 === subjectIDFound );
+                // 2. Make sure one (and only one) column has been categorized as 'Subject ID'
+                const singleSubjectIDColumn = ( 1 === Object.values(p_state.columnToCategoryMapping)
+                                                            .filter(category => "Subject ID" === category)
+                                                            .length );
 
                 // Annotation page is only accessible if at least one column has
-                // been categorized and all assessment tools have been grouped
-                // and if one (and only one) column has been categorized as 'Subject ID'
-                pageAccessible = categorizationStatus && toolGroupingStatus && singleSubjectIDColumn;
+                // been categorized and if one (and only one) column has been categorized as 'Subject ID'
+                pageAccessible = categorizationStatus && singleSubjectIDColumn;
 
                 break;
             }
 
             case "download":
 
-                pageAccessible = p_state.annotationCount > 1;
+                pageAccessible = p_state.annotationCount > 0;
 
                 break;
         }
 
         return pageAccessible;
-    },
-
-    valueDescription: (p_state) => (p_column, p_value) => {
-
-        // 0. If we do not have a data dictionary then the value description is undefined (e.g. "")
-        let valueDescription = "";
-
-        // 1. Find the description for this column's value in the data dictionary
-        if ( null !== p_state.dataDictionary.original && Object.keys(p_state.dataDictionary.original).includes(p_column) ) {
-
-            // A. Get dictionary's levels string for this column
-            const dictionaryLevelsStr = Object.keys(p_state.dataDictionary.original[p_column]).find((key) => key.toLowerCase() === "levels");
-
-            // B. Attempt to get the value string in this 'levels' object
-            if ( dictionaryLevelsStr ) {
-
-                // I. Get the dictionary's value string for this column's value
-                const dictionaryValueStr = Object.keys(p_state.dataDictionary.original[p_column][dictionaryLevelsStr]).find(
-                    (key) => key.toLowerCase() === p_value.toLowerCase());
-
-                // II. Get the value description
-                if ( dictionaryValueStr ) {
-                    valueDescription = p_state.dataDictionary.original[p_column][dictionaryLevelsStr][dictionaryValueStr];
-                }
-            }
-        }
-
-        return valueDescription;
     }
 };
 
 
-// Action helpers
-function convertTsvLinesToTableData(p_tsvLines){
+export const actions = {
 
-    // 0. Data structure for table will be stored here
-    const tsvRowDictArray = [];
+    processDataDictionary( { state, commit, getters }, { data, filename }) {
 
-    // 1. First tsv line contains column headers
-    const columnHeaders = p_tsvLines[0];
+        commit("setDataDictionary", JSON.parse(data), getters.getColumnNames);
+    },
 
-    // 2. Create dictionaries for each tsv row keyed on the column headers
-    for ( let index = 1; index < p_tsvLines.length; index++ ){
+    processDataTable( { state, commit, getters }, { data, filename }) {
 
-        const tsvRowDict = {};
+        // This action is dispatched when a new dataTable is loaded by the user.
+        // This indicates to us that the user wants to reset the app and begin a new
+        // annotation procedure from scratch. The needed steps are handled by this action.
 
-        // A. Loop through the tsv row, matching entries with the tsv column headers
-        for ( let index2 = 0; index2 < columnHeaders.length; index2++ ) {
+        commit("setDataTable", data);
+        commit("initializeColumnToCategoryMap", getters.getColumnNames);
+        commit("initializeDataDictionary");
+    }
+};
 
-            // Skip blank lines
-            if ( "" === p_tsvLines[index].join().trim() )
+export const mutations = {
+
+    /**
+     * Change the mapping between a column and a category
+     * If the two are already mapped, the column should be unlinked
+     * Otherwise the column is mapped to a different category
+     *
+     * @param {string} targetCategory Category the column should be mapped to
+     * @param {string} columnName Column that will be mapped to the category
+     */
+    alterColumnCategoryMapping(p_state, targetCategory, columnName) {
+        if (p_state.columnToCategoryMapping[columnName] === targetCategory) {
+            p_state.columnToCategoryMapping[columnName] = null;
+        }
+        else {
+            p_state.columnToCategoryMapping[columnName] = targetCategory;
+        }
+
+    },
+
+    initializeColumnToCategoryMap(p_state, p_columns) {
+
+        // Column to category map lists all columns as keys with default value of null
+        p_state.columnToCategoryMapping =
+            Object.fromEntries(p_columns.map((column) => [column, null]));
+    },
+
+    initializeDataDictionary(p_state) {
+
+        // 0. Wipe the current provided data dictionary
+        p_state.dataDictionary.userProvided = {};
+
+        // 1. Create a skeleton data dictionary based on the data table's columns
+        for ( const columnName of Object.keys(p_state.dataTable[0]) ) {
+
+            p_state.dataDictionary.userProvided[columnName] = { "description": "" };
+        }
+
+        // 2. Make a copy of the newly provided skeleton dictionary for annotation
+        p_state.dataDictionary.annotated = JSON.parse(JSON.stringify(p_state.dataDictionary.userProvided));
+    },
+
+    setCurrentPage(p_state, p_pageName) {
+
+        p_state.currentPage = p_pageName;
+    },
+
+    // setDataDictionary: (p_state) => (p_newDataDictionary, p_storeColumns) => {
+    setDataDictionary(p_state, p_payload) {
+
+        let p_newDataDictionary = p_payload.newDataDictionary;
+        let p_storeColumns = p_payload.columnNames;
+
+        // 1. Update values to existing columns in the data dictionary, but ignore any new columns
+        for ( const column of p_storeColumns ) {
+
+            // A. Provided data dictionary is updated with new keys/values
+            p_state.dataDictionary.userProvided[column] =
+                Object.assign({},
+                              p_state.dataDictionary.userProvided[column],
+                              p_newDataDictionary[column]);
+
+            // B. Annotated data dictionary is similarly update with new keys/values,
+            // but ensuring no annotations are removed (unless bashed by the new data dictionary)
+            p_state.dataDictionary.annotated[column] =
+                Object.assign({},
+                              p_state.dataDictionary.annotated[column],
+                              p_newDataDictionary[column]);
+        }
+    },
+
+    setDataTable(p_state, p_payload) {
+
+        // 0. Get column names from the input file data
+        const inputTable = p_payload.data;
+        const columnNames = inputTable[0];
+
+        // 1. Reformat the table data into an array of objects
+        const transformedTable = [];
+        for ( let rowIndex = 1; rowIndex < inputTable.length; rowIndex++ ) {
+
+            // A. If the row is empty, we don't want it in our dataTable
+            if ( "" === inputTable[rowIndex].join("").trim() ) {
                 continue;
-
-            // I. Potential warning in case file is malformed.
-            // NOTE: Graceful handling of this will be required
-            if ( p_tsvLines[index].length !== columnHeaders.length ){
-                console.log("WARNING: tsv row " + parseInt(index) + " has different size than tsv header.");
-                console.log("Row size: " + parseInt(p_tsvLines[index].length));
-                console.log("Row: '" + p_tsvLines[index] + "'");
-                console.log("Header fields: " + columnHeaders.length);
+            } else if ( inputTable[rowIndex].length < columnNames.length ) {
+                console.warn(`WARNING: tsv row ${rowIndex} has fewer columns than the tsv header!`);
             }
 
-            // II. Save the field for this row, keyed by the current column header
-            tsvRowDict[columnHeaders[index2]] = p_tsvLines[index][index2];
+            // B. Create a list of row values, each in a tuple with their associated column name
+            let rowArray = [];
+            for ( let colIndex = 0; colIndex < inputTable[rowIndex].length; colIndex++ ) {
+
+                // Rows that are longer than the header should be truncated
+                if ( colIndex >= columnNames.length ) {
+
+                    console.warn(`WARNING: tsv row " + ${rowIndex} + " has more columns than the tsv header!`);
+                    continue;
+                }
+
+                rowArray.push([columnNames[colIndex], inputTable[rowIndex][colIndex]]);
+            }
+
+            // C. Save the reformatted row
+            transformedTable.push(Object.fromEntries(rowArray));
         }
 
-        // B. Save the row dictionary
-        // NOTE: Conditional here is to account for the possibility of a blank line
-        // among the tsv lines input to this function. We may want to readdress this
-        // via the Papa parse file input method or just leave as is
-        if ( Object.keys(tsvRowDict).length > 0 ) {
-            tsvRowDictArray.push(tsvRowDict);
-        }
+        // 2. Save a reference to the newly created data table in the store
+        p_state.dataTable = transformedTable;
     }
-
-    return tsvRowDictArray;
-}
+};
