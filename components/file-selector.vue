@@ -47,6 +47,14 @@
             };
         },
 
+        watch: {
+
+            "$store.state.pageData": function() {
+
+                this.updatePageDataAccessibility();
+            }
+        },
+
         computed: {
 
             fileName() {

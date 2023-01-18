@@ -52,6 +52,9 @@
     // Fields listed in mapState below can be found in the store (index.js)
     import { mapState } from "vuex";
 
+    // Allows for reference to store actions (index.js)
+    import { mapActions } from "vuex";
+
     export default {
 
         data() {
@@ -64,6 +67,11 @@
                     toolName: "Annotation Tool"
                 }
             };
+        },
+
+        updated() {
+
+            this.updatePageDataAccessibility();
         },
 
         computed: {
@@ -85,7 +93,19 @@
             }
         },
 
+        watch: {
+            "$store.state.pageData": function() {
+
+                this.updatePageDataAccessibility();
+            }
+        },
+
         methods: {
+
+            ...mapActions([
+
+                "updatePageDataAccessibility"
+            ]),
 
             ...mapMutations([
 
@@ -93,6 +113,10 @@
             ]),
 
             getNavItemColor(p_navItemData) {
+
+                console.log(`In getNavItemColor`);
+                console.log(`${JSON.stringify(p_navItemData)}`);
+                console.log(`Current page: ${this.currentPageName}`);
 
                 // Default color for currently unaccessible page
                 let variant = "secondary";
