@@ -21,7 +21,7 @@
             <file-selector
                 data-cy="data-table-selector"
                 :content-type="contentTypes.dataTable"
-                @file-selected="setDataTable($event)"
+                @file-selected="processDataTable($event)"
                 :enabled="true" />
         </b-row>
 
@@ -45,7 +45,7 @@
             <file-selector
                 data-cy="data-dictionary-selector"
                 :content-type="contentTypes.dataDictionary"
-                @file-selected="mySet($event.data, getColumnNames)"
+                @file-selected="processDataDictionary($event)"
                 :enabled="dataTableSelected" />
         </b-row>
 
@@ -54,7 +54,7 @@
 </template>
 
 <script>
-    import { mapGetters, mapMutations, mapState } from "vuex";
+    import { mapActions, mapState } from "vuex";
 
     export default {
 
@@ -89,11 +89,6 @@
 
         computed: {
 
-            ...mapGetters([
-
-                "getColumnNames"
-            ]),
-
             ...mapState([
 
                 "dataDictionary",
@@ -122,10 +117,10 @@
 
         methods: {
 
-            ...mapMutations([
+            ...mapActions([
 
-                "setDataDictionary",
-                "setDataTable"
+                "processDataDictionary",
+                "processDataTable"
             ]),
 
             mySet(p_eventData, p_columnNames) {

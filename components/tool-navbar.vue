@@ -114,10 +114,6 @@
 
             getNavItemColor(p_navItemData) {
 
-                console.log(`In getNavItemColor`);
-                console.log(`${JSON.stringify(p_navItemData)}`);
-                console.log(`Current page: ${this.currentPageName}`);
-
                 // Default color for currently unaccessible page
                 let variant = "secondary";
 

@@ -200,14 +200,16 @@ export const actions = {
 
     nuxtServerInit({ commit }) {
 
-        console.log("In nuxtServerInit");
-
         commit("setupCategoryColorMaps");
     },
 
-    processDataDictionary( { state, commit, getters }, { data, filename }) {
+    processDataDictionary( { state, commit, getters }, p_payload) {
 
-        commit("setDataDictionary", JSON.parse(data), getters.getColumnNames);
+        commit("setDataDictionary", {
+
+            newDataDictionary: JSON.parse(p_payload.data),
+            columnNames: getters.getColumnNames
+        });
     },
 
     processDataTable( { state, commit, getters }, { data, filename }) {
@@ -223,11 +225,13 @@ export const actions = {
 
     updatePageDataAccessibility({ state, commit, getters }) {
 
-        console.log("In updatePageDataAccesibility");
+        for ( const pageName in state.pageData ) {
 
-        for ( const pageName in Object.keys(state.pageData) ) {
+            commit("setPageAccessible", {
 
-            state.pageData.accessible = getters.isPageAccessible(pageName);
+                pageName: pageName,
+                accessible: getters.isPageAccessible(pageName)
+            });
         }
     }
 };
@@ -303,26 +307,25 @@ export const mutations = {
         }
     },
 
-    setDataTable(p_state, p_payload) {
+    setDataTable(p_state, p_inputTable) {
 
         // 0. Get column names from the input file data
-        const inputTable = p_payload.data;
-        const columnNames = inputTable[0];
+        const columnNames = p_inputTable[0];
 
         // 1. Reformat the table data into an array of objects
         const transformedTable = [];
-        for ( let rowIndex = 1; rowIndex < inputTable.length; rowIndex++ ) {
+        for ( let rowIndex = 1; rowIndex < p_inputTable.length; rowIndex++ ) {
 
             // A. If the row is empty, we don't want it in our dataTable
-            if ( "" === inputTable[rowIndex].join("").trim() ) {
+            if ( "" === p_inputTable[rowIndex].join("").trim() ) {
                 continue;
-            } else if ( inputTable[rowIndex].length < columnNames.length ) {
+            } else if ( p_inputTable[rowIndex].length < columnNames.length ) {
                 console.warn(`WARNING: tsv row ${rowIndex} has fewer columns than the tsv header!`);
             }
 
             // B. Create a list of row values, each in a tuple with their associated column name
             let rowArray = [];
-            for ( let colIndex = 0; colIndex < inputTable[rowIndex].length; colIndex++ ) {
+            for ( let colIndex = 0; colIndex < p_inputTable[rowIndex].length; colIndex++ ) {
 
                 // Rows that are longer than the header should be truncated
                 if ( colIndex >= columnNames.length ) {
@@ -331,7 +334,7 @@ export const mutations = {
                     continue;
                 }
 
-                rowArray.push([columnNames[colIndex], inputTable[rowIndex][colIndex]]);
+                rowArray.push([columnNames[colIndex], p_inputTable[rowIndex][colIndex]]);
             }
 
             // C. Save the reformatted row
@@ -342,9 +345,12 @@ export const mutations = {
         p_state.dataTable = transformedTable;
     },
 
-    setupCategoryColorMaps(p_state) {
+    setPageAccessible(p_state, p_payload) {
 
-        console.log("HERE 1");
+        p_state.pageData[p_payload.pageName].accessible = p_payload.accessible;
+    },
+
+    setupCategoryColorMaps(p_state) {
 
         // 0. Create a simple list of the categories
         const categories = Object.keys(p_state.categories);
@@ -352,13 +358,9 @@ export const mutations = {
         // 1. Get color keys from tool color palette
         const colorKeys = Object.keys(p_state.colorInfo.colorPalette);
 
-        console.log("HERE 2");
-
         // 2. Create the category to color map
         let assignedCategories = 0;
         for ( let index = 0; index < categories.length && index < colorKeys.length; index++ ) {
-
-            console.log("HERE 3");
 
             // A. Stop when the default color key has been reached
             if ( "colorDefault" === colorKeys[index] )
@@ -371,15 +373,11 @@ export const mutations = {
             assignedCategories += 1;
         }
 
-        console.log("HERE 4");
-
         // D. Issue warning if there are not enough color keys for the given category set
         if ( categories.length > assignedCategories ) {
 
             console.log("WARNING: Not all categories have been assigned color keys!");
         }
-
-        console.log("HERE 5");
 
         // 3. Set up the category to CSS class map
 
@@ -392,8 +390,6 @@ export const mutations = {
 
             mapArray.push([category, colorClass]);
         }
-
-        console.log("HERE 6");
 
         // B. Save the new category to class map
         p_state.colorInfo.categoryClasses = Object.fromEntries(mapArray);
