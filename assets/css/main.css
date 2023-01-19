@@ -45,27 +45,27 @@
 
 /* Category palette */
 
-.category-style-0 {
+.category-style-1 {
 
 	background-color: rgb(164,208,90) !important;
 	color: black !important;
 }
-.category-style-1 {
+.category-style-2 {
 	
 	background-color: rgb(127,23,167) !important;
 	color: white !important;
 }
-.category-style-2 {
+.category-style-3 {
 	
 	background-color: rgb(70,76,174) !important;
 	color: white !important;		
 }
-.category-style-3 {
+.category-style-4 {
 	
 	background-color: rgb(236,197,50) !important;
 	color: black !important;
 }
-.category-style-4 {
+.category-style-5 {
 	
 	background-color: rgb(128,1,1) !important;
 	color: white !important;	

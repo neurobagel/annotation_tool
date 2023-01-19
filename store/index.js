@@ -246,14 +246,9 @@ export const mutations = {
      * @param {string} targetCategory Category the column should be mapped to
      * @param {string} columnName Column that will be mapped to the category
      */
-    alterColumnCategoryMapping(p_state, targetCategory, columnName) {
-        if (p_state.columnToCategoryMap[columnName] === targetCategory) {
-            p_state.columnToCategoryMap[columnName] = null;
-        }
-        else {
-            p_state.columnToCategoryMap[columnName] = targetCategory;
-        }
+    alterColumnCategoryMap(p_state, p_payload) {
 
+        p_state.columnToCategoryMap[p_payload.column] = ( p_payload.category === p_state.columnToCategoryMap[p_payload.column] ) ? null : p_payload.category;
     },
 
     initializeColumnToCategoryMap(p_state, p_columns) {
@@ -383,7 +378,7 @@ export const mutations = {
 
         // A. Create a map between category names and color classes
         const mapArray = [];
-        for ( const category in categories ) {
+        for ( const category of categories ) {
 
             const colorID = p_state.colorInfo.categoryToColorMap[category];
             const colorClass = p_state.colorInfo.colorPalette[colorID];

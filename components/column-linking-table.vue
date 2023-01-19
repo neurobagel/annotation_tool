@@ -4,6 +4,7 @@
 
         <!-- Category to column linking table -->
         <b-table
+            ref="table"
             data-cy="column-linking-table-table"
             bordered
             outlined
@@ -25,6 +26,7 @@
     // Allows for reference to store data by creating simple, implicit getters
     import { mapGetters } from "vuex";
 
+    // Fields listed in mapState below can be found in the store (index.js)
     import { mapState } from "vuex";
 
     export default {
@@ -53,13 +55,13 @@
 
             ...mapGetters([
 
-                "categoryClasses",
                 "getColumnNames",
                 "getColumnDescription"
             ]),
 
             ...mapState([
 
+                "colorInfo",
                 "columnToCategoryMap"
             ]),
 
@@ -69,7 +71,7 @@
 
                     category: this.columnToCategoryMap[column],
                     column: column,
-                    description: this.getColumnDescription(column.name)
+                    description: this.getColumnDescription(column)
                 }));
             }
         },
@@ -78,13 +80,15 @@
 
             ...mapMutations([
 
-                "alterColumnCategoryMapping"
+                "alterColumnCategoryMap"
             ]),
 
             applyCategory(p_row, p_index, p_event) {
 
                 // 1. Link or unlink the currently-selected/active category and the clicked column
-                this.alterColumnCategoryMapping(this.selectedCategory, p_row.column);
+                this.alterColumnCategoryMap({ category: this.selectedCategory, column: p_row.column });
+
+                this.$refs.table.refresh();
             },
 
             styleTableRow(p_row, p_rowType) {
@@ -92,7 +96,7 @@
                 // Check to see what category has been assigned to this row's column, if any
                 const assignedCategory = this.columnToCategoryMap[p_row.column];
 
-                return ( null === assignedCategory ) ? "" : this.categoryClasses[assignedCategory];
+                return ( null === assignedCategory ) ? "" : this.colorInfo.categoryClasses[assignedCategory];
             }
         }
     };
