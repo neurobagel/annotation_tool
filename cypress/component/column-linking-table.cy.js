@@ -62,7 +62,7 @@ describe("The column-linking-table component", () => {
             },
 
             mutations: {
-                alterColumnCategoryMapping: () => (activeCategory, columnName) => {}
+                alterColumnCategoryMap: () => (activeCategory, columnName) => {}
             }
         };
 
@@ -122,6 +122,6 @@ describe("The column-linking-table component", () => {
             .click();
 
         // 3. Assert - Make sure linking mutation is commited to the store
-        cy.get("@commitSpy").should("have.been.calledWith", "alterColumnCategoryMapping", subjectIDCategory, participantIDColumn);
+        cy.get("@commitSpy").should("have.been.calledWith", "alterColumnCategoryMap", subjectIDCategory, participantIDColumn);
     });
 });

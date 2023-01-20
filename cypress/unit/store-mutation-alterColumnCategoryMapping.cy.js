@@ -1,8 +1,8 @@
 import { mutations } from "~/store/index";
 
-describe('alterColumnCategoryMapping', () => {
+describe('alterColumnCategoryMap', () => {
     it('Removes the mapping of column to category if they\'re already mapped', () => {
-        const { alterColumnCategoryMapping } = mutations;
+        const { alterColumnCategoryMap } = mutations;
         const state = {
           columnToCategoryMap : {
               "column1": "Age",
@@ -12,11 +12,11 @@ describe('alterColumnCategoryMapping', () => {
               "column5": null
           }
       };
-      alterColumnCategoryMapping(state, "Sex", "column3");
+      alterColumnCategoryMap(state, "Sex", "column3");
       expect(state.columnToCategoryMap.column3).to.equal(null);
     });
     it('Changes the mapping of column to category if they\'re not already mapped', () => {
-      const { alterColumnCategoryMapping } = mutations;
+      const { alterColumnCategoryMap } = mutations;
       const state = {
         columnToCategoryMap : {
             "column1": "Age",
@@ -26,9 +26,9 @@ describe('alterColumnCategoryMapping', () => {
             "column5": null
         }
     };
-    alterColumnCategoryMapping(state, "someCategory", "column1");
+    alterColumnCategoryMap(state, "someCategory", "column1");
     expect(state.columnToCategoryMap.column1).to.equal("someCategory");
-    alterColumnCategoryMapping(state, "someCategory", "column2");
+    alterColumnCategoryMap(state, "someCategory", "column2");
     expect(state.columnToCategoryMap.column2).to.equal("someCategory");
     });
 });
