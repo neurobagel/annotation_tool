@@ -93,8 +93,6 @@ export const state = () => ({
 
 export const getters = {
 
-    // (p_state) => (p_column) => {
-
     getCategoryNames(p_state) {
 
         return Object.keys(p_state.categories);
@@ -103,9 +101,11 @@ export const getters = {
     getColumnDescription: (p_state) => (p_columnName) => {
 
         if ( Object.hasOwn(p_state.dataDictionary.annotated[p_columnName], "description") ) {
+
             return p_state.dataDictionary.annotated[p_columnName].description;
         }
         else {
+
             return "";
         }
     },
@@ -266,7 +266,7 @@ export const mutations = {
         // 1. Create a skeleton data dictionary based on the data table's columns
         for ( const columnName of Object.keys(p_state.dataTable[0]) ) {
 
-            p_state.dataDictionary.userProvided[columnName] = { "description": "" };
+            p_state.dataDictionary.userProvided[columnName] = { "Description": "" };
         }
 
         // 2. Make a copy of the newly provided skeleton dictionary for annotation
@@ -278,7 +278,6 @@ export const mutations = {
         p_state.currentPage = p_pageName;
     },
 
-    // setDataDictionary: (p_state) => (p_newDataDictionary, p_storeColumns) => {
     setDataDictionary(p_state, p_payload) {
 
         let p_newDataDictionary = p_payload.newDataDictionary;
@@ -289,15 +288,13 @@ export const mutations = {
 
             // A. Provided data dictionary is updated with new keys/values
             p_state.dataDictionary.userProvided[column] =
-                Object.assign({},
-                              p_state.dataDictionary.userProvided[column],
+                Object.assign(p_state.dataDictionary.userProvided[column],
                               p_newDataDictionary[column]);
 
             // B. Annotated data dictionary is similarly update with new keys/values,
             // but ensuring no annotations are removed (unless bashed by the new data dictionary)
             p_state.dataDictionary.annotated[column] =
-                Object.assign({},
-                              p_state.dataDictionary.annotated[column],
+                Object.assign(p_state.dataDictionary.annotated[column],
                               p_newDataDictionary[column]);
         }
     },
