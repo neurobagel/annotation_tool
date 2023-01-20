@@ -121,12 +121,7 @@
 
                 "processDataDictionary",
                 "processDataTable"
-            ]),
-
-            mySet(p_eventData, p_columnNames) {
-
-                this.setDataDictionary({ newDataDictionary: p_eventData, columnNames: p_columnNames });
-            }
+            ])
         }
     };
 

@@ -4,7 +4,6 @@
 
         <!-- Category to column linking table -->
         <b-table
-            ref="table"
             data-cy="column-linking-table-table"
             bordered
             outlined
@@ -87,8 +86,6 @@
 
                 // 1. Link or unlink the currently-selected/active category and the clicked column
                 this.alterColumnCategoryMap({ category: this.selectedCategory, column: p_row.column });
-
-                this.$refs.table.refresh();
             },
 
             styleTableRow(p_row, p_rowType) {
