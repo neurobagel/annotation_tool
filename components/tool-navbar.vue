@@ -24,7 +24,7 @@
                         :active="currentPageName === navItem.fullName"
                         :class="getNavItemColor(navItem)"
                         :data-cy="'menu-item-' + navItem.pageName"
-                        :disabled="!isPageAccessible(navItem.pageName)"
+                        :disabled="!isPageAccessible(navItem.pageName) || currentPageName === navItem.fullName"
                         :key="navItem.pageName"
                         :to="navItem.location"
                         @click="setCurrentPage(navItem.pageName)">
@@ -90,13 +90,6 @@
             currentPageName() {
 
                 return this.pageData[this.currentPage].fullName;
-            }
-        },
-
-        watch: {
-            "$store.state.pageData": function() {
-
-                this.updatePageDataAccessibility();
             }
         },
 
