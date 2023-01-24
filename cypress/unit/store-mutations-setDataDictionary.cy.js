@@ -71,7 +71,7 @@ describe("setDataDictionary", () => {
         newDataDictionary["group"] = { "key1": "value1" };
 
         // Act
-        mutations.setDataDictionary(state, newDataDictionary, columns);
+        mutations.setDataDictionary(state, { newDataDictionary: newDataDictionary, storeColumns: columns} );
 
         // Assert
         expect(state.dataDictionary.annotated).to.not.contain.keys("group");
@@ -83,7 +83,7 @@ describe("setDataDictionary", () => {
         newDataDictionary["age"]["Units"] = "minutes";
 
         // Act
-        mutations.setDataDictionary(state, newDataDictionary, columns);
+        mutations.setDataDictionary(state, { newDataDictionary: newDataDictionary, storeColumns: columns});
 
         // Assert
         expect(state.dataDictionary.annotated["age"]["Units"]).to.equal("minutes");
@@ -95,7 +95,7 @@ describe("setDataDictionary", () => {
         newDataDictionary["sex"]["Levels"] = { "M": "a male participant", "F": "female", "NB": "non-binary" };
 
         // Act
-        mutations.setDataDictionary(state, newDataDictionary, columns);
+        mutations.setDataDictionary(state, { newDataDictionary: newDataDictionary, storeColumns: columns});
 
         // Assert
         expect(state.dataDictionary.annotated["sex"]).to.deep.equal(newDataDictionary["sex"]);

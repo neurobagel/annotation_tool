@@ -73,13 +73,10 @@ export const getters = {
     },
 
     getColumnDescription: (p_state) => (p_columnName) => {
-
         if ( Object.hasOwn(p_state.dataDictionary.annotated[p_columnName], "description") ) {
-
             return p_state.dataDictionary.annotated[p_columnName].description;
         }
         else {
-
             return "";
         }
     },
@@ -109,16 +106,13 @@ export const getters = {
         return nextPage;
     },
 
-
     getValueDescription: (p_state) => (p_columnName, p_value) => {
-
         // Returns the description of a value in a column, if that description exists
         // Otherwise it returns an empty string
         const description = p_state.dataDictionary.annotated[p_columnName].levels?.[p_value]?.description;
         if ( typeof description  === "undefined" ) {
             return "";
         }
-
         return description;
     },
 
@@ -175,7 +169,7 @@ export const actions = {
 
     processDataDictionary( { state, commit, getters }, { data, filename }) {
 
-        commit("setDataDictionary", JSON.parse(data), getters.getColumnNames);
+        commit("setDataDictionary", { newDataDictionary: JSON.parse(data), storeColumns: getters.getColumnNames });
     },
 
     processDataTable( { state, commit, getters }, { data, filename }) {
@@ -197,15 +191,16 @@ export const mutations = {
      * If the two are already mapped, the column should be unlinked
      * Otherwise the column is mapped to a different category
      *
-     * @param {string} targetCategory Category the column should be mapped to
-     * @param {string} columnName Column that will be mapped to the category
+     * @param {string} category Category the column should be mapped to
+     * @param {string} column Column that will be mapped to the category
      */
-    alterColumnCategoryMapping(p_state, targetCategory, columnName) {
-        if (p_state.columnToCategoryMapping[columnName] === targetCategory) {
-            p_state.columnToCategoryMapping[columnName] = null;
+    alterColumnCategoryMapping(p_state, { category, column }) {
+
+        if (p_state.columnToCategoryMapping[column] === category) {
+            p_state.columnToCategoryMapping[column] = null;
         }
         else {
-            p_state.columnToCategoryMapping[columnName] = targetCategory;
+            p_state.columnToCategoryMapping[column] = category;
         }
 
     },
@@ -237,23 +232,23 @@ export const mutations = {
         p_state.currentPage = p_pageName;
     },
 
-    setDataDictionary(p_state, p_newDataDictionary, p_storeColumns) {
+    setDataDictionary(p_state, { newDataDictionary, storeColumns }) {
 
         // 1. Update values to existing columns in the data dictionary, but ignore any new columns
-        for ( const column of p_storeColumns ) {
+        for ( const column of storeColumns ) {
 
             // A. Provided data dictionary is updated with new keys/values
             p_state.dataDictionary.userProvided[column] =
                 Object.assign({},
                               p_state.dataDictionary.userProvided[column],
-                              p_newDataDictionary[column]);
+                              newDataDictionary[column]);
 
             // B. Annotated data dictionary is similarly update with new keys/values,
             // but ensuring no annotations are removed (unless bashed by the new data dictionary)
             p_state.dataDictionary.annotated[column] =
                 Object.assign({},
                               p_state.dataDictionary.annotated[column],
-                              p_newDataDictionary[column]);
+                              newDataDictionary[column]);
         }
     },
 
