@@ -1,4 +1,4 @@
-import { getters } from "~/store/index-refactor";
+import { getters } from "~/store";
 
 describe("getColumnNames", () => {
     it("Returns an array of all column names in the data table", () => {
