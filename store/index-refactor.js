@@ -106,7 +106,7 @@ export const getters = {
         return nextPage;
     },
 
-    getValueDescription (p_state, p_columnName, p_value) {
+    getValueDescription: (p_state) => (p_columnName, p_value) => {
         // Returns the description of a value in a column, if that description exists
         // Otherwise it returns an empty string
         const description = p_state.dataDictionary.annotated[p_columnName].levels?.[p_value]?.description;
@@ -116,7 +116,7 @@ export const getters = {
         return description;
     },
 
-    isPageAccessible: (p_state, p_pageName) => {
+    isPageAccessible: (p_state) => (p_pageName) => {
 
         let pageAccessible = false;
 
