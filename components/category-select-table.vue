@@ -27,6 +27,9 @@
     // Allows for reference to store data by creating simple, implicit getters
     import { mapGetters } from "vuex";
 
+    // Fields listed in mapState below can be found in the store (index.js)
+    import { mapState } from "vuex";
+
     export default {
 
         name: "CategorySelectTable",
@@ -40,8 +43,12 @@
 
             ...mapGetters([
 
-                "getCategoryNames",
-                "categoryClasses"
+                "getCategoryNames"
+            ]),
+
+            ...mapState([
+
+                "colorInfo"
             ]),
 
             categoryTable() {
@@ -70,7 +77,7 @@
                     "category-transparent" : "category-opaque";
 
                 // 2. Get the color class for this row
-                const colorClass = this.categoryClasses[p_row.category];
+                const colorClass = this.colorInfo.categoryClasses[p_row.category];
 
                 return [opacityClass, colorClass];
             }

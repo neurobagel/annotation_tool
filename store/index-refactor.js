@@ -3,7 +3,52 @@ import Vue from "vue";
 
 export const state = () => ({
 
-    categories: {},
+    categories: {
+
+        "Subject ID": {
+
+        },
+        "Age": {
+
+        },
+        "Sex": {
+
+        },
+        "Diagnosis": {
+
+        }
+    },
+
+    colorInfo: {
+
+        colorPalette: {
+
+            color1: "category-style-1",
+            color2: "category-style-2",
+            color3: "category-style-3",
+            color4: "category-style-4",
+            color5: "category-style-5",
+            colorDefault: "category-style-default"
+        },
+
+        categoryToColorMap: {
+
+            "Subject ID": "color1",
+            "Age": "color2",
+            "Sex": "color3",
+            "Diagnosis": "color4",
+            "Assessment Tool": "color5"
+        },
+
+        categoryClasses: {
+
+            "Subject ID": "category-style-1",
+            "Age": "category-style-2",
+            "Sex": "category-style-3",
+            "Diagnosis": "category-style-4",
+            "Assessment Tool": "category-style-5"
+        }
+    },
 
     columnToCategoryMapping: {},
 

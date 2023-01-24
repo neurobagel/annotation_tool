@@ -21,7 +21,7 @@
             <file-selector
                 data-cy="data-table-selector"
                 :content-type="contentTypes.dataTable"
-                @file-selected="setDataTable($event)" />
+                @file-selected="processDataTable($event)" />
         </b-row>
 
 
@@ -44,7 +44,7 @@
             <file-selector
                 data-cy="data-dictionary-selector"
                 :content-type="contentTypes.dataDictionary"
-                @file-selected="setDataDictionary($event)" />
+                @file-selected="processDataDictionary($event)" />
         </b-row>
 
     </b-container>
@@ -111,8 +111,8 @@
 
             ...mapActions([
 
-                "setDataDictionary",
-                "setDataTable"
+                "processDataDictionary",
+                "processDataTable"
             ])
         }
     };
