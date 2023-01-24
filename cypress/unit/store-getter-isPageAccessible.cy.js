@@ -34,13 +34,13 @@ describe("isPageAccessible", () => {
         let nextPage = "categorization";
 
         // Assert
-        expect(getters.isPageAccessible(state, nextPage)).to.be.true;
+        expect(getters.isPageAccessible(state)(nextPage)).to.be.true;
 
         // Setup
         state.dataTable = [];
 
         // Assert
-        expect(getters.isPageAccessible(state, nextPage)).to.be.false;
+        expect(getters.isPageAccessible(state)(nextPage)).to.be.false;
     });
 
     it("Test page accessibility via the categorization page", () => {
@@ -49,13 +49,13 @@ describe("isPageAccessible", () => {
         let nextPage = "annotation";
 
         // Assert
-        expect(getters.isPageAccessible(state, nextPage)).to.be.true;
+        expect(getters.isPageAccessible(state)(nextPage)).to.be.true;
 
         // Setup
         state.columnToCategoryMapping = {};
 
         // Assert
-        expect(getters.isPageAccessible(state, nextPage)).to.be.false;
+        expect(getters.isPageAccessible(state)(nextPage)).to.be.false;
     });
 
     it("Test page accessibility via the annotation page", () => {
@@ -64,12 +64,12 @@ describe("isPageAccessible", () => {
         let nextPage = "download";
 
         // Assert
-        expect(getters.isPageAccessible(state, nextPage)).to.be.true;
+        expect(getters.isPageAccessible(state)(nextPage)).to.be.true;
 
         // Setup
         state.annotationCount = 0;
 
         // Assert
-        expect(getters.isPageAccessible(state, nextPage)).to.be.false;
+        expect(getters.isPageAccessible(state)(nextPage)).to.be.false;
     });
 });
