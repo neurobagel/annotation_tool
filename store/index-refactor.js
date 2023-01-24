@@ -27,11 +27,14 @@ export const getters = {
         return Object.keys(p_state.categories);
     },
 
-    getColumnDescription (p_state, p_columnName) {
+    getColumnDescription: (p_state) => (p_columnName) => {
+
         if ( Object.hasOwn(p_state.dataDictionary.annotated[p_columnName], "description") ) {
+
             return p_state.dataDictionary.annotated[p_columnName].description;
         }
         else {
+
             return "";
         }
     },
@@ -61,17 +64,20 @@ export const getters = {
         return nextPage;
     },
 
-    getValueDescription (p_state, p_columnName, p_value) {
+
+    getValueDescription: (p_state) => (p_columnName, p_value) => {
+
         // Returns the description of a value in a column, if that description exists
         // Otherwise it returns an empty string
         const description = p_state.dataDictionary.annotated[p_columnName].levels?.[p_value]?.description;
         if ( typeof description  === "undefined" ) {
             return "";
         }
+
         return description;
     },
 
-    isPageAccessible: (p_state, p_pageName) => {
+    isPageAccessible: (p_state) => (p_pageName) => {
 
         let pageAccessible = false;
 
