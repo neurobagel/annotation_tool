@@ -41,8 +41,8 @@
 
 <script>
 
-    // Fields listed in mapState below can be found in the store (index.js)
-    import { mapState } from "vuex";
+    // Methods listed in mapGetters below can be found in the store (index.js)
+    import { mapGetters } from "vuex";
 
     export default {
 
@@ -66,16 +66,16 @@
 
         computed: {
 
-            ...mapState([
+            ...mapGetters([
 
-                "categories"
+                "getCategoryNames"
             ])
         },
 
         mounted() {
 
             // Set selected category to the first category by default
-            this.setSelectedCategory(this.categories[0]);
+            this.setSelectedCategory(this.getCategoryNames[0]);
         },
 
         methods: {
