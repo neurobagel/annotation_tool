@@ -1,4 +1,4 @@
-import { mutations } from "~/store/index-refactor";
+import { mutations } from "~/store";
 
 let state = {};
 
