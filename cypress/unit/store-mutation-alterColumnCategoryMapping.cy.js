@@ -32,7 +32,7 @@ describe("alterColumnCategoryMapping", () => {
                 "column5": null
             }
         };
-    
+
         alterColumnCategoryMapping(state, { category: "someCategory", column: "column1" });
         expect(state.columnToCategoryMapping.column1).to.equal("someCategory");
         alterColumnCategoryMapping(state, { category: "someCategory", column: "column2" });
