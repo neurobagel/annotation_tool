@@ -7,50 +7,63 @@ import ColumnLinkingTable from "~/components/column-linking-table.vue";
 // Tests
 
 describe("The column-linking-table component", () => {
+
     // Initialize the mocks
     let store;
     let props;
 
     beforeEach(() => {
+
         // Redefine the mocks
         store = {
+
             commit: () => {},
+
             getters: {
 
-                categories: () => {
+                getCategoryNames: () => {
 
                     return [
 
                         "Subject ID",
                         "Age",
-                        "Sex"
+                        "Sex",
+                        "Diagnosis",
+                        "Assessment Tool"
                     ];
                 },
 
-                categoryClasses: () => {
+                colorInfo: () => {
 
                     return {
 
-                        "Subject ID": "category-style-0",
-                        "Age": "category-style-1",
-                        "Sex": "category-style-2"
+                        categoryClasses: {
+
+                            "Subject ID": "category-style-1",
+                            "Age": "category-style-2",
+                            "Sex": "category-style-3",
+                            "Diagnosis": "category-style-4",
+                            "Assessment Tool": "category-style-5"
+                        }
                     };
                 },
 
                 getColumnNames: () => {
 
                     return [
+
                         "participant_id",
                         "age",
                         "sex"
                     ];
                 },
 
-                getColumnDescription: () => (columnName) => {
+                getColumnDescription: () => (p_columnName) => {
+
                     return "descriptions help";
                 },
 
-                columnToCategoryMap: () => {
+                columnToCategoryMapping: () => {
 
                     return {
 
@@ -62,18 +75,20 @@ describe("The column-linking-table component", () => {
             },
 
             mutations: {
-                alterColumnCategoryMapping: () => (activeCategory, columnName) => {}
+
+                alterColumnCategoryMap: () => ({category, column}) => {}
             }
         };
 
         props = {
 
-            activeCategory: "Subject ID"
+            selectedCategory: "Subject ID"
         };
 
     });
 
-    it("correctly displays columns and descriptions", () => {
+    it("Correctly displays columns and descriptions", () => {
+
         cy.mount(ColumnLinkingTable, {
 
             mocks: {
@@ -89,19 +104,20 @@ describe("The column-linking-table component", () => {
         });
 
         for ( const columnName of ["participant_id", "age", "sex"] ) {
+
             cy.get("[data-cy='column-linking-table-table']").contains(columnName).parent().as("targetRow");
             cy.get("@targetRow").contains("descriptions help");
         }
-
     });
-    it("can alter link relation (add/remove) between a column and a category", () => {
+
+    it("Can alter link relation (add/remove) between a column and a category", () => {
 
         // 0. The first category and column
         const participantIDColumn = store.getters.getColumnNames()[0];
-        const subjectIDCategory = store.getters.categories()[0];
+        const subjectIDCategory = store.getters.getCategoryNames()[0];
 
         // 1. Arrange - Set up the spy, mount the component, and bind the spy to it
-        cy.spy(store, 'commit').as('commitSpy');
+        cy.spy(store, "commit").as("commitSpy");
         cy.mount(ColumnLinkingTable, {
 
             mocks: {
@@ -122,6 +138,6 @@ describe("The column-linking-table component", () => {
             .click();
 
         // 3. Assert - Make sure linking mutation is commited to the store
-        cy.get("@commitSpy").should("have.been.calledWith", "alterColumnCategoryMapping", subjectIDCategory, participantIDColumn);
+        cy.get("@commitSpy").should("have.been.calledWith", "alterColumnCategoryMapping", { category: subjectIDCategory, column: participantIDColumn });
     });
 });

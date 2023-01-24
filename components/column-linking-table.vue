@@ -19,17 +19,14 @@
 
 <script>
 
-    // Allows for reference to store mutations (index.js)
-    import { mapMutations } from "vuex";
-
-    // Allows for reference to store data by creating simple, implicit getters
-    import { mapGetters } from "vuex";
+    // Allows for reference to store (index.js)
+    import { mapMutations, mapGetters, mapState } from "vuex";
 
     export default {
 
         props: {
 
-            activeCategory: { type: String, required: true }
+            selectedCategory: { type: String, required: true }
         },
 
         data() {
@@ -51,19 +48,23 @@
 
             ...mapGetters([
 
-                "categoryClasses",
                 "getColumnNames",
-                "getColumnDescription",
-                "columnToCategoryMap"
+                "getColumnDescription"
+            ]),
+
+            ...mapState([
+
+                "colorInfo",
+                "columnToCategoryMapping"
             ]),
 
             tableRows() {
 
                 return this.getColumnNames.map(column => ({
 
-                    category: this.columnToCategoryMap[column],
+                    category: this.columnToCategoryMapping[column],
                     column: column,
-                    description: this.getColumnDescription(column.name)
+                    description: this.getColumnDescription(column)
                 }));
             }
         },
@@ -76,16 +77,17 @@
             ]),
 
             applyCategory(p_row, p_index, p_event) {
-                // 1. Link or unlink the currently-selected/active category and the clicked column
-                this.alterColumnCategoryMapping(this.activeCategory, p_row.column);
+
+                // Link or unlink the currently-selected/active category and the clicked column
+                this.alterColumnCategoryMapping({ category: this.selectedCategory, column: p_row.column });
             },
 
             styleTableRow(p_row, p_rowType) {
 
                 // Check to see what category has been assigned to this row's column, if any
-                const assignedCategory = this.columnToCategoryMap[p_row.column];
+                const assignedCategory = this.columnToCategoryMapping[p_row.column];
 
-                return ( null === assignedCategory ) ? "" : this.categoryClasses[assignedCategory];
+                return ( null === assignedCategory ) ? "" : this.colorInfo.categoryClasses[assignedCategory];
             }
         }
     };
