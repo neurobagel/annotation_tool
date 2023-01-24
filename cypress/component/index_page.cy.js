@@ -84,7 +84,7 @@ describe("The index page", () => {
             plugins: ["bootstrap-vue"]
         });
         cy.get("[data-cy='data-table-selector']").contains("Choose file").click().selectFile("@exampleTable");
-        cy.get("@dispatchSpy").should("have.been.calledWith", "setDataTable", {
+        cy.get("@dispatchSpy").should("have.been.calledWith", "processDataTable", {
             "data": [
                 [
                     "participant_id",
@@ -122,7 +122,7 @@ describe("The index page", () => {
         });
 
         cy.get("[data-cy='data-dictionary-selector']").contains("Choose file").click().selectFile("@exampleDictionary");
-        cy.get("@dispatchSpy").should("have.been.calledWith", "setDataDictionary", {
+        cy.get("@dispatchSpy").should("have.been.calledWith", "processDataDictionary", {
             "data": "{\"age\":{\"Description\":\"age of the participant\",\"Units\":\"years\"},\"sex\":{\"Description\":\"sex of the participant as reported by the participant\",\"Levels\":{\"M\":\"male\",\"F\":\"female\"}},\"group\":{\"Description\":\"diagnostic status determined by the study clinician at baseline\",\"Levels\":{\"AD\":\"individuals with Alzheimer's Disease\",\"HC\":\"healthy controls\",\"MCI\":\"individuals with Mild Cognitive Impairment\"}}}",
             "filename": "example_short.json"
         });
