@@ -24,7 +24,7 @@
                         :active="currentPageName === navItem.fullName"
                         :class="getNavItemColor(navItem)"
                         :data-cy="'menu-item-' + navItem.pageName"
-                        :disabled="!isPageAccessible(navItem.pageName)"
+                        :disabled="!navItem.accessible"
                         :key="navItem.pageName"
                         :to="navItem.location"
                         @click="setCurrentPage(navItem.pageName)">
@@ -52,6 +52,9 @@
     // Fields listed in mapState below can be found in the store (index.js)
     import { mapState } from "vuex";
 
+    // Allows for reference to store actions (index.js)
+    import { mapActions } from "vuex";
+
     export default {
 
         data() {
@@ -64,6 +67,15 @@
                     toolName: "Annotation Tool"
                 }
             };
+        },
+
+        created() {
+
+            this.$store.watch(
+                () => { return this.$store.state; },
+                this.updatePageDataAccessibility,
+                { deep: true }
+            );
         },
 
         computed: {
@@ -86,6 +98,11 @@
         },
 
         methods: {
+
+            ...mapActions([
+
+                "updatePageDataAccessibility"
+            ]),
 
             ...mapMutations([
 

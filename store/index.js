@@ -64,7 +64,7 @@ export const state = () => ({
             accessible: true,
             fullName: "Home",
             location: "/",
-            pageName: "index"
+            pageName: "home"
         },
 
         categorization: {
@@ -212,6 +212,18 @@ export const actions = {
         commit("setDataTable", data);
         commit("initializeColumnToCategoryMap", getters.getColumnNames);
         commit("initializeDataDictionary");
+    },
+
+    updatePageDataAccessibility({ state, commit, getters }) {
+
+        for ( const pageName in state.pageData ) {
+
+            commit("setPageAccessible", {
+
+                pageName: pageName,
+                accessible: getters.isPageAccessible(pageName)
+            });
+        }
     }
 };
 
@@ -310,5 +322,10 @@ export const mutations = {
         }
 
         p_state.dataTable = dataTable;
+    },
+
+    setPageAccessible(p_state, p_payload) {
+
+        p_state.pageData[p_payload.pageName].accessible = p_payload.accessible;
     }
 };
