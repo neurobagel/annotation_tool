@@ -95,7 +95,8 @@
 
             stringifiedDataDictionary() {
 
-                return JSON.stringify(this.dataDictionary, null, 4);
+                return ( 0 === Object.keys(this.dataDictionary.userProvided).length ) ? "" :
+                    JSON.stringify(this.dataDictionary.userProvided, null, 4);
             },
 
             stringifiedDataTable() {
