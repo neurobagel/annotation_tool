@@ -241,22 +241,20 @@ Cypress.Commands.add("loadTestDataIntoStore", (p_dataset) => {
     // 1. Load data table from file and save it to the Vuex store
     cy.loadDataTable(p_dataset.source_folder, p_dataset.data_table).then(dataTable => {
 
-        cy.dispatchToNuxtStore("saveDataTable", {
+        cy.dispatchToNuxtStore("processDataTable", {
 
             data: dataTable,
-            filename: p_dataset.data_table,
-            fileType: "tsv"
+            filename: p_dataset.data_table
         });
     });
 
     // 2. Load data table from file and save it to the Vuex store
     cy.loadDataDictionary(p_dataset.source_folder, p_dataset.data_dictionary).then(dataDictionary => {
 
-        cy.dispatchToNuxtStore("saveDataDictionary", {
+        cy.dispatchToNuxtStore("processDataDictionary", {
 
             data: dataDictionary,
-            filename: p_dataset.data_dictionary,
-            fileType: "json"
+            filename: p_dataset.data_dictionary
         });
     });
 });
