@@ -97,16 +97,19 @@ export const getters = {
 
     getCategoryNames (p_state) {
 
+
         return Object.keys(p_state.categories);
     },
 
     getColumnDescription: (p_state) => (p_columnName) => {
+
 
         if ( Object.hasOwn(p_state.dataDictionary.annotated[p_columnName], "description") ) {
 
             return p_state.dataDictionary.annotated[p_columnName].description;
         }
         else {
+
 
             return "";
         }
