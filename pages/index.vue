@@ -21,7 +21,8 @@
             <file-selector
                 data-cy="data-table-selector"
                 :content-type="contentTypes.dataTable"
-                @file-selected="processDataTable($event)" />
+                @file-selected="processDataTable($event)"
+                :enabled="true" />
         </b-row>
 
 
@@ -44,7 +45,8 @@
             <file-selector
                 data-cy="data-dictionary-selector"
                 :content-type="contentTypes.dataDictionary"
-                @file-selected="processDataDictionary($event)" />
+                @file-selected="processDataDictionary($event)"
+                :enabled="dataTableSelected" />
         </b-row>
 
     </b-container>
@@ -92,6 +94,11 @@
                 "dataDictionary",
                 "dataTable"
             ]),
+
+            dataTableSelected() {
+
+                return ( this.dataTable.length > 0 );
+            },
 
             stringifiedDataDictionary() {
 
