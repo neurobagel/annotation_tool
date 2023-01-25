@@ -51,26 +51,28 @@ describe("tests on the index page via store interaction", () => {
                 cy.assertNextPageAccess("categorization", true);
             });
 
-            // Description: User selects data dictionary alone
+            // Description: User cannot select a data dictionary alone
             // Expected results: Categorization nav and next page button remain disabled
             it("select data dictionary only", () => {
 
                 // 1. Assert that categorization nav item and next button are disabled
                 cy.assertNextPageAccess("categorization", false);
 
-                // 2. Select participants dictionary
+                // 2. Check that data dictionary file select button is disabled
+                cy.get("[data-cy='data-dictionary-selector']").should("be.disabled");
+
+                // 3. Select participants dictionary
                 cy.get("[data-cy='data-dictionary-selector']")
                     .contains("Choose file")
-                    .click()
-                    .selectFile(dataFolder + p_dataset.data_dictionary);
+                    .click();
 
-                // 3. Assert that categorization nav item and next button are *still* disabled
+                // 4. Assert that categorization nav item and next button are *still* disabled
                 cy.assertNextPageAccess("categorization", false);
             });
 
-            // Description: User selects data table and data dictionary
+            // Description: User selects data table and then selects data dictionary
             // Expected results: Categorization nav and Next page button are only enabled after data table selection
-            it("select both data table and dictionary", () => {
+            it("select data table followed by data dictionary", () => {
 
                 // 1. Assert that categorization nav item and next button are disabled
                 cy.assertNextPageAccess("categorization", false);
