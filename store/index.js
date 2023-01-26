@@ -280,6 +280,10 @@ export const mutations = {
                               p_state.dataDictionary.annotated[column],
                               newDataDictionary[column]);
         }
+
+        // 2. Create a new object in case additions/deletions to the data
+        // dictionary object in order to maintain Vue reactivity
+        p_state.dataDictionary = Object.assign({}, p_state.dataDictionary);
     },
 
     setDataTable(p_state, p_dataTable) {
