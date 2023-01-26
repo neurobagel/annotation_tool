@@ -12,7 +12,7 @@
             <textarea
                 :cols="textArea.height"
                 :rows="textArea.width"
-                v-model="stringifiedDataTable"
+                :value="stringifiedDataTable"
                 data-cy="data-table-display" />
         </b-row>
 
@@ -36,7 +36,7 @@
             <textarea
                 :cols="textArea.height"
                 :rows="textArea.width"
-                v-model="stringifiedDataDictionary"
+                :value="dataDictionaryAsString"
                 data-cy="data-dictionary-display" />
         </b-row>
 
@@ -71,6 +71,8 @@
                     dataTable: "text/tab-separated-values"
                 },
 
+                dataDictionaryAsString: "",
+
                 // Size of the file display textboxes
                 textArea: {
 
@@ -87,6 +89,11 @@
             };
         },
 
+        mounted() {
+
+            this.stringifyDataDictionary();
+        },
+
         computed: {
 
             ...mapState([
@@ -100,12 +107,6 @@
                 return ( this.dataTable.length > 0 );
             },
 
-            stringifiedDataDictionary() {
-
-                return ( 0 === Object.keys(this.dataDictionary.userProvided).length ) ? "" :
-                    JSON.stringify(this.dataDictionary.userProvided, null, 4);
-            },
-
             stringifiedDataTable() {
 
                 // Returns only the cell values of the table as a formatted string (no column names)
@@ -115,13 +116,34 @@
             }
         },
 
+        watch: {
+
+            dataDictionary: {
+
+                deep: true,
+                handler() {
+
+                    this.stringifyDataDictionary();
+                }
+            }
+        },
+
         methods: {
 
             ...mapActions([
 
                 "processDataDictionary",
                 "processDataTable"
-            ])
+            ]),
+
+            stringifyDataDictionary() {
+
+                this.dataDictionaryAsString = "";
+                if ( Object.keys(this.dataDictionary.userProvided).length > 0 ) {
+
+                    this.dataDictionaryAsString = JSON.stringify(this.dataDictionary.userProvided, null, 4);
+                }
+            }
         }
     };
 
