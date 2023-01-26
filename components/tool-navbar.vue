@@ -24,7 +24,7 @@
                         :active="currentPageName === navItem.fullName"
                         :class="getNavItemColor(navItem)"
                         :data-cy="'menu-item-' + navItem.pageName"
-                        :disabled="!isPageAccessible(pageData[getNextPage].pageName)"
+                        :disabled="!isPageAccessible(navItem.pageName)"
                         :key="navItem.pageName"
                         :to="navItem.location"
                         @click="setCurrentPage(navItem.pageName)">

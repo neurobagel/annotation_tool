@@ -97,6 +97,8 @@
 
             dataTableSelected() {
 
+                // Return whether or not a data table has been selected
+                // (used to enable data dictionary selection)
                 return ( this.dataTable.length > 0 );
             },
 
