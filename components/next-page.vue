@@ -14,7 +14,7 @@
             <b-button
                 class="float-right"
                 data-cy="button-nextpage"
-                :disabled="!pageData[getNextPage].accessible"
+                :disabled="!isPageAccessible(pageData[getNextPage].pageName)"
                 :to="'/' + pageData[getNextPage].location"
                 :variant="nextPageButtonColor"
                 @click="setCurrentPage(getNextPage)">

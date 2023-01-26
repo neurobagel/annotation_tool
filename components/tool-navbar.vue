@@ -24,7 +24,7 @@
                         :active="currentPageName === navItem.fullName"
                         :class="getNavItemColor(navItem)"
                         :data-cy="'menu-item-' + navItem.pageName"
-                        :disabled="!navItem.accessible"
+                        :disabled="!isPageAccessible(navItem.pageName)"
                         :key="navItem.pageName"
                         :to="navItem.location"
                         @click="setCurrentPage(navItem.pageName)">
@@ -69,15 +69,6 @@
             };
         },
 
-        created() {
-
-            this.$store.watch(
-                () => { return this.$store.state; },
-                this.updatePageDataAccessibility,
-                { deep: true }
-            );
-        },
-
         computed: {
 
             ...mapGetters([
@@ -99,11 +90,6 @@
 
         methods: {
 
-            ...mapActions([
-
-                "updatePageDataAccessibility"
-            ]),
-
             ...mapMutations([
 
                 "setCurrentPage"
@@ -119,7 +105,7 @@
                     variant = "dark";
                 }
                 // Else, if the page is accessible
-                else if ( p_navItemData.accessible  ) {
+                else if ( this.isPageAccessible(p_navItemData.pageName) ) {
                     variant = "success";
                 }
 
