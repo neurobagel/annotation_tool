@@ -52,9 +52,6 @@
     // Fields listed in mapState below can be found in the store (index.js)
     import { mapState } from "vuex";
 
-    // Allows for reference to store actions (index.js)
-    import { mapActions } from "vuex";
-
     export default {
 
         data() {
