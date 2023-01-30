@@ -1,4 +1,4 @@
-describe("tests on the index page via store interaction", () => {
+describe("Tests on the index page via store interaction", () => {
 
     // Fixtures folder prefix needed for manual file loading
     const fixturesFolder = "./cypress/fixtures/";
