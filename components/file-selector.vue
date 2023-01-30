@@ -4,9 +4,9 @@
 
         <b-row class="file-selector-row">
             <b-form>
-                <label class="file-selector-button btn">
+                <label :class="labelClass" :disabled="!enabled">
                     {{ uiText.instructions }}
-                    <input type="file" :accept="contentType" @change="onFileSelected" />
+                    <input v-if="enabled" type="file" :accept="contentType" @change="onFileSelected" />
                 </label>
                 <span>{{ fileName }}</span>
             </b-form>
@@ -24,7 +24,8 @@
 
         props: {
 
-            contentType: { type: String, required: true }
+            contentType: { type: String, required: true },
+            enabled: { type: Boolean, required: true }
         },
 
         data() {
@@ -52,6 +53,12 @@
 
                 // null - No file has been selected yet
                 return ( null === this.fileInput ) ? "" : this.fileInput.name;
+            },
+
+            labelClass() {
+
+                return ( this.enabled ) ? "file-selector-button btn" :
+                    "disabled-file-selector-button btn";
             }
         },
 
@@ -128,12 +135,14 @@
         display: none;
     }
 
-    .custom-file-upload {
+    .disabled-file-selector-button {
 
-        border: 1px solid #ccc;
-        cursor: pointer;
-        display: inline-block;
-        padding: 6px 12px;
+        background-color: #6c757d;
+        border-color: #6c757d;
+        border-radius: 5px;
+        color: white;
+        opacity: 0.65;
+        padding: 0.5em 0.75em 0.5em 0.75em;
     }
 
     .file-selector-button {

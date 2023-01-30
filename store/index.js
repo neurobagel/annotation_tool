@@ -61,15 +61,13 @@ export const state = () => ({
 
         home: {
 
-            accessible: true,
             fullName: "Home",
             location: "/",
-            pageName: "index"
+            pageName: "home"
         },
 
         categorization: {
 
-            accessible: false,
             fullName: "Categorization",
             location: "categorization",
             pageName: "categorization"
@@ -77,7 +75,6 @@ export const state = () => ({
 
         annotation: {
 
-            accessible: false,
             fullName: "Annotation",
             location: "annotation",
             pageName: "annotation"
@@ -85,7 +82,6 @@ export const state = () => ({
 
         download: {
 
-            accessible: false,
             fullName: "Download",
             location: "download",
             pageName: "download"
@@ -97,16 +93,19 @@ export const getters = {
 
     getCategoryNames (p_state) {
 
+
         return Object.keys(p_state.categories);
     },
 
     getColumnDescription: (p_state) => (p_columnName) => {
+
 
         if ( Object.hasOwn(p_state.dataDictionary.annotated[p_columnName], "description") ) {
 
             return p_state.dataDictionary.annotated[p_columnName].description;
         }
         else {
+
 
             return "";
         }
@@ -281,6 +280,10 @@ export const mutations = {
                               p_state.dataDictionary.annotated[column],
                               newDataDictionary[column]);
         }
+
+        // 2. Create a new object in case additions/deletions to the data
+        // dictionary object in order to maintain Vue reactivity
+        p_state.dataDictionary = Object.assign({}, p_state.dataDictionary);
     },
 
     setDataTable(p_state, p_dataTable) {

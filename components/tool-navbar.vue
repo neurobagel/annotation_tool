@@ -102,7 +102,7 @@
                     variant = "dark";
                 }
                 // Else, if the page is accessible
-                else if ( p_navItemData.accessible  ) {
+                else if ( this.isPageAccessible(p_navItemData.pageName) ) {
                     variant = "success";
                 }
 

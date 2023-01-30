@@ -12,7 +12,7 @@
             <textarea
                 :cols="textArea.height"
                 :rows="textArea.width"
-                v-model="stringifiedDataTable"
+                :value="stringifiedDataTable"
                 data-cy="data-table-display" />
         </b-row>
 
@@ -21,7 +21,8 @@
             <file-selector
                 data-cy="data-table-selector"
                 :content-type="contentTypes.dataTable"
-                @file-selected="processDataTable($event)" />
+                @file-selected="processDataTable($event)"
+                :enabled="true" />
         </b-row>
 
 
@@ -35,7 +36,7 @@
             <textarea
                 :cols="textArea.height"
                 :rows="textArea.width"
-                v-model="stringifiedDataDictionary"
+                :value="stringifiedDataDictionary"
                 data-cy="data-dictionary-display" />
         </b-row>
 
@@ -44,7 +45,8 @@
             <file-selector
                 data-cy="data-dictionary-selector"
                 :content-type="contentTypes.dataDictionary"
-                @file-selected="processDataDictionary($event)" />
+                @file-selected="processDataDictionary($event)"
+                :enabled="dataTableSelected" />
         </b-row>
 
     </b-container>
@@ -93,9 +95,17 @@
                 "dataTable"
             ]),
 
+            dataTableSelected() {
+
+                // Return whether or not a data table has been selected
+                // (used to enable data dictionary selection)
+                return ( this.dataTable.length > 0 );
+            },
+
             stringifiedDataDictionary() {
 
-                return JSON.stringify(this.dataDictionary, null, 4);
+                return ( 0 === Object.keys(this.dataDictionary.userProvided).length )
+                    ? "" : JSON.stringify(this.dataDictionary.userProvided, null, 4);
             },
 
             stringifiedDataTable() {
