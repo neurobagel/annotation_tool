@@ -44,19 +44,15 @@ Cypress.Commands.add("assertButtonStatus", (p_buttonName, p_enabled) => {
         .should(chainer, "disabled");
 });
 
-Cypress.Commands.add("assertNextPageAccess", (p_pageName, p_enabled, p_checkMenu=true, p_checkButton=true) => {
+Cypress.Commands.add("assertNextPageAccess", (p_pageName, p_enabled) => {
 
     let chainer = ( p_enabled ) ? "not.have.class" : "have.class";
 
-    if ( p_checkMenu ) {
-        cy.get("[data-cy='menu-item-" + p_pageName + "'] a")
-            .should(chainer, "disabled");
-    }
+    cy.get("[data-cy='menu-item-" + p_pageName + "'] a")
+        .should(chainer, "disabled");
 
-    if ( p_checkButton ) {
-        cy.get("[data-cy='button-nextpage']")
-            .should(chainer, "disabled");
-    }
+    cy.get("[data-cy='button-nextpage-" + p_pageName + "']")
+        .should(chainer, "disabled");
 });
 
 Cypress.Commands.add("categorizeColumn", (p_category, p_column) => {
