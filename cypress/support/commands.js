@@ -51,7 +51,7 @@ Cypress.Commands.add("assertNextPageAccess", (p_pageName, p_enabled) => {
     cy.get("[data-cy='menu-item-" + p_pageName + "'] a")
         .should(chainer, "disabled");
 
-    cy.get("[data-cy='button-nextpage-" + p_pageName + "']")
+    cy.get("[data-cy='button-nextpage']")
         .should(chainer, "disabled");
 });
 
@@ -115,6 +115,16 @@ Cypress.Commands.add("datasetMeetsTestCriteria", (p_pageName, p_datasetConfig, p
     }
 
     return true;
+});
+
+// Calls mutation in the Nuxt store
+Cypress.Commands.add("commitToNuxtStore", (p_mutation, p_data) => {
+
+    // Commit mutation with given data on the Nuxt store
+    cy.window().its("$nuxt.$store").then(p_store => {
+
+        p_store.commit(p_mutation, p_data);
+    });
 });
 
 // Calls action in the Nuxt store
@@ -245,15 +255,15 @@ Cypress.Commands.add("loadTestDataIntoStore", (p_dataset) => {
             data: dataTable,
             filename: p_dataset.data_table
         });
-    });
 
-    // 2. Load data table from file and save it to the Vuex store
-    cy.loadDataDictionary(p_dataset.source_folder, p_dataset.data_dictionary).then(dataDictionary => {
+        // 2. Load data table from file and save it to the Vuex store
+        cy.loadDataDictionary(p_dataset.source_folder, p_dataset.data_dictionary).then(dataDictionary => {
 
-        cy.dispatchToNuxtStore("processDataDictionary", {
+            cy.dispatchToNuxtStore("processDataDictionary", {
 
-            data: dataDictionary,
-            filename: p_dataset.data_dictionary
+                data: dataDictionary,
+                filename: p_dataset.data_dictionary
+            });
         });
     });
 });
