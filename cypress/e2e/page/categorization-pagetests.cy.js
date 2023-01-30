@@ -36,7 +36,12 @@ describe("Tests on categorization page ui via programmatic state loading and sto
                 // when a page is 'visited' by Cypress
                 cy.window().its("$nuxt.$router").then(router => {
 
+                    // A. Route to categorization page
                     router.push({ path: "/categorization" });
+
+                    // B. Once routing is complete, set the current page in the nuxt store
+                    // (normally would happen via navigation clicks)
+                    cy.commitToNuxtStore("setCurrentPage", "categorization");
                 });
             });
 
@@ -58,13 +63,13 @@ describe("Tests on categorization page ui via programmatic state loading and sto
                 if ( cy.datasetMeetsTestCriteria("categorization", p_dataset, testCriteria) ) {
 
                     // 1. Assert annotation nav and next page button are disabled
-                    cy.assertNextPageAccess("annotation", false, true, false);
+                    cy.assertNextPageAccess("annotation", false);
 
                     // 2. Categorize first subject id column in table as 'Subject ID'
                     cy.categorizeColumn("Subject ID", p_dataset["category_columns"]["Subject ID"][0]);
 
                     // 3. Assert that annotation nav and next page button are enabled
-                    cy.assertNextPageAccess("annotation", true, true, false);
+                    cy.assertNextPageAccess("annotation", true);
                 }
             });
 
@@ -88,16 +93,16 @@ describe("Tests on categorization page ui via programmatic state loading and sto
                 if ( cy.datasetMeetsTestCriteria("categorization", p_dataset, testCriteria) ) {
 
                     // 1. Assert annotation nav and next page button are disabled
-                    cy.assertNextPageAccess("annotation", false, true, false);
+                    cy.assertNextPageAccess("annotation", false);
 
-                    // 2. Categorize first subject id column in table as 'Subject ID'
+                    // 2. Categorize a column in the table as 'Subject ID'
                     cy.categorizeColumn("Subject ID", p_dataset["category_columns"]["Subject ID"][0]);
 
-                    // 3. Categorize first age column in table as 'Age'
+                    // 3. Categorize a column in the table as 'Age'
                     cy.categorizeColumn("Age", p_dataset["category_columns"]["Age"][0]);
 
                     // 3. Assert that annotation nav and next page button are enabled
-                    cy.assertNextPageAccess("annotation", true, true, false);
+                    cy.assertNextPageAccess("annotation", true);
                 }
             });
         });
