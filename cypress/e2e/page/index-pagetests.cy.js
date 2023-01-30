@@ -34,7 +34,7 @@ describe("tests on the index page via store interaction", () => {
 
             // Description: User selects data table alone
             // Expected results: Categorization nav and next page button are enabled
-            it("select data table only", () => {
+            it("Select a data table only", () => {
 
                 // 1. Go through index page, selecting participants tsv and json dictionary files
 
@@ -53,15 +53,18 @@ describe("tests on the index page via store interaction", () => {
 
             // Description: User cannot select a data dictionary alone
             // Expected results: Categorization nav and next page button remain disabled
-            it("select data dictionary only", () => {
+            it("Selecting a data dictionary without a data table is not possible", () => {
 
                 // 1. Assert that categorization nav item and next button are disabled
                 cy.assertNextPageAccess("categorization", false);
 
                 // 2. Check that data dictionary file select button is disabled
-                cy.get("[data-cy='data-dictionary-selector']").should("be.disabled");
+                cy.get("[data-cy='data-dictionary-selector']")
+                    .find("label")
+                    .first()
+                    .should("have.class", "disabled-file-selector-button");
 
-                // 3. Select participants dictionary
+                // 3. Attempt to click on 'Choose file' button for data dictionary
                 cy.get("[data-cy='data-dictionary-selector']")
                     .contains("Choose file")
                     .click();
@@ -72,7 +75,7 @@ describe("tests on the index page via store interaction", () => {
 
             // Description: User selects data table and then selects data dictionary
             // Expected results: Categorization nav and Next page button are only enabled after data table selection
-            it("select data table followed by data dictionary", () => {
+            it("Select data table followed by data dictionary", () => {
 
                 // 1. Assert that categorization nav item and next button are disabled
                 cy.assertNextPageAccess("categorization", false);
