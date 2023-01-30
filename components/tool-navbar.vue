@@ -70,7 +70,6 @@
 
             ...mapGetters([
 
-                "getNextPage",
                 "isPageAccessible"
             ]),
 
