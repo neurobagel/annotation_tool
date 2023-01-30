@@ -1,4 +1,4 @@
-describe("tests on categorization page ui via programmatic state loading and store interaction", () => {
+describe("Tests on categorization page ui via programmatic state loading and store interaction", () => {
 
     // List of datasets to use for these tests
     const datasets = [
@@ -17,7 +17,7 @@ describe("tests on categorization page ui via programmatic state loading and sto
 
     datasets.forEach((p_dataset) => {
 
-        context("categorization page tests with " + p_dataset.description + " data", () => {
+        context("Categorization page tests with " + p_dataset.description + " data", () => {
 
             beforeEach(() => {
 
@@ -58,13 +58,46 @@ describe("tests on categorization page ui via programmatic state loading and sto
                 if ( cy.datasetMeetsTestCriteria("categorization", p_dataset, testCriteria) ) {
 
                     // 1. Assert annotation nav and next page button are disabled
-                    cy.assertNextPageAccess("annotation", false);
+                    cy.assertNextPageAccess("annotation", false, true, false);
 
-                    // 2. Categorize first column in table as 'Subject ID'
+                    // 2. Categorize first subject id column in table as 'Subject ID'
                     cy.categorizeColumn("Subject ID", p_dataset["category_columns"]["Subject ID"][0]);
 
                     // 3. Assert that annotation nav and next page button are enabled
-                    cy.assertNextPageAccess("annotation", true);
+                    cy.assertNextPageAccess("annotation", true, true, false);
+                }
+            });
+
+            // Description of task:
+            // 1. Selects 'Subject ID' category + 'Age' category
+            // 2. Links one column as a subject ID
+            // 3. Links another column as age
+            // Expected results: Annotation nav and Next page button are enabled
+            it("Multiple column categorization; categorize subject ID and age", () => {
+
+                // 0. Categories required for this test and the number of required columns for each category
+                const testCriteria = {
+
+                    categories: [
+
+                        ["Subject ID", 1],
+                        ["Age", 1]
+                    ]
+                };
+
+                if ( cy.datasetMeetsTestCriteria("categorization", p_dataset, testCriteria) ) {
+
+                    // 1. Assert annotation nav and next page button are disabled
+                    cy.assertNextPageAccess("annotation", false, true, false);
+
+                    // 2. Categorize first subject id column in table as 'Subject ID'
+                    cy.categorizeColumn("Subject ID", p_dataset["category_columns"]["Subject ID"][0]);
+
+                    // 3. Categorize first age column in table as 'Age'
+                    cy.categorizeColumn("Age", p_dataset["category_columns"]["Age"][0]);
+
+                    // 3. Assert that annotation nav and next page button are enabled
+                    cy.assertNextPageAccess("annotation", true, true, false);
                 }
             });
         });
