@@ -41,7 +41,7 @@ describe("Tests on categorization page ui via programmatic state loading and sto
 
                     // B. Once routing is complete, set the current page in the nuxt store
                     // (normally would happen via navigation clicks)
-                    cy.commitToNuxtStore("setCurrentPage", "categorization");
+                    cy.commitToVuexStore("setCurrentPage", "categorization");
                 });
             });
 

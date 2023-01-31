@@ -118,7 +118,7 @@ Cypress.Commands.add("datasetMeetsTestCriteria", (p_pageName, p_datasetConfig, p
 });
 
 // Calls mutation in the Nuxt store
-Cypress.Commands.add("commitToNuxtStore", (p_mutation, p_data) => {
+Cypress.Commands.add("commitToVuexStore", (p_mutation, p_data) => {
 
     // Commit mutation with given data on the Nuxt store
     cy.window().its("$nuxt.$store").then(p_store => {
@@ -128,7 +128,7 @@ Cypress.Commands.add("commitToNuxtStore", (p_mutation, p_data) => {
 });
 
 // Calls action in the Nuxt store
-Cypress.Commands.add("dispatchToNuxtStore", (p_action, p_data) => {
+Cypress.Commands.add("dispatchToVuexStore", (p_action, p_data) => {
 
     // Dispatch action with given data on the Nuxt store
     cy.window().its("$nuxt.$store").then(p_store => {
@@ -138,7 +138,7 @@ Cypress.Commands.add("dispatchToNuxtStore", (p_action, p_data) => {
 });
 
 // Retrieves store value via getters
-Cypress.Commands.add("getNuxtStoreValue", (p_storeVariableName) => {
+Cypress.Commands.add("getVuexStoreValue", (p_storeVariableName) => {
 
     return cy.window().its("$nuxt.$store.getters." + p_storeVariableName);
 });
@@ -161,7 +161,7 @@ Cypress.Commands.add("loadAppState", (p_pageName, p_dataset, p_pageData) => {
             for ( let index = 0; index < columnCount; index++ ) {
 
                 // A. Link the column to this category
-                cy.dispatchToNuxtStore("alterColumnCategoryRelation", {
+                cy.dispatchToVuexStore("alterColumnCategoryRelation", {
 
                     category: category,
                     column: p_dataset["category_columns"][category][index]
@@ -189,7 +189,7 @@ Cypress.Commands.add("loadAppState", (p_pageName, p_dataset, p_pageData) => {
             // B. Add each tool group to the store
             for ( const groupName in toolGroupData ) {
 
-                cy.dispatchToNuxtStore("createToolGroup", {
+                cy.dispatchToVuexStore("createToolGroup", {
 
                     name: groupName,
                     tools: toolGroupData[groupName]
@@ -250,7 +250,7 @@ Cypress.Commands.add("loadTestDataIntoStore", (p_dataset) => {
     // 1. Load data table from file and save it to the Vuex store
     cy.loadDataTable(p_dataset.source_folder, p_dataset.data_table).then(dataTable => {
 
-        cy.dispatchToNuxtStore("processDataTable", {
+        cy.dispatchToVuexStore("processDataTable", {
 
             data: dataTable,
             filename: p_dataset.data_table
@@ -259,7 +259,7 @@ Cypress.Commands.add("loadTestDataIntoStore", (p_dataset) => {
         // 2. Load data table from file and save it to the Vuex store
         cy.loadDataDictionary(p_dataset.source_folder, p_dataset.data_dictionary).then(dataDictionary => {
 
-            cy.dispatchToNuxtStore("processDataDictionary", {
+            cy.dispatchToVuexStore("processDataDictionary", {
 
                 data: dataDictionary,
                 filename: p_dataset.data_dictionary

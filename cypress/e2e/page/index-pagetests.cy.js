@@ -65,6 +65,9 @@ describe("Tests on the index page via store interaction", () => {
                     .should("have.class", "disabled-file-selector-button");
 
                 // 3. Attempt to click on 'Choose file' button for data dictionary
+                // NOTE: Click without 'selectFile' is done here because asserting
+                // that the file-selector label is not clickable would require
+                // checking Cypress error messages
                 cy.get("[data-cy='data-dictionary-selector']")
                     .contains("Choose file")
                     .click();
