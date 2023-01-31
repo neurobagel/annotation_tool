@@ -44,14 +44,13 @@ Cypress.Commands.add("assertButtonStatus", (p_buttonName, p_enabled) => {
         .should(chainer, "disabled");
 });
 
-Cypress.Commands.add("assertNextPageAccess", (p_pageName, p_enabled, p_checkMenu=true) => {
+Cypress.Commands.add("assertNextPageAccess", (p_pageName, p_enabled) => {
 
     let chainer = ( p_enabled ) ? "not.have.class" : "have.class";
 
-    if ( p_checkMenu ) {
-        cy.get("[data-cy='menu-item-" + p_pageName + "'] a")
-            .should(chainer, "disabled");
-    }
+    cy.get("[data-cy='menu-item-" + p_pageName + "'] a")
+        .should(chainer, "disabled");
+
     cy.get("[data-cy='button-nextpage']")
         .should(chainer, "disabled");
 });
@@ -118,8 +117,18 @@ Cypress.Commands.add("datasetMeetsTestCriteria", (p_pageName, p_datasetConfig, p
     return true;
 });
 
+// Calls mutation in the Nuxt store
+Cypress.Commands.add("commitToVuexStore", (p_mutation, p_data) => {
+
+    // Commit mutation with given data on the Nuxt store
+    cy.window().its("$nuxt.$store").then(p_store => {
+
+        p_store.commit(p_mutation, p_data);
+    });
+});
+
 // Calls action in the Nuxt store
-Cypress.Commands.add("dispatchToNuxtStore", (p_action, p_data) => {
+Cypress.Commands.add("dispatchToVuexStore", (p_action, p_data) => {
 
     // Dispatch action with given data on the Nuxt store
     cy.window().its("$nuxt.$store").then(p_store => {
@@ -129,7 +138,7 @@ Cypress.Commands.add("dispatchToNuxtStore", (p_action, p_data) => {
 });
 
 // Retrieves store value via getters
-Cypress.Commands.add("getNuxtStoreValue", (p_storeVariableName) => {
+Cypress.Commands.add("getVuexStoreValue", (p_storeVariableName) => {
 
     return cy.window().its("$nuxt.$store.getters." + p_storeVariableName);
 });
@@ -152,7 +161,7 @@ Cypress.Commands.add("loadAppState", (p_pageName, p_dataset, p_pageData) => {
             for ( let index = 0; index < columnCount; index++ ) {
 
                 // A. Link the column to this category
-                cy.dispatchToNuxtStore("alterColumnCategoryRelation", {
+                cy.dispatchToVuexStore("alterColumnCategoryRelation", {
 
                     category: category,
                     column: p_dataset["category_columns"][category][index]
@@ -180,7 +189,7 @@ Cypress.Commands.add("loadAppState", (p_pageName, p_dataset, p_pageData) => {
             // B. Add each tool group to the store
             for ( const groupName in toolGroupData ) {
 
-                cy.dispatchToNuxtStore("createToolGroup", {
+                cy.dispatchToVuexStore("createToolGroup", {
 
                     name: groupName,
                     tools: toolGroupData[groupName]
@@ -241,22 +250,20 @@ Cypress.Commands.add("loadTestDataIntoStore", (p_dataset) => {
     // 1. Load data table from file and save it to the Vuex store
     cy.loadDataTable(p_dataset.source_folder, p_dataset.data_table).then(dataTable => {
 
-        cy.dispatchToNuxtStore("saveDataTable", {
+        cy.dispatchToVuexStore("processDataTable", {
 
             data: dataTable,
-            filename: p_dataset.data_table,
-            fileType: "tsv"
+            filename: p_dataset.data_table
         });
-    });
 
-    // 2. Load data table from file and save it to the Vuex store
-    cy.loadDataDictionary(p_dataset.source_folder, p_dataset.data_dictionary).then(dataDictionary => {
+        // 2. Load data table from file and save it to the Vuex store
+        cy.loadDataDictionary(p_dataset.source_folder, p_dataset.data_dictionary).then(dataDictionary => {
 
-        cy.dispatchToNuxtStore("saveDataDictionary", {
+            cy.dispatchToVuexStore("processDataDictionary", {
 
-            data: dataDictionary,
-            filename: p_dataset.data_dictionary,
-            fileType: "json"
+                data: dataDictionary,
+                filename: p_dataset.data_dictionary
+            });
         });
     });
 });
