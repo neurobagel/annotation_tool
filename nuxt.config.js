@@ -61,8 +61,5 @@ export default {
 	},
 
 	devtool: "source-map",
-	target: "static",
-	router: {
-		base: "/annotation-tool/"
-	}
+	target: "static"
 };
