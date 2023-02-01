@@ -19,65 +19,75 @@ const store = {
 
 
 const props = {
+
     activeCategory: "category1"
 };
 
 describe("continuous-values-component", () => {
-        it("correctly displays preview values provided by the store", () => {
-                cy.mount(annotContinuousValues, {
-                    propsData: props,
-                    computed: store.getters,
-                    plugins: ["vue-select"]
-                });
-                cy.get("[data-cy='dataTable']").then(table => {
-                    // TODO: find a pattern to iterate over the values directly
-                    expect(table).to.contain("1Y");
-                    expect(table).to.contain("11Y");
-                    expect(table).to.contain("2,1");
-                    expect(table).to.contain("22,1");
-                });
-            }
-        );
 
-        it("can select a transformation and then dispatches it to the store", () => {
-                const mockStore = {
-                    dispatch: () => {
-                    }
-                };
-                cy.spy(mockStore, 'dispatch').as('dispatchSpy');
+    it("Correctly displays preview values provided by the store", () => {
 
-                cy.mount(annotContinuousValues, {
-                    propsData: props,
-                    computed: store.getters,
-                    mocks: {
-                        $store: mockStore
-                    },
-                    plugins: ["vue-select"]
-                });
-                cy.get("[data-cy='selectTransform']").click();
-                cy.get("[data-cy='selectTransform']").find("li").contains('float').click();
-                cy.get("@dispatchSpy").should('have.been.calledWith', "setHeuristic", "category1", "float");
-            }
-        );
+        cy.mount(annotContinuousValues, {
+            propsData: props,
+            computed: store.getters,
+            plugins: ["vue-select"]
+        });
 
-        it("applies a selected heuristic and previews transformed values", () => {
-                cy.mount(annotContinuousValues, {
-                        propsData: props,
-                        computed: Object.assign(store.getters, {
-                            getActiveHeuristic: () => (activeCategory) => "float",
-                            getHarmonizedPreview: () => (column, missingValue) => column + "-" + missingValue + "-harmonized"
-                        })
-                    }
-                );
-            cy.get("[data-cy='selectTransform']").contains("float");
-            cy.get("[data-cy='dataTable']").then(table => {
-                // TODO: find a pattern to iterate over the values directly
-                expect(table).to.contain("column1-1Y-harmonized");
-                expect(table).to.contain("column1-11Y-harmonized");
-                expect(table).to.contain("column2-2,1-harmonized");
-                expect(table).to.contain("column2-22,1-harmonized");
-            });
+        cy.get("[data-cy='dataTable']").then(table => {
+            // TODO: find a pattern to iterate over the values directly
+            expect(table).to.contain("1Y");
+            expect(table).to.contain("11Y");
+            expect(table).to.contain("2,1");
+            expect(table).to.contain("22,1");
+        });
+    });
+
+    it("Can select a transformation and then dispatches it to the store", () => {
+
+        const mockStore = {
+
+            commit: () => {},
+            mutations: {
+
+                setHeuristic: () => (p_state, { column, heuristic }) => {},
+                designateAsMissing: () => (columnName, rawValue) => {}
             }
-        );
-    }
-);
+        };
+        cy.spy(mockStore, "commit").as("commitSpy");
+
+        cy.mount(annotContinuousValues, {
+
+            propsData: props,
+            computed: store.getters,
+            mocks: { $store: mockStore },
+            plugins: ["vue-select"]
+        });
+
+        cy.get("[data-cy='selectTransform']").click();
+        cy.get("[data-cy='selectTransform']")
+            .find("li")
+            .contains("float")
+            .click();
+        cy.get("@commitSpy").should('have.been.calledWith', "setHeuristic", { column: "category1", heuristic: "float" });
+    });
+
+    it("Applies a selected heuristic and previews transformed values", () => {
+
+        cy.mount(annotContinuousValues, {
+            propsData: props,
+            computed: Object.assign(store.getters, {
+                getActiveHeuristic: () => (activeCategory) => "float",
+                getHarmonizedPreview: () => (column, missingValue) => column + "-" + missingValue + "-harmonized"
+            })
+        });
+
+        cy.get("[data-cy='selectTransform']").contains("float");
+        cy.get("[data-cy='dataTable']").then(table => {
+            // TODO: find a pattern to iterate over the values directly
+            expect(table).to.contain("column1-1Y-harmonized");
+            expect(table).to.contain("column1-11Y-harmonized");
+            expect(table).to.contain("column2-2,1-harmonized");
+            expect(table).to.contain("column2-22,1-harmonized");
+        });
+    });
+});
