@@ -10,7 +10,8 @@
     "lint": "npx eslint --ext .vue  --ext .js .",
     "prepare": "husky install",
     "heroku-postbuild": "npm run build",
-    "cypress:open": "cypress open"
+    "cypress:open": "cypress open",
+    "deploy": "push-dir --dir=dist --branch=gh-pages --cleanup"
   },
   "dependencies": {
     "@nuxtjs/axios": "^5.13.6",
