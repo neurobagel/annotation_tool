@@ -17,7 +17,7 @@
             I forced this block to be rendered client-side only for now and that fixed it for now
             See: https://nuxtjs.org/docs/features/nuxt-components/#the-client-only-component
         -->
-        <client-only>
+        <!-- <client-only> -->
             <!-- This gives us built-in keyboard navigation! -->
             <b-tabs
                 data-cy="annotation-category-tabs"
@@ -47,7 +47,7 @@
                 </b-tab>
 
             </b-tabs>
-        </client-only>
+        <!-- </client-only> -->
 
         <b-row>
 

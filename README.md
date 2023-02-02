@@ -19,6 +19,17 @@ $ npm run generate
 
 For detailed explanation on how things work, check out the [documentation](https://nuxtjs.org).
 
+## Deployment
+
+To deploy the static build on GH pages, run
+
+```bash
+npm run generate
+npm run deploy
+```
+
+See the [Nuxt documention](https://nuxtjs.org/deployments/github-pages/) for more details.
+
 ## Special Directories
 
 You can create the following extra directories, some of which have special behaviors. Only `pages` is required; you can delete them if you don't want to use their functionality.
