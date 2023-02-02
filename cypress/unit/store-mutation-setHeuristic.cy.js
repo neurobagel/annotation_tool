@@ -26,6 +26,7 @@ describe("setHeuristic", () => {
         });
 
         // Assert
+        expect(state.dataDictionary.annotated.column1.transformationHeuristic).to.exist;
         expect(state.dataDictionary.annotated.column1.transformationHeuristic).to.equal("column1Heuristic");
     });
 
