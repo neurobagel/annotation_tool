@@ -2,8 +2,12 @@ import annotContinuousValues from "~/components/annot-continuous-values";
 
 
 const store = {
+
+    commit: () => {},
+
     getters: {
-        getActiveHeuristic: () => (activeCategory) => null,
+
+        getActiveHeuristic: () => (column) => null,
         getHarmonizedPreview: () => (column, missingValue) => null,
         getPreviewValues: () => (activeCategory) => {
             return {
@@ -14,13 +18,20 @@ const store = {
         getTransformHeuristics: () => (activeCategory) => {
             return ["float", "bounded", "euro", "range", "int", "string", "isoyear"];
         }
+    },
+
+    mutations: {
+
+        setHeuristic: () => (p_state, { column, heuristic }) => {},
+        designateAsMissing: () => (columnName, rawValue) => {}
     }
 };
 
 
 const props = {
 
-    activeCategory: "category1"
+    // TODO: This prop is currently necessary until new column-based heuristic feature is added
+    activeCategory: "column1"
 };
 
 describe("continuous-values-component", () => {
@@ -44,22 +55,13 @@ describe("continuous-values-component", () => {
 
     it("Can select a transformation and then dispatches it to the store", () => {
 
-        const mockStore = {
-
-            commit: () => {},
-            mutations: {
-
-                setHeuristic: () => (p_state, { column, heuristic }) => {},
-                designateAsMissing: () => (columnName, rawValue) => {}
-            }
-        };
-        cy.spy(mockStore, "commit").as("commitSpy");
+        cy.spy(store, "commit").as("commitSpy");
 
         cy.mount(annotContinuousValues, {
 
             propsData: props,
             computed: store.getters,
-            mocks: { $store: mockStore },
+            mocks: { $store: store },
             plugins: ["vue-select"]
         });
 
@@ -68,7 +70,7 @@ describe("continuous-values-component", () => {
             .find("li")
             .contains("float")
             .click();
-        cy.get("@commitSpy").should('have.been.calledWith', "setHeuristic", { column: "category1", heuristic: "float" });
+        cy.get("@commitSpy").should('have.been.calledWith', "setHeuristic", { column: "column1", heuristic: "float" });
     });
 
     it("Applies a selected heuristic and previews transformed values", () => {
@@ -76,7 +78,7 @@ describe("continuous-values-component", () => {
         cy.mount(annotContinuousValues, {
             propsData: props,
             computed: Object.assign(store.getters, {
-                getActiveHeuristic: () => (activeCategory) => "float",
+                getActiveHeuristic: () => (column) => "float",
                 getHarmonizedPreview: () => (column, missingValue) => column + "-" + missingValue + "-harmonized"
             })
         });

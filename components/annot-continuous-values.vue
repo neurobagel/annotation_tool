@@ -91,6 +91,9 @@
 
             commitHeuristic(p_heuristic) {
 
+                // TODO: With the addition of ability to set heuristic for
+                // individual columns, 'activeCategory' below will be replaced
+                // with the appropriate column name
                 this.setHeuristic({ column: this.activeCategory, heuristic: p_heuristic });
             }
         }
