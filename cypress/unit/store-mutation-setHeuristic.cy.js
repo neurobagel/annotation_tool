@@ -11,13 +11,28 @@ describe("setHeuristic", () => {
 
             dataDictionary: {
                 annotated: {
-                    column1: { transformationHeuristic: "" }
+                    column1: {}
                 }
             }
         };
     });
 
-    it("Set the transformation heuristic of a column", () => {
+    it("Set the heuristic of a column with no transformationHeuristic key", () => {
+
+        // Act
+        mutations.setHeuristic(state, {
+            column: "column1",
+            heuristic: "column1Heuristic"
+        });
+
+        // Assert
+        expect(state.dataDictionary.annotated.column1.transformationHeuristic).to.equal("column1Heuristic");
+    });
+
+    it("Set the heuristic of a column that already has a transformationHeuristic key", () => {
+
+        // Setup
+        state.dataDictionary.annotated.column1.transformationHeuristic = "oldHeuristic";
 
         // Act
         mutations.setHeuristic(state, {
