@@ -313,5 +313,11 @@ export const mutations = {
         }
 
         p_state.dataTable = dataTable;
+    },
+
+    setHeuristic(p_state, { column, heuristic }) {
+
+        // Set a new transformation heuristic for this column
+        Vue.set(p_state.dataDictionary.annotated[column], "transformationHeuristic", heuristic);
     }
 };
