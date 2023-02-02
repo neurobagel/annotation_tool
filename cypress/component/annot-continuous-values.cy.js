@@ -7,7 +7,7 @@ const store = {
 
     getters: {
 
-        getActiveHeuristic: () => (column) => null,
+        getHeuristic: () => (column) => null,
         getHarmonizedPreview: () => (column, missingValue) => null,
         getPreviewValues: () => (activeCategory) => {
             return {
@@ -78,7 +78,7 @@ describe("continuous-values-component", () => {
         cy.mount(annotContinuousValues, {
             propsData: props,
             computed: Object.assign(store.getters, {
-                getActiveHeuristic: () => (column) => "float",
+                getHeuristic: () => (column) => "float",
                 getHarmonizedPreview: () => (column, missingValue) => column + "-" + missingValue + "-harmonized"
             })
         });
