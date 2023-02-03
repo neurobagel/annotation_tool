@@ -9,7 +9,7 @@
             <v-select
                 data-cy="selectTransform"
                 :options="transformChoices"
-                :value="getActiveHeuristic(this.activeCategory)"
+                :value="getHeuristic(this.activeCategory)"
                 @input="commitHeuristic($event)" />
 
             <b-table
@@ -56,7 +56,7 @@
                 "getPreviewValues",
                 "getHarmonizedPreview",
                 "getTransformHeuristics",
-                "getActiveHeuristic"
+                "getHeuristic"
             ]),
 
             transformChoices() {

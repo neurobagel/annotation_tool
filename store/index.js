@@ -116,6 +116,12 @@ export const getters = {
         return ( 0 === p_state.dataTable.length) ? [] : Object.keys(p_state.dataTable[0] );
     },
 
+    getHeuristic: (p_state) => (p_columnName) => {
+
+        return ( "transformationHeuristic" in p_state.dataDictionary.annotated[p_columnName] ) ?
+            p_state.dataDictionary.annotated[p_columnName].transformationHeuristic : "";
+    },
+
     getNextPage(p_state) {
 
         let nextPage = "";
