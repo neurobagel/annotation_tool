@@ -1,6 +1,6 @@
 import { getters } from "~/store";
 
-describe("The column-linking-table component", () => {
+describe("The getHeuristic getter", () => {
 
     let store = {};
 
