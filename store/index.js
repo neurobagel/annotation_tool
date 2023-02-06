@@ -6,9 +6,18 @@ export const state = () => ({
     categories: {
 
         "Subject ID": {},
-        "Age": {},
-        "Sex": {},
-        "Diagnosis": {}
+        "Age": {
+
+            componentName: "annot-continuous-values"
+        },
+        "Sex": {
+
+            componentName: "annot-categorical"
+        },
+        "Diagnosis": {
+
+            componentName: "annot-categorical"
+        }
     },
 
     colorInfo: {
@@ -90,6 +99,11 @@ export const state = () => ({
 });
 
 export const getters = {
+
+    getAnnotationComponent: (p_state) => (p_category) => {
+
+        return p_state.categories[p_category].componentName;
+    },
 
     getCategoryNames (p_state) {
 
