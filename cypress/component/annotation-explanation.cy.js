@@ -15,14 +15,6 @@ describe("explanation", () => {
                 "Age": {
 
                     explanation: "Age explanation"
-                },
-                "Sex": {
-
-                    explanation: "Sex explanation"
-                },
-                "Diagnosis": {
-
-                    explanation: "Diagnosis explanation"
                 }
             }
         };
