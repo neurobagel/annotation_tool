@@ -136,6 +136,19 @@ export const getters = {
             p_state.dataDictionary.annotated[p_columnName].transformationHeuristic : "";
     },
 
+    getMappedColumns: (p_state) => (p_category) => {
+
+        const mappedColumns = [];
+        for ( const column in p_state.columnToCategoryMapping ) {
+
+            if ( p_category === p_state.columnToCategoryMapping[column] ) {
+
+                mappedColumns.push(column);
+            }
+        }
+        return mappedColumns;
+    },
+
     getNextPage(p_state) {
 
         let nextPage = "";
