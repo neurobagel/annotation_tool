@@ -6,27 +6,20 @@ const store = {
 
         categories: {
 
-            "Age": { explanation: "Age explanation" },
-            "Sex": { explanation: "Sex explanation" },
-            "Diagnosis": { explanation: "Diagnosis explanation" }
+            "Category1": { explanation: "Category 1 explanation" }
         }
     }
 };
 
 describe("getExplanation", () => {
 
-    it("Get explanation for Age category", () => {
+    it("Get explanation for a given category", () => {
 
-        expect(getters.getExplanation(store.state)("Age")).to.equal("Age explanation");
+        expect(getters.getExplanation(store.state)("Category1")).to.equal("Category 1 explanation");
     });
 
-    it("Get explanation for Sex category", () => {
-
-        expect(getters.getExplanation(store.state)("Sex")).to.equal("Sex explanation");
-    });
-
-    it("Get explanation for Diagnosis category", () => {
-
-        expect(getters.getExplanation(store.state)("Diagnosis")).to.equal("Diagnosis explanation");
-    });
+    // NOTE: Since corresponding component `annot-explanation` will handle categories
+    // without an 'explanation' key and there is not the chance that an
+    // incorrect/absent category will be given, tests for these scenarios have
+    // not been implemented
 });
