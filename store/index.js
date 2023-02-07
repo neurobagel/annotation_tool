@@ -8,15 +8,18 @@ export const state = () => ({
         "Subject ID": {},
         "Age": {
 
-            componentName: "annot-continuous-values"
+            componentName: "annot-continuous-values",
+            explanation: "This is an explanation for how to annotate age."
         },
         "Sex": {
 
-            componentName: "annot-categorical"
+            componentName: "annot-categorical",
+            explanation: "This is an explanation for how to annotate sex."
         },
         "Diagnosis": {
 
-            componentName: "annot-categorical"
+            componentName: "annot-categorical",
+            explanation: "This is an explanation for how to annotate diagnosis."
         }
     },
 
@@ -128,6 +131,11 @@ export const getters = {
     getColumnNames(p_state) {
 
         return ( 0 === p_state.dataTable.length) ? [] : Object.keys(p_state.dataTable[0] );
+    },
+
+    getExplanation: (p_state) => (p_category) => {
+
+        return p_state.categories[p_category].explanation;
     },
 
     getHeuristic: (p_state) => (p_columnName) => {
