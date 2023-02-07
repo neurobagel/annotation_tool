@@ -86,4 +86,19 @@ describe("explanation", () => {
         // Assert
         cy.get(".card-body").contains("No category/explanation has been provided.");
     });
+
+    it("Displays expected explanation text", () => {
+
+        // Act
+        cy.mount(annotExplanation, {
+
+            computed: store.getters,
+            plugins: ["bootstrap-vue"],
+            propsData: props,
+            mocks: { $store: store }
+        });
+
+        // Assert
+        cy.get(".card-body").contains("Age explanation");
+    });
 });
