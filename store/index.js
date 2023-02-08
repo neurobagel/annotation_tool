@@ -185,26 +185,20 @@ export const getters = {
         return nextPage;
     },
 
-    getOptions: (p_state) => (p_column) => {
+    getCategoricalOptions: (p_state) => (p_column) => {
 
-        // 0. Get the data type of the column via its category
-        const category = p_state.columnToCategoryMapping[p_column];
-        const columnDataType = p_state.categories[category].componentName;
+        // Return the options for this column listed in the data dictionary, if available
+        return ( "Levels" in p_state.dataDictionary.userProvided[p_column] ) ?
+            Object.keys(p_state.dataDictionary.userProvided[p_column]["Levels"]) : [];
+    },
 
-        // 1. Retrieve the appropriate options by the column's data type
-        let options = [];
-        if ( "annot-categorical" === columnDataType ) {
+    getTransformOptions: (p_state) => (p_category) => {
 
-            if ( "Levels" in p_state.dataDictionary.userProvided[p_column] ) {
+        // 0. Get the data type of the given category
+        const columnDataType = p_state.categories[p_category].componentName;
 
-                options = Object.keys(p_state.dataDictionary.userProvided[p_column]["Levels"]);
-            }
-        } else if ( "annot-continuous-values" === columnDataType ) {
-
-            options = p_state.transformationHeuristics[columnDataType];
-        }
-
-        return options;
+        // Return the set of transformation heuristics for this data type
+        return p_state.transformationHeuristics[columnDataType];
     },
 
     getValueDescription: (p_state) => (p_columnName, p_value) => {
