@@ -12,7 +12,7 @@
 
             <b-collapse :id="'explanation-' + uniqueID" accordion="explanation-accordion" role="tabpanel">
                 <b-card-body>
-                    <b-card-text>{{ explanation }}</b-card-text>
+                    <b-card-text>{{ explanationText }}</b-card-text>
                 </b-card-body>
             </b-collapse>
 
@@ -23,16 +23,18 @@
 </template>
 
 <script>
-    import { v4 as uuidv4 } from 'uuid';
+
+    import { mapGetters } from "vuex";
+    import { v4 as uuidv4 } from "uuid";
 
     export default {
 
         props: {
 
-            explanation: {
+            activeCategory: {
 
                 type: String,
-                default: "No explanation has been provided yet."
+                default: ""
             }
         },
 
@@ -44,13 +46,29 @@
 
                 uiText: {
 
-                    cardTitle: "Explanation"
+                    cardTitle: "Explanation",
+                    defaultText: "No category/explanation has been provided."
                 },
 
                 // If we have multiple instances of the accoridion,
                 // the unique ID ensures that their behaviours don't interfere
                 uniqueID: uuidv4()
             };
+        },
+
+        computed: {
+
+            ...mapGetters([
+
+                "getExplanation"
+            ]),
+
+            explanationText() {
+
+                // Returns default text if no explanation text exists for the active category
+                const explanation = this.getExplanation(this.activeCategory);
+                return ( null === explanation ) ? this.uiText.defaultText : explanation;
+            }
         }
     };
 
