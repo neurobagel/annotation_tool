@@ -24,7 +24,8 @@ describe("explanation", () => {
 
                 getExplanation: () => (p_category) => {
 
-                    return state.categories[p_category].explanation;
+                    return ( "explanation" in state.categories[p_category] ) ?
+                        state.categories[p_category].explanation : null;
                 }
             },
             state: state

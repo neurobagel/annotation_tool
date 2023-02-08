@@ -135,7 +135,8 @@ export const getters = {
 
     getExplanation: (p_state) => (p_category) => {
 
-        return p_state.categories[p_category].explanation;
+        return ( "explanation" in p_state.categories[p_category] ) ?
+            p_state.categories[p_category].explanation : null;
     },
 
     getHeuristic: (p_state) => (p_columnName) => {

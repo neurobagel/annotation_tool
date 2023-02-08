@@ -24,7 +24,7 @@
 
 <script>
 
-    import { mapGetters, mapState } from "vuex";
+    import { mapGetters } from "vuex";
     import { v4 as uuidv4 } from "uuid";
 
     export default {
@@ -63,16 +63,11 @@
                 "getExplanation"
             ]),
 
-            ...mapState([
-
-                "categories"
-            ]),
-
             explanationText() {
 
-                // Returns default text
-                return ( "explanation" in this.categories[this.activeCategory] ) ?
-                    this.getExplanation(this.activeCategory) : this.uiText.defaultText;
+                // Returns default text if no explanation text exists for the active category
+                const explanation = this.getExplanation(this.activeCategory);
+                return ( null === explanation ) ? this.uiText.defaultText : explanation;
             }
         }
     };
