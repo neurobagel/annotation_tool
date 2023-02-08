@@ -2,13 +2,13 @@ import annotCategorical from "~/components/annot-categorical.vue";
 
 
 // Mocking the store
-let store = {
+const store = {
 
     commit: () => {},
 
     getters: {
 
-        getOptions: () => (category) => {
+        getCategoricalOptions: () => (category) => {
 
             return ["option_0", "option_1", "option_2", "option_3"];
         },
@@ -48,48 +48,6 @@ const props = {
 
 
 describe("Categorical annotation", () => {
-
-    beforeEach(() => {
-
-        store = {
-
-            commit: () => {},
-
-            getters: {
-
-                getCategoricalOptions: () => (category) => {
-
-                    return ["option_0", "option_1", "option_2", "option_3"];
-                },
-
-                getSelectedOption: () => (p_rowIndex) => {
-
-                    return "option_" + p_rowIndex;
-                },
-
-                getUniqueValues: () => (p_activeCategory) => {
-
-                    return [
-                        { columnName: "column1", rawValue: "PD" },
-                        { columnName: "column1", rawValue: "HC" },
-                        { columnName: "column2", rawValue: "" },
-                        { columnName: "column2", rawValue: "oups" }
-                    ];
-                },
-
-                getValueDescription: () => (p_column, p_cellValue) => {
-
-                    return "descr_" + p_column + "_" + p_cellValue;
-                }
-            },
-
-            mutations: {
-
-                designateAsMissing: () => (p_columnName, p_rawValue) => {},
-                selectAnOption: () => (p_option, p_columnName, p_rawValue) => {}
-            }
-        };
-    });
 
     it("Displays unique values and their descriptions", () => {
 
