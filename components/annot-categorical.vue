@@ -25,7 +25,7 @@
                             :data-cy="'categoricalSelector' + '_' + row.index"
                             :value="getSelectedOption(row.index)"
                             @input="selectAnOption($event, row.item['columnName'], row.item['rawValue'])"
-                            :options="getOptions()" />
+                            :options="getCategoricalOptions()" />
                     </template>
                     <template #cell(missingValue)="row">
                         <b-button
@@ -58,6 +58,7 @@
         name: "AnnotCategorical",
 
         props: {
+
             activeCategory: { type: String, required: true }
         },
 
@@ -76,9 +77,10 @@
 
                 // Text for UI elements
                 uiText: {
+
                     instructions: "Annotate each unique value",
-                    saveButton: "Save Annotation",
-                    missingValueButton: "Mark as missing"
+                    missingValueButton: "Mark as missing",
+                    saveButton: "Save Annotation"
                 },
 
                 valueMapping: {}
@@ -90,11 +92,12 @@
 
             ...mapGetters([
 
+                "getCategoricalOptions",
+                "getSelectedOption",
                 "getUniqueValues",
-                "getValueDescription",
-                "getOptions",
-                "getSelectedOption"
+                "getValueDescription"
             ]),
+
             displayTable() {
 
                 // Create and return table data for the unique values in the relevant columns that are not missing values
@@ -103,15 +106,19 @@
 
                     tableData.push({
                         columnName: row.columnName,
-                        rawValue: row.rawValue,
-                        description: this.getValueDescription(row.columnName, row.rawValue)
+                        description: this.getValueDescription(row.columnName, row.rawValue),
+                        rawValue: row.rawValue
                     });
                 }
+
                 return tableData;
             }
         },
+
         methods: {
+
             ...mapMutations([
+
                 "selectAnOption",
                 "designateAsMissing"
             ])
