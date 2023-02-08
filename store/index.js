@@ -98,6 +98,13 @@ export const state = () => ({
             location: "download",
             pageName: "download"
         }
+    },
+
+    transformationHeuristics: {
+
+        "annot-continuous-values": [
+            "float", "bounded", "euro", "range", "int", "string", "isoyear"
+        ]
     }
 });
 
@@ -176,6 +183,28 @@ export const getters = {
         }
 
         return nextPage;
+    },
+
+    getOptions: (p_state) => (p_column) => {
+
+        // 0. Get the data type of the column via its category
+        const category = p_state.columnToCategoryMapping[p_column];
+        const columnDataType = p_state.categories[category].componentName;
+
+        // 1. Retrieve the appropriate options by the column's data type
+        let options = [];
+        if ( "annot-categorical" === columnDataType ) {
+
+            if ( "Levels" in p_state.dataDictionary.userProvided[p_column] ) {
+
+                options = Object.keys(p_state.dataDictionary.userProvided[p_column]["Levels"]);
+            }
+        } else if ( "annot-continuous-values" === columnDataType ) {
+
+            options = p_state.transformationHeuristics[columnDataType];
+        }
+
+        return options;
     },
 
     getValueDescription: (p_state) => (p_columnName, p_value) => {
