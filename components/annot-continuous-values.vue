@@ -8,7 +8,7 @@
 
             <v-select
                 data-cy="selectTransform"
-                :options="transformChoices"
+                :options="getTransformOptions(this.activeCategory)"
                 :value="getHeuristic(this.activeCategory)"
                 @input="commitHeuristic($event)" />
 
@@ -55,14 +55,9 @@
 
                 "getPreviewValues",
                 "getHarmonizedPreview",
-                "getTransformHeuristics",
+                "getTransformOptions",
                 "getHeuristic"
             ]),
-
-            transformChoices() {
-
-                return this.getTransformHeuristics(this.activeCategory);
-            },
 
             validationItems() {
 
