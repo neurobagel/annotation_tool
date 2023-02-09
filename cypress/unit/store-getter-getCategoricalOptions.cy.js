@@ -6,21 +6,14 @@ let store = {
 
     state: {
 
-        dataDictionary: {
+        categoricalOptions: {
 
-            userProvided: {
+            "category1": ["option1", "option2"]
+        },
 
-                "column1": {
+        columnToCategoryMapping: {
 
-                    "Levels": {
-
-                        "option1": "Option 1 description",
-                        "option2": "Option 2 description"
-                    }
-                },
-
-                "column2": {}
-            }
+            "column1": "category1"
         }
     }
 };
