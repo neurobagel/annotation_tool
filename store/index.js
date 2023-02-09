@@ -100,6 +100,8 @@ export const state = () => ({
         }
     },
 
+    // TODO: Assess whether this is the best place and configuration for storing
+    // transformation heuristics
     transformationHeuristics: {
 
         "annot-continuous-values": [
