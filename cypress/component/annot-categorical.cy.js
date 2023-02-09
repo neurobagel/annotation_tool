@@ -8,7 +8,7 @@ const store = {
 
     getters: {
 
-        getCategoricalOptions: () => (category) => {
+        getCategoricalOptions: () => (p_activeCategory) => {
 
             return ["option_0", "option_1", "option_2", "option_3"];
         },
