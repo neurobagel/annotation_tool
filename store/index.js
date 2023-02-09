@@ -3,6 +3,11 @@ import Vue from "vue";
 
 export const state = () => ({
 
+    categoricalOptions: {
+
+        "Sex": ["male", "female", "other"]
+    },
+
     categories: {
 
         "Subject ID": {},
@@ -189,9 +194,9 @@ export const getters = {
 
     getCategoricalOptions: (p_state) => (p_column) => {
 
-        // Return the options for this column listed in the data dictionary, if available
-        return ( "Levels" in p_state.dataDictionary.userProvided[p_column] ) ?
-            Object.keys(p_state.dataDictionary.userProvided[p_column]["Levels"]) : [];
+        // Return the options for this column listed in the current (hardcoded)
+        // options for each categorical data-based category
+        return p_state.categoricalOptions[p_state.columnToCategoryMapping[p_column]] ?? [];
     },
 
     getTransformOptions: (p_state) => (p_category) => {
