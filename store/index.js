@@ -3,6 +3,11 @@ import Vue from "vue";
 
 export const state = () => ({
 
+    categoricalOptions: {
+
+        "Sex": ["male", "female", "other"]
+    },
+
     categories: {
 
         "Subject ID": {},
@@ -98,6 +103,15 @@ export const state = () => ({
             location: "download",
             pageName: "download"
         }
+    },
+
+    // TODO: Assess whether this is the best place and configuration for storing
+    // transformation heuristics
+    transformationHeuristics: {
+
+        "annot-continuous-values": [
+            "float", "bounded", "euro", "range", "int", "string", "isoyear"
+        ]
     }
 });
 
@@ -189,6 +203,22 @@ export const getters = {
         }
 
         return nextPage;
+    },
+
+    getCategoricalOptions: (p_state) => (p_column) => {
+
+        // Return the options for this column listed in the current (hardcoded)
+        // options for each categorical data-based category
+        return p_state.categoricalOptions[p_state.columnToCategoryMapping[p_column]] ?? [];
+    },
+
+    getTransformOptions: (p_state) => (p_category) => {
+
+        // 0. Get the data type of the given category
+        const columnDataType = p_state.categories[p_category].componentName;
+
+        // Return the set of transformation heuristics for this data type
+        return p_state.transformationHeuristics[columnDataType];
     },
 
     getValueDescription: (p_state) => (p_columnName, p_value) => {
