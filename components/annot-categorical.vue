@@ -25,7 +25,7 @@
                             :data-cy="'categoricalSelector' + '_' + row.index"
                             :value="getSelectedOption(row.index)"
                             @input="selectAnOption($event, row.item['columnName'], row.item['rawValue'])"
-                            :options="getCategoricalOptions()" />
+                            :options="getCategoricalOptions(row.item['columnName'])" />
                     </template>
                     <template #cell(missingValue)="row">
                         <b-button
