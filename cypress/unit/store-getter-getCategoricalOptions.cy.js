@@ -36,7 +36,7 @@ describe("getCategoricalOptions", () => {
         expect(options).to.deep.equal(["option1", "option2"]);
     });
 
-    it("Retrieves empty list for a categorical column that has no options in its data dictionary entry", () => {
+    it("Returns empty list for a categorical column that has no options in its data dictionary entry", () => {
 
         // Act
         const options = store.getters.getCategoricalOptions(store.state)("column2");
