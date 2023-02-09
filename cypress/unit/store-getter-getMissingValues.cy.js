@@ -5,6 +5,13 @@ const store = {
     getters: getters,
     state: {
 
+        columnToCategoryMapping: {
+
+            column1: "category1",
+            column2: "category1",
+            column3: "category2"
+        },
+
         dataDictionary: {
 
             annotated: {
@@ -14,7 +21,12 @@ const store = {
                     missingValues: [1, 2, 3]
                 },
 
-                column2: {}
+                column2: {
+
+                    missingValues: [4, 5, 6]
+                },
+
+                column3: {}
             }
         }
     }
@@ -22,30 +34,33 @@ const store = {
 
 describe("getMissingValues", () => {
 
-    it("Retrieves the missing values of a column that has missing values", () => {
+    it("Retrieves the missing values of a category that has columns with missing values", () => {
 
         // Act
-        const missingValues = store.getters.getMissingValues(store.state)("column1");
+        const missingValues = store.getters.getMissingValues(store.state)("category1");
 
         // Assert
-        expect(missingValues).to.deep.equal([1, 2, 3]);
+        expect(missingValues).to.deep.equal({
+            column1: [1, 2, 3],
+            column2: [4, 5, 6]
+        });
     });
 
-    it("Attempts to retrieve the missing values of a column has *no* missing values", () => {
+    it("Attempts to retrieve the missing values of a category has a column with no missing values", () => {
 
         // Act
-        const missingValues = store.getters.getMissingValues(store.state)("column2");
+        const missingValues = store.getters.getMissingValues(store.state)("category2");
 
         // Assert
-        expect(missingValues).to.deep.equal([]);
+        expect(missingValues).to.deep.equal({ column3: [] });
     });
 
-    it("Attempts to retrieve the missing values of a column has *no* entry in the data dictionary", () => {
+    it("Attempts to retrieve the missing values of a category has *no* linked columns", () => {
 
         // Act
-        const missingValues = store.getters.getMissingValues(store.state)("column3");
+        const missingValues = store.getters.getMissingValues(store.state)("category3");
 
         // Assert
-        expect(missingValues).to.deep.equal([]);
+        expect(missingValues).to.deep.equal({});
     });
 });
