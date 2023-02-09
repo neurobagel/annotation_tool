@@ -158,6 +158,19 @@ export const getters = {
         return mappedColumns;
     },
 
+    getMissingValues: (p_state) => (p_column) => {
+
+        let missingValues = [];
+
+        if ( p_column in p_state.dataDictionary.annotated &&
+             "missingValues" in p_state.dataDictionary.annotated[p_column] ) {
+
+            missingValues = p_state.dataDictionary.annotated[p_column].missingValues;
+        }
+
+        return missingValues;
+    },
+
     getNextPage(p_state) {
 
         let nextPage = "";
