@@ -31,7 +31,7 @@
                         <b-button
                             :data-cy="'missingValueButton_' + row.index"
                             variant="danger"
-                            @click="designateAsMissing(row.item['columnName'], row.item['rawValue'])">
+                            @click="changeMissingStatus(row.item['columnName'], row.item['rawValue'], true)">
                             {{ uiText.missingValueButton }}
                         </b-button>
                     </template>
@@ -119,8 +119,8 @@
 
             ...mapMutations([
 
-                "selectAnOption",
-                "designateAsMissing"
+                "changeMissingStatus",
+                "selectAnOption"
             ])
         }
     };
