@@ -172,6 +172,38 @@ export const getters = {
         return mappedColumns;
     },
 
+    getMissingValues: (p_state) => (p_category) => {
+
+        // 0. Retrieve all columns linked with the given category
+        const mappedColumns = [];
+        for ( const column in p_state.columnToCategoryMapping ) {
+
+            if ( p_category === p_state.columnToCategoryMapping[column] ) {
+
+                mappedColumns.push(column);
+            }
+        }
+
+        // 1. Build a map of missing values by column
+        let missingValues = {};
+        for ( const column of mappedColumns ) {
+
+            // A. Starts out as a blank list
+            missingValues[column] = [];
+
+            // B. Save a list of missing values for this column if,
+            // 1) the column has an entry in the data dictionary and,
+            // 2) if a missing values list for the column has already been made
+            if ( column in p_state.dataDictionary.annotated &&
+                "missingValues" in p_state.dataDictionary.annotated[column] ) {
+
+               missingValues[column] = p_state.dataDictionary.annotated[column].missingValues;
+           }
+        }
+
+        return missingValues;
+    },
+
     getNextPage(p_state) {
 
         let nextPage = "";
