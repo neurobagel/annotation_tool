@@ -69,7 +69,7 @@
 
             ...mapGetters([
 
-                "missingValues",
+                "getMissingValues",
                 "getValueDescription"
             ]),
 
@@ -77,7 +77,7 @@
                 // Returns an array of objects, with one object for each missing value
                 // in the columns assigned to the activeCategory
                 // for display in the missing Value Table
-                return Object.entries(this.missingValues(this.activeCategory)).map(([column, missingValues]) => {
+                return Object.entries(this.getMissingValues(this.activeCategory)).map(([column, missingValues]) => {
                     return missingValues.map(missingValue => {
                         return {
                             column: column,
