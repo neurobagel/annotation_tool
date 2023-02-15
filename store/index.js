@@ -339,6 +339,15 @@ export const mutations = {
 
     },
 
+    changeMissingStatus(p_state, { column, value, markAsMissing }) {
+
+        if ( markAsMissing ) {
+            p_state.missingValues[column].push(value);
+        } else {
+            p_state.missingValues[column].splice(p_state.missingValues[column].indexOf(value), 1);
+        }
+    },
+
     initializeColumnToCategoryMap(p_state, p_columns) {
 
         // Column to category map lists all columns as keys with default value of null
