@@ -3,56 +3,71 @@ import annotMissingValues from "~/components/annot-missing-values";
 
 // Mocked Store getters
 const store = {
+
     getters: {
-        getValueDescription: () => (column, missingValue) => missingValue + " from " + column,
-        missingValues: () => (category) => {
+
+        getMissingValues: () => (p_category) => {
+
             return {
-                "column1": ["val1", "val2"],
-                "column2": ["val3"]
+
+                column1: ["val1", "val2"],
+                column2: ["val3"]
             };
-        }
+        },
+        getValueDescription: () => (p_column, p_missingValue) => p_missingValue + " from " + p_column
     }
 };
 
 const props = {
+
     activeCategory: "category1"
 };
 
-describe("missing values", () => {
+describe("Missing values", () => {
 
-        it('displays unique values and description', () => {
+        it("Displays unique values and description", () => {
+
+                // Act
                 cy.mount(annotMissingValues, {
                         propsData: props,
                         computed: store.getters
                     }
                 );
-                cy.get('.missing-values-card-body').contains('val1 from column1');
+
+                // Assert
+                cy.get(".missing-values-card-body").contains("val1 from column1");
             }
         );
 
-        it('handles lack of description gracefully', () => {
+        it("Handles lack of description gracefully", () => {
+
+                // Act
                 cy.mount(annotMissingValues, {
                         propsData: props,
-                        computed: Object.assign(store.getters, {valueDescription: () => (col, mis) => null})
+                        computed: Object.assign(store.getters, { description: () => (p_column, p_missingValues) => null })
                     }
                 );
             }
         );
 
-        it("can be declared 'not missing' by clicking the 'Not Missing' button", () => {
-                const mockStore = {commit: () => {}};
-                cy.spy(mockStore, 'commit').as('commitSpy');
+        it("Can be declared 'not missing' by clicking the 'Not Missing' button", () => {
 
+                // Setup
+                const mockStore = { commit: () => {} };
+                cy.spy(mockStore, "commit").as("commitSpy");
                 cy.mount(annotMissingValues, {
-                        propsData: props,
-                        computed: store.getters,
-                        mocks: {
-                            $store: mockStore
-                        }
-                    }
-                );
+                    computed: store.getters,
+                    mocks: {
+                        $store: mockStore
+                    },
+                    propsData: props
+                });
+
+                // Act
                 cy.get("[data-cy='not-missing-button-column1-val1']").click();
-                cy.get("@commitSpy").should('have.been.calledWith', "declareNotMissing", {column: "column1", value: "val1"});
+
+                // Assert
+                cy.get("@commitSpy").should("have.been.calledWith", "declareNotMissing", { column: "column1", value: "val1" });
             }
         );
     }
