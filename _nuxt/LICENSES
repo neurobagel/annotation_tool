@@ -1,18 +1,23 @@
 /* @license
 Papa Parse
-v5.3.1
+v5.3.2
 https://github.com/mholt/PapaParse
 License: MIT
 */
 
 
 /*!
- * BootstrapVue Icons, generated from Bootstrap Icons 1.2.2
- *
- * @link https://icons.getbootstrap.com/
- * @license MIT
- * https://github.com/twbs/icons/blob/master/LICENSE.md
+ * Vue.js v2.7.14
+ * (c) 2014-2022 Evan You
+ * Released under the MIT License.
  */
+
+/*!
+ * vuex v3.6.2
+ * (c) 2021 Evan You
+ * @license MIT
+ */
+
 
 /*!
  * vue-client-only v0.0.0-semantic-release
@@ -60,31 +65,4 @@ License: MIT
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- */
-
-
-/* @license
-Papa Parse
-v5.3.1
-https://github.com/mholt/PapaParse
-License: MIT
-*/
-
-
-/*!
-  * vue-router v3.5.3
-  * (c) 2021 Evan You
-  * @license MIT
-  */
-
-/*!
- * Vue.js v2.6.14
- * (c) 2014-2021 Evan You
- * Released under the MIT License.
- */
-
-/*!
- * vuex v3.6.2
- * (c) 2021 Evan You
- * @license MIT
  */
