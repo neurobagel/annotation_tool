@@ -101,7 +101,7 @@ describe("Categorical annotation", () => {
         cy.get("[data-cy='categoricalSelector_1']").contains("option_1");
     });
 
-    it("displays the missing value button and designates value as missing when clicked", () => {
+    it("Displays the missing value button and designates value as missing when clicked", () => {
 
         // Setup
         cy.spy(store, "commit").as("commitSpy");
@@ -120,6 +120,6 @@ describe("Categorical annotation", () => {
         cy.get("[data-cy='missingValueButton_1']").click();
 
         // Assert
-        cy.get("@commitSpy").should("have.been.calledOnceWith", "designateAsMissing", "column1", "HC");
+        cy.get("@commitSpy").should("have.been.calledOnceWith", "changeMissingStatus", "column1", "HC", true);
     });
 });

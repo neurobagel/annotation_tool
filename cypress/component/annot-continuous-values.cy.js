@@ -24,7 +24,9 @@ const store = {
 
     mutations: {
 
-        designateAsMissing: () => (p_columnName, p_rawValue) => {},
+        // NOTE: changeMissingStatus reflects a future 'mark as missing' feature
+        // for the continous value component
+        changeMissingStatus: () => (p_columnName, p_rawValue, p_markAsMissing) => {},
         setHeuristic: () => (p_state, { p_column, p_heuristic }) => {}
     }
 };
