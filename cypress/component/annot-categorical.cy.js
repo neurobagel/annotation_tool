@@ -20,12 +20,11 @@ const store = {
 
         getUniqueValues: () => (p_activeCategory) => {
 
-            return [
-                { columnName: "column1", rawValue: "PD" },
-                { columnName: "column1", rawValue: "HC" },
-                { columnName: "column2", rawValue: "" },
-                { columnName: "column2", rawValue: "oups" }
-            ];
+            return {
+
+                column1: ["PD", "HC"],
+                column2: ["", "oups"]
+            };
         },
 
         getValueDescription: () => (p_column, p_cellValue) => {
