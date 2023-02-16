@@ -342,8 +342,13 @@ export const mutations = {
     changeMissingStatus(p_state, { column, value, markAsMissing }) {
 
         if ( markAsMissing ) {
-            p_state.dataDictionary.annotated[column].missingValues.push(value);
+
+            if ( !p_state.dataDictionary.annotated[column].missingValues.includes(value) ) {
+
+                p_state.dataDictionary.annotated[column].missingValues.push(value);
+            }
         } else {
+
             p_state.dataDictionary.annotated[column].missingValues.splice(
                 p_state.dataDictionary.annotated[column].missingValues.indexOf(value), 1);
         }
