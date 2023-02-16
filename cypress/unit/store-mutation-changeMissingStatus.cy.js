@@ -11,9 +11,12 @@ describe("changeMissingStatus mutation", () => {
 
             state: {
 
-                missingValues: {
+                dataDictionary: {
 
-                    column1: []
+                    annotated: {
+
+                        column1: []
+                    }
                 }
             }
         };
@@ -29,13 +32,13 @@ describe("changeMissingStatus mutation", () => {
         });
 
         // Assert
-        expect(store.state.missingValues.column1).to.include("value1");
+        expect(store.state.dataDictionary.annotated.column1).to.include("value1");
     });
 
     it("Remove missing status of a value", () => {
 
         // Setup
-        store.state.missingValues.column1.push("value1");
+        store.state.dataDictionary.annotated.column1.push("value1");
 
         // Act
         mutations.changeMissingStatus(store.state, {
@@ -45,7 +48,7 @@ describe("changeMissingStatus mutation", () => {
         });
 
         // Assert
-        expect(store.state.missingValues.column1).to.not.include("value1");
+        expect(store.state.dataDictionary.annotated.column1).to.not.include("value1");
     });
 
 });
