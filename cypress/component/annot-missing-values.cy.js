@@ -67,7 +67,7 @@ describe("Missing values", () => {
                 cy.get("[data-cy='not-missing-button-column1-val1']").click();
 
                 // Assert
-                cy.get("@commitSpy").should("have.been.calledWith", "declareNotMissing", { column: "column1", value: "val1" });
+                cy.get("@commitSpy").should("have.been.calledWith", "changeMissingStatus", { column: "column1", value: "val1", markAsMissing: false });
             }
         );
     }

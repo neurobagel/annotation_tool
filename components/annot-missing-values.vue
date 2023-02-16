@@ -98,14 +98,20 @@
         },
 
         methods: {
+
             ...mapMutations([
-                "declareNotMissing"
+
+                "changeMissingStatus"
             ]),
 
-            removeValue(tableItem) {
+            removeValue(p_tableItem) {
 
                 // Remove this value from the column's missing value list in the store
-                this.declareNotMissing({column: tableItem.column, value: tableItem.value});
+                this.changeMissingStatus({
+                    column: p_tableItem.column,
+                    markAsMissing: false,
+                    value: p_tableItem.value
+                });
             }
         }
     };
