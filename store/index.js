@@ -243,35 +243,39 @@ export const getters = {
 
     getUniqueValues: (p_state) => (p_category, p_maxValues="None") => {
 
-        // NEXT: Debug this function next to help pass unit test
-
         // 1. Construct a list of unique values for each column
         const uniqueValues = {};
-        for ( const column in p_state.columnToCategoryMapping ) {
+        for ( const columnName in p_state.columnToCategoryMapping ) {
 
             // A. Create a new list for values for each column linked to the given category
-            if ( p_category === p_state.columnToCategoryMapping[column] ) {
+            if ( p_category === p_state.columnToCategoryMapping[columnName] ) {
 
                 // I. Save unique values for each column
-                uniqueValues[column] = new Set();
+                uniqueValues[columnName] = new Set();
                 for ( let index = 0; index < p_state.dataTable.length; index++ ) {
 
-                    uniqueValues[column].add(p_state.dataTable[index][column]);
+                    // a. Check to see if this value is marked as 'missing' for this column
+                    let value = p_state.dataTable[index][columnName];
+                    if ( !p_state.dataDictionary.annotated[columnName].missingValues.includes(value) ) {
+
+                        uniqueValues[columnName].add(value);
+                    }
                 }
 
                 // II. Convert the unique values list for this column from a set to an array
-                uniqueValues[column] = [...uniqueValues[column]];
+                uniqueValues[columnName] = [...uniqueValues[columnName]];
 
                 // III. Trim the value list if a maximum value amount was given
                 // NOTE: Trimming is done here instead of only looking at p_maxValues rows
                 // just in case there are blank entries for columns in the data table
                 if ( "None" !== p_maxValues ) {
 
-                    uniqueValues[column] = uniqueValues[column].slice(0, p_maxValues);
+                    uniqueValues[columnName] = uniqueValues[columnName].slice(0, p_maxValues);
                 }
             }
         }
 
+        // Return a list of objects
         return uniqueValues;
     },
 
