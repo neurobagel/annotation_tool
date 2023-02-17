@@ -370,6 +370,18 @@ export const mutations = {
         p_state.dataDictionary.annotated = JSON.parse(JSON.stringify(p_state.dataDictionary.userProvided));
     },
 
+    selectCategoricalOption(p_state, p_optionValue, p_columnName, p_rawValue) {
+
+        // 0. Create an categorical value map for this column, if it does not yet exist
+        if ( !("valueMap" in p_state.dataDictionary.annotated[p_columnName]) ) {
+
+            p_state.dataDictionary.annotated[p_columnName].valueMap = {};
+        }
+
+        // 1. Assign the option value to a raw value for this column
+        p_state.dataDictionary.annotated[p_columnName].valueMap[p_rawValue] = p_optionValue;
+    },
+
     setCurrentPage(p_state, p_pageName) {
 
         p_state.currentPage = p_pageName;
