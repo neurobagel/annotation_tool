@@ -243,7 +243,7 @@ export const getters = {
 
     getUniqueValues: (p_state) => (p_category, p_maxValues="None") => {
 
-        // 1. Construct a list of unique values for each column
+        // 1. Construct an object containing a list of unique values for each column
         const uniqueValues = {};
         for ( const columnName in p_state.columnToCategoryMapping ) {
 
@@ -275,7 +275,7 @@ export const getters = {
             }
         }
 
-        // Return a list of objects
+        // Return an object containing a list of unique values for each column
         return uniqueValues;
     },
 
