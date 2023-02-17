@@ -1,4 +1,5 @@
 // Facilitate Vue reactivity via 'Vue.set' and 'Vue.delete'
+import { Set } from "core-js";
 import Vue from "vue";
 
 export const state = () => ({
@@ -238,6 +239,44 @@ export const getters = {
 
         // Return the set of transformation heuristics for this data type
         return p_state.transformationHeuristics[columnDataType];
+    },
+
+    getUniqueValues: (p_state) => (p_category, p_maxValues="None") => {
+
+        // 1. Construct an object containing a list of unique values for each column
+        const uniqueValues = {};
+        for ( const columnName in p_state.columnToCategoryMapping ) {
+
+            // A. Create a new list for values for each column linked to the given category
+            if ( p_category === p_state.columnToCategoryMapping[columnName] ) {
+
+                // I. Save unique values for each column
+                uniqueValues[columnName] = new Set();
+                for ( let index = 0; index < p_state.dataTable.length; index++ ) {
+
+                    // a. Check to see if this value is marked as 'missing' for this column
+                    let value = p_state.dataTable[index][columnName];
+                    if ( !p_state.dataDictionary.annotated[columnName].missingValues.includes(value) ) {
+
+                        uniqueValues[columnName].add(value);
+                    }
+                }
+
+                // II. Convert the unique values list for this column from a set to an array
+                uniqueValues[columnName] = [...uniqueValues[columnName]];
+
+                // III. Trim the value list if a maximum value amount was given
+                // NOTE: Trimming is done here instead of only looking at p_maxValues rows
+                // just in case there are blank entries for columns in the data table
+                if ( "None" !== p_maxValues ) {
+
+                    uniqueValues[columnName] = uniqueValues[columnName].slice(0, p_maxValues);
+                }
+            }
+        }
+
+        // Return an object containing a list of unique values for each column
+        return uniqueValues;
     },
 
     getValueDescription: (p_state) => (p_columnName, p_value) => {

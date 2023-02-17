@@ -100,15 +100,21 @@
 
             displayTable() {
 
-                // Create and return table data for the unique values in the relevant columns that are not missing values
-                const tableData = [];
-                for ( const row of this.getUniqueValues(this.activeCategory) ) {
+                // 0. Retrieve all unique values for columns linked to the active category
+                const uniqueValuesMap = this.getUniqueValues(this.activeCategory);
 
-                    tableData.push({
-                        columnName: row.columnName,
-                        description: this.getValueDescription(row.columnName, row.rawValue),
-                        rawValue: row.rawValue
-                    });
+                // 1. Create and return table data for the unique values in the relevant columns that are not missing values
+                const tableData = [];
+
+                for ( const columnName in uniqueValuesMap ) {
+                    for ( const uniqueValue of uniqueValuesMap[columnName]) {
+
+                        tableData.push({
+                            columnName: columnName,
+                            description: this.getValueDescription(columnName, uniqueValue),
+                            rawValue: uniqueValue
+                        });
+                    }
                 }
 
                 return tableData;
