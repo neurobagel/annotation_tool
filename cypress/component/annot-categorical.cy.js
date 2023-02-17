@@ -37,7 +37,7 @@ const store = {
     mutations: {
 
         designateAsMissing: () => (p_columnName, p_rawValue) => {},
-        selectAnOption: () => (p_option, p_columnName, p_rawValue) => {}
+        selectCategoricalOption: () => (p_option, p_columnName, p_rawValue) => {}
     }
 };
 
@@ -86,7 +86,7 @@ describe("Categorical annotation", () => {
         cy.get("[data-cy='categoricalSelector_0']").click().contains("option_2").click();
 
         // Assert
-        cy.get("@commitSpy").should("have.been.calledOnceWith", "selectAnOption", "option_2", "column1", "PD");
+        cy.get("@commitSpy").should("have.been.calledOnceWith", "selectCategoricalOption", "option_2", "column1", "PD");
     });
 
     it("Displays the preset mapping in the dropdown", () => {

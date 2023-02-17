@@ -24,7 +24,7 @@
                         <v-select
                             :data-cy="'categoricalSelector' + '_' + row.index"
                             :value="getSelectedOption(row.index)"
-                            @input="selectAnOption($event, row.item['columnName'], row.item['rawValue'])"
+                            @input="selectCategoricalOption($event, row.item['columnName'], row.item['rawValue'])"
                             :options="getCategoricalOptions(row.item['columnName'])" />
                     </template>
                     <template #cell(missingValue)="row">
@@ -120,7 +120,7 @@
             ...mapMutations([
 
                 "changeMissingStatus",
-                "selectAnOption"
+                "selectCategoricalOption"
             ])
         }
     };
