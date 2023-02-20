@@ -69,36 +69,49 @@
 
             ...mapGetters([
 
-                "missingValues",
+                "getMissingValues",
                 "getValueDescription"
             ]),
 
             tableItems() {
-                // Returns an array of objects, with one object for each missing value
-                // in the columns assigned to the activeCategory
-                // for display in the missing Value Table
-                return Object.entries(this.missingValues(this.activeCategory)).map(([column, missingValues]) => {
-                    return missingValues.map(missingValue => {
-                        return {
+
+                // 0. Retrieve the missing values for each column linked to the active category
+                const missingValuesForCategory = this.getMissingValues(this.activeCategory);
+
+                // 1. Construct an array of objects with one object for each missing value
+                // that each includes its column name, description, and the value itself
+                const tableItems = [];
+                for ( const column in missingValuesForCategory ) {
+                    for ( const value of missingValuesForCategory[column] ) {
+
+                        tableItems.push({
+
                             column: column,
-                            description: this.getValueDescription(column, missingValue),
-                            value: missingValue
-                        };
-                    });
+                            description: this.getValueDescription(column, value),
+                            value: value
+                        });
+                    }
                 }
-                ).flat();
+
+                return tableItems;
             }
         },
 
         methods: {
+
             ...mapMutations([
-                "declareNotMissing"
+
+                "changeMissingStatus"
             ]),
 
-            removeValue(tableItem) {
+            removeValue(p_tableItem) {
 
                 // Remove this value from the column's missing value list in the store
-                this.declareNotMissing({column: tableItem.column, value: tableItem.value});
+                this.changeMissingStatus({
+                    column: p_tableItem.column,
+                    markAsMissing: false,
+                    value: p_tableItem.value
+                });
             }
         }
     };

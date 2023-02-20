@@ -7,9 +7,10 @@ const store = {
 
     getters: {
 
-        getHeuristic: () => (column) => null,
-        getHarmonizedPreview: () => (column, missingValue) => null,
-        getPreviewValues: () => (activeCategory) => {
+        getHarmonizedPreview: () => (p_column, p_missingValue) => null,
+        getHeuristic: () => (p_column) => null,
+        getPreviewValues: () => (p_activeCategory) => {
+
             return {
                 "column1": ["1Y", "11Y"],
                 "column2": ["2,1", "22,1"]
@@ -22,11 +23,12 @@ const store = {
 
     mutations: {
 
-        setHeuristic: () => (p_state, { column, heuristic }) => {},
-        designateAsMissing: () => (columnName, rawValue) => {}
+        // NOTE: changeMissingStatus reflects a future 'mark as missing' feature
+        // for the continous value component
+        changeMissingStatus: () => (p_columnName, p_rawValue, p_markAsMissing) => {},
+        setHeuristic: () => (p_state, { p_column, p_heuristic }) => {}
     }
 };
-
 
 const props = {
 
@@ -34,18 +36,21 @@ const props = {
     activeCategory: "column1"
 };
 
-describe("continuous-values-component", () => {
+describe("Continuous values component", () => {
 
     it("Correctly displays preview values provided by the store", () => {
 
+        // Act
         cy.mount(annotContinuousValues, {
-            propsData: props,
             computed: store.getters,
-            plugins: ["vue-select"]
+            plugins: ["vue-select"],
+            propsData: props
         });
 
+        // Assert
         cy.get("[data-cy='dataTable']").then(table => {
-            // TODO: find a pattern to iterate over the values directly
+
+            // TODO: Find a pattern to iterate over the values directly
             expect(table).to.contain("1Y");
             expect(table).to.contain("11Y");
             expect(table).to.contain("2,1");
@@ -55,37 +60,41 @@ describe("continuous-values-component", () => {
 
     it("Can select a transformation and then dispatches it to the store", () => {
 
+        // Setup
         cy.spy(store, "commit").as("commitSpy");
-
         cy.mount(annotContinuousValues, {
-
-            propsData: props,
             computed: store.getters,
             mocks: { $store: store },
-            plugins: ["vue-select"]
+            plugins: ["vue-select"],
+            propsData: props
         });
 
+        // Act
         cy.get("[data-cy='selectTransform']").click();
         cy.get("[data-cy='selectTransform']")
             .find("li")
             .contains("float")
             .click();
-        cy.get("@commitSpy").should('have.been.calledWith', "setHeuristic", { column: "column1", heuristic: "float" });
+
+        // Assert
+        cy.get("@commitSpy").should("have.been.calledWith", "setHeuristic", { column: "column1", heuristic: "float" });
     });
 
     it("Applies a selected heuristic and previews transformed values", () => {
 
+        // Act
         cy.mount(annotContinuousValues, {
-            propsData: props,
             computed: Object.assign(store.getters, {
-                getHeuristic: () => (column) => "float",
-                getHarmonizedPreview: () => (column, missingValue) => column + "-" + missingValue + "-harmonized"
-            })
+                getHeuristic: () => (p_column) => "float",
+                getHarmonizedPreview: () => (p_column, p_missingValue) => p_column + "-" + p_missingValue + "-harmonized"
+            }),
+            propsData: props
         });
 
+        // Assert
         cy.get("[data-cy='selectTransform']").contains("float");
         cy.get("[data-cy='dataTable']").then(table => {
-            // TODO: find a pattern to iterate over the values directly
+            // TODO: Find a pattern to iterate over the values directly
             expect(table).to.contain("column1-1Y-harmonized");
             expect(table).to.contain("column1-11Y-harmonized");
             expect(table).to.contain("column2-2,1-harmonized");

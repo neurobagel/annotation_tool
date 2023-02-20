@@ -24,14 +24,14 @@
                         <v-select
                             :data-cy="'categoricalSelector' + '_' + row.index"
                             :value="getSelectedOption(row.index)"
-                            @input="selectAnOption($event, row.item['columnName'], row.item['rawValue'])"
-                            :options="getOptions()" />
+                            @input="selectCategoricalOption($event, row.item['columnName'], row.item['rawValue'])"
+                            :options="getCategoricalOptions(row.item['columnName'])" />
                     </template>
                     <template #cell(missingValue)="row">
                         <b-button
                             :data-cy="'missingValueButton_' + row.index"
                             variant="danger"
-                            @click="designateAsMissing(row.item['columnName'], row.item['rawValue'])">
+                            @click="changeMissingStatus(row.item['columnName'], row.item['rawValue'], true)">
                             {{ uiText.missingValueButton }}
                         </b-button>
                     </template>
@@ -58,6 +58,7 @@
         name: "AnnotCategorical",
 
         props: {
+
             activeCategory: { type: String, required: true }
         },
 
@@ -76,9 +77,10 @@
 
                 // Text for UI elements
                 uiText: {
+
                     instructions: "Annotate each unique value",
-                    saveButton: "Save Annotation",
-                    missingValueButton: "Mark as missing"
+                    missingValueButton: "Mark as missing",
+                    saveButton: "Save Annotation"
                 },
 
                 valueMapping: {}
@@ -90,30 +92,41 @@
 
             ...mapGetters([
 
+                "getCategoricalOptions",
+                "getSelectedOption",
                 "getUniqueValues",
-                "getValueDescription",
-                "getOptions",
-                "getSelectedOption"
+                "getValueDescription"
             ]),
+
             displayTable() {
 
-                // Create and return table data for the unique values in the relevant columns that are not missing values
-                const tableData = [];
-                for ( const row of this.getUniqueValues(this.activeCategory) ) {
+                // 0. Retrieve all unique values for columns linked to the active category
+                const uniqueValuesMap = this.getUniqueValues(this.activeCategory);
 
-                    tableData.push({
-                        columnName: row.columnName,
-                        rawValue: row.rawValue,
-                        description: this.getValueDescription(row.columnName, row.rawValue)
-                    });
+                // 1. Create and return table data for the unique values in the relevant columns that are not missing values
+                const tableData = [];
+
+                for ( const columnName in uniqueValuesMap ) {
+                    for ( const uniqueValue of uniqueValuesMap[columnName]) {
+
+                        tableData.push({
+                            columnName: columnName,
+                            description: this.getValueDescription(columnName, uniqueValue),
+                            rawValue: uniqueValue
+                        });
+                    }
                 }
+
                 return tableData;
             }
         },
+
         methods: {
+
             ...mapMutations([
-                "selectAnOption",
-                "designateAsMissing"
+
+                "changeMissingStatus",
+                "selectCategoricalOption"
             ])
         }
     };

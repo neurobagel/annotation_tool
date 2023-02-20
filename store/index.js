@@ -1,7 +1,13 @@
 // Facilitate Vue reactivity via 'Vue.set' and 'Vue.delete'
+import { Set } from "core-js";
 import Vue from "vue";
 
 export const state = () => ({
+
+    categoricalOptions: {
+
+        "Sex": ["male", "female", "other"]
+    },
 
     categories: {
 
@@ -98,6 +104,15 @@ export const state = () => ({
             location: "download",
             pageName: "download"
         }
+    },
+
+    // TODO: Assess whether this is the best place and configuration for storing
+    // transformation heuristics
+    transformationHeuristics: {
+
+        "annot-continuous-values": [
+            "float", "bounded", "euro", "range", "int", "string", "isoyear"
+        ]
     }
 });
 
@@ -172,6 +187,38 @@ export const getters = {
         return mappedColumns;
     },
 
+    getMissingValues: (p_state) => (p_category) => {
+
+        // 0. Retrieve all columns linked with the given category
+        const mappedColumns = [];
+        for ( const column in p_state.columnToCategoryMapping ) {
+
+            if ( p_category === p_state.columnToCategoryMapping[column] ) {
+
+                mappedColumns.push(column);
+            }
+        }
+
+        // 1. Build a map of missing values by column
+        let missingValues = {};
+        for ( const column of mappedColumns ) {
+
+            // A. Starts out as a blank list
+            missingValues[column] = [];
+
+            // B. Save a list of missing values for this column if,
+            // 1) the column has an entry in the data dictionary and,
+            // 2) if a missing values list for the column has already been made
+            if ( column in p_state.dataDictionary.annotated &&
+                "missingValues" in p_state.dataDictionary.annotated[column] ) {
+
+               missingValues[column] = p_state.dataDictionary.annotated[column].missingValues;
+           }
+        }
+
+        return missingValues;
+    },
+
     getNextPage(p_state) {
 
         let nextPage = "";
@@ -190,6 +237,60 @@ export const getters = {
         }
 
         return nextPage;
+    },
+
+    getCategoricalOptions: (p_state) => (p_column) => {
+
+        // Return the options for this column listed in the current (hardcoded)
+        // options for each categorical data-based category
+        return p_state.categoricalOptions[p_state.columnToCategoryMapping[p_column]] ?? [];
+    },
+
+    getTransformOptions: (p_state) => (p_category) => {
+
+        // 0. Get the data type of the given category
+        const columnDataType = p_state.categories[p_category].componentName;
+
+        // Return the set of transformation heuristics for this data type
+        return p_state.transformationHeuristics[columnDataType];
+    },
+
+    getUniqueValues: (p_state) => (p_category, p_maxValues="None") => {
+
+        // 1. Construct an object containing a list of unique values for each column
+        const uniqueValues = {};
+        for ( const columnName in p_state.columnToCategoryMapping ) {
+
+            // A. Create a new list for values for each column linked to the given category
+            if ( p_category === p_state.columnToCategoryMapping[columnName] ) {
+
+                // I. Save unique values for each column
+                uniqueValues[columnName] = new Set();
+                for ( let index = 0; index < p_state.dataTable.length; index++ ) {
+
+                    // a. Check to see if this value is marked as 'missing' for this column
+                    let value = p_state.dataTable[index][columnName];
+                    if ( !p_state.dataDictionary.annotated[columnName].missingValues.includes(value) ) {
+
+                        uniqueValues[columnName].add(value);
+                    }
+                }
+
+                // II. Convert the unique values list for this column from a set to an array
+                uniqueValues[columnName] = [...uniqueValues[columnName]];
+
+                // III. Trim the value list if a maximum value amount was given
+                // NOTE: Trimming is done here instead of only looking at p_maxValues rows
+                // just in case there are blank entries for columns in the data table
+                if ( "None" !== p_maxValues ) {
+
+                    uniqueValues[columnName] = uniqueValues[columnName].slice(0, p_maxValues);
+                }
+            }
+        }
+
+        // Return an object containing a list of unique values for each column
+        return uniqueValues;
     },
 
     getValueDescription: (p_state) => (p_columnName, p_value) => {
@@ -291,6 +392,21 @@ export const mutations = {
 
     },
 
+    changeMissingStatus(p_state, { column, value, markAsMissing }) {
+
+        if ( markAsMissing ) {
+
+            if ( !p_state.dataDictionary.annotated[column].missingValues.includes(value) ) {
+
+                p_state.dataDictionary.annotated[column].missingValues.push(value);
+            }
+        } else {
+
+            p_state.dataDictionary.annotated[column].missingValues.splice(
+                p_state.dataDictionary.annotated[column].missingValues.indexOf(value), 1);
+        }
+    },
+
     initializeColumnToCategoryMap(p_state, p_columns) {
 
         // Column to category map lists all columns as keys with default value of null
@@ -311,6 +427,18 @@ export const mutations = {
 
         // 2. Make a copy of the newly provided skeleton dictionary for annotation
         p_state.dataDictionary.annotated = JSON.parse(JSON.stringify(p_state.dataDictionary.userProvided));
+    },
+
+    selectCategoricalOption(p_state, p_optionValue, p_columnName, p_rawValue) {
+
+        // 0. Create an categorical value map for this column, if it does not yet exist
+        if ( !("valueMap" in p_state.dataDictionary.annotated[p_columnName]) ) {
+
+            p_state.dataDictionary.annotated[p_columnName].valueMap = {};
+        }
+
+        // 1. Assign the option value to a raw value for this column
+        p_state.dataDictionary.annotated[p_columnName].valueMap[p_rawValue] = p_optionValue;
     },
 
     setCurrentPage(p_state, p_pageName) {
