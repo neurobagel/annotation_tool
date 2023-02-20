@@ -15,7 +15,7 @@ const store = {
                 "column2": ["2,1", "22,1"]
             };
         },
-        getTransformHeuristics: () => (activeCategory) => {
+        getTransformationHeuristics: () => (activeCategory) => {
             return ["float", "bounded", "euro", "range", "int", "string", "isoyear"];
         }
     },
