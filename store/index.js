@@ -145,6 +145,20 @@ export const getters = {
             p_state.dataDictionary.annotated[p_columnName].transformationHeuristic : "";
     },
 
+    getTransformationHeuristic: (p_state) => (p_category) => {
+
+        let heuristics = [];
+        switch ( p_category ) {
+
+            case "Age":
+
+                heuristics = ["float", "bounded", "euro", "range", "int", "string", "isoyear"];
+                break;
+        }
+
+        return heuristics;
+    },
+
     getMappedColumns: (p_state) => (p_category) => {
 
         const mappedColumns = [];
