@@ -123,6 +123,13 @@ export const getters = {
         return p_state.categories[p_category].componentName;
     },
 
+    getCategoricalOptions: (p_state) => (p_column) => {
+
+        // Return the options for this column listed in the current (hardcoded)
+        // options for each categorical data-based category
+        return p_state.categoricalOptions[p_state.columnToCategoryMapping[p_column]] ?? [];
+    },
+
     getCategoryNames (p_state) {
 
 
@@ -158,20 +165,6 @@ export const getters = {
 
         return ( "transformationHeuristic" in p_state.dataDictionary.annotated[p_columnName] ) ?
             p_state.dataDictionary.annotated[p_columnName].transformationHeuristic : "";
-    },
-
-    getTransformationHeuristic: (p_state) => (p_category) => {
-
-        let heuristics = [];
-        switch ( p_category ) {
-
-            case "Age":
-
-                heuristics = ["float", "bounded", "euro", "range", "int", "string", "isoyear"];
-                break;
-        }
-
-        return heuristics;
     },
 
     getMappedColumns: (p_state) => (p_category) => {
@@ -237,13 +230,6 @@ export const getters = {
         }
 
         return nextPage;
-    },
-
-    getCategoricalOptions: (p_state) => (p_column) => {
-
-        // Return the options for this column listed in the current (hardcoded)
-        // options for each categorical data-based category
-        return p_state.categoricalOptions[p_state.columnToCategoryMapping[p_column]] ?? [];
     },
 
     getTransformOptions: (p_state) => (p_category) => {
