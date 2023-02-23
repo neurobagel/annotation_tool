@@ -7,12 +7,8 @@ const store = {
 
     getters: {
 
-        getHarmonizedPreview: () => (p_column, p_missingValue) => {
-            return null;
-        },
-        getHeuristic: () => (p_column) => {
-            return null;
-        },
+        getHarmonizedPreview: () => (p_column, p_missingValue) => null,
+        getHeuristic: () => (p_column) => null,
         getPreviewValues: () => (p_activeCategory) => {
 
             return {
