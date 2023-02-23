@@ -31,20 +31,14 @@ describe("getHarmonizedPreview", () => {
         };
     });
 
-    it.only("float transformation", () => {
-
-        console.log("Pre-setup");
+    it("float transformation", () => {
 
         // Setup
         store.state.dataDictionary.annotated.column1.transformationHeuristic = "float";
         originalValue = "42.6";
 
-        console.log("Pre-act");
-
         // Act
         const harmonizedValue = getters.getHarmonizedPreview(store.state)("column1", originalValue);
-
-        console.log("Pre-assert");
 
         // Assert
         expect(Number.isInteger(harmonizedValue)).to.be.false;
