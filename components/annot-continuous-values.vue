@@ -53,10 +53,9 @@
 
             ...mapGetters([
 
-                "getPreviewValues",
                 "getHarmonizedPreview",
-                "getTransformOptions",
-                "getHeuristic"
+                "getHeuristic",
+                "getTransformOptions"
             ]),
 
             validationItems() {

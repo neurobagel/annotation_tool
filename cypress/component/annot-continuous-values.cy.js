@@ -7,8 +7,12 @@ const store = {
 
     getters: {
 
-        getHarmonizedPreview: () => (p_column, p_missingValue) => null,
-        getHeuristic: () => (p_column) => null,
+        getHarmonizedPreview: () => (p_column, p_missingValue) => {
+            return null;
+        },
+        getHeuristic: () => (p_column) => {
+            return null;
+        },
         getPreviewValues: () => (p_activeCategory) => {
 
             return {
@@ -16,8 +20,9 @@ const store = {
                 "column2": ["2,1", "22,1"]
             };
         },
-        getTransformationHeuristics: () => (activeCategory) => {
-            return ["float", "bounded", "euro", "range", "int", "string", "isoyear"];
+        getTransformOptions: () => (activeCategory) => {
+            // return ["float", "bounded", "euro", "range", "int", "string", "isoyear"];
+            return ["float", "bounded", "euro", "range", "int", "string"];
         }
     },
 
