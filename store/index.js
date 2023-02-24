@@ -4,6 +4,12 @@ import Vue from "vue";
 
 export const state = () => ({
 
+    appSetting: {
+
+        // The string label applied to values designated as "missing values" when the data are annotated.
+        missingValueLabel: "missing value"
+    },
+
     categoricalOptions: {
 
         "Sex": ["male", "female", "other"]
@@ -110,8 +116,11 @@ export const state = () => ({
     // transformation heuristics
     transformationHeuristics: {
 
+        // "annot-continuous-values": [
+        //     "float", "bounded", "euro", "range", "int", "string", "isoyear"
+        // ]
         "annot-continuous-values": [
-            "float", "bounded", "euro", "range", "int", "string", "isoyear"
+            "float", "bounded", "euro", "range", "int", "string"
         ]
     }
 });
@@ -121,6 +130,13 @@ export const getters = {
     getAnnotationComponent: (p_state) => (p_category) => {
 
         return p_state.categories[p_category].componentName;
+    },
+
+    getCategoricalOptions: (p_state) => (p_column) => {
+
+        // Return the options for this column listed in the current (hardcoded)
+        // options for each categorical data-based category
+        return p_state.categoricalOptions[p_state.columnToCategoryMapping[p_column]] ?? [];
     },
 
     getCategoryNames (p_state) {
@@ -152,6 +168,71 @@ export const getters = {
 
         return ( "explanation" in p_state.categories[p_category] ) ?
             p_state.categories[p_category].explanation : null;
+    },
+
+    getHarmonizedPreview: (p_state) => (p_column, p_originalValue) => {
+
+        const transformationHeuristic = p_state.dataDictionary.annotated[p_column].transformationHeuristic ?? "";
+
+        let convertedValue = "";
+
+        switch ( transformationHeuristic ) {
+
+            case "float":
+
+                convertedValue = parseFloat(p_originalValue);
+                break;
+
+            case "bounded":
+
+                convertedValue = parseInt(p_originalValue.replace("+", ""));
+                break;
+
+            case "euro":
+
+                convertedValue = parseFloat(p_originalValue.replace(",", "."));
+                break;
+
+            case "range": {
+
+                const [lower, upper] = p_originalValue.split("-").map(val => parseFloat(val.trim()));
+                convertedValue = (lower + upper) / 2;
+                break;
+            }
+
+            case "int":
+
+                convertedValue = parseInt(p_originalValue);
+                break;
+
+            case "string":
+
+                convertedValue = p_state.appSetting.missingValueLabel;
+                break;
+
+            // case "isoyear": {
+
+            //     // Returns an Object array where keys are the format(s) of the age value and values are the portion of the
+            //     // age value that matches this format (in some cases, only a substring may match, or there may be several substrings)
+            //     // If no capture group matches, return "undefined"
+            //     const regularExpressions = ['(?<isoyear>\\d+Y)?(?<isomonth>\\d+M)?'];
+            //     const ageRegex = new RegExp(regularExpressions.join("|"));
+            //     const regexHits = ageRegex.exec(p_originalValue);
+            //     const matchingKeys = Object.keys(regexHits.groups).filter(key => undefined !== regexHits.groups[key]);
+            //     const ageFormats = ( null !== regexHits ) ? Object.fromEntries(matchingKeys.map(key => [key, regexHits.groups[key]])) : "";
+
+            //     const yearValue = parseInt(ageFormats.isoyear.replace("Y", ""));
+            //     const monthValue = Object.keys(ageFormats).includes("isomonth") ? parseInt(ageFormats.isomonth.replace("M", "")) / 12 : 0;
+
+            //     convertedValue = `${yearValue + monthValue}`;
+            //     break;
+            // }
+
+            default:
+                break;
+        }
+
+        return convertedValue;
     },
 
     getHeuristic: (p_state) => (p_columnName) => {
@@ -223,13 +304,6 @@ export const getters = {
         }
 
         return nextPage;
-    },
-
-    getCategoricalOptions: (p_state) => (p_column) => {
-
-        // Return the options for this column listed in the current (hardcoded)
-        // options for each categorical data-based category
-        return p_state.categoricalOptions[p_state.columnToCategoryMapping[p_column]] ?? [];
     },
 
     getTransformOptions: (p_state) => (p_category) => {

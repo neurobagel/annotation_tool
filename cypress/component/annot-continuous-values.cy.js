@@ -16,9 +16,9 @@ const store = {
                 "column2": ["2,1", "22,1"]
             };
         },
-        getTransformOptions: () => (p_activeCategory) => {
-
-            return ["float", "bounded", "euro", "range", "int", "string", "isoyear"];
+        getTransformOptions: () => (activeCategory) => {
+            // return ["float", "bounded", "euro", "range", "int", "string", "isoyear"];
+            return ["float", "bounded", "euro", "range", "int", "string"];
         }
     },
 
