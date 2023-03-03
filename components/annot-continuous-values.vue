@@ -6,18 +6,36 @@
         <b-card-header>{{ uiText.instructions }}</b-card-header>
         <b-card-body class="continuous-values-card-body">
 
-            <v-select
-                data-cy="selectTransform"
-                :options="getTransformOptions(this.activeCategory)"
-                :value="getHeuristic(this.activeCategory)"
-                @input="commitHeuristic($event)" />
+            <b-tabs content-class="mt-3">
 
-            <b-table
-                hover
-                striped
-                id="annotation-table"
-                data-cy="dataTable"
-                :items="validationItems" />
+                <b-tab
+                    v-for="(columnName, index) in relevantColumns"
+                    :key="columnName"
+                    :active="0 === index"
+                    :title="columnName">
+
+                    <b-row>
+
+                        <b-col cols="8">
+                            <b-table
+                                hover
+                                striped
+                                id="annotation-table"
+                                :data-cy="'dataTable-' + columnName"
+                                :items="columnValidationItems(columnName)" />
+                        </b-col>
+
+                        <b-col cols="4">
+                            <v-select
+                                :data-cy="'selectTransform_' + columnName"
+                                :options="getTransformOptions(activeCategory)"
+                                :value="getHeuristic(columnName)"
+                                @input="commitHeuristic(columnName, $event)" />
+                        </b-col>
+
+                    </b-row>
+                </b-tab>
+            </b-tabs>
 
         </b-card-body>
     </b-card>
@@ -33,7 +51,7 @@
 
         props: {
 
-            activeCategory: {type: String, required: true}
+            activeCategory: { type: String, required: true }
         },
 
         name: "ContinuousTable",
@@ -49,31 +67,21 @@
                 }
             };
         },
+
         computed: {
 
             ...mapGetters([
 
-                "getPreviewValues",
                 "getHarmonizedPreview",
+                "getHeuristic",
+                "getMappedColumns",
                 "getTransformOptions",
-                "getHeuristic"
+                "getUniqueValues"
             ]),
 
-            validationItems() {
+            relevantColumns() {
 
-                // A table generated from the unique values provided by the
-                // store for columns assigned to the activeCategory.
-                return Object.entries(
-                    this.getPreviewValues(this.activeCategory)
-                ).map(([column, values]) => {
-                    return values.map(value => {
-                        return {
-                            rawValue: value,
-                            column: column,
-                            preview: this.getHarmonizedPreview(column, value)
-                        };
-                    });
-                }).flat();
+                return this.getMappedColumns(this.activeCategory);
             }
         },
 
@@ -84,12 +92,34 @@
                 "setHeuristic"
             ]),
 
-            commitHeuristic(p_heuristic) {
+            columnValidationItems(p_columnName) {
+
+                // 1. Retrieve all unique values for each column linked to this category
+                const uniqueValuesByColumn = this.getUniqueValues(this.activeCategory);
+
+                // 2. Create items for the table consisting of objects containing column name, raw and transformed values
+                const tableItems = [];
+                Object.keys(uniqueValuesByColumn).forEach(columnName => {
+
+                    return uniqueValuesByColumn[columnName].forEach(value => {
+
+                        tableItems.push({
+
+                            preview: this.getHarmonizedPreview(p_columnName, value),
+                            rawValue: value
+                        });
+                    });
+                });
+
+                return tableItems;
+            },
+
+            commitHeuristic(p_column, p_heuristic) {
 
                 // TODO: With the addition of ability to set heuristic for
                 // individual columns, 'activeCategory' below will be replaced
                 // with the appropriate column name
-                this.setHeuristic({ column: this.activeCategory, heuristic: p_heuristic });
+                this.setHeuristic({ column: p_column, heuristic: p_heuristic });
             }
         }
     };
