@@ -1,62 +1,104 @@
 import annotContinuousValues from "~/components/annot-continuous-values";
 
 
-const store = {
-
-    commit: () => {},
-
-    getters: {
-
-        getHarmonizedPreview: () => (p_column, p_missingValue) => null,
-        getHeuristic: () => (p_column) => null,
-        getPreviewValues: () => (p_activeCategory) => {
-
-            return {
-                "column1": ["1Y", "11Y"],
-                "column2": ["2,1", "22,1"]
-            };
-        },
-        getTransformOptions: () => (p_activeCategory) => {
-
-            return ["float", "bounded", "euro", "range", "int", "string", "isoyear"];
-        }
-    },
-
-    mutations: {
-
-        // NOTE: changeMissingStatus reflects a future 'mark as missing' feature
-        // for the continous value component
-        changeMissingStatus: () => (p_columnName, p_rawValue, p_markAsMissing) => {},
-        setHeuristic: () => (p_state, { p_column, p_heuristic }) => {}
-    }
-};
+let store;
 
 const props = {
 
-    // TODO: This prop is currently necessary until new column-based heuristic feature is added
-    activeCategory: "column1"
+    activeCategory: "category1"
 };
 
 describe("Continuous values component", () => {
 
-    it("Correctly displays preview values provided by the store", () => {
+    beforeEach(() => {
+
+        store = {
+
+            commit: (p_mutationName, p_argument) => { store.mutations[p_mutationName](p_argument); },
+
+            getters: {
+
+                getHarmonizedPreview: () => (p_column, p_originalValue) => {
+
+                    let convertedValue = "";
+
+                    switch ( store.state.dataDictionary.annotated[p_column].transformationHeuristic ) {
+
+                        case "euro":
+
+                            convertedValue = parseFloat(p_originalValue.replace(",", "."));
+                            break;
+                    }
+
+                    return convertedValue;
+                },
+                getHeuristic: () => (p_column) => {
+
+                    return store.state.dataDictionary.annotated[p_column].transformationHeuristic;
+                },
+                getMappedColumns: () => (p_activeCategory) => {
+
+                    return ["column1"];
+                },
+                getTransformOptions: () => (p_activeCategory) => {
+
+                    // return ["float", "bounded", "euro", "range", "int", "string", "isoyear"];
+                    return ["", "float", "bounded", "euro", "range", "int", "string"];
+                },
+                getUniqueValues: () => (p_activeCategory) => {
+
+                    return {
+
+                        column1: ["2,1", "22,1"]
+                    };
+                }
+            },
+
+            mutations: {
+
+                // NOTE: changeMissingStatus reflects a future 'mark as missing' feature
+                // for the continous value component
+                changeMissingStatus: () => (p_columnName, p_rawValue, p_markAsMissing) => {},
+                setHeuristic: ({ column, heuristic }) => {
+
+                    store.state.dataDictionary.annotated[column].transformationHeuristic = heuristic;
+                }
+            },
+
+            state: {
+
+                dataDictionary: {
+
+                    annotated: {
+
+                        "column1": {
+
+                            transformationHeuristic: ""
+                        }
+                    }
+                }
+            }
+        };
+    });
+
+    it("Correctly displays blank preview value on mount", () => {
 
         // Act
         cy.mount(annotContinuousValues, {
+
             computed: store.getters,
+            mocks: { $store: store },
             plugins: ["vue-select"],
             propsData: props
         });
 
-        // Assert
-        cy.get("[data-cy='dataTable']").then(table => {
-
-            // TODO: Find a pattern to iterate over the values directly
-            expect(table).to.contain("1Y");
-            expect(table).to.contain("11Y");
-            expect(table).to.contain("2,1");
-            expect(table).to.contain("22,1");
-        });
+        // Assert - With default transformation of "", preview values should be blank
+        cy.get("[data-cy='dataTable-column1'] tr").eq(1)
+          .find("td").eq(0)
+          .should("contain", "");
+        cy.get("[data-cy='dataTable-column1'] tr").eq(2)
+          .find("td").eq(0)
+          .should("contain", "");
     });
 
     it("Can select a transformation and then dispatches it to the store", () => {
@@ -64,6 +106,7 @@ describe("Continuous values component", () => {
         // Setup
         cy.spy(store, "commit").as("commitSpy");
         cy.mount(annotContinuousValues, {
+
             computed: store.getters,
             mocks: { $store: store },
             plugins: ["vue-select"],
@@ -71,8 +114,8 @@ describe("Continuous values component", () => {
         });
 
         // Act
-        cy.get("[data-cy='selectTransform']").click();
-        cy.get("[data-cy='selectTransform']")
+        cy.get("[data-cy='selectTransform_column1']").click();
+        cy.get("[data-cy='selectTransform_column1']")
             .find("li")
             .contains("float")
             .click();
@@ -83,23 +126,24 @@ describe("Continuous values component", () => {
 
     it("Applies a selected heuristic and previews transformed values", () => {
 
-        // Act
+        // Setup
         cy.mount(annotContinuousValues, {
-            computed: Object.assign(store.getters, {
-                getHeuristic: () => (p_column) => "float",
-                getHarmonizedPreview: () => (p_column, p_missingValue) => p_column + "-" + p_missingValue + "-harmonized"
-            }),
+
+            computed: store.getters,
+            mocks: { $store: store },
+            plugins: ["vue-select"],
             propsData: props
         });
 
-        // Assert
-        cy.get("[data-cy='selectTransform']").contains("float");
-        cy.get("[data-cy='dataTable']").then(table => {
-            // TODO: Find a pattern to iterate over the values directly
-            expect(table).to.contain("column1-1Y-harmonized");
-            expect(table).to.contain("column1-11Y-harmonized");
-            expect(table).to.contain("column2-2,1-harmonized");
-            expect(table).to.contain("column2-22,1-harmonized");
-        });
+        // Act
+        cy.get("[data-cy='selectTransform_column1']").click().contains("euro").click();
+
+        // Assert - With euro transformation selected, preview values should have ',' replaced with '.'
+        cy.get("[data-cy='dataTable-column1'] tr").eq(1)
+          .find("td").eq(0)
+          .should("contain", "2.1");
+        cy.get("[data-cy='dataTable-column1'] tr").eq(2)
+          .find("td").eq(0)
+          .should("contain", "22.1");
     });
 });
