@@ -117,10 +117,10 @@ export const state = () => ({
     transformationHeuristics: {
 
         // "annot-continuous-values": [
-        //     "float", "bounded", "euro", "range", "int", "string", "isoyear"
+        //     "", "float", "bounded", "euro", "range", "int", "string", "isoyear"
         // ]
         "annot-continuous-values": [
-            "float", "bounded", "euro", "range", "int", "string"
+            "", "float", "bounded", "euro", "range", "int", "string"
         ]
     }
 });
