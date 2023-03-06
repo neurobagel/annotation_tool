@@ -561,8 +561,6 @@ export const mutations = {
 
     setHeuristic(p_state, { column, heuristic }) {
 
-        console.log("Store setHeuristic");
-
         // Set a new transformation heuristic for this column
         Vue.set(p_state.dataDictionary.annotated[column], "transformationHeuristic", heuristic);
     }
