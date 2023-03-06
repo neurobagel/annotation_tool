@@ -8,6 +8,12 @@ jobs:
     steps:
       - name: Checkout 🔍
         uses: actions/checkout@v2
+
+      - name: Set up node env
+        uses: actions/setup-node@v2.1.2
+        with:
+          node-version: 16
+                  
       # Install NPM dependencies, cache them correctly
       # and run all Cypress End to End tests
       - name: Run End to End tests 🧪
