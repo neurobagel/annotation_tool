@@ -146,4 +146,95 @@ describe("Continuous values component", () => {
           .find("td").eq(0)
           .should("contain", "22.1");
     });
+
+    it("Displays two or more columns in separate tabs with different data", () => {
+
+        // Setup
+        store.state.dataDictionary.annotated["column2"] = { transformationHeuristic: "" };
+        store.getters.getMappedColumns = () => (p_activeCategory) => {
+
+            return ["column1", "column2"];
+        };
+        store.getters.getUniqueValues = () => (p_activeCategory) => {
+
+            return {
+
+                column1: ["2,1", "22,1"],
+                column2: ["4,1", "44,1"]
+            };
+        };
+
+        // Act
+        cy.mount(annotContinuousValues, {
+
+            computed: store.getters,
+            mocks: { $store: store },
+            plugins: ["vue-select"],
+            propsData: props
+        });
+
+        // Assert
+        cy.get("[data-cy='dataTable-column1']").should("exist");
+        cy.get("[data-cy='dataTable-column1'] tr").eq(1)
+          .find("td").eq(1)
+          .should("contain", "2,1");
+        cy.get("[data-cy='dataTable-column1'] tr").eq(2)
+          .find("td").eq(1)
+          .should("contain", "22,1");
+        cy.get("[data-cy='dataTable-column2']").should("exist");
+        cy.get("[data-cy='dataTable-column2'] tr").eq(1)
+          .find("td").eq(1)
+          .should("contain", "4,1");
+        cy.get("[data-cy='dataTable-column2'] tr").eq(2)
+          .find("td").eq(1)
+          .should("contain", "44,1");
+    });
+
+    it("Able to transform two or more columns", () => {
+
+        // Setup
+        store.state.dataDictionary.annotated["column2"] = { transformationHeuristic: "" };
+        store.getters.getMappedColumns = () => (p_activeCategory) => {
+
+            return ["column1", "column2"];
+        };
+        store.getters.getUniqueValues = () => (p_activeCategory) => {
+
+            return {
+
+                column1: ["2,1", "22,1"],
+                column2: ["4,1", "44,1"]
+            };
+        };
+        cy.mount(annotContinuousValues, {
+
+            computed: store.getters,
+            mocks: { $store: store },
+            plugins: ["vue-select"],
+            propsData: props
+        });
+
+        // Act
+        cy.get("[data-cy='selectTransform_column1']").click().contains("euro").click();
+
+        // Assert - With euro transformation selected, preview values should have ',' replaced with '.'
+        cy.get("[data-cy='dataTable-column1'] tr").eq(1)
+          .find("td").eq(0)
+          .should("contain", "2.1");
+        cy.get("[data-cy='dataTable-column1'] tr").eq(2)
+          .find("td").eq(0)
+          .should("contain", "22.1");
+
+        // Act
+        cy.get(".nav-link").contains("column2").click();
+        cy.get("[data-cy='selectTransform_column2']").click().contains("euro").click();
+
+        // Assert - With euro transformation selected, preview values should have ',' replaced with '.'
+        cy.get("[data-cy='dataTable-column2'] tr").eq(1)
+          .find("td").eq(0)
+          .should("contain", "4.1");
+        cy.get("[data-cy='dataTable-column2'] tr").eq(2)
+          .find("td").eq(0)
+          .should("contain", "44.1");
+    });
 });
