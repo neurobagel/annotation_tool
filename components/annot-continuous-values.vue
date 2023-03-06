@@ -99,15 +99,12 @@
 
                 // 2. Create items for the table consisting of objects containing column name, raw and transformed values
                 const tableItems = [];
-                Object.keys(uniqueValuesByColumn).forEach(columnName => {
+                uniqueValuesByColumn[p_columnName].forEach(value => {
 
-                    return uniqueValuesByColumn[columnName].forEach(value => {
+                    tableItems.push({
 
-                        tableItems.push({
-
-                            preview: this.getHarmonizedPreview(p_columnName, value),
-                            rawValue: value
-                        });
+                        preview: this.getHarmonizedPreview(p_columnName, value),
+                        rawValue: value
                     });
                 });
 
