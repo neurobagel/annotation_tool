@@ -241,6 +241,12 @@ export const getters = {
             p_state.dataDictionary.annotated[p_columnName].transformationHeuristic : "";
     },
 
+    getMappedCategories: (p_state) => (p_skipCategories=[]) => {
+
+        // Return list of all categories linked to columns (filtered by given categories to skip)
+        return [...new Set(Object.values(p_state.columnToCategoryMapping).filter(x => !p_skipCategories.has(x)))];
+    },
+
     getMappedColumns: (p_state) => (p_category) => {
 
         const mappedColumns = [];
