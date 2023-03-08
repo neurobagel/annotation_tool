@@ -28,15 +28,14 @@
                 v-model="tabNavTitle">
 
                 <b-tab
-                    v-for="details in annotationDetails"
-                    :key="details.id"
-                    :title="tabTitle(details)"
-                    :title-link-class="tabStyle(details)">
+                    v-for="(category, index) in getMappedCategories"
+                    :key="index"
+                    :title="category"
+                    :title-link-class="['annotation-tab-nav', colorInfo.categoryClasses[category]]">
 
                     <b-card-text>
                         <annot-tab
-                            :details="details"
-                            :title="tabTitle(details)"
+                            :active-category="category"
                             @remove:column="unlinkColumnFromCategory($event)"
                             @remove:missingValue="removeMissingValue($event)"
                             @update:dataTable="setAnnotatedDataTable($event.transformedTable)"
@@ -83,16 +82,13 @@
 
             ...mapGetters([
 
-                "getGroupOfTool",
-                "isToolGrouped"
+                "getMappedCategories"
             ]),
 
             ...mapState([
 
-                "annotationDetails",
-                "categoryClasses",
-                "missingColumnValues",
-                "toolGroups"
+                "colorInfo",
+                "missingColumnValues"
             ])
         },
 
@@ -105,7 +101,6 @@
 
             ...mapMutations([
 
-                "deleteToolFromGroup",
                 "removeColumnCategorization",
                 "setAnnotatedDataTable",
                 "setMissingColumnValues"
@@ -165,29 +160,6 @@
 
                 // 2. Save the new missing value list for this column to the store
                 this.setMissingColumnValues(missingValuesList);
-            },
-
-            tabStyle(p_details) {
-
-                // NOTE: The 'title-link-class' attribute for b-tab expects a single or list of classes
-
-                // Style assessment tool group tabs like assessment tools
-                if ( Object.hasOwn(p_details, "groupName") ) {
-
-                    return ["annotation-tab-nav", this.categoryClasses["Assessment Tool"]];
-                }
-
-                // Else, style the tab based on the detail's category
-                return ["annotation-tab-nav", this.categoryClasses[p_details.category]];
-            },
-
-            tabTitle(p_details) {
-
-                // Return the annotation detail's tool group name if it exists,
-                // otherwise just the detail's category
-                return ( Object.hasOwn(p_details, "groupName") ) ?
-                    p_details.groupName : p_details.category;
-
             },
 
             unlinkColumnFromCategory(p_event) {

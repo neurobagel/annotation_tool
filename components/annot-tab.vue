@@ -31,11 +31,14 @@
     export default {
 
         props: {
+
             activeCategory: { type: String, required: true }
         },
 
         computed: {
+
             ...mapGetters([
+
                 "getAnnotationComponent"
             ])
         }
