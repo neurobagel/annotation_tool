@@ -244,7 +244,8 @@ export const getters = {
     getMappedCategories: (p_state) => (p_skipCategories=[]) => {
 
         // Return list of all categories linked to columns (filtered by given categories to skip)
-        return [...new Set(Object.values(p_state.columnToCategoryMapping).filter(x => !p_skipCategories.has(x)))];
+        return [...new Set(Object.values(p_state.columnToCategoryMapping)
+                    .filter(category => !p_skipCategories.includes(category)))];
     },
 
     getMappedColumns: (p_state) => (p_category) => {
