@@ -343,7 +343,8 @@ export const getters = {
 
                     // a. Check to see if this value is marked as 'missing' for this column
                     let value = p_state.dataTable[index][columnName];
-                    if ( !p_state.dataDictionary.annotated[columnName].missingValues.includes(value) ) {
+                    if ( "missingValues" in p_state.dataDictionary.annotated[columnName] &&
+                         !p_state.dataDictionary?.annotated[columnName]?.missingValues.includes(value) ) {
 
                         uniqueValues[columnName].add(value);
                     }
