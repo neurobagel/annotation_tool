@@ -16,7 +16,6 @@
             :is="getAnnotationComponent(activeCategory)"
             :data-cy="(getAnnotationComponent(activeCategory) + '-' + activeCategory)"
             :active-category="activeCategory"
-            :id-field="idField"
             :title="('annotate_' + activeCategory)" />
 
     </div>
