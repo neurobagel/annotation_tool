@@ -241,7 +241,7 @@ export const getters = {
             p_state.dataDictionary.annotated[p_columnName].transformationHeuristic : "";
     },
 
-    getMappedCategories: (p_state) => (p_categorySkipList) => {
+    getMappedCategories: (p_state) => (p_categorySkipList=[]) => {
 
         // 1. Remove unmapped (null) columns and skipped categories
         const currentCategories = Object.values(p_state.columnToCategoryMapping)
