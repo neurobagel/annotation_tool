@@ -241,11 +241,17 @@ export const getters = {
             p_state.dataDictionary.annotated[p_columnName].transformationHeuristic : "";
     },
 
-    getMappedCategories: (p_state) => (p_skipCategories=[]) => {
+    getMappedCategories: (p_state) => (p_categorySkipList) => {
 
-        // Return list of all categories linked to columns (filtered by given categories to skip)
-        return [...new Set(Object.values(p_state.columnToCategoryMapping)
-                    .filter(category => !p_skipCategories.includes(category)))];
+        // 1. Remove unmapped (null) columns and skipped categories
+        const currentCategories = Object.values(p_state.columnToCategoryMapping)
+            .filter(category => null !== category && !p_categorySkipList.includes(category));
+
+        // 2. Create a set of the unique mapped categories
+        const categorySet = new Set(currentCategories);
+
+        // Return the categories in array form
+        return [...categorySet];
     },
 
     getMappedColumns: (p_state) => (p_category) => {
