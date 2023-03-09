@@ -18,6 +18,7 @@
             See: https://nuxtjs.org/docs/features/nuxt-components/#the-client-only-component
         -->
         <client-only>
+
             <!-- This gives us built-in keyboard navigation! -->
             <b-tabs
                 card
@@ -28,19 +29,20 @@
                 v-model="tabNavTitle">
 
                 <b-tab
-                    v-for="(category, index) in getMappedCategories"
+                    v-for="(category, index) in getMappedCategories(categorySkipList)"
                     :key="index"
                     :title="category"
                     :title-link-class="['annotation-tab-nav', colorInfo.categoryClasses[category]]">
 
                     <b-card-text>
-                        <annot-tab
+                        <!-- <annot-tab
                             :active-category="category"
                             @remove:column="unlinkColumnFromCategory($event)"
                             @remove:missingValue="removeMissingValue($event)"
                             @update:dataTable="setAnnotatedDataTable($event.transformedTable)"
                             @update:missingColumnValues="setMissingColumnValues($event)"
-                            @update:missingValue="addMissingValue($event)" />
+                            @update:missingValue="addMissingValue($event)" /> -->
+                        <annot-tab :active-category="category" />
                     </b-card-text>
 
                 </b-tab>
@@ -54,17 +56,8 @@
 
 <script>
 
-    // Allows for reference to store actions (index.js)
-    import { mapActions } from "vuex";
-
-    // Allows for reference to store data by creating simple, implicit getters
-    import { mapGetters } from "vuex";
-
-    // Allows for direct mutations of store data
-    import { mapMutations } from "vuex";
-
-    // Fields listed in mapState below can be found in the store (index.js)
-    import { mapState } from "vuex";
+    // Allows for reference to store actions, getters, mutations, and state fields (index.js)
+    import { mapActions, mapGetters, mapMutations, mapState } from "vuex";
 
     export default {
 
@@ -74,6 +67,7 @@
 
             return {
 
+                categorySkipList: ["Subject ID"],
                 tabNavTitle: 0
             };
         },
@@ -87,8 +81,8 @@
 
             ...mapState([
 
-                "colorInfo",
-                "missingColumnValues"
+                "colorInfo"
+                // "missingColumnValues"
             ])
         },
 
@@ -96,17 +90,17 @@
 
             ...mapActions([
 
-                "revertColumnToOriginal"
+                // "revertColumnToOriginal"
             ]),
 
             ...mapMutations([
 
-                "removeColumnCategorization",
-                "setAnnotatedDataTable",
-                "setMissingColumnValues"
-            ]),
+                // "removeColumnCategorization",
+                // "setAnnotatedDataTable",
+                // "setMissingColumnValues"
+            ])
 
-            addMissingValue(p_event) {
+            /* addMissingValue(p_event) {
 
                 // This method expects an event object with a `column` and a `value` key.
                 // It will merge the new missing value with the existing missing value array for
@@ -189,7 +183,7 @@
                         }
                     }
                 }
-            }
+            }*/
         }
     };
 
