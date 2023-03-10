@@ -126,4 +126,15 @@ describe("Categorical annotation", () => {
         // Assert
         cy.get("@commitSpy").should("have.been.calledOnceWith", "changeMissingStatus", "column1", "HC", true);
     });
+
+    it("Can deal with an empty options array without crashing", () => {
+
+        // Setup
+        cy.mount(annotCategorical, {
+            computed: Object.assign(store.getters, { getCategoricalOptions: () => (p_column) => [],
+                getSelectedOption: () => (p_rowIndex) => null }),
+            mocks: { $store: store },
+            propsData: props
+        });
+    });
 });
