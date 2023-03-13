@@ -21,17 +21,18 @@
                         <!-- NOTE: We use the $event statement to add the row data to the payload of the @input
                             event without replacing the original event payload -->
 
+                        <!-- :value="getSelectedOption(row.index)" -->
                         <v-select
                             :data-cy="'categoricalSelector' + '_' + row.index"
-                            :value="getSelectedOption(row.index)"
-                            @input="selectCategoricalOption($event, row.item['columnName'], row.item['rawValue'])"
+
+                            @input="selectCategoricalOption({optionValue: $event, columnName: row.item['columnName'], rawValue: row.item['rawValue']})"
                             :options="getCategoricalOptions(row.item['columnName'])" />
                     </template>
                     <template #cell(missingValue)="row">
                         <b-button
                             :data-cy="'missingValueButton_' + row.index"
                             variant="danger"
-                            @click="changeMissingStatus(row.item['columnName'], row.item['rawValue'], true)">
+                            @click="changeMissingStatus({column: row.item['columnName'], value: row.item['rawValue'], markAsMissing: true})">
                             {{ uiText.missingValueButton }}
                         </b-button>
                     </template>
@@ -110,6 +111,7 @@
                     for ( const uniqueValue of uniqueValuesMap[columnName]) {
 
                         tableData.push({
+
                             columnName: columnName,
                             description: this.getValueDescription(columnName, uniqueValue),
                             rawValue: uniqueValue
