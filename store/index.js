@@ -480,12 +480,22 @@ export const mutations = {
 
         if ( markAsMissing ) {
 
+            // 1. Create missing value list if it does not yet exist
+            // NOTE: The idea here is to only have missing value lists for columns as needed
+            // And this will be reflected in the data dictionary output from the download page
+            if ( !("missingValues" in p_state.dataDictionary.annotated[column]) ) {
+
+                p_state.dataDictionary.annotated[column].missingValues = [];
+            }
+
+            // 2. Only add unique values to the missing value list
             if ( !p_state.dataDictionary.annotated[column].missingValues.includes(value) ) {
 
                 p_state.dataDictionary.annotated[column].missingValues.push(value);
             }
         } else {
 
+            // 1. Remove value from the missing value list
             p_state.dataDictionary.annotated[column].missingValues.splice(
                 p_state.dataDictionary.annotated[column].missingValues.indexOf(value), 1);
         }
