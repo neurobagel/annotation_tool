@@ -1,44 +1,7 @@
 import annotCategorical from "~/components/annot-categorical.vue";
 
 
-// Mocking the store
-const store = {
-
-    commit: () => {},
-
-    getters: {
-
-        getCategoricalOptions: () => (p_column) => {
-
-            return ["option_0", "option_1", "option_2", "option_3"];
-        },
-
-        getSelectedOption: () => (p_rowIndex) => {
-
-            return "option_" + p_rowIndex;
-        },
-
-        getUniqueValues: () => (p_activeCategory) => {
-
-            return {
-
-                column1: ["PD", "HC"],
-                column2: ["", "oups"]
-            };
-        },
-
-        getValueDescription: () => (p_column, p_cellValue) => {
-
-            return "descr_" + p_column + "_" + p_cellValue;
-        }
-    },
-
-    mutations: {
-
-        designateAsMissing: () => (p_columnName, p_rawValue) => {},
-        selectCategoricalOption: () => (p_option, p_columnName, p_rawValue) => {}
-    }
-};
+let store;
 
 const props = {
 
@@ -48,10 +11,52 @@ const props = {
 
 describe("Categorical annotation", () => {
 
+    beforeEach(() => {
+
+        store = {
+
+            commit: (p_mutationName, p_argument) => { store.mutations[p_mutationName](p_argument); },
+
+            getters: {
+
+                getCategoricalOptions: () => (p_column) => {
+
+                    return ["option_0", "option_1", "option_2", "option_3"];
+                },
+
+                getSelectedOption: () => (p_rowIndex) => {
+
+                    return "option_" + p_rowIndex;
+                },
+
+                getUniqueValues: () => (p_activeCategory) => {
+
+                    return {
+
+                        column1: ["PD", "HC"],
+                        column2: ["", "oups"]
+                    };
+                },
+
+                getValueDescription: () => (p_column, p_cellValue) => {
+
+                    return "descr_" + p_column + "_" + p_cellValue;
+                }
+            },
+
+            mutations: {
+
+                changeMissingStatus: () => ({ column, value, markAsMissing }) => {},
+                selectCategoricalOption: () => ({ optionValue, columnName, rawValue }) => {}
+            }
+        };
+    });
+
     it("Displays unique values and their descriptions", () => {
 
         // Act
         cy.mount(annotCategorical, {
+
             computed: store.getters,
             propsData: props
         });
@@ -68,8 +73,10 @@ describe("Categorical annotation", () => {
 
         // Act
         cy.mount(annotCategorical, {
+
             computed: store.getters,
             mocks: { $store: store },
+            plugins: ["vue-select"],
             propsData: props
         });
 
@@ -82,22 +89,45 @@ describe("Categorical annotation", () => {
         });
 
         // Act
-        cy.get("[data-cy='categoricalSelector_0']").click().contains("option_2").click();
+        cy.get("[data-cy='categoricalSelector_0']").click();
+        cy.get("[data-cy='categoricalSelector_0']")
+            .find("li")
+            .contains("option_2")
+            .click();
 
         // Assert
-        cy.get("@commitSpy").should("have.been.calledOnceWith", "selectCategoricalOption", "option_2", "column1", "PD");
+        cy.get("@commitSpy").should("have.been.calledWith", "selectCategoricalOption", {
+            optionValue: "option_2",
+            columnName: "column1",
+            rawValue: "PD"
+        });
     });
 
     it("Displays the preset mapping in the dropdown", () => {
 
         // Act
         cy.mount(annotCategorical, {
+
             computed: store.getters,
+            mocks: { $store: store },
+            plugins: ["vue-select"],
             propsData: props
         });
+        cy.get("[data-cy='categoricalSelector_1']").click();
 
         // Assert
-        cy.get("[data-cy='categoricalSelector_1']").contains("option_1");
+        cy.get("[data-cy='categoricalSelector_1']")
+            .find("li")
+            .contains("option_0");
+        cy.get("[data-cy='categoricalSelector_1']")
+            .find("li")
+            .contains("option_1");
+        cy.get("[data-cy='categoricalSelector_1']")
+            .find("li")
+            .contains("option_2");
+        cy.get("[data-cy='categoricalSelector_1']")
+            .find("li")
+            .contains("option_3");
     });
 
     it("Displays the missing value button and designates value as missing when clicked", () => {
@@ -107,6 +137,7 @@ describe("Categorical annotation", () => {
 
         // Act
         cy.mount(annotCategorical, {
+
             computed: store.getters,
             mocks: { $store: store },
             propsData: props
@@ -119,6 +150,10 @@ describe("Categorical annotation", () => {
         cy.get("[data-cy='missingValueButton_1']").click();
 
         // Assert
-        cy.get("@commitSpy").should("have.been.calledOnceWith", "changeMissingStatus", "column1", "HC", true);
+        cy.get("@commitSpy").should("have.been.calledOnceWith", "changeMissingStatus", {
+            column: "column1",
+            value: "HC",
+            markAsMissing: true
+        });
     });
 });

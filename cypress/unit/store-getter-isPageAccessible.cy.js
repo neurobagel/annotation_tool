@@ -47,6 +47,7 @@ describe("isPageAccessible", () => {
 
         // Setup
         let nextPage = "annotation";
+        state.columnToCategoryMapping["column2Name"] = "Sex";
 
         // Assert
         expect(getters.isPageAccessible(state)(nextPage)).to.be.true;
