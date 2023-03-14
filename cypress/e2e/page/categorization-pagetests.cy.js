@@ -69,7 +69,7 @@ describe("Tests on categorization page ui via programmatic state loading and sto
                     cy.categorizeColumn("Subject ID", p_dataset["category_columns"]["Subject ID"][0]);
 
                     // 3. Assert that annotation nav and next page button are enabled
-                    cy.assertNextPageAccess("annotation", true);
+                    cy.assertNextPageAccess("annotation", false);
                 }
             });
 
