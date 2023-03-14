@@ -10,12 +10,17 @@ const store = {
 
         getCategoricalOptions: () => (p_column) => {
 
-            return ["option_0", "option_1", "option_2", "option_3"];
+            return [
+                { label: "option_0", identifier: "https://example.org/option_0"},
+                { label: "option_1", identifier: "https://example.org/option_1"},
+                { label: "option_2", identifier: "https://example.org/option_2"},
+                { label: "option_3", identifier: "https://example.org/option_3"}
+            ];
         },
 
         getSelectedOption: () => (p_rowIndex) => {
 
-            return "option_" + p_rowIndex;
+            return "https://example.org/option_" + p_rowIndex;
         },
 
         getUniqueValues: () => (p_activeCategory) => {
@@ -85,7 +90,7 @@ describe("Categorical annotation", () => {
         cy.get("[data-cy='categoricalSelector_0']").click().contains("option_2").click();
 
         // Assert
-        cy.get("@commitSpy").should("have.been.calledOnceWith", "selectCategoricalOption", "option_2", "column1", "PD");
+        cy.get("@commitSpy").should("have.been.calledOnceWith", "selectCategoricalOption", "https://example.org/option_2", "column1", "PD");
     });
 
     it("Displays the preset mapping in the dropdown", () => {
@@ -120,5 +125,16 @@ describe("Categorical annotation", () => {
 
         // Assert
         cy.get("@commitSpy").should("have.been.calledOnceWith", "changeMissingStatus", "column1", "HC", true);
+    });
+
+    it("Can deal with an empty options array without crashing", () => {
+
+        // Setup
+        cy.mount(annotCategorical, {
+            computed: Object.assign(store.getters, { getCategoricalOptions: () => (p_column) => [],
+                getSelectedOption: () => (p_rowIndex) => null }),
+            mocks: { $store: store },
+            propsData: props
+        });
     });
 });

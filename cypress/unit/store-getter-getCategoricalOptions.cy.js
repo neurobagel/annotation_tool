@@ -8,7 +8,10 @@ let store = {
 
         categoricalOptions: {
 
-            "category1": ["option1", "option2"]
+            "category1": [
+                { label: "option_0", identifier: "https://example.org/option_0"},
+                { label: "option_1", identifier: "https://example.org/option_1"}
+            ]
         },
 
         columnToCategoryMapping: {
@@ -26,7 +29,10 @@ describe("getCategoricalOptions", () => {
         const options = store.getters.getCategoricalOptions(store.state)("column1");
 
         // Assert
-        expect(options).to.deep.equal(["option1", "option2"]);
+        expect(options).to.deep.equal([
+            { label: "option_0", identifier: "https://example.org/option_0"},
+            { label: "option_1", identifier: "https://example.org/option_1"}
+        ]);
     });
 
     it("Returns empty list for a categorical column that has no options in its data dictionary entry", () => {
