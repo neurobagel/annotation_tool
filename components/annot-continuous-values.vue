@@ -30,7 +30,7 @@
                                 :data-cy="'selectTransform_' + columnName"
                                 :options="getTransformOptions(activeCategory)"
                                 :value="getHeuristic(columnName)"
-                                @input="commitHeuristic(columnName, $event)" />
+                                @input="setHeuristic({ column: columnName, heuristic: $event })" />
                         </b-col>
 
                     </b-row>
@@ -109,14 +109,6 @@
                 });
 
                 return tableItems;
-            },
-
-            commitHeuristic(p_column, p_heuristic) {
-
-                // TODO: With the addition of ability to set heuristic for
-                // individual columns, 'activeCategory' below will be replaced
-                // with the appropriate column name
-                this.setHeuristic({ column: p_column, heuristic: p_heuristic });
             }
         }
     };
