@@ -20,11 +20,15 @@
                         <!-- Bootstrap-Vue doesn't have a great option here so I am using https://vue-select.org/ -->
                         <!-- NOTE: We use the $event statement to add the row data to the payload of the @input
                             event without replacing the original event payload -->
+                        <!-- NOTE: We're using the "reduce" option for vue-select so that we can pass around the
+                            term.identifier parameter, but still display the term.label parameter to the user.
+                            See: https://vue-select.org/guide/values.html#transforming-selections -->
 
-                        <!-- :value="getSelectedOption(row.index)" -->
                         <v-select
                             :data-cy="'categoricalSelector' + '_' + row.index"
-
+                            :value="getSelectedOption(row.index)"
+                            :label="label"
+                            :reduce="term => term.identifier"
                             @input="selectCategoricalOption({optionValue: $event, columnName: row.item['columnName'], rawValue: row.item['rawValue']})"
                             :options="getCategoricalOptions(row.item['columnName'])" />
                     </template>

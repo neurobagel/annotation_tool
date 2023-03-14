@@ -12,7 +12,11 @@ export const state = () => ({
 
     categoricalOptions: {
 
-        "Sex": ["male", "female", "other"]
+        "Sex": [
+            {label: "male", identifier: "bids:male"},
+            {label: "female", identifier: "bids:female"},
+            {label: "other", identifier: "bids:other"}
+        ]
     },
 
     categories: {
