@@ -245,6 +245,19 @@ export const getters = {
             p_state.dataDictionary.annotated[p_columnName].transformationHeuristic : "";
     },
 
+    getMappedCategories: (p_state) => (p_categorySkipList=[]) => {
+
+        // 1. Remove unmapped (null) columns and skipped categories
+        const currentCategories = Object.values(p_state.columnToCategoryMapping)
+            .filter(category => null !== category && !p_categorySkipList.includes(category));
+
+        // 2. Create a set of the unique mapped categories
+        const categorySet = new Set(currentCategories);
+
+        // Return the categories in array form
+        return [...categorySet];
+    },
+
     getMappedColumns: (p_state) => (p_category) => {
 
         const mappedColumns = [];
@@ -334,7 +347,11 @@ export const getters = {
 
                     // a. Check to see if this value is marked as 'missing' for this column
                     let value = p_state.dataTable[index][columnName];
-                    if ( !p_state.dataDictionary.annotated[columnName].missingValues.includes(value) ) {
+
+                    if ( !("missingValues" in p_state.dataDictionary.annotated[columnName]) ) {
+
+                        uniqueValues[columnName].add(value);
+                    } else if ( !p_state.dataDictionary?.annotated[columnName].missingValues.includes(value) ) {
 
                         uniqueValues[columnName].add(value);
                     }
@@ -388,18 +405,21 @@ export const getters = {
 
             case "annotation": {
 
-                // 1. Determine if at least one column has been linked to a category
-                const categorizationStatus = Object.values(p_state.columnToCategoryMapping)
-                                                   .some(category =>  null !== category );
-
-                // 2. Make sure one (and only one) column has been categorized as 'Subject ID'
+                // 1. Make sure one (and only one) column has been categorized as 'Subject ID'
                 const singleSubjectIDColumn = ( 1 === Object.values(p_state.columnToCategoryMapping)
                                                             .filter(category => "Subject ID" === category)
                                                             .length );
 
-                // Annotation page is only accessible if at least one column has
-                // been categorized and if one (and only one) column has been categorized as 'Subject ID'
-                pageAccessible = categorizationStatus && singleSubjectIDColumn;
+                // 2. Make sure at least one other category other than 'Subject ID' has been linked to a column
+                const notOnlySubjectIDCategorized = ( Object.values(p_state.columnToCategoryMapping)
+                                                            .filter(category => "Subject ID" !== category &&
+                                                                    null !== category)
+                                                            .length >= 1 );
+
+                // Annotation page is only accessible if one (and only one)
+                // column has been categorized as 'Subject ID' and if at least
+                // one category other than Subject ID has been categorized
+                pageAccessible = singleSubjectIDColumn && notOnlySubjectIDCategorized;
 
                 break;
             }
@@ -448,24 +468,35 @@ export const mutations = {
     alterColumnCategoryMapping(p_state, { category, column }) {
 
         if (p_state.columnToCategoryMapping[column] === category) {
+
             p_state.columnToCategoryMapping[column] = null;
         }
         else {
+
             p_state.columnToCategoryMapping[column] = category;
         }
-
     },
 
     changeMissingStatus(p_state, { column, value, markAsMissing }) {
 
         if ( markAsMissing ) {
 
+            // 1. Create missing value list if it does not yet exist
+            // NOTE: The idea here is to only have missing value lists for columns as needed
+            // And this will be reflected in the data dictionary output from the download page
+            if ( !("missingValues" in p_state.dataDictionary.annotated[column]) ) {
+
+                p_state.dataDictionary.annotated[column].missingValues = [];
+            }
+
+            // 2. Only add unique values to the missing value list
             if ( !p_state.dataDictionary.annotated[column].missingValues.includes(value) ) {
 
                 p_state.dataDictionary.annotated[column].missingValues.push(value);
             }
         } else {
 
+            // 1. Remove value from the missing value list
             p_state.dataDictionary.annotated[column].missingValues.splice(
                 p_state.dataDictionary.annotated[column].missingValues.indexOf(value), 1);
         }
@@ -493,16 +524,16 @@ export const mutations = {
         p_state.dataDictionary.annotated = JSON.parse(JSON.stringify(p_state.dataDictionary.userProvided));
     },
 
-    selectCategoricalOption(p_state, p_optionValue, p_columnName, p_rawValue) {
+    selectCategoricalOption(p_state, { optionValue, columnName, rawValue }) {
 
         // 0. Create an categorical value map for this column, if it does not yet exist
-        if ( !("valueMap" in p_state.dataDictionary.annotated[p_columnName]) ) {
+        if ( !("valueMap" in p_state.dataDictionary.annotated[columnName]) ) {
 
-            p_state.dataDictionary.annotated[p_columnName].valueMap = {};
+            p_state.dataDictionary.annotated[columnName].valueMap = {};
         }
 
         // 1. Assign the option value to a raw value for this column
-        p_state.dataDictionary.annotated[p_columnName].valueMap[p_rawValue] = p_optionValue;
+        p_state.dataDictionary.annotated[columnName].valueMap[rawValue] = optionValue;
     },
 
     setCurrentPage(p_state, p_pageName) {
@@ -540,23 +571,29 @@ export const mutations = {
         let dataTable = [];
 
         for ( const [rowIndex, row] of p_dataTable.slice(1).entries() ) {
+
             // If the row is empty, we don't want it in our dataTable
             if ( "" === row.join("").trim() ) {
+
                 continue;
             } else if ( row.length < columnNames.length ) {
+
                 console.warn("WARNING: tsv row " + parseInt(rowIndex) + " has fewer columns than the tsv header!");
             }
 
             let rowArray = [];
             for ( const [colIndex, value] of row.entries() ) {
+
                 // Rows that are longer than the header should be truncated
                 if ( colIndex >= columnNames.length ) {
+
                     console.warn("WARNING: tsv row " + parseInt(rowIndex) + " has more columns than the tsv header!");
                     continue;
                 }
 
                 rowArray.push([columnNames[colIndex], value]);
             }
+
             dataTable.push(Object.fromEntries(rowArray));
         }
 

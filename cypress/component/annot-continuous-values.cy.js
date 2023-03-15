@@ -58,7 +58,7 @@ describe("Continuous values component", () => {
 
                 // NOTE: changeMissingStatus reflects a future 'mark as missing' feature
                 // for the continous value component
-                changeMissingStatus: () => (p_columnName, p_rawValue, p_markAsMissing) => {},
+                changeMissingStatus: () => ({ column, value, markAsMissing}) => {},
                 setHeuristic: ({ column, heuristic }) => {
 
                     store.state.dataDictionary.annotated[column].transformationHeuristic = heuristic;

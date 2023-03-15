@@ -18,6 +18,7 @@
             See: https://nuxtjs.org/docs/features/nuxt-components/#the-client-only-component
         -->
         <client-only>
+
             <!-- This gives us built-in keyboard navigation! -->
             <b-tabs
                 card
@@ -28,20 +29,20 @@
                 v-model="tabNavTitle">
 
                 <b-tab
-                    v-for="details in annotationDetails"
-                    :key="details.id"
-                    :title="tabTitle(details)"
-                    :title-link-class="tabStyle(details)">
+                    v-for="(category, index) in getMappedCategories(categorySkipList)"
+                    :key="index"
+                    :title="category"
+                    :title-link-class="['annotation-tab-nav', colorInfo.categoryClasses[category]]">
 
                     <b-card-text>
-                        <annot-tab
-                            :details="details"
-                            :title="tabTitle(details)"
+                        <!-- <annot-tab
+                            :active-category="category"
                             @remove:column="unlinkColumnFromCategory($event)"
                             @remove:missingValue="removeMissingValue($event)"
                             @update:dataTable="setAnnotatedDataTable($event.transformedTable)"
                             @update:missingColumnValues="setMissingColumnValues($event)"
-                            @update:missingValue="addMissingValue($event)" />
+                            @update:missingValue="addMissingValue($event)" /> -->
+                        <annot-tab :active-category="category" />
                     </b-card-text>
 
                 </b-tab>
@@ -55,17 +56,8 @@
 
 <script>
 
-    // Allows for reference to store actions (index.js)
-    import { mapActions } from "vuex";
-
-    // Allows for reference to store data by creating simple, implicit getters
-    import { mapGetters } from "vuex";
-
-    // Allows for direct mutations of store data
-    import { mapMutations } from "vuex";
-
-    // Fields listed in mapState below can be found in the store (index.js)
-    import { mapState } from "vuex";
+    // Allows for reference to store actions, getters, mutations, and state fields (index.js)
+    import { mapActions, mapGetters, mapMutations, mapState } from "vuex";
 
     export default {
 
@@ -75,6 +67,7 @@
 
             return {
 
+                categorySkipList: ["Subject ID"],
                 tabNavTitle: 0
             };
         },
@@ -83,16 +76,13 @@
 
             ...mapGetters([
 
-                "getGroupOfTool",
-                "isToolGrouped"
+                "getMappedCategories"
             ]),
 
             ...mapState([
 
-                "annotationDetails",
-                "categoryClasses",
-                "missingColumnValues",
-                "toolGroups"
+                "colorInfo"
+                // "missingColumnValues"
             ])
         },
 
@@ -100,18 +90,17 @@
 
             ...mapActions([
 
-                "revertColumnToOriginal"
+                // "revertColumnToOriginal"
             ]),
 
             ...mapMutations([
 
-                "deleteToolFromGroup",
-                "removeColumnCategorization",
-                "setAnnotatedDataTable",
-                "setMissingColumnValues"
-            ]),
+                // "removeColumnCategorization",
+                // "setAnnotatedDataTable",
+                // "setMissingColumnValues"
+            ])
 
-            addMissingValue(p_event) {
+            /* addMissingValue(p_event) {
 
                 // This method expects an event object with a `column` and a `value` key.
                 // It will merge the new missing value with the existing missing value array for
@@ -167,29 +156,6 @@
                 this.setMissingColumnValues(missingValuesList);
             },
 
-            tabStyle(p_details) {
-
-                // NOTE: The 'title-link-class' attribute for b-tab expects a single or list of classes
-
-                // Style assessment tool group tabs like assessment tools
-                if ( Object.hasOwn(p_details, "groupName") ) {
-
-                    return ["annotation-tab-nav", this.categoryClasses["Assessment Tool"]];
-                }
-
-                // Else, style the tab based on the detail's category
-                return ["annotation-tab-nav", this.categoryClasses[p_details.category]];
-            },
-
-            tabTitle(p_details) {
-
-                // Return the annotation detail's tool group name if it exists,
-                // otherwise just the detail's category
-                return ( Object.hasOwn(p_details, "groupName") ) ?
-                    p_details.groupName : p_details.category;
-
-            },
-
             unlinkColumnFromCategory(p_event) {
 
                 // 1. Undo annotation for this column
@@ -217,7 +183,7 @@
                         }
                     }
                 }
-            }
+            }*/
         }
     };
 

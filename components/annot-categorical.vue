@@ -29,14 +29,14 @@
                             :value="getSelectedOption(row.index)"
                             :label="label"
                             :reduce="term => term.identifier"
-                            @input="selectCategoricalOption($event, row.item['columnName'], row.item['rawValue'])"
+                            @input="selectCategoricalOption({optionValue: $event, columnName: row.item['columnName'], rawValue: row.item['rawValue']})"
                             :options="getCategoricalOptions(row.item['columnName'])" />
                     </template>
                     <template #cell(missingValue)="row">
                         <b-button
                             :data-cy="'missingValueButton_' + row.index"
                             variant="danger"
-                            @click="changeMissingStatus(row.item['columnName'], row.item['rawValue'], true)">
+                            @click="changeMissingStatus({column: row.item['columnName'], value: row.item['rawValue'], markAsMissing: true})">
                             {{ uiText.missingValueButton }}
                         </b-button>
                     </template>
@@ -115,6 +115,7 @@
                     for ( const uniqueValue of uniqueValuesMap[columnName]) {
 
                         tableData.push({
+
                             columnName: columnName,
                             description: this.getValueDescription(columnName, uniqueValue),
                             rawValue: uniqueValue
