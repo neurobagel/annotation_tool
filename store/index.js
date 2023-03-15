@@ -13,9 +13,10 @@ export const state = () => ({
     categoricalOptions: {
 
         "Sex": [
-            {label: "male", identifier: "bids:male"},
-            {label: "female", identifier: "bids:female"},
-            {label: "other", identifier: "bids:other"}
+
+            { label: "male", identifier: "bids:male" },
+            { label: "female", identifier: "bids:female" },
+            { label: "other", identifier: "bids:other" }
         ]
     },
 
@@ -141,6 +142,11 @@ export const getters = {
         // Return the options for this column listed in the current (hardcoded)
         // options for each categorical data-based category
         return p_state.categoricalOptions[p_state.columnToCategoryMapping[p_column]] ?? [];
+    },
+
+    getCategoricalSelectedOption: (p_state) => (p_column, p_rawValue) => {
+
+        return p_state.dataDictionary.annotated[p_column]?.valueMap[p_rawValue] ?? "";
     },
 
     getCategoryNames (p_state) {
