@@ -405,24 +405,21 @@ export const getters = {
 
             case "annotation": {
 
-                // 1. Determine if at least one column has been linked to a category
-                const categorizationStatus = Object.values(p_state.columnToCategoryMapping)
-                                                   .some(category => null !== category );
-
-                // 2. Make sure one (and only one) column has been categorized as 'Subject ID'
+                // 1. Make sure one (and only one) column has been categorized as 'Subject ID'
                 const singleSubjectIDColumn = ( 1 === Object.values(p_state.columnToCategoryMapping)
                                                             .filter(category => "Subject ID" === category)
                                                             .length );
 
+                // 2. Make sure at least one other category other than 'Subject ID' has been linked to a column
                 const notOnlySubjectIDCategorized = ( Object.values(p_state.columnToCategoryMapping)
                                                             .filter(category => "Subject ID" !== category &&
                                                                     null !== category)
                                                             .length >= 1 );
 
-                // Annotation page is only accessible if at least one column has
-                // been categorized and if one (and only one) column has been categorized as 'Subject ID'
-                // and if at least one category other than Subject ID has been categorized
-                pageAccessible = categorizationStatus && singleSubjectIDColumn && notOnlySubjectIDCategorized;
+                // Annotation page is only accessible if one (and only one)
+                // column has been categorized as 'Subject ID' and if at least
+                // one category other than Subject ID has been categorized
+                pageAccessible = singleSubjectIDColumn && notOnlySubjectIDCategorized;
 
                 break;
             }

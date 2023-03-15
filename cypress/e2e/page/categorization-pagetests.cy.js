@@ -68,7 +68,7 @@ describe("Tests on categorization page ui via programmatic state loading and sto
                     // 2. Categorize first subject id column in table as 'Subject ID'
                     cy.categorizeColumn("Subject ID", p_dataset["category_columns"]["Subject ID"][0]);
 
-                    // 3. Assert that annotation nav and next page button are enabled
+                    // 3. Assert that annotation nav and next page button are disabled
                     cy.assertNextPageAccess("annotation", false);
                 }
             });
