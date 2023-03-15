@@ -22,6 +22,7 @@ describe("Categorical annotation", () => {
                 getCategoricalOptions: () => (p_column) => {
 
                     return [
+
                         { label: "option_0", identifier: "https://example.org/option_0"},
                         { label: "option_1", identifier: "https://example.org/option_1"},
                         { label: "option_2", identifier: "https://example.org/option_2"},
@@ -29,9 +30,9 @@ describe("Categorical annotation", () => {
                     ];
                 },
 
-                getSelectedOption: () => (p_rowIndex) => {
+                getSelectedCategoricalOption: () => (p_column, p_rawValue) => {
 
-                    return "https://example.org/option_" + p_rowIndex;
+                    return "https://example.org/" + p_rawValue;
                 },
 
                 getUniqueValues: () => (p_activeCategory) => {
