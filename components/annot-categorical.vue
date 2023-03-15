@@ -26,7 +26,7 @@
 
                         <v-select
                             :data-cy="'categoricalSelector' + '_' + row.index"
-                            :value="getCategoricalSelectedOption(row.item['columnName'], row.item['rawValue'])"
+                            :value="getSelectedCategoricalOption(row.item['columnName'], row.item['rawValue'])"
                             :label="label"
                             :reduce="term => term.identifier"
                             @input="selectCategoricalOption({optionValue: $event, columnName: row.item['columnName'], rawValue: row.item['rawValue']})"

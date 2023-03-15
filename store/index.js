@@ -144,7 +144,7 @@ export const getters = {
         return p_state.categoricalOptions[p_state.columnToCategoryMapping[p_column]] ?? [];
     },
 
-    getCategoricalSelectedOption: (p_state) => (p_column, p_rawValue) => {
+    getSelectedCategoricalOption: (p_state) => (p_column, p_rawValue) => {
 
         return p_state.dataDictionary.annotated[p_column]?.valueMap[p_rawValue] ?? "";
     },

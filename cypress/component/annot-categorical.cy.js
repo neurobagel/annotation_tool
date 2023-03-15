@@ -30,7 +30,7 @@ describe("Categorical annotation", () => {
                     ];
                 },
 
-                getCategoricalSelectedOption: () => (p_column, p_rawValue) => {
+                getSelectedCategoricalOption: () => (p_column, p_rawValue) => {
 
                     return "https://example.org/" + p_rawValue;
                 },
