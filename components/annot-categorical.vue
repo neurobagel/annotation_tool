@@ -98,7 +98,7 @@
             ...mapGetters([
 
                 "getCategoricalOptions",
-                "getSelectedOption",
+                "getSelectedCategoricalOption",
                 "getUniqueValues",
                 "getValueDescription"
             ]),
