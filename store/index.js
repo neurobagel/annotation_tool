@@ -473,13 +473,26 @@ export const mutations = {
      */
     alterColumnCategoryMapping(p_state, { category, column }) {
 
-        if (p_state.columnToCategoryMapping[column] === category) {
+        if ( category === p_state.columnToCategoryMapping[column] ) {
 
+            // 1. Unlink the column from the category
             p_state.columnToCategoryMapping[column] = null;
+
+            // 2. Revert the annotated data dictionary column definition to the one given
+            p_state.dataDictionary.annotated[column] = Object.assign(
+                {},
+                p_state.dataDictionary.annotated[column],
+                ( column in p_state.dataDictionary.userProvided ) ?
+                    p_state.dataDictionary.userProvided[column] : { description: "" }
+            );
         }
         else {
 
+            // 1. Link the column to the category
             p_state.columnToCategoryMapping[column] = category;
+
+            // 2. Add an entry for this column in the annotated data dictionary
+            p_state.dataDictionary.annotated[column] = { description: "" };
         }
     },
 
