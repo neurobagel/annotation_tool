@@ -167,8 +167,9 @@ describe("Categorical annotation", () => {
 
         // Setup
         cy.mount(annotCategorical, {
+
             computed: Object.assign(store.getters, { getCategoricalOptions: () => (p_column) => [],
-                getSelectedOption: () => (p_rowIndex) => null }),
+                getSelectedCategoricalOption: () => (p_rowIndex) => null }),
             mocks: { $store: store },
             propsData: props
         });
