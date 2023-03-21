@@ -9,7 +9,7 @@
             <b-tabs content-class="mt-3">
 
                 <b-tab
-                    v-for="(columnName, index) in relevantColumns"
+                    v-for="(columnName, index) in getMappedColumns(activeCategory)"
                     :key="columnName"
                     :active="0 === index"
                     :title="columnName">
@@ -22,7 +22,18 @@
                                 striped
                                 id="annotation-table"
                                 :data-cy="'dataTable-' + columnName"
-                                :items="columnValidationItems(columnName)" />
+                                :fields="exampleFields"
+                                :items="columnValidationItems(columnName)">
+
+                                <template #cell(missingValue)="row">
+                                    <b-button
+                                        :data-cy="'missingValueButton_' + row.index"
+                                        variant="danger"
+                                        @click="changeMissingStatus({column: columnName, value: row.item['rawValue'], markAsMissing: true})">
+                                        {{ uiText.missingValueButton }}
+                                    </b-button>
+                                </template>
+                            </b-table>
                         </b-col>
 
                         <b-col cols="4">
@@ -60,9 +71,17 @@
 
             return {
 
+                exampleFields: [
+
+                    "preview",
+                    "rawValue",
+                    "missingValue"
+                ],
+
                 uiText: {
 
                     instructions: "Review the age harmonization",
+                    missingValueButton: "Mark as missing",
                     saveButton: "Save Annotation"
                 }
             };
@@ -77,18 +96,14 @@
                 "getMappedColumns",
                 "getTransformOptions",
                 "getUniqueValues"
-            ]),
-
-            relevantColumns() {
-
-                return this.getMappedColumns(this.activeCategory);
-            }
+            ])
         },
 
         methods: {
 
             ...mapMutations([
 
+                "changeMissingStatus",
                 "setHeuristic"
             ]),
 
