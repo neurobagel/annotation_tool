@@ -473,7 +473,7 @@ export const mutations = {
 
         if ( category === p_state.columnToCategoryMapping[column] ) {
 
-            // 1. Link or unlink the column from the category
+            // 1. Unlink the column from the category
             p_state.columnToCategoryMapping[column] = null;
         }
         else {
