@@ -29,13 +29,28 @@ describe("alterColumnCategoryMapping", () => {
 
                     annotated: {
 
+                        column1: {
+
+                            description: "",
+                            missingValues: []
+                        },
+                        column2: {
+
+                            description: "",
+                            missingValues: []
+                        },
                         column3: {
 
+                            description: "",
+                            missingValues: []
                         }
                     },
 
                     userProvided: {
 
+                        column1: { description: "" },
+                        column2: { description: "" },
+                        column3: { description: "" }
                     }
                 }
             }
