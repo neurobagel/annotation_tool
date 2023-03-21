@@ -473,28 +473,21 @@ export const mutations = {
 
         if ( category === p_state.columnToCategoryMapping[column] ) {
 
-            // 1. Unlink the column from the category
+            // 1. Link or unlink the column from the category
             p_state.columnToCategoryMapping[column] = null;
-
-            // 2. Revert the annotated data dictionary column definition to the one given
-            p_state.dataDictionary.annotated[column] = Object.assign(
-                {},
-                p_state.dataDictionary.annotated[column],
-                ( column in p_state.dataDictionary.userProvided ) ?
-                    p_state.dataDictionary.userProvided[column] : { description: "" }
-            );
         }
         else {
 
             // 1. Link the column to the category
             p_state.columnToCategoryMapping[column] = category;
-
-            // 2. Add an entry for this column in the annotated data dictionary
-            if ( !(column in p_state.dataDictionary.annotated) ) {
-
-                p_state.dataDictionary.annotated[column] = { description: "" };
-            }
         }
+
+        // 2. Re-initialize the annotated data dictionary column
+        p_state.dataDictionary.annotated[column] = Object.assign(
+            {},
+            p_state.dataDictionary.userProvided[column],
+            { missingValues: [] }
+        );
     },
 
     changeMissingStatus(p_state, { column, value, markAsMissing }) {
