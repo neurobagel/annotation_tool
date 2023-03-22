@@ -55,14 +55,14 @@
             ...mapState([
 
                 "colorInfo",
-                "columnToCategoryMapping"
+                "columnToCategoryMap"
             ]),
 
             tableRows() {
 
                 return this.getColumnNames.map(column => ({
 
-                    category: this.columnToCategoryMapping[column],
+                    category: this.columnToCategoryMap[column],
                     column: column,
                     description: this.getColumnDescription(column)
                 }));
@@ -85,7 +85,7 @@
             styleTableRow(p_row, p_rowType) {
 
                 // Check to see what category has been assigned to this row's column, if any
-                const assignedCategory = this.columnToCategoryMapping[p_row.column];
+                const assignedCategory = this.columnToCategoryMap[p_row.column];
 
                 return ( null === assignedCategory ) ? "" : this.colorInfo.categoryClasses[assignedCategory];
             }

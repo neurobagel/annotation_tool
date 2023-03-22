@@ -63,7 +63,7 @@ describe("The column-linking-table component", () => {
                     return "descriptions help";
                 },
 
-                columnToCategoryMapping: () => {
+                columnToCategoryMap: () => {
 
                     return {
 
