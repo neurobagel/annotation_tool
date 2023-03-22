@@ -29,6 +29,7 @@ describe("Missing values", () => {
 
                 // Act
                 cy.mount(annotMissingValues, {
+
                         propsData: props,
                         computed: store.getters
                     }
@@ -43,8 +44,9 @@ describe("Missing values", () => {
 
                 // Act
                 cy.mount(annotMissingValues, {
+
                         propsData: props,
-                        computed: Object.assign(store.getters, { description: () => (p_column, p_missingValues) => null })
+                        computed: store.getters
                     }
                 );
             }
@@ -56,10 +58,9 @@ describe("Missing values", () => {
                 const mockStore = { commit: () => {} };
                 cy.spy(mockStore, "commit").as("commitSpy");
                 cy.mount(annotMissingValues, {
+
                     computed: store.getters,
-                    mocks: {
-                        $store: mockStore
-                    },
+                    mocks: { $store: mockStore },
                     propsData: props
                 });
 

@@ -144,11 +144,6 @@ export const getters = {
         return p_state.categoricalOptions[p_state.columnToCategoryMapping[p_column]] ?? [];
     },
 
-    getSelectedCategoricalOption: (p_state) => (p_column, p_rawValue) => {
-
-        return p_state.dataDictionary.annotated?.[p_column]?.valueMap?.[p_rawValue] ?? "";
-    },
-
     getCategoryNames (p_state) {
 
 
@@ -274,36 +269,28 @@ export const getters = {
                 mappedColumns.push(column);
             }
         }
+
         return mappedColumns;
     },
 
     getMissingValues: (p_state) => (p_category) => {
 
-        // 0. Retrieve all columns linked with the given category
+        // 1. Retrieve all columns linked with the given category
         const mappedColumns = [];
-        for ( const column in p_state.columnToCategoryMapping ) {
+        for ( const columnName in p_state.columnToCategoryMapping ) {
 
-            if ( p_category === p_state.columnToCategoryMapping[column] ) {
+            if ( p_category === p_state.columnToCategoryMapping[columnName] ) {
 
-                mappedColumns.push(column);
+                mappedColumns.push(columnName);
             }
         }
 
-        // 1. Build a map of missing values by column
-        let missingValues = {};
-        for ( const column of mappedColumns ) {
+        // 2. Build a map of missing values by column
+        // NOTE: Every column in the annotated dictionary has at least a blank missing values list
+        const missingValues = {};
+        for ( const columnName of mappedColumns ) {
 
-            // A. Starts out as a blank list
-            missingValues[column] = [];
-
-            // B. Save a list of missing values for this column if,
-            // 1) the column has an entry in the data dictionary and,
-            // 2) if a missing values list for the column has already been made
-            if ( column in p_state.dataDictionary.annotated &&
-                "missingValues" in p_state.dataDictionary.annotated[column] ) {
-
-               missingValues[column] = p_state.dataDictionary.annotated[column].missingValues;
-           }
+            missingValues[columnName] = p_state.dataDictionary.annotated[columnName].missingValues;
         }
 
         return missingValues;
@@ -327,6 +314,11 @@ export const getters = {
         }
 
         return nextPage;
+    },
+
+    getSelectedCategoricalOption: (p_state) => (p_column, p_rawValue) => {
+
+        return p_state.dataDictionary.annotated?.[p_column]?.valueMap?.[p_rawValue] ?? "";
     },
 
     getTransformOptions: (p_state) => (p_category) => {
@@ -353,11 +345,7 @@ export const getters = {
 
                     // a. Check to see if this value is marked as 'missing' for this column
                     let value = p_state.dataTable[index][columnName];
-
-                    if ( !("missingValues" in p_state.dataDictionary.annotated[columnName]) ) {
-
-                        uniqueValues[columnName].add(value);
-                    } else if ( !p_state.dataDictionary?.annotated[columnName].missingValues.includes(value) ) {
+                    if ( !p_state.dataDictionary?.annotated[columnName].missingValues.includes(value) ) {
 
                         uniqueValues[columnName].add(value);
                     }
@@ -441,7 +429,6 @@ export const getters = {
     }
 };
 
-
 export const actions = {
 
     processDataDictionary( { state, commit, getters }, { data, filename }) {
@@ -477,38 +464,26 @@ export const mutations = {
 
             // 1. Unlink the column from the category
             p_state.columnToCategoryMapping[column] = null;
-
-            // 2. Revert the annotated data dictionary column definition to the one given
-            p_state.dataDictionary.annotated[column] = Object.assign(
-                {},
-                p_state.dataDictionary.annotated[column],
-                ( column in p_state.dataDictionary.userProvided ) ?
-                    p_state.dataDictionary.userProvided[column] : { description: "" }
-            );
         }
         else {
 
             // 1. Link the column to the category
             p_state.columnToCategoryMapping[column] = category;
-
-            // 2. Add an entry for this column in the annotated data dictionary
-            p_state.dataDictionary.annotated[column] = { description: "" };
         }
+
+        // 2. Re-initialize the annotated data dictionary column
+        p_state.dataDictionary.annotated[column] = Object.assign(
+            {},
+            p_state.dataDictionary.userProvided[column],
+            { missingValues: [] }
+        );
     },
 
     changeMissingStatus(p_state, { column, value, markAsMissing }) {
 
         if ( markAsMissing ) {
 
-            // 1. Create missing value list if it does not yet exist
-            // NOTE: The idea here is to only have missing value lists for columns as needed
-            // And this will be reflected in the data dictionary output from the download page
-            if ( !("missingValues" in p_state.dataDictionary.annotated[column]) ) {
-
-                p_state.dataDictionary.annotated[column].missingValues = [];
-            }
-
-            // 2. Only add unique values to the missing value list
+            // 1. Only add unique values to the missing value list
             if ( !p_state.dataDictionary.annotated[column].missingValues.includes(value) ) {
 
                 p_state.dataDictionary.annotated[column].missingValues.push(value);
@@ -540,7 +515,13 @@ export const mutations = {
         }
 
         // 2. Make a copy of the newly provided skeleton dictionary for annotation
-        p_state.dataDictionary.annotated = JSON.parse(JSON.stringify(p_state.dataDictionary.userProvided));
+        p_state.dataDictionary.annotated = Object.assign({}, JSON.parse(JSON.stringify(p_state.dataDictionary.userProvided)));
+
+        // 3. Add fields required for annotation
+        Object.keys(p_state.dataDictionary.annotated).forEach(columnName => {
+
+            p_state.dataDictionary.annotated[columnName].missingValues = [];
+        });
     },
 
     selectCategoricalOption(p_state, { optionValue, columnName, rawValue }) {

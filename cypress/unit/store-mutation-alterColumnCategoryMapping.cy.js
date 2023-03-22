@@ -1,6 +1,11 @@
 import { mutations } from "~/store";
 
 // Setup
+const reinitializedAnnotatedColumn = {
+
+    description: "",
+    missingValues: []
+};
 let store;
 
 describe("alterColumnCategoryMapping", () => {
@@ -24,13 +29,28 @@ describe("alterColumnCategoryMapping", () => {
 
                     annotated: {
 
+                        column1: {
+
+                            description: "",
+                            missingValues: []
+                        },
+                        column2: {
+
+                            description: "",
+                            missingValues: []
+                        },
                         column3: {
 
+                            description: "",
+                            missingValues: []
                         }
                     },
 
                     userProvided: {
 
+                        column1: { description: "" },
+                        column2: { description: "" },
+                        column3: { description: "" }
                     }
                 }
             }
@@ -53,34 +73,13 @@ describe("alterColumnCategoryMapping", () => {
 
         // Assert
         expect(store.state.columnToCategoryMapping.column1).to.equal("someCategory");
-        expect(store.state.dataDictionary.annotated.column1).to.deep.equal({ description: "" });
+        expect(store.state.dataDictionary.annotated.column1).to.deep.equal(reinitializedAnnotatedColumn);
 
         // Act
         mutations.alterColumnCategoryMapping(store.state, { category: "someCategory", column: "column2" });
 
         // Assert
         expect(store.state.columnToCategoryMapping.column2).to.equal("someCategory");
-        expect(store.state.dataDictionary.annotated.column2).to.deep.equal({ description: "" });
-    });
-
-    it("Unlink a category from a column that is not listed in the user provided data dictionary", () => {
-
-        // Act
-        mutations.alterColumnCategoryMapping(store.state, { category: "Sex", column: "column3" });
-
-        // Assert
-        expect(store.state.dataDictionary.annotated["column3"]).to.deep.equal({ "description": "" });
-    });
-
-    it("Unlink a category from a column that is listed in the user provided data dictionary", () => {
-
-        // Setup
-        store.state.dataDictionary.userProvided["column3"] = { description: "filled in description" };
-
-        // Act
-        mutations.alterColumnCategoryMapping(store.state, { category: "Sex", column: "column3" });
-
-        // Assert
-        expect(store.state.dataDictionary.annotated["column3"]).to.deep.equal({ description: "filled in description" });
+        expect(store.state.dataDictionary.annotated.column2).to.deep.equal(reinitializedAnnotatedColumn);
     });
 });

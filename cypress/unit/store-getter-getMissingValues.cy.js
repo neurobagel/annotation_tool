@@ -26,7 +26,10 @@ const store = {
                     missingValues: [4, 5, 6]
                 },
 
-                column3: {}
+                column3: {
+
+                    missingValues: []
+                }
             }
         }
     }
@@ -46,7 +49,7 @@ describe("getMissingValues", () => {
         });
     });
 
-    it("Attempts to retrieve the missing values of a category has a column with no missing values", () => {
+    it("Attempts to retrieve the missing values of a category that has a column with no missing values", () => {
 
         // Act
         const missingValues = store.getters.getMissingValues(store.state)("category2");
