@@ -14,7 +14,7 @@ let store = {
             ]
         },
 
-        columnToCategoryMapping: {
+        columnToCategoryMap: {
 
             "column1": "category1"
         }

@@ -71,7 +71,7 @@ export const state = () => ({
         }
     },
 
-    columnToCategoryMapping: {},
+    columnToCategoryMap: {},
 
     currentPage: "home",
 
@@ -141,7 +141,7 @@ export const getters = {
 
         // Return the options for this column listed in the current (hardcoded)
         // options for each categorical data-based category
-        return p_state.categoricalOptions[p_state.columnToCategoryMapping[p_column]] ?? [];
+        return p_state.categoricalOptions[p_state.columnToCategoryMap[p_column]] ?? [];
     },
 
     getCategoryNames (p_state) {
@@ -249,7 +249,7 @@ export const getters = {
     getMappedCategories: (p_state) => (p_categorySkipList=[]) => {
 
         // 1. Remove unmapped (null) columns and skipped categories
-        const currentCategories = Object.values(p_state.columnToCategoryMapping)
+        const currentCategories = Object.values(p_state.columnToCategoryMap)
             .filter(category => null !== category && !p_categorySkipList.includes(category));
 
         // 2. Create a set of the unique mapped categories
@@ -262,9 +262,9 @@ export const getters = {
     getMappedColumns: (p_state) => (p_category) => {
 
         const mappedColumns = [];
-        for ( const column in p_state.columnToCategoryMapping ) {
+        for ( const column in p_state.columnToCategoryMap ) {
 
-            if ( p_category === p_state.columnToCategoryMapping[column] ) {
+            if ( p_category === p_state.columnToCategoryMap[column] ) {
 
                 mappedColumns.push(column);
             }
@@ -277,9 +277,9 @@ export const getters = {
 
         // 1. Retrieve all columns linked with the given category
         const mappedColumns = [];
-        for ( const columnName in p_state.columnToCategoryMapping ) {
+        for ( const columnName in p_state.columnToCategoryMap ) {
 
-            if ( p_category === p_state.columnToCategoryMapping[columnName] ) {
+            if ( p_category === p_state.columnToCategoryMap[columnName] ) {
 
                 mappedColumns.push(columnName);
             }
@@ -334,10 +334,10 @@ export const getters = {
 
         // 1. Construct an object containing a list of unique values for each column
         const uniqueValues = {};
-        for ( const columnName in p_state.columnToCategoryMapping ) {
+        for ( const columnName in p_state.columnToCategoryMap ) {
 
             // A. Create a new list for values for each column linked to the given category
-            if ( p_category === p_state.columnToCategoryMapping[columnName] ) {
+            if ( p_category === p_state.columnToCategoryMap[columnName] ) {
 
                 // I. Save unique values for each column
                 uniqueValues[columnName] = new Set();
@@ -400,12 +400,12 @@ export const getters = {
             case "annotation": {
 
                 // 1. Make sure one (and only one) column has been categorized as 'Subject ID'
-                const singleSubjectIDColumn = ( 1 === Object.values(p_state.columnToCategoryMapping)
+                const singleSubjectIDColumn = ( 1 === Object.values(p_state.columnToCategoryMap)
                                                             .filter(category => "Subject ID" === category)
                                                             .length );
 
                 // 2. Make sure at least one other category other than 'Subject ID' has been linked to a column
-                const notOnlySubjectIDCategorized = ( Object.values(p_state.columnToCategoryMapping)
+                const notOnlySubjectIDCategorized = ( Object.values(p_state.columnToCategoryMap)
                                                             .filter(category => "Subject ID" !== category &&
                                                                     null !== category)
                                                             .length >= 1 );
@@ -460,15 +460,15 @@ export const mutations = {
      */
     alterColumnCategoryMapping(p_state, { category, column }) {
 
-        if ( category === p_state.columnToCategoryMapping[column] ) {
+        if ( category === p_state.columnToCategoryMap[column] ) {
 
             // 1. Unlink the column from the category
-            p_state.columnToCategoryMapping[column] = null;
+            p_state.columnToCategoryMap[column] = null;
         }
         else {
 
             // 1. Link the column to the category
-            p_state.columnToCategoryMapping[column] = category;
+            p_state.columnToCategoryMap[column] = category;
         }
 
         // 2. Re-initialize the annotated data dictionary column
@@ -499,7 +499,7 @@ export const mutations = {
     initializeColumnToCategoryMap(p_state, p_columns) {
 
         // Column to category map lists all columns as keys with default value of null
-        p_state.columnToCategoryMapping =
+        p_state.columnToCategoryMap =
             Object.fromEntries(p_columns.map((column) => [column, null]));
     },
 

@@ -11,7 +11,7 @@ describe("isPageAccessible", () => {
 
             annotationCount: 1,
 
-            columnToCategoryMapping: {
+            columnToCategoryMap: {
 
                 "column1Name": "Subject ID"
             },
@@ -47,13 +47,13 @@ describe("isPageAccessible", () => {
 
         // Setup
         let nextPage = "annotation";
-        state.columnToCategoryMapping["column2Name"] = "Sex";
+        state.columnToCategoryMap["column2Name"] = "Sex";
 
         // Assert
         expect(getters.isPageAccessible(state)(nextPage)).to.be.true;
 
         // Setup
-        state.columnToCategoryMapping = {};
+        state.columnToCategoryMap = {};
 
         // Assert
         expect(getters.isPageAccessible(state)(nextPage)).to.be.false;

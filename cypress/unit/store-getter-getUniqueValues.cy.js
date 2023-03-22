@@ -10,7 +10,7 @@ describe("getUniqueValues getter", () => {
 
             state: {
 
-                columnToCategoryMapping: {
+                columnToCategoryMap: {
 
                     column1: "Diagnosis",
                     column2: "Age",
@@ -50,7 +50,7 @@ describe("getUniqueValues getter", () => {
     it("Retrieves unique values of a multiple columns", () => {
 
         // Setup
-        store.state.columnToCategoryMapping.column2 = "Diagnosis";
+        store.state.columnToCategoryMap.column2 = "Diagnosis";
 
         // Act
         const diagnosisUniqueValues = getters.getUniqueValues(store.state)("Diagnosis");

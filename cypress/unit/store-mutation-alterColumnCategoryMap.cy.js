@@ -16,7 +16,7 @@ describe("alterColumnCategoryMapping", () => {
 
             state: {
 
-                columnToCategoryMapping : {
+                columnToCategoryMap : {
 
                     "column1": "Age",
                     "column2": null,
@@ -63,7 +63,7 @@ describe("alterColumnCategoryMapping", () => {
         mutations.alterColumnCategoryMapping(store.state, { category: "Sex", column: "column3" });
 
         // Assert
-        expect(store.state.columnToCategoryMapping.column3).to.equal(null);
+        expect(store.state.columnToCategoryMap.column3).to.equal(null);
     });
 
     it("Changes the mapping of column to category if they're not already mapped", () => {
@@ -72,14 +72,14 @@ describe("alterColumnCategoryMapping", () => {
         mutations.alterColumnCategoryMapping(store.state, { category: "someCategory", column: "column1" });
 
         // Assert
-        expect(store.state.columnToCategoryMapping.column1).to.equal("someCategory");
+        expect(store.state.columnToCategoryMap.column1).to.equal("someCategory");
         expect(store.state.dataDictionary.annotated.column1).to.deep.equal(reinitializedAnnotatedColumn);
 
         // Act
         mutations.alterColumnCategoryMapping(store.state, { category: "someCategory", column: "column2" });
 
         // Assert
-        expect(store.state.columnToCategoryMapping.column2).to.equal("someCategory");
+        expect(store.state.columnToCategoryMap.column2).to.equal("someCategory");
         expect(store.state.dataDictionary.annotated.column2).to.deep.equal(reinitializedAnnotatedColumn);
     });
 });

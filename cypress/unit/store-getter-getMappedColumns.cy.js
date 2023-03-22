@@ -4,7 +4,7 @@ const store = {
 
     state: {
 
-        columnToCategoryMapping: {
+        columnToCategoryMap: {
 
             "column1": "category1",
             "column2": "category2",
