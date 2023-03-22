@@ -275,33 +275,22 @@ export const getters = {
 
     getMissingValues: (p_state) => (p_category) => {
 
-        // 0. Retrieve all columns linked with the given category
+        // 1. Retrieve all columns linked with the given category
         const mappedColumns = [];
-        for ( const column in p_state.columnToCategoryMapping ) {
+        for ( const columnName in p_state.columnToCategoryMapping ) {
 
-            if ( p_category === p_state.columnToCategoryMapping[column] ) {
+            if ( p_category === p_state.columnToCategoryMapping[columnName] ) {
 
-                mappedColumns.push(column);
+                mappedColumns.push(columnName);
             }
         }
 
-        // 1. Build a map of missing values by column
-        let missingValues = {};
-        for ( const column of mappedColumns ) {
+        // 2. Build a map of missing values by column
+        // NOTE: Every column in the annotated dictionary has at least a blank missing values list
+        const missingValues = {};
+        for ( const columnName of mappedColumns ) {
 
-            // A. Starts out as a blank list
-            missingValues[column] = [];
-
-            // B. Save a list of missing values for this column if,
-            // 1) the column has an entry in the data dictionary and,
-            // 2) if a missing values list for the column has already been made
-
-            // NOTE: commenting out condition checks because all columns should be in data dictionary and all have missing values lists
-            // if ( column in p_state.dataDictionary.annotated &&
-            //    "missingValues" in p_state.dataDictionary.annotated[column] ) {
-
-               missingValues[column] = p_state.dataDictionary.annotated[column].missingValues;
-           // }
+            missingValues[columnName] = p_state.dataDictionary.annotated[columnName].missingValues;
         }
 
         return missingValues;

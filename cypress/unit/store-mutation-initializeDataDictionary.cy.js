@@ -27,8 +27,6 @@ describe("initializeDataDictionary", () => {
         // Act
         mutations.initializeDataDictionary(state);
 
-        console.log(`dataDictionary after initialization: ${JSON.stringify(state.dataDictionary)}`);
-
         // Assert
         expect(state.dataDictionary.userProvided).to.deep.equal({
             "col1": {
