@@ -533,8 +533,14 @@ export const mutations = {
             p_state.dataDictionary.annotated[columnName].valueMap = {};
         }
 
-        // 1. Assign the option value to a raw value for this column
-        p_state.dataDictionary.annotated[columnName].valueMap[rawValue] = optionValue;
+        if (optionValue === null) {
+
+            delete p_state.dataDictionary.annotated[columnName].valueMap[rawValue];
+        }
+        else {
+            // 1. Assign the option value to a raw value for this column
+            p_state.dataDictionary.annotated[columnName].valueMap[rawValue] = optionValue;
+        }
     },
 
     setCurrentPage(p_state, p_pageName) {
@@ -613,10 +619,10 @@ export const mutations = {
         Object.keys(p_state.dataDictionary.annotated).forEach(columnName => {
             const column = p_state.dataDictionary.annotated[columnName];
 
-            if (column.valueMap && column.valueMap != {}) {
+            if (column.valueMap && Object.keys(column.valueMap).length > 0) {
                 count++;
             }
-            if (column.transformationHeuristic && column.transformationHeuristic != null) {
+            if (column.transformationHeuristic && column.transformationHeuristic !== null) {
                 count++;
             }
         });
