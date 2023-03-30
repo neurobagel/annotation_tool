@@ -3,6 +3,7 @@ import { Set } from "core-js";
 import Vue from "vue";
 
 export const state = () => ({
+    annotationCount: 0,
 
     appSetting: {
 
@@ -604,5 +605,22 @@ export const mutations = {
 
         // Set a new transformation heuristic for this column
         Vue.set(p_state.dataDictionary.annotated[column], "transformationHeuristic", heuristic);
+    },
+
+    updateAnnotationCount(p_state) {
+        let count = 0;
+
+        Object.keys(p_state.dataDictionary.annotated).forEach(columnName => {
+            const column = p_state.dataDictionary.annotated[columnName];
+
+            if (column.valueMap && column.valueMap != {}) {
+                count++;
+            }
+            if (column.transformationHeuristic && column.transformationHeuristic != null) {
+                count++;
+            }
+        });
+
+        p_state.annotationCount = count;
     }
 };
