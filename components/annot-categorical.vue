@@ -29,7 +29,7 @@
                             :value="getSelectedCategoricalOption(row.item['columnName'], row.item['rawValue'])"
                             :label="label"
                             :reduce="term => term.identifier"
-                            @input="selectCategoricalOption({optionValue: $event, columnName: row.item['columnName'], rawValue: row.item['rawValue']})"
+                            @input="selectCategoricalOption({optionValue: $event, columnName: row.item['columnName'], rawValue: row.item['rawValue']}); updateAnnotationCount();"
                             :options="getCategoricalOptions(row.item['columnName'])" />
                     </template>
                     <template #cell(missingValue)="row">
@@ -132,7 +132,8 @@
             ...mapMutations([
 
                 "changeMissingStatus",
-                "selectCategoricalOption"
+                "selectCategoricalOption",
+                "updateAnnotationCount"
             ])
         }
     };
