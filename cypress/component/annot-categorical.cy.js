@@ -53,7 +53,8 @@ describe("Categorical annotation", () => {
             mutations: {
 
                 changeMissingStatus: () => ({ column, value, markAsMissing }) => {},
-                selectCategoricalOption: () => ({ optionValue, columnName, rawValue }) => {}
+                selectCategoricalOption: () => ({ optionValue, columnName, rawValue }) => {},
+                updateAnnotationCount: () => () => { return 0; }
             }
         };
     });

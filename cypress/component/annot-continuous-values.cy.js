@@ -62,7 +62,8 @@ describe("Continuous values component", () => {
                 setHeuristic: ({ column, heuristic }) => {
 
                     store.state.dataDictionary.annotated[column].transformationHeuristic = heuristic;
-                }
+                },
+                updateAnnotationCount: () => () => { return 0; }
             },
 
             state: {
