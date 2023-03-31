@@ -3,6 +3,7 @@ import { Set } from "core-js";
 import Vue from "vue";
 
 export const state = () => ({
+    annotationCount: 0,
 
     appSetting: {
 
@@ -532,8 +533,16 @@ export const mutations = {
             p_state.dataDictionary.annotated[columnName].valueMap = {};
         }
 
-        // 1. Assign the option value to a raw value for this column
-        p_state.dataDictionary.annotated[columnName].valueMap[rawValue] = optionValue;
+        // If the empty (null) option from v-select dropdown is selected remove
+        // the rawValue from the valueMap
+        if (optionValue === null) {
+
+            delete p_state.dataDictionary.annotated[columnName].valueMap[rawValue];
+        }
+        else {
+            // 1. Assign the option value to a raw value for this column
+            p_state.dataDictionary.annotated[columnName].valueMap[rawValue] = optionValue;
+        }
     },
 
     setCurrentPage(p_state, p_pageName) {
@@ -604,5 +613,21 @@ export const mutations = {
 
         // Set a new transformation heuristic for this column
         Vue.set(p_state.dataDictionary.annotated[column], "transformationHeuristic", heuristic);
+    },
+
+    updateAnnotationCount(p_state) {
+        let count = 0;
+
+        Object.keys(p_state.dataDictionary.annotated).forEach(columnName => {
+            const column = p_state.dataDictionary.annotated[columnName];
+
+            if (column.valueMap && Object.keys(column.valueMap).length > 0) {
+                count++;
+            } else if (column.transformationHeuristic && column.transformationHeuristic !== null) {
+                count++;
+            }
+        });
+
+        p_state.annotationCount = count;
     }
 };

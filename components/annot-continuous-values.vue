@@ -41,7 +41,7 @@
                                 :data-cy="'selectTransform_' + columnName"
                                 :options="getTransformOptions(activeCategory)"
                                 :value="getHeuristic(columnName)"
-                                @input="setHeuristic({ column: columnName, heuristic: $event })" />
+                                @input="setHeuristic({ column: columnName, heuristic: $event }); updateAnnotationCount();" />
                         </b-col>
 
                     </b-row>
@@ -104,7 +104,8 @@
             ...mapMutations([
 
                 "changeMissingStatus",
-                "setHeuristic"
+                "setHeuristic",
+                "updateAnnotationCount"
             ]),
 
             columnValidationItems(p_columnName) {
