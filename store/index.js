@@ -533,6 +533,8 @@ export const mutations = {
             p_state.dataDictionary.annotated[columnName].valueMap = {};
         }
 
+        // If the empty (null) option from v-select dropdown is selected remove
+        // the rawValue from the valueMap
         if (optionValue === null) {
 
             delete p_state.dataDictionary.annotated[columnName].valueMap[rawValue];
@@ -621,8 +623,7 @@ export const mutations = {
 
             if (column.valueMap && Object.keys(column.valueMap).length > 0) {
                 count++;
-            }
-            if (column.transformationHeuristic && column.transformationHeuristic !== null) {
+            } else if (column.transformationHeuristic && column.transformationHeuristic !== null) {
                 count++;
             }
         });
