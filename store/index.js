@@ -147,7 +147,6 @@ export const getters = {
 
     getCategoryNames (p_state) {
 
-
         return Object.keys(p_state.categories);
     },
 
@@ -317,9 +316,37 @@ export const getters = {
         return nextPage;
     },
 
-    getSelectedCategoricalOption: (p_state) => (p_column, p_rawValue) => {
+    getSelectedCategoricalOption: (p_state) => (p_columnName, p_rawValue) => {
 
-        return p_state.dataDictionary.annotated?.[p_column]?.valueMap?.[p_rawValue] ?? "";
+        console.log(`In getSelectedCategoricalOption`);
+
+        // If value map for the column doesn't exist OR
+        // If value map for the column does exist and the raw value does not exist in the value map, returns ""
+        let selectedCategoricalOption = "";
+
+        // If value map exists and raw value exists in value map,
+        // take annotated value and do reverse lookup of the label in p_state.categoricalOptions
+        if ( "valueMap" in p_state.dataDictionary.annotated[p_columnName] &&
+             p_rawValue in p_state.dataDictionary.annotated[p_columnName].valueMap ) {
+
+            const annotatedValue = p_state.dataDictionary.annotated[p_columnName].valueMap[p_rawValue];
+
+            // Reverse lookup here
+            for ( const optionObject of p_state.categoricalOptions[p_columnName] ) {
+
+                if ( annotatedValue === optionObject.identifier ) {
+
+                    console.log(`Found annotatedValue ${annotatedValue} and saving ${optionObject.label} as selected option`);
+
+                    selectedCategoricalOption = optionObject.label;
+                }
+            }
+        }
+
+        console.log(`In getSelectedCategoricalOption, returning: ${selectedCategoricalOption}`);
+
+        // return p_state.dataDictionary.annotated?.[p_column]?.valueMap?.[p_rawValue] ?? "";
+        return selectedCategoricalOption;
     },
 
     getTransformOptions: (p_state) => (p_category) => {
