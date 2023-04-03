@@ -5,7 +5,7 @@ const state = {
     dataDictionary : {
         annotated: {
             "describedColumn": {
-                description: "This is my first column"
+                Description: "This is my first column"
             },
             "lazyColumn": {}
         }

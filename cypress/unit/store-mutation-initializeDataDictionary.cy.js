@@ -30,19 +30,19 @@ describe("initializeDataDictionary", () => {
         // Assert
         expect(state.dataDictionary.userProvided).to.deep.equal({
             "col1": {
-                description: ""
+                Description: ""
             },
             "col2": {
-                description: ""
+                Description: ""
             }
         });
         expect(state.dataDictionary.annotated).to.deep.equal({
             "col1": {
-                description: "",
+                Description: "",
                 missingValues: []
             },
             "col2": {
-                description: "",
+                Description: "",
                 missingValues: []
             }
         });
@@ -62,19 +62,19 @@ describe("initializeDataDictionary", () => {
         // Assert
         expect(state.dataDictionary.userProvided).to.deep.equal({
             "col1": {
-                description: ""
+                Description: ""
             },
             "col2": {
-                description: ""
+                Description: ""
             }
         });
         expect(state.dataDictionary.annotated).to.deep.equal({
             "col1": {
-                description: "",
+                Description: "",
                 missingValues: []
             },
             "col2": {
-                description: "",
+                Description: "",
                 missingValues: []
             }
         });
