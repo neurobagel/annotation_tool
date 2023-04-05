@@ -24,20 +24,12 @@
                             term.identifier parameter, but still display the term.label parameter to the user.
                             See: https://vue-select.org/guide/values.html#transforming-selections -->
 
-                        <!-- <v-select
-                            :data-cy="'categoricalSelector' + '_' + row.index"
-                            :value="getSelectedCategoricalOption(row.item['columnName'], row.item['rawValue'])"
-                            :reduce="term => term.identifier"
-                            @input="selectCategoricalOption({optionValue: $event, columnName: row.item['columnName'], rawValue: row.item['rawValue']}); updateAnnotationCount();"
-                            :options="getCategoricalOptions(row.item['columnName'])" /> -->
-
-                        <!-- :value="getSelectedCategoricalOption(row.item['columnName'], row.item['rawValue'])" -->
-
                         <v-select
                             :data-cy="'categoricalSelector' + '_' + row.index"
                             :options="getCategoricalOptions(row.item['columnName'])"
-                            :value="selectedValues[row.item['columnName']][row.item['rawValue']]"
-                            @input="selectCategoricalOption({ optionValue: $event, columnName: row.item['columnName'], rawValue: row.item['rawValue'] })" />
+                            :reduce="term => term.identifier"
+                            :value="getSelectedCategoricalOption(row.item['columnName'], row.item['rawValue'])"
+                            @input="selectOptionAndUpdate($event, row.item['columnName'], row.item['rawValue'])" />
 
                     </template>
                     <template #cell(missingValue)="row">
@@ -88,8 +80,6 @@
                     "missingValue"
                 ],
 
-                selectedValues: {},
-
                 // Text for UI elements
                 uiText: {
 
@@ -101,17 +91,11 @@
 
         },
 
-        mounted() {
-
-            this.getSelectedValues();
-        },
-
         computed: {
 
             ...mapGetters([
 
                 "getCategoricalOptions",
-                "getMappedColumns",
                 "getSelectedCategoricalOption",
                 "getUniqueValues",
                 "getValueDescription"
@@ -137,28 +121,8 @@
                     }
                 }
 
-                console.log(`Categorical table data: ${JSON.stringify(tableData)}`);
-
                 return tableData;
             }
-
-            // getSelectedValues() {
-
-            //     // 0. Retrieve data that will be used by the categorical dropdowns
-            //     const tableData = this.displayData();
-
-            //     // 1. Build a map of selected values by column for display in the v-selects
-            //     this.selectedValues = {};
-            //     for ( const row of tableData ) {
-
-            //         if ( !(row.columnName in this.selectedValues) ) {
-
-            //             this.selectedValues[row.columnName] = {};
-            //         }
-
-            //         this.selectedValues[row.columnName][row.rawValue] = this.getSelectedCategoricalOption(row.columnName, row.rawValue);
-            //     }
-            // }
         },
 
         methods: {
@@ -170,28 +134,18 @@
                 "updateAnnotationCount"
             ]),
 
-            getSelectedValues() {
+            selectOptionAndUpdate(p_optionValue, p_columnName, p_rawValue) {
 
-                // 1. Populate selectedValues with the columns linked to this category
-                this.selectedValues = Object.fromEntries(() => {
+                // 1. Set the categoricla option for this value in the store
+                this.selectCategoricalOption({
 
-                    return this.getMappedColumns(this.activeCategory).map(columnName => {
-
-                        return [columnName, ""];
-                    });
+                    optionValue: p_optionValue,
+                    columnName: p_columnName,
+                    rawValue: p_rawValue
                 });
 
-                // 2. Populate the columns of selectedValues with data dictionary's annotated values
-                Object.keys(this.displayTable).forEach(row => {
-
-                    this.selectedValues[row.columnName][row.rawValue] = this.getSelectedCategoricalOption(row.columnName, row.rawValue);
-                });
-            },
-
-            selectCategoricalOptionWrapper({ optionValue, columnName, rawValue }) {
-
-                this.getSelectedValues();
-                this.selectCategoricalOptin({ optionValue, columnName, rawValue });
+                // 2. Update the annotation count
+                this.updateAnnotationCount();
             }
         }
     };
