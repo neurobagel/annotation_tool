@@ -27,7 +27,7 @@ describe("updateAnnotationCount", () => {
     it("Annotate and remove the annotation of a continuous value column", () => {
 
         mutations.setHeuristic(store.state, {
-            column: "column1",
+            columnName: "column1",
             heuristic: "column1Heuristic"
         });
 
@@ -36,7 +36,7 @@ describe("updateAnnotationCount", () => {
         expect(store.state.annotationCount).to.equal(1);
 
         mutations.setHeuristic(store.state, {
-            column: "column1",
+            columnName: "column1",
             heuristic: null
         });
 
@@ -87,14 +87,14 @@ describe("updateAnnotationCount", () => {
         mutations.updateAnnotationCount(store.state);
 
         mutations.setHeuristic(store.state, {
-            column: "column1",
+            columnName: "column1",
             heuristic: "column1Heuristic"
         });
 
         mutations.updateAnnotationCount(store.state);
 
         mutations.setHeuristic(store.state, {
-            column: "column4",
+            columnName: "column4",
             heuristic: "column4Heuristic"
         });
 

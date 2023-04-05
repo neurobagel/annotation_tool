@@ -4,14 +4,14 @@
 
         <!-- Category to column linking table -->
         <b-table
-            data-cy="column-linking-table-table"
             bordered
             outlined
-            :fields="uiText.tableFields"
+            data-cy="column-linking-table-table"
             head-variant="dark"
+            :fields="uiText.tableFields"
             :items="tableRows"
-            @row-clicked="applyCategory"
-            :tbody-tr-class="styleTableRow" />
+            :tbody-tr-class="styleTableRow"
+            @row-clicked="applyCategory" />
 
     </b-container>
 
@@ -79,7 +79,7 @@
             applyCategory(p_row, p_index, p_event) {
 
                 // Link or unlink the currently-selected/active category and the clicked column
-                this.alterColumnCategoryMapping({ category: this.selectedCategory, column: p_row.column });
+                this.alterColumnCategoryMapping({ category: this.selectedCategory, columnName: p_row.column });
             },
 
             styleTableRow(p_row, p_rowType) {

@@ -21,7 +21,7 @@ describe("setHeuristic", () => {
 
         // Act
         mutations.setHeuristic(state, {
-            column: "column1",
+            columnName: "column1",
             heuristic: "column1Heuristic"
         });
 
@@ -37,7 +37,7 @@ describe("setHeuristic", () => {
 
         // Act
         mutations.setHeuristic(state, {
-            column: "column1",
+            columnName: "column1",
             heuristic: "column1Heuristic"
         });
 

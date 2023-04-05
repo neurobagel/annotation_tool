@@ -138,6 +138,6 @@ describe("The column-linking-table component", () => {
             .click();
 
         // 3. Assert - Make sure linking mutation is commited to the store
-        cy.get("@commitSpy").should("have.been.calledWith", "alterColumnCategoryMapping", { category: subjectIDCategory, column: participantIDColumn });
+        cy.get("@commitSpy").should("have.been.calledWith", "alterColumnCategoryMapping", { category: subjectIDCategory, columnName: participantIDColumn });
     });
 });

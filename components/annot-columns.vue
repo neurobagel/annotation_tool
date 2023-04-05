@@ -18,7 +18,7 @@
                     <b-button
                         :data-cy="'remove_' + columnName"
                         variant="danger"
-                        @click="alterColumnCategoryMapping({category: activeCategory, column: columnName})">
+                        @click="alterColumnCategoryMapping({category: activeCategory, columnName: columnName})">
                         {{ uiText.removeButton }}
                     </b-button>
                 </b-list-group-item>
