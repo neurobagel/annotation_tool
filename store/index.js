@@ -647,7 +647,7 @@ export const mutations = {
     setHeuristic(p_state, { columnName, heuristic }) {
 
         // Set a new transformation heuristic for this column
-        Vue.set(p_state.dataDictionary.annotated[columnName], "transformationHeuristic", heuristic);
+        Vue.set(p_state.dataDictionary.annotated[columnName], "transformationHeuristic", heuristic ?? "");
     },
 
     updateAnnotationCount(p_state) {
@@ -657,15 +657,25 @@ export const mutations = {
         // 1. Check each column in the data dictionary for annotations
         Object.keys(p_state.dataDictionary.annotated).forEach(columnName => {
 
+            // A. Get the annotated column object for this column
             const column = p_state.dataDictionary.annotated[columnName];
 
-            // A. Check for data type-specific structure and for what that data type counts as an annotation
-            if ( column.valueMap && Object.keys(column.valueMap).length > 0 ) {
+            // B. Get the mapped category for this column
+            const category = p_state.columnToCategoryMap[columnName];
 
-                count++;
-            } else if ( "" !== column.transformationHeuristic ) {
+            // Only categorized columns can have annotations
+            if ( null !== category ) {
 
-                count++;
+                // C. Check for data type and for what that data type counts as an annotation
+                if ( "annot-categorical" === p_state.categories[category].componentName &&
+                     Object.keys(column.valueMap).length > 0 ) {
+
+                    count++;
+                } else if ( "annot-continuous-values" === p_state.categories[category].componentName &&
+                            "" !== column.transformationHeuristic ) {
+
+                    count++;
+                }
             }
         });
 
