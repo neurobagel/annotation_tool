@@ -156,9 +156,9 @@ export const getters = {
     getColumnDescription: (p_state) => (p_columnName) => {
 
         let columnDescription = "";
-        if ( Object.hasOwn(p_state.dataDictionary.annotated[p_columnName], "description") ) {
+        if ( Object.hasOwn(p_state.dataDictionary.annotated[p_columnName], "Description") ) {
 
-            columnDescription = p_state.dataDictionary.annotated[p_columnName].description;
+            columnDescription = p_state.dataDictionary.annotated[p_columnName].Description;
         }
 
         return columnDescription;
@@ -551,7 +551,7 @@ export const mutations = {
         // 1. Create a skeleton data dictionary based on the data table's columns
         for ( const columnName of Object.keys(p_state.dataTable[0]) ) {
 
-            p_state.dataDictionary.userProvided[columnName] = { "description": "" };
+            p_state.dataDictionary.userProvided[columnName] = { "Description": "" };
         }
 
         // 2. Make a copy of the newly provided skeleton dictionary for annotation
