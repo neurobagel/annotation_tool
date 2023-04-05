@@ -312,6 +312,9 @@ export const getters = {
             case "annotation":
                 nextPage = "download";
                 break;
+            case "download":
+                nextPage = "";
+                break;
         }
 
         return nextPage;
