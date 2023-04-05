@@ -8,16 +8,33 @@ describe("updateAnnotationCount", () => {
 
         store = {
             state: {
+
                 annotationCount: 0,
 
+                categories: {
+
+                    "Subject ID": {},
+                    "Age": { componentName: "annot-continuous-values" },
+                    "Sex": { componentName: "annot-categorical" },
+                    "Diagnosis": { componentName: "annot-categorical" }
+                },
+
+                columnToCategoryMap: {
+
+                    column1: "Age",
+                    column2: "Sex",
+                    column3: "Diagnosis",
+                    column4: "Age"
+                },
+
                 dataDictionary: {
+
                     annotated: {
-                        column1: {},
-                        column2: {},
-                        column3: {
-                            valueMap: {}
-                        },
-                        column4: {}
+
+                        column1: { transformationHeuristic: "" },
+                        column2: { valueMap: {} },
+                        column3: { valueMap: {} },
+                        column4: { transformationHeuristic: "" }
                     }
                 }
             }
