@@ -26,18 +26,6 @@ describe("selectCategoricalOption mutation", () => {
         };
     });
 
-    it("Makes sure a value map is created for a column in the data dictionary", () => {
-
-        // Act
-        mutations.alterColumnCategoryMapping(store.state, {
-            category: "category1",
-            columnName: "column1"
-        });
-
-        // Assert
-        expect(store.state.dataDictionary.annotated.column1.valueMap).to.exist;
-    });
-
     it("Makes sure an annotated value is set in the value map", () => {
 
         // Act

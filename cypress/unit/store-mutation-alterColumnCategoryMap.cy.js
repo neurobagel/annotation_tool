@@ -82,4 +82,28 @@ describe("alterColumnCategoryMapping", () => {
         expect(store.state.columnToCategoryMap.column2).to.equal("someCategory");
         expect(store.state.dataDictionary.annotated.column2).to.deep.equal(reinitializedAnnotatedColumn);
     });
+
+    it("Makes sure a value map is created for a categorical column in the data dictionary", () => {
+
+        // Act
+        mutations.alterColumnCategoryMapping(store.state, {
+            category: "Sex",
+            columnName: "column2"
+        });
+
+        // Assert
+        expect(store.state.dataDictionary.annotated.column2.valueMap).to.exist;
+    });
+
+    it("Makes sure a transformation heuristic is created for a continuous values column in the data dictionary", () => {
+
+        // Act
+        mutations.alterColumnCategoryMapping(store.state, {
+            category: "Age",
+            columnName: "column2"
+        });
+
+        // Assert
+        expect(store.state.dataDictionary.annotated.column2.transformationHeuristic).to.exist;
+    });
 });
