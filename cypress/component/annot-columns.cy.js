@@ -16,7 +16,7 @@ const store = {
         }
     },
     mutations: {
-        alterColumnCategoryMapping: () => ({category, column}) => {}
+        alterColumnCategoryMapping: () => ({ category, columnName }) => {}
     }
 };
 
@@ -49,7 +49,7 @@ describe("columns annotation", () =>  {
             }
         });
         cy.get("[data-cy='remove_column2']").click();
-        cy.get("@commitSpy").should("have.been.calledOnceWith", "alterColumnCategoryMapping", {category: "someCategory", column: "column2"});
+        cy.get("@commitSpy").should("have.been.calledOnceWith", "alterColumnCategoryMapping", {category: "someCategory", columnName: "column2"});
     });
 });
 

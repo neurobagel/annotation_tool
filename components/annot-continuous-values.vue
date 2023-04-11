@@ -41,7 +41,7 @@
                                 :data-cy="'selectTransform_' + columnName"
                                 :options="getTransformOptions(activeCategory)"
                                 :value="getHeuristic(columnName)"
-                                @input="setHeuristic({ column: columnName, heuristic: $event }); updateAnnotationCount();" />
+                                @input="selectHeuristic({ columnName: columnName, heuristic: $event})" />
                         </b-col>
 
                     </b-row>
@@ -114,17 +114,26 @@
                 const uniqueValuesByColumn = this.getUniqueValues(this.activeCategory);
 
                 // 2. Create items for the table consisting of objects containing column name, raw and transformed values
-                const tableItems = [];
+                const tableItemsForColumn = [];
                 uniqueValuesByColumn[p_columnName].forEach(value => {
 
-                    tableItems.push({
+                    tableItemsForColumn.push({
 
                         preview: this.getHarmonizedPreview(p_columnName, value),
                         rawValue: value
                     });
                 });
 
-                return tableItems;
+                return tableItemsForColumn;
+            },
+
+            selectHeuristic({ columnName, heuristic }) {
+
+                // 1. Set the heuristic for this column in the store
+                this.setHeuristic({ columnName: columnName, heuristic: heuristic });
+
+                // 2. Update the annotation count
+                this.updateAnnotationCount();
             }
         }
     };

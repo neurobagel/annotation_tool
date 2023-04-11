@@ -8,16 +8,33 @@ describe("updateAnnotationCount", () => {
 
         store = {
             state: {
+
                 annotationCount: 0,
 
+                categories: {
+
+                    "Subject ID": {},
+                    "Age": { componentName: "annot-continuous-values" },
+                    "Sex": { componentName: "annot-categorical" },
+                    "Diagnosis": { componentName: "annot-categorical" }
+                },
+
+                columnToCategoryMap: {
+
+                    column1: "Age",
+                    column2: "Sex",
+                    column3: "Diagnosis",
+                    column4: "Age"
+                },
+
                 dataDictionary: {
+
                     annotated: {
-                        column1: {},
-                        column2: {},
-                        column3: {
-                            valueMap: {}
-                        },
-                        column4: {}
+
+                        column1: { transformationHeuristic: "" },
+                        column2: { valueMap: {} },
+                        column3: { valueMap: {} },
+                        column4: { transformationHeuristic: "" }
                     }
                 }
             }
@@ -27,7 +44,7 @@ describe("updateAnnotationCount", () => {
     it("Annotate and remove the annotation of a continuous value column", () => {
 
         mutations.setHeuristic(store.state, {
-            column: "column1",
+            columnName: "column1",
             heuristic: "column1Heuristic"
         });
 
@@ -36,7 +53,7 @@ describe("updateAnnotationCount", () => {
         expect(store.state.annotationCount).to.equal(1);
 
         mutations.setHeuristic(store.state, {
-            column: "column1",
+            columnName: "column1",
             heuristic: null
         });
 
@@ -87,14 +104,14 @@ describe("updateAnnotationCount", () => {
         mutations.updateAnnotationCount(store.state);
 
         mutations.setHeuristic(store.state, {
-            column: "column1",
+            columnName: "column1",
             heuristic: "column1Heuristic"
         });
 
         mutations.updateAnnotationCount(store.state);
 
         mutations.setHeuristic(store.state, {
-            column: "column4",
+            columnName: "column4",
             heuristic: "column4Heuristic"
         });
 

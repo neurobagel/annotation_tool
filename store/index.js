@@ -3,6 +3,9 @@ import { Set } from "core-js";
 import Vue from "vue";
 
 export const state = () => ({
+
+    // Keeps track of number of annotations made in current run;
+    // > 0 annotations allows access to the download page
     annotationCount: 0,
 
     appSetting: {
@@ -147,22 +150,18 @@ export const getters = {
 
     getCategoryNames (p_state) {
 
-
         return Object.keys(p_state.categories);
     },
 
     getColumnDescription: (p_state) => (p_columnName) => {
 
-
+        let columnDescription = "";
         if ( Object.hasOwn(p_state.dataDictionary.annotated[p_columnName], "Description") ) {
 
-            return p_state.dataDictionary.annotated[p_columnName].Description;
+            columnDescription = p_state.dataDictionary.annotated[p_columnName].Description;
         }
-        else {
 
-
-            return "";
-        }
+        return columnDescription;
     },
 
     getColumnNames(p_state) {
@@ -178,11 +177,9 @@ export const getters = {
 
     getHarmonizedPreview: (p_state) => (p_column, p_originalValue) => {
 
-        const transformationHeuristic = p_state.dataDictionary.annotated[p_column].transformationHeuristic ?? "";
-
         let convertedValue = "";
 
-        switch ( transformationHeuristic ) {
+        switch ( p_state.dataDictionary.annotated[p_column].transformationHeuristic ) {
 
             case "float":
 
@@ -243,8 +240,7 @@ export const getters = {
 
     getHeuristic: (p_state) => (p_columnName) => {
 
-        return ( "transformationHeuristic" in p_state.dataDictionary.annotated[p_columnName] ) ?
-            p_state.dataDictionary.annotated[p_columnName].transformationHeuristic : "";
+        return p_state.dataDictionary.annotated[p_columnName].transformationHeuristic;
     },
 
     getMappedCategories: (p_state) => (p_categorySkipList=[]) => {
@@ -320,9 +316,33 @@ export const getters = {
         return nextPage;
     },
 
-    getSelectedCategoricalOption: (p_state) => (p_column, p_rawValue) => {
+    getSelectedCategoricalOption: (p_state) => (p_columnName, p_rawValue) => {
 
-        return p_state.dataDictionary.annotated?.[p_column]?.valueMap?.[p_rawValue] ?? "";
+        // 0. If raw value does not exist in the value map, returns ""
+        let selectedCategoricalOption = "";
+
+        // 1. Look for raw value in the value map
+        if ( p_rawValue in p_state.dataDictionary.annotated[p_columnName].valueMap ) {
+
+            // A. Get the annotated value of the raw value
+            const annotatedValue = p_state.dataDictionary.annotated[p_columnName].valueMap[p_rawValue];
+
+            // B. Get the category for the given column
+            const activeCategory = p_state.columnToCategoryMap[p_columnName];
+
+            // C. Try to find the label for the given annotated value (identifier)
+            // in the store's option objects for this category
+            for ( const optionObject of p_state.categoricalOptions[activeCategory] ) {
+
+                if ( annotatedValue === optionObject.identifier ) {
+
+                    selectedCategoricalOption = optionObject.label;
+                    break;
+                }
+            }
+        }
+
+        return selectedCategoricalOption;
     },
 
     getTransformOptions: (p_state) => (p_category) => {
@@ -435,12 +455,12 @@ export const getters = {
 
 export const actions = {
 
-    processDataDictionary( { state, commit, getters }, { data, filename }) {
+    processDataDictionary({ state, commit, getters }, { data, filename }) {
 
         commit("setDataDictionary", { newDataDictionary: JSON.parse(data), storeColumns: getters.getColumnNames });
     },
 
-    processDataTable( { state, commit, getters }, { data, filename }) {
+    processDataTable({ state, commit, getters }, { data, filename }) {
 
         // This action is dispatched when a new dataTable is loaded by the user.
         // This indicates to us that the user wants to reset the app and begin a new
@@ -460,27 +480,46 @@ export const mutations = {
      * Otherwise the column is mapped to a different category
      *
      * @param {string} category Category the column should be mapped to
-     * @param {string} column Column that will be mapped to the category
+     * @param {string} columnName Column that will be mapped to the category
      */
-    alterColumnCategoryMapping(p_state, { category, column }) {
+    alterColumnCategoryMapping(p_state, { category, columnName }) {
 
-        if ( category === p_state.columnToCategoryMap[column] ) {
+        if ( category === p_state.columnToCategoryMap[columnName] ) {
 
             // 1. Unlink the column from the category
-            p_state.columnToCategoryMap[column] = null;
+            p_state.columnToCategoryMap[columnName] = null;
         }
         else {
 
             // 1. Link the column to the category
-            p_state.columnToCategoryMap[column] = category;
+            p_state.columnToCategoryMap[columnName] = category;
         }
 
-        // 2. Re-initialize the annotated data dictionary column
-        p_state.dataDictionary.annotated[column] = Object.assign(
-            {},
-            p_state.dataDictionary.userProvided[column],
-            { missingValues: [] }
-        );
+        // 2. Re-initialize the annotated data dictionary column,
+        // also checking data type of new category for specialized structures
+        // NOTE: The latter are initialized here to eliminate checks for their
+        // nullness in other store functions
+        switch ( p_state.columnToCategoryMap[columnName] ) {
+
+            case "Age":
+
+                p_state.dataDictionary.annotated[columnName] = Object.assign(
+                    {},
+                    p_state.dataDictionary.userProvided[columnName],
+                    { missingValues: [], transformationHeuristic: "" }
+                );
+                break;
+
+            case "Diagnosis":
+            case "Sex":
+
+                p_state.dataDictionary.annotated[columnName] = Object.assign(
+                    {},
+                    p_state.dataDictionary.userProvided[columnName],
+                    { missingValues: [], valueMap: {} }
+                );
+                break;
+        }
     },
 
     changeMissingStatus(p_state, { column, value, markAsMissing }) {
@@ -524,27 +563,23 @@ export const mutations = {
         // 3. Add fields required for annotation
         Object.keys(p_state.dataDictionary.annotated).forEach(columnName => {
 
+            // A. Every column can have missing values
             p_state.dataDictionary.annotated[columnName].missingValues = [];
         });
     },
 
     selectCategoricalOption(p_state, { optionValue, columnName, rawValue }) {
 
-        // 0. Create an categorical value map for this column, if it does not yet exist
-        if ( !("valueMap" in p_state.dataDictionary.annotated[columnName]) ) {
-
-            p_state.dataDictionary.annotated[columnName].valueMap = {};
-        }
-
         // If the empty (null) option from v-select dropdown is selected remove
         // the rawValue from the valueMap
-        if (optionValue === null) {
+        if ( null === optionValue ) {
 
-            delete p_state.dataDictionary.annotated[columnName].valueMap[rawValue];
+            Vue.delete(p_state.dataDictionary.annotated[columnName].valueMap, rawValue);
         }
+        // Otherwise, assign the option value to a raw value for this column
         else {
-            // 1. Assign the option value to a raw value for this column
-            p_state.dataDictionary.annotated[columnName].valueMap[rawValue] = optionValue;
+
+            Vue.set(p_state.dataDictionary.annotated[columnName].valueMap, rawValue, optionValue);
         }
     },
 
@@ -612,25 +647,42 @@ export const mutations = {
         p_state.dataTable = dataTable;
     },
 
-    setHeuristic(p_state, { column, heuristic }) {
+    setHeuristic(p_state, { columnName, heuristic }) {
 
         // Set a new transformation heuristic for this column
-        Vue.set(p_state.dataDictionary.annotated[column], "transformationHeuristic", heuristic);
+        Vue.set(p_state.dataDictionary.annotated[columnName], "transformationHeuristic", heuristic ?? "");
     },
 
     updateAnnotationCount(p_state) {
+
         let count = 0;
 
+        // 1. Check each column in the data dictionary for annotations
         Object.keys(p_state.dataDictionary.annotated).forEach(columnName => {
+
+            // A. Get the annotated column object for this column
             const column = p_state.dataDictionary.annotated[columnName];
 
-            if (column.valueMap && Object.keys(column.valueMap).length > 0) {
-                count++;
-            } else if (column.transformationHeuristic && column.transformationHeuristic !== null) {
-                count++;
+            // B. Get the mapped category for this column
+            const category = p_state.columnToCategoryMap[columnName];
+
+            // Only categorized columns can have annotations
+            if ( null !== category ) {
+
+                // C. Check for data type and for what that data type counts as an annotation
+                if ( "annot-categorical" === p_state.categories[category].componentName &&
+                     Object.keys(column.valueMap).length > 0 ) {
+
+                    count++;
+                } else if ( "annot-continuous-values" === p_state.categories[category].componentName &&
+                            "" !== column.transformationHeuristic ) {
+
+                    count++;
+                }
             }
         });
 
+        // 2. Save the updated annotation in the store
         p_state.annotationCount = count;
     }
 };

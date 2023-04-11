@@ -59,9 +59,9 @@ describe("Continuous values component", () => {
                 // NOTE: changeMissingStatus reflects a future 'mark as missing' feature
                 // for the continous value component
                 changeMissingStatus: () => ({ column, value, markAsMissing}) => {},
-                setHeuristic: ({ column, heuristic }) => {
+                setHeuristic: ({ columnName, heuristic }) => {
 
-                    store.state.dataDictionary.annotated[column].transformationHeuristic = heuristic;
+                    store.state.dataDictionary.annotated[columnName].transformationHeuristic = heuristic;
                 },
                 updateAnnotationCount: () => () => { return 0; }
             },
@@ -122,7 +122,7 @@ describe("Continuous values component", () => {
             .click();
 
         // Assert
-        cy.get("@commitSpy").should("have.been.calledWith", "setHeuristic", { column: "column1", heuristic: "float" });
+        cy.get("@commitSpy").should("have.been.calledWith", "setHeuristic", { columnName: "column1", heuristic: "float" });
     });
 
     it("Applies a selected heuristic and previews transformed values", () => {

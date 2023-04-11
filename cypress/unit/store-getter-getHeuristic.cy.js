@@ -15,7 +15,10 @@ describe("The getHeuristic getter", () => {
                     userProvided: {},
                     annotated: {
 
-                        column1: {}
+                        column1: {
+
+                            transformationHeuristic: ""
+                        }
                     }
                 }
             }

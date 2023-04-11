@@ -10,6 +10,20 @@ describe("getSelectedCategoricalOption", () => {
 
             state: {
 
+                categoricalOptions: {
+
+                    category1: [{
+
+                        label: "option1Label",
+                        identifier: "optionIdentifier"
+                    }]
+                },
+
+                columnToCategoryMap: {
+
+                    column1: "category1"
+                },
+
                 dataDictionary: {
 
                     annotated: {
@@ -18,7 +32,7 @@ describe("getSelectedCategoricalOption", () => {
 
                             valueMap: {
 
-                                "raw_value1": "annotated_value1"
+                                "raw_value1": "optionIdentifier"
                             }
                         }
                     }
@@ -33,7 +47,7 @@ describe("getSelectedCategoricalOption", () => {
         const mappedValue = getters.getSelectedCategoricalOption(store.state)("column1", "raw_value1");
 
         // Assert
-        expect(mappedValue).to.equal("annotated_value1");
+        expect(mappedValue).to.equal("option1Label");
     });
 
     it("Attempt to get a value mapped to raw value that does not exist in a column that exists in the value map", () => {
@@ -42,15 +56,6 @@ describe("getSelectedCategoricalOption", () => {
         const mappedValue = getters.getSelectedCategoricalOption(store.state)("column1", "raw_value2");
 
         // Assert - If a raw value is not found in the column in the value map, a blank string should be returned
-        expect(mappedValue).to.equal("");
-    });
-
-    it("Attempt to get a value mapped to a raw value in a column that does not exist in the value map", () => {
-
-        // Act
-        const mappedValue = getters.getSelectedCategoricalOption(store.state)("column2", "raw_value1");
-
-        // Assert - If a column is not found in the value map, a blank string should be returned
         expect(mappedValue).to.equal("");
     });
 });

@@ -10,28 +10,20 @@ describe("selectCategoricalOption mutation", () => {
 
             state: {
 
+                columnToCategoryMap: {},
+
                 dataDictionary: {
 
                     annotated: {
 
-                        column1: {}
+                        column1: {
+
+                            valueMap: {}
+                        }
                     }
                 }
             }
         };
-    });
-
-    it("Makes sure a value map is created for a column in the data dictionary", () => {
-
-        // Act
-        mutations.selectCategoricalOption(store.state, {
-            optionValue: "https://example.org/female",
-            columnName: "column1",
-            rawValue: "F"
-        });
-
-        // Assert
-        expect(store.state.dataDictionary.annotated.column1.valueMap).to.exist;
     });
 
     it("Makes sure an annotated value is set in the value map", () => {

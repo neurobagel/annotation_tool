@@ -26,11 +26,11 @@
 
                         <v-select
                             :data-cy="'categoricalSelector' + '_' + row.index"
-                            :value="getSelectedCategoricalOption(row.item['columnName'], row.item['rawValue'])"
-                            :label="label"
+                            :options="getCategoricalOptions(row.item['columnName'])"
                             :reduce="term => term.identifier"
-                            @input="selectCategoricalOption({optionValue: $event, columnName: row.item['columnName'], rawValue: row.item['rawValue']}); updateAnnotationCount();"
-                            :options="getCategoricalOptions(row.item['columnName'])" />
+                            :value="getSelectedCategoricalOption(row.item['columnName'], row.item['rawValue'])"
+                            @input="selectOptionAndUpdate($event, row.item['columnName'], row.item['rawValue'])" />
+
                     </template>
                     <template #cell(missingValue)="row">
                         <b-button
@@ -86,9 +86,7 @@
                     instructions: "Annotate each unique value",
                     missingValueButton: "Mark as missing",
                     saveButton: "Save Annotation"
-                },
-
-                valueMapping: {}
+                }
             };
 
         },
@@ -112,7 +110,7 @@
                 const tableData = [];
 
                 for ( const columnName in uniqueValuesMap ) {
-                    for ( const uniqueValue of uniqueValuesMap[columnName]) {
+                    for ( const uniqueValue of uniqueValuesMap[columnName] ) {
 
                         tableData.push({
 
@@ -134,7 +132,21 @@
                 "changeMissingStatus",
                 "selectCategoricalOption",
                 "updateAnnotationCount"
-            ])
+            ]),
+
+            selectOptionAndUpdate(p_optionValue, p_columnName, p_rawValue) {
+
+                // 1. Set the categoricla option for this value in the store
+                this.selectCategoricalOption({
+
+                    optionValue: p_optionValue,
+                    columnName: p_columnName,
+                    rawValue: p_rawValue
+                });
+
+                // 2. Update the annotation count
+                this.updateAnnotationCount();
+            }
         }
     };
 
