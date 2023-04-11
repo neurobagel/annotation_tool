@@ -95,23 +95,6 @@ Cypress.Commands.add("datasetMeetsTestCriteria", (p_pageName, p_datasetConfig, p
             else if ( columnCount > p_datasetConfig["category_columns"][category].length )
                 return false;
         }
-
-        // 2. Check to see if the tool group categorization requirements of a test are met by a dataset
-        if ( "toolGroups" in p_testCriteria ) {
-
-            // A. Failure #1: Dataset does not have an 'Assessment Tool' category
-            if ( !Object.keys(p_datasetConfig["category_columns"]).includes("Assessment Tool") )
-                return false;
-
-            // B. Failure #2: Test tool count requirement is more than the # of tools available in dataset
-            const datasetToolCount = p_datasetConfig["category_columns"]["Assessment Tool"].length;
-            let testToolCount = 0;
-            for ( const [/*groupName*/, columnCount] of p_testCriteria.toolGroups ) {
-                testToolCount += columnCount;
-            }
-            if ( testToolCount > datasetToolCount )
-                return false;
-        }
     }
 
     return true;
@@ -161,38 +144,10 @@ Cypress.Commands.add("loadAppState", (p_pageName, p_dataset, p_pageData) => {
             for ( let index = 0; index < columnCount; index++ ) {
 
                 // A. Link the column to this category
-                cy.dispatchToVuexStore("alterColumnCategoryRelation", {
+                cy.dispatchToVuexStore("alterColumnCategoryMapping", {
 
                     category: category,
                     column: p_dataset["category_columns"][category][index]
-                });
-            }
-        }
-
-        // 2. Create assessment tool groups if given
-        if ( "toolGroups" in p_pageData ) {
-
-            const toolGroupData = {};
-
-            // A. For each tool group, create a list of tools from the dataset for each tool group
-            for ( let index = 0; index < p_pageData.toolGroups.length; index++ ) {
-
-                const [groupName, columnCount] = p_pageData.toolGroups[index];
-
-                toolGroupData[groupName] = [];
-                for ( let index = 0; index < p_dataset["category_columns"]["Assessment Tool"].length; index += columnCount + 1) {
-
-                    toolGroupData[groupName] = p_dataset["category_columns"]["Assessment Tool"].slice(index, index + columnCount);
-                }
-            }
-
-            // B. Add each tool group to the store
-            for ( const groupName in toolGroupData ) {
-
-                cy.dispatchToVuexStore("createToolGroup", {
-
-                    name: groupName,
-                    tools: toolGroupData[groupName]
                 });
             }
         }
