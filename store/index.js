@@ -480,7 +480,7 @@ export const mutations = {
      * Otherwise the column is mapped to a different category
      *
      * @param {string} category Category the column should be mapped to
-     * @param {string} column Column that will be mapped to the category
+     * @param {string} columnName Column that will be mapped to the category
      */
     alterColumnCategoryMapping(p_state, { category, columnName }) {
 
