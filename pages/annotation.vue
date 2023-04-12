@@ -79,7 +79,8 @@
 
             ...mapState([
 
-                "colorInfo"
+                "colorInfo",
+                "columnToCategoryMap"
             ])
         }
     };
