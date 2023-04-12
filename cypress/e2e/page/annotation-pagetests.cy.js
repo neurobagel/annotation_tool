@@ -35,13 +35,18 @@ describe("tests on annotation page ui with programmatic state loading and store 
                 cy.loadTestDataIntoStore(p_dataset);
 
                 // 3. Move to the annotation page
-                cy.window().its("$nuxt.$router").then(router => {
+                // cy.window().its("$nuxt.$router").then(router => {
 
-                    router.push({ path: "/annotation" });
-                });
+                //     router.push({ path: "/annotation" });
+                // });
             });
 
-            it("Annotate age column; default age format transformations", () => {
+            it.only("Annotate age column; default age format transformations", () => {
+
+                console.log("Start of test store:");
+                cy.window().its("$nuxt.$store").then(p_store => {
+                    console.dir(p_store);
+                });
 
                 // 0. Categories required for this test and the number of required columns for each category
                 const testCriteria = {
@@ -58,10 +63,12 @@ describe("tests on annotation page ui with programmatic state loading and store 
                     // 1. Load the app with test criteria using the dataset
                     cy.loadAppState("annotation", p_dataset, testCriteria);
 
+                    cy.visit("/annotation");
+
                     // 2. Pause until 'Age' tab (the default annotation tab) components are loaded
                     // NOTE: This DOM check is possible because the annotation tool uses server-side rendering
                     // See https://docs.cypress.io/guides/core-concepts/conditional-testing#Server-side-rendering
-                    cy.get("[data-cy='annot-component-Age']").should("be.visible");
+                    cy.get("[data-cy='annot-continuous-values-age']").should("be.visible");
 
                     // 3. Assert annotation nav and next page button are disabled
                     cy.assertNextPageAccess("download", false);
@@ -73,9 +80,9 @@ describe("tests on annotation page ui with programmatic state loading and store 
                         .contains("li", "Age")
                         .click();
 
-                    // B. Click on the 'Save Annotation' button
-                    cy.get("[data-cy='save-button-Age']")
-                        .click();
+                    // B. Select the 'float' transformation heuristic
+                    // :data-cy="'selectTransform_' + columnName"
+                    cy.get("[data-cy='selectTransform_age']").click().type("float{enter}");
 
                     // 5. Assert annotation nav and next page button are enabled
                     cy.assertNextPageAccess("download", true);

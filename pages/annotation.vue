@@ -65,6 +65,11 @@
             };
         },
 
+        mounted() {
+
+            console.log(`mappedCategories in annotation.vue mount(): ${JSON.stringify(this.columnToCategoryMap)}`);
+        },
+
         computed: {
 
             ...mapGetters([
