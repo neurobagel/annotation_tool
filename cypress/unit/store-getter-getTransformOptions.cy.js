@@ -18,7 +18,7 @@ let store = {
 
             "annot-continuous-values": [
 
-                "float", "bounded", "euro", "range", "int", "string", "isoyear"
+                "float", "bounded", "euro", "int", "isoyear"
             ]
         }
     }
@@ -33,7 +33,7 @@ describe("getTransformOptions", () => {
 
         // Assert
         expect(options).to.deep.equal([
-            "float", "bounded", "euro", "range", "int", "string", "isoyear"
+            "float", "bounded", "euro", "int", "isoyear"
         ]);
     });
 });
