@@ -42,8 +42,8 @@ describe("Continuous values component", () => {
                 },
                 getTransformOptions: () => (p_activeCategory) => {
 
-                    // return ["float", "bounded", "euro", "range", "int", "string", "isoyear"];
-                    return ["", "float", "bounded", "euro", "range", "int", "string"];
+                    // return ["float", "bounded", "euro", "int", "isoyear"];
+                    return ["", "float", "bounded", "euro", "int"];
                 },
                 getUniqueValues: () => (p_activeCategory) => {
 

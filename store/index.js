@@ -126,10 +126,10 @@ export const state = () => ({
     transformationHeuristics: {
 
         // "annot-continuous-values": [
-        //     "", "float", "bounded", "euro", "range", "int", "string", "isoyear"
+        //     "", "float", "bounded", "euro", "int", "isoyear"
         // ]
         "annot-continuous-values": [
-            "", "float", "bounded", "euro", "range", "int", "string"
+            "", "float", "bounded", "euro", "int"
         ]
     }
 });
@@ -196,21 +196,9 @@ export const getters = {
                 convertedValue = parseFloat(p_originalValue.replace(",", "."));
                 break;
 
-            case "range": {
-
-                const [lower, upper] = p_originalValue.split("-").map(val => parseFloat(val.trim()));
-                convertedValue = (lower + upper) / 2;
-                break;
-            }
-
             case "int":
 
                 convertedValue = parseInt(p_originalValue);
-                break;
-
-            case "string":
-
-                convertedValue = p_state.appSetting.missingValueLabel;
                 break;
 
             // case "isoyear": {

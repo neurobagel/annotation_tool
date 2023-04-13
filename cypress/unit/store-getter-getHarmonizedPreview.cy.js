@@ -111,34 +111,6 @@ describe("getHarmonizedPreview", () => {
         expect(harmonizedValue).to.equal(42.6);
     });
 
-    it("range transformation", () => {
-
-        // 1. Integer range transformation
-
-        // Setup
-        store.state.dataDictionary.annotated.column1.transformationHeuristic = "range";
-        originalValue = "42-44";
-
-        // Act
-        let harmonizedValue = getters.getHarmonizedPreview(store.state)("column1", originalValue);
-
-        // Assert
-        expect(harmonizedValue).to.equal(43);
-
-        // 2. Floating point range transformation
-
-        // Setup
-        store.state.dataDictionary.annotated.column1.transformationHeuristic = "range";
-        originalValue = "42-43";
-
-        // Act
-        harmonizedValue = getters.getHarmonizedPreview(store.state)("column1", originalValue);
-
-        // Assert
-        expect(harmonizedValue).to.equal(42.5);
-
-    });
-
     it("int transformation", () => {
 
         // Setup
@@ -150,18 +122,6 @@ describe("getHarmonizedPreview", () => {
 
         // Assert
         expect(harmonizedValue).to.equal(42);
-    });
-
-    it("string transformation", () => {
-
-        // Setup
-        store.state.dataDictionary.annotated.column1.transformationHeuristic = "string";
-
-        // Act
-        const harmonizedValue = getters.getHarmonizedPreview(store.state)("column1", originalValue);
-
-        // Assert
-        expect(harmonizedValue).to.equal(store.state.appSetting.missingValueLabel);
     });
 
     // it("isoyear transformation", () => {
