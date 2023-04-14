@@ -21,6 +21,11 @@ export const state = () => ({
             { label: "male", identifier: "bids:male" },
             { label: "female", identifier: "bids:female" },
             { label: "other", identifier: "bids:other" }
+        ],
+        "Diagnosis": [
+            { label: "Depressive disorder", identifier: "snomed:35489007"},
+            { label: "Parkinson's disease", identifier: "snomed:49049000"},
+            { label: "other", identifier: "snomed:other"}
         ]
     },
 
