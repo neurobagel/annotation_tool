@@ -23,6 +23,7 @@ jobs:
           spec: |
             cypress/e2e/page/index-pagetests.cy.js
             cypress/e2e/page/categorization-pagetests.cy.js
+            cypress/e2e/page/annotation-pagetests.cy.js
           build: npm run build
           start: npm start
           component: false
