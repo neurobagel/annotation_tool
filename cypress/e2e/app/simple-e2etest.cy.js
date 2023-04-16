@@ -37,30 +37,32 @@ describe("End to end test using a simple UI path through the app", () => {
                 ]
             };
 
-            if ( cy.datasetMeetsTestCriteria("annotation", p_dataset, testCriteria) ) {
+            // 1. Go through index page, selecting participants tsv and json dictionary files
 
-                // 1. Go through index page, selecting participants tsv and json dictionary files
+            // A. Assert that categorization nav item and next button are disabled
+            cy.assertNextPageAccess("categorization", false);
 
-                // A. Assert that categorization nav item and next button are disabled
-                cy.assertNextPageAccess("categorization", false);
+            // B. Select data table file
+            cy.get("[data-cy='data-table-selector']")
+                .contains("Choose file")
+                .click()
+                .selectFile(dataFolder + p_dataset.data_table);
 
-                // B. Select data table file
-                cy.get("[data-cy='data-table-selector']")
-                    .contains("Choose file")
-                    .click()
-                    .selectFile(dataFolder + p_dataset.data_table);
+            // C. Assert that categorization nav item and next button are enabled
+            cy.assertNextPageAccess("categorization", true);
 
-                // C. Assert that categorization nav item and next button are enabled
-                cy.assertNextPageAccess("categorization", true);
+            // D. Select participants dictionary
+            cy.get("[data-cy='data-dictionary-selector']")
+                .contains("Choose file")
+                .click()
+                .selectFile(dataFolder + p_dataset.data_dictionary);
 
-                // D. Select participants dictionary
-                cy.get("[data-cy='data-dictionary-selector']")
-                    .contains("Choose file")
-                    .click()
-                    .selectFile(dataFolder + p_dataset.data_dictionary);
+            // E. Click the next page button to proceed to the categorization page
+            cy.nextPageByButton();
 
-                // E. Click the next page button to proceed to the categorization page
-                cy.nextPageByButton();
+            cy.commitToVuexStore("setCurrentPage", "categorization");
+
+            if ( cy.datasetMeetsTestCriteria("categorization", p_dataset, testCriteria) ) {
 
                 // 2. Go through categorization page, categorizing subject ID and age columns in the table
 
@@ -70,44 +72,50 @@ describe("End to end test using a simple UI path through the app", () => {
                 // B. Categorize "participant_id" as "Subject ID"
                 cy.categorizeColumn("Subject ID", p_dataset["category_columns"]["Subject ID"][0]);
 
-                // C. Assert nav and next button are enabled
-                cy.assertNextPageAccess("annotation", true);
+                // C. Assert nav and next button are not yet enabled
+                cy.assertNextPageAccess("annotation", false);
 
                 // D. Categorize "age" as "Age"
                 cy.categorizeColumn("Age", p_dataset["category_columns"]["Age"][0]);
 
+                cy.assertNextPageAccess("annotation", true);
+
                 // E. Click the next page button to proceed to the categorization page
                 cy.nextPageByButton();
 
-                // 3. Go through annotation page, saving default age annotation
+                cy.commitToVuexStore("setCurrentPage", "annotation");
 
-                // A. Assert that next page nav and button are disabled for download page
-                cy.assertNextPageAccess("download", false);
+                if ( cy.datasetMeetsTestCriteria("annotation", p_dataset, testCriteria)) {
 
-                // B. Click on the 'Age' tab
-                cy.get("[data-cy='annotation-category-tabs'] ul")
-                    .contains("li", "Age")
-                    .click();
+                    // 3. Go through annotation page, saving default age annotation
 
-                // C. Click on the 'Save Annotation' button
-                cy.get("button")
-                    .contains("Save Annotation")
-                    .click();
+                    // A. Assert that next page nav and button are disabled for download page
+                    cy.assertNextPageAccess("download", false);
 
-                // D. Assert that next page nav and button are enabled for download page
-                cy.assertNextPageAccess("download", true);
+                    // B. Click on the 'Age' tab
+                    cy.get("[data-cy='annotation-category-tabs'] ul")
+                        .contains("li", "Age")
+                        .click();
 
-                // E. Click the next page button to proceed to the download page
-                cy.nextPageByButton();
+                    // B. Select the 'float' transformation heuristic
+                    // :data-cy="'selectTransform_' + columnName"
+                    cy.get("[data-cy='selectTransform_age']").click().type("float{enter}");
 
-                // 4. Go through the download page, downloading the output annotation file
+                    // D. Assert that next page nav and button are enabled for download page
+                    cy.assertNextPageAccess("download", true);
 
-                // A. Click the download button
-                cy.get("[data-cy='download-button']")
-                    .click();
+                    // E. Click the next page button to proceed to the download page
+                    cy.nextPageByButton();
 
-                // B. Assert that csv file has downloaded
-                // cy.verifyDownload(".json", { contains: true });
+                    // 4. Go through the download page, downloading the output annotation file
+
+                    // A. Click the download button
+                    cy.get("[data-cy='download-button']")
+                        .click();
+
+                    // B. Assert that csv file has downloaded
+                    // cy.verifyDownload(".json", { contains: true });
+                }
             }
         });
     });
