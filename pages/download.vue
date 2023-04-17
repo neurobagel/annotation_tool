@@ -26,8 +26,7 @@
                 <b-button
                     class="float-right"
                     data-cy="download-button"
-                    :disabled="!isDataAnnotated"
-                    :variant="downloadButtonColor"
+                    variant="success"
                     @click="downloadAnnotatedData">
                     {{ uiText.downloadButton }}
                 </b-button>
@@ -76,12 +75,6 @@
         },
 
         computed: {
-
-            ...mapGetters([
-
-                "isDataAnnotated"
-            ]),
-
             ...mapState([
 
                 "columnToCategoryMap",
@@ -119,12 +112,6 @@
             defaultOutputFilename() {
 
                 return `${this.datasetName}_annotated_${Date.now()}.json`;
-            },
-
-            downloadButtonColor() {
-
-                // Bootstrap variant color of the button leading to the output download
-                return this.isDataAnnotated ? "success" : "secondary";
             }
         },
 
