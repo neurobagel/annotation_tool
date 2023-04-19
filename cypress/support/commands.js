@@ -103,15 +103,10 @@ Cypress.Commands.add("datasetMeetsTestCriteria", (p_pageName, p_datasetConfig, p
 // Calls mutation in the Nuxt store
 Cypress.Commands.add("commitToVuexStore", (p_mutation, p_data) => {
 
-    console.log(`In commitToVuexStore for ${p_mutation} with data: ${JSON.stringify(p_data)}`);
-
     // Commit mutation with given data on the Nuxt store
     cy.window().its("$nuxt.$store").then(p_store => {
 
         p_store.commit(p_mutation, p_data);
-
-        console.log("Post commit store:");
-        console.dir(p_store);
     });
 });
 

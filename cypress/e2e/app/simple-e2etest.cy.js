@@ -73,11 +73,15 @@ describe("End to end test using a simple UI path through the app", () => {
                 cy.categorizeColumn("Subject ID", p_dataset["category_columns"]["Subject ID"][0]);
 
                 // C. Assert nav and next button are not yet enabled
+                // For annotation page to be enabled, subject ID and
+                // at least one other column must be categorized.
                 cy.assertNextPageAccess("annotation", false);
 
                 // D. Categorize "age" as "Age"
                 cy.categorizeColumn("Age", p_dataset["category_columns"]["Age"][0]);
 
+                // Since Age and subject ID have been categorized
+                // annotation page is no accessible.
                 cy.assertNextPageAccess("annotation", true);
 
                 // E. Click the next page button to proceed to the categorization page
@@ -98,7 +102,7 @@ describe("End to end test using a simple UI path through the app", () => {
                         .click();
 
                     // B. Select the 'float' transformation heuristic
-                    // :data-cy="'selectTransform_' + columnName"
+                    // :data-cy="'selectTransform_' + columnName" where columnName is age
                     cy.get("[data-cy='selectTransform_age']").click().type("float{enter}");
 
                     // D. Assert that next page nav and button are enabled for download page

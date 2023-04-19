@@ -37,14 +37,17 @@ describe("tests on annotation page ui with programmatic state loading and store 
                 // 3. Move to the annotation page
                 cy.window().its("$nuxt.$router").then(router => {
 
+                    // A. Route to annotation page
                     router.push({ path: "/annotation" });
+
+                    // B. Once routing is complete, set the current page in the nuxt store
+                    // (normally would happen via navigation clicks)
                     cy.commitToVuexStore("setCurrentPage", "annotation");
                 });
             });
 
             it("Annotate age column; default age format transformations", () => {
 
-                console.log("Start of test store:");
                 cy.window().its("$nuxt.$store").then(p_store => {
                     console.dir(p_store);
                 });
@@ -63,8 +66,6 @@ describe("tests on annotation page ui with programmatic state loading and store 
 
                     // 1. Load the app with test criteria using the dataset
                     cy.loadAppState("annotation", p_dataset, testCriteria);
-
-                    // cy.visit("/annotation");
 
                     // 2. Pause until 'Age' tab (the default annotation tab) components are loaded
                     // NOTE: This DOM check is possible because the annotation tool uses server-side rendering
