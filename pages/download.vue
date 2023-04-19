@@ -12,8 +12,7 @@
 
             <b-col cols="9" />
 
-            <!-- Button to proceed to download the annotation output data -->
-            <!-- Only enabled when annotation has been at least partially completed -->
+            <!-- Button to download the annotation output data -->
             <b-col cols="3">
                 <b-button
                     class="float-right"
@@ -32,7 +31,7 @@
 
 <script>
 
-    // Saves file to user's computer
+    // Saves annotated data dictionary to user's computer
     import { saveAs } from "file-saver";
 
     export default {
@@ -81,8 +80,8 @@
             // Leaving this code in as a reminder what the file saveAs functionality needs
             downloadAnnotatedData() {
 
-                // // 1. Format the annotated table into propietary JSON format
-                // const jsonData = this.transformAnnotatedTableToJSON();
+                // // 1. Format the annotated data dictionary into propietary JSON format
+                // const jsonData = this.transformAnnotatedDictionaryToJSON();
 
                 // // 2. Open file dialog to prompt the user to name it and
                 // // download it to their location of choice
@@ -91,18 +90,21 @@
 
             fileSaverSaveAs(p_jsonData) {
 
+                // 1. Create a blob version of the JSON output file
                 const blob = new Blob([JSON.stringify(p_jsonData, null, this.jsonSpacing)], {type: "text/plain;charset=utf-8"});
+
+                // 2. Open 'save as' file dialog box to allow user to save JSON output file to user's computer
                 saveAs(blob, this.defaultOutputFilename);
             }
 
             // transformAnnotatedTableToJSON() {
 
-            //     // Transform the annotated data table into a new subject-centric JSON format for the output file
+            //     // Transform the annotated data dictionary into a propietary JSON format for the output file
             //     return {
 
             //         name: this.datasetName,
             //         type: "dataset",
-            //         hasSamples: this.dataTable.annotated.map(row => this.transformAnnotatedRowToSubjectJSON(row))
+            //         hasSamples: Object.keys(this.dataDictionary.annotated).map(entry => this.transformDataDictionaryEntry(entry))
             //     };
             // }
         }
