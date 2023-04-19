@@ -295,7 +295,7 @@
                                         }
                                     }
 
-                                    // b. Save the description from the json file colum entry
+                                    // b. Save the description from the json file column entry
                                     this.columnToCategoryTable[index].description = descriptionStr;
                                 }
                             }

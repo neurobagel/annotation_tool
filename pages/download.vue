@@ -121,7 +121,7 @@
 
             downloadAnnotatedData() {
 
-                // 1. Format the annotated table into propietary JSON format
+                // 1. Format the annotated table into proprietary JSON format
                 const jsonData = this.transformAnnotatedTableToJSON();
 
                 // 2. Open file dialog to prompt the user to name it and
