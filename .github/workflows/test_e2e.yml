@@ -19,10 +19,6 @@ jobs:
       - name: Run End to End tests 🧪
         uses: cypress-io/github-action@v4
         with:
-          # See https://github.com/cypress-io/github-action#specs for running only certain specs
-          spec: |
-            cypress/e2e/page/index-pagetests.cy.js
-            cypress/e2e/page/categorization-pagetests.cy.js
           build: npm run build
           start: npm start
           component: false
