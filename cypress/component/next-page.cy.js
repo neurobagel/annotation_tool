@@ -19,14 +19,11 @@ describe("next page button", () => {
         // Setup
         store = {
 
-            // commit: (p_mutationName, p_argument) => { store.mutations[p_mutationName](p_argument); },
             commit: () => {},
 
             getters: {
 
                 getNextPage: () => {
-
-                    // console.log(`getNextPage called with store.state: ${JSON.stringify(store.state)}`);
 
                     let nextPage = "";
 
@@ -46,14 +43,10 @@ describe("next page button", () => {
                             break;
                     }
 
-                    // console.log(`Next page is ${nextPage}`);
-
                     return nextPage;
                 },
 
                 isPageAccessible: () => (p_pageName) => {
-
-                    // console.log(`isPageAccessible called for ${p_pageName}`);
 
                     let pageAccessible = false;
 
@@ -66,8 +59,6 @@ describe("next page button", () => {
                             break;
 
                         case "categorization":
-
-                            // console.log(`dataTable: ${store.state.dataTable}`);
 
                             // Categorization page is accessible if a data table has been uploaded
                             pageAccessible = store.state.dataTable.length > 0;
@@ -102,8 +93,6 @@ describe("next page button", () => {
                             break;
                     }
 
-                    // console.log(`${p_pageName} ${(pageAccessible)? "is" : "is not"} accessible`);
-
                     return pageAccessible;
                 }
             },
@@ -111,8 +100,6 @@ describe("next page button", () => {
             mutations: {
 
                 setCurrentPage: () => (p_pageName) => {
-
-                    console.log(`setCurrentPage called for ${p_pageName}`);
 
                     store.state.currentPage = p_pageName;
                 }
