@@ -20,11 +20,11 @@
 	},
 	"medload": {
 		"Description": "reflects the number of dosage of psychotropic medications taken by participants. Higher numbers correspond to more medications and/or higher medication dosage ",
-		"Units": "arbitraty units"
+		"Units": "arbitrary units"
 	},
 	"iq": {
 		"Description": "IQ derived based on the NART assessment.",
-		"Units": "arbitraty units"
+		"Units": "arbitrary units"
 	},
 	"stroop": {
 		"Description": "Reaction time in a Stroop task experiment.",

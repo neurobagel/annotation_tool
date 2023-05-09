@@ -29,7 +29,7 @@
     "Description": "Animal weight in grams"
   },
 "Temperature": {
-    "Description": "Animal rectal temperature in Celcius"
+    "Description": "Animal rectal temperature in Celsius"
   },
 "DOB": {
     "Description": "Animal date of birth"

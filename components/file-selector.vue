@@ -77,7 +77,7 @@
 
                         complete: results => {
 
-                            // I. Returned results inlcude data and filename
+                            // I. Returned results include data and filename
                             const myJson = {
 
                                 data: results.data,

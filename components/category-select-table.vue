@@ -71,7 +71,7 @@
                     // 1. Save the newly selected category, if given
                     this.selectedCategory = p_row[0].category;
 
-                    // 2. Tell the parent page about the category selction
+                    // 2. Tell the parent page about the category selection
                     this.$emit("category-select", { category: this.selectedCategory });
                 }
             },

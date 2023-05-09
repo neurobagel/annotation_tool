@@ -36,7 +36,7 @@ npm run generate
 npm run deploy
 ```
 
-See the [Nuxt documention](https://nuxtjs.org/deployments/github-pages/) for more details.
+See the [Nuxt documentation](https://nuxtjs.org/deployments/github-pages/) for more details.
 
 ## Special Directories
 

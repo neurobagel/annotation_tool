@@ -53,7 +53,7 @@ This file contains functions that are linked to the Cypress object. The idea is 
 
 _assertNextPageAccess_
 
-Since each page in the annotation tool uses a standard naming convention for the nav and next page buttons, this function is a quick means of determining of the page's requirements for proceeeding to the next one have been met.
+Since each page in the annotation tool uses a standard naming convention for the nav and next page buttons, this function is a quick means of determining of the page's requirements for proceeding to the next one have been met.
 
 _datasetMeetsTestCriteria_
 
