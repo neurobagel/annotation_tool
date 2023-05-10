@@ -1,15 +1,10 @@
 import nextPage from "~/components/next-page";
 
 let store;
-const pages = ["home", "categorization", "annotation"];
 const uiText = {
 
-    button: {
-
-        "home": "Next step: Categorize columns",
-        "categorization": "Next step: Annotate columns",
-        "annotation": "Next step: Review and download harmonized data"
-    }
+    button: { "mypage": "My next page button text" },
+    instructions: { "mypage": "This is how to get to the next page..." }
 };
 
 describe("next page button", () => {
@@ -25,75 +20,7 @@ describe("next page button", () => {
 
                 getNextPage: () => {
 
-                    let nextPage = "";
-
-                    switch ( store.state.currentPage ) {
-
-                        case "home":
-                            nextPage = "categorization";
-                            break;
-                        case "categorization":
-                            nextPage = "annotation";
-                            break;
-                        case "annotation":
-                            nextPage = "download";
-                            break;
-                        case "download":
-                            nextPage = "";
-                            break;
-                    }
-
-                    return nextPage;
-                },
-
-                isPageAccessible: () => (p_pageName) => {
-
-                    let pageAccessible = false;
-
-                    switch ( p_pageName ) {
-
-                        case "home":
-
-                            // Landing page is always accessible
-                            pageAccessible = true;
-                            break;
-
-                        case "categorization":
-
-                            // Categorization page is accessible if a data table has been uploaded
-                            pageAccessible = store.state.dataTable.length > 0;
-
-                            break;
-
-                        case "annotation": {
-
-                            // 1. Make sure one (and only one) column has been categorized as 'Subject ID'
-                            const singleSubjectIDColumn = ( 1 === Object.values(store.state.columnToCategoryMap)
-                                                                        .filter(category => "Subject ID" === category)
-                                                                        .length );
-
-                            // 2. Make sure at least one other category other than 'Subject ID' has been linked to a column
-                            const notOnlySubjectIDCategorized = ( Object.values(store.state.columnToCategoryMap)
-                                                                        .filter(category => "Subject ID" !== category &&
-                                                                                null !== category)
-                                                                        .length >= 1 );
-
-                            // Annotation page is only accessible if one (and only one)
-                            // column has been categorized as 'Subject ID' and if at least
-                            // one category other than Subject ID has been categorized
-                            pageAccessible = singleSubjectIDColumn && notOnlySubjectIDCategorized;
-
-                            break;
-                        }
-
-                        case "download":
-
-                            pageAccessible = store.state.annotationCount > 0;
-
-                            break;
-                    }
-
-                    return pageAccessible;
+                    return ( "mypage" === store.state.currentPage ) ? "mynextpage" : "mypage";
                 }
             },
 
@@ -107,120 +34,148 @@ describe("next page button", () => {
 
             state: {
 
-                annotationCount: 0,
-                columnToCategoryMap: {},
-                currentPage: "home",
+                currentPage: "mypage",
                 dataTable: [],
                 pageData: {
 
-                    home: {
 
-                        fullName: "Home",
-                        location: "/",
-                        pageName: "home"
+
+                    mypage: {
+
+                        location: "mypage",
+                        pageName: "mypage"
                     },
 
-                    categorization: {
+                    mynextpage: {
 
-                        fullName: "Categorization",
-                        location: "categorization",
-                        pageName: "categorization"
-                    },
-
-                    annotation: {
-
-                        fullName: "Annotation",
-                        location: "annotation",
-                        pageName: "annotation"
-                    },
-
-                    download: {
-
-                        fullName: "Download",
-                        location: "download",
-                        pageName: "download"
+                        location: "mynextpage",
+                        pageName: "mynextpage"
                     }
                 }
             }
         };
     });
 
-    pages.forEach(pageName => {
+    it("Does instruction text appear above the next page button when the button is disabled", () => {
 
-        it(`Does the label on next page button correspond to the ${pageName} page`, () => {
+        // Setup - The next page after 'mypage' is currently inaccessible
+        store.getters.isPageAccessible = () => (p_pageName) => false;
 
-            // Setup - Mount the next page button
-            cy.mount(nextPage, {
-
-                computed: store.getters,
-                mocks: { $store: store }
-            });
-
-            // Act - Change current page store field to the desired page
-            store.mutations.setCurrentPage()(pageName);
-
-            // Assert - Check button text corresponds to the recently set page
-            cy.get("[data-cy='button-nextpage']").should("contain", uiText.button[pageName]);
-        });
-    });
-
-    it("Does next page disabled status correspond to page accessibility", () => {
-
-        // Setup - Mount the next page button
+        // Act - Mount the next page button with mocks
         cy.mount(nextPage, {
 
             computed: store.getters,
+            data() {
+                return {
+                    uiText: uiText
+                };
+            },
             mocks: { $store: store }
         });
 
-        // Assert
-
-        // A. Button is disabled and page is inaccessible
-        cy.get("[data-cy='button-nextpage']").should(($button) => {
-
-            expect($button).to.have.class("disabled");
-            expect(store.getters.isPageAccessible()("categorization")).to.be.false;
-        });
-
-        // B. Button is enabled and page is accessible if data table is loaded
-        cy.get("[data-cy='button-nextpage']").should(($button) => {
-
-            // Setup - Make categorization page accessible
-            store.state.dataTable = ["some data"];
-
-            expect($button).to.not.have.class("disabled");
-            expect(store.getters.isPageAccessible()("categorization")).to.be.true;
-        });
+        // Assert - Correct instructions are visible (since button is disabled due to next page inaccessibility)
+        cy.get("[data-cy='instructions-nextpage']").should("contain", uiText.instructions[store.state.currentPage]);
     });
 
-    it("When clicked is setCurrentPage mutation fired *once* with the correct parameters", () => {
+    it("Button is enabled when next page is accessible and vice-versa", () => {
+
+        // Setup - Mock the page accessibility getter to test effects on the next page button
+        store.getters.isPageAccessible = () => (p_pageName) => true;
+
+        // Act - Mount the next page button with mocks
+        cy.mount(nextPage, {
+
+            computed: store.getters,
+            data() {
+                return {
+                    uiText: uiText
+                };
+            },
+            mocks: { $store: store }
+        });
+
+        // Assert - Button is enabled when next page is accessible
+        // cy.get("[data-cy='button-nextpage']").should("not.be.disabled");
+        cy.get("[data-cy='button-nextpage']").should("not.have.class", "disabled");
+    });
+
+    it("Button is disabled when next page is not accessible", () => {
+
+        // Setup - Mock the page accessibility getter to test effects on the next page button
+        store.getters.isPageAccessible = () => (p_pageName) => false;
+
+        // Act - Mount the next page button with mocks
+        cy.mount(nextPage, {
+
+            computed: store.getters,
+            data() {
+                return {
+                    uiText: uiText
+                };
+            },
+            mocks: { $store: store }
+        });
+
+        // Assert - Button is enabled when next page is accessible
+        // cy.get("[data-cy='button-nextpage']").should("be.disabled");
+        cy.get("[data-cy='button-nextpage']").should("have.class", "disabled");
+    });
+
+    it("Does the label on the next page button correspond to the text for the current page?", () => {
+
+        // Setup - Mock the page accessibility getter to test effects on the next page button
+        store.getters.isPageAccessible = () => (p_pageName) => true;
+
+        // Act - Mount the next page button with mocks
+        cy.mount(nextPage, {
+
+            computed: store.getters,
+            data() {
+                return {
+                    uiText: uiText
+                };
+            },
+            mocks: { $store: store }
+        });
+
+        // Assert - Check button text corresponds to the recently set page
+        cy.get("[data-cy='button-nextpage']").should("contain", uiText.button[store.state.currentPage]);
+    });
+
+    it("When enabled, next page button moves to next page's url and sets current page", () => {
 
         // Setup
 
-        // A. Spy on the commit function
+        // 1. Mock the page accessibility getter to test effects on the next page button
+        store.getters.isPageAccessible = () => (p_pageName) => true;
+
+        // 2. Set up an intercept on the next page button click
+        cy.intercept("GET", "/" + store.getters.getNextPage(), req => {}).as("buttonclick");
+
+        // 3. Set up a spy on the store commit function
         cy.spy(store, "commit").as("commitSpy");
 
-        // B. Mount the next page button
+        // 4. Mount the next page button with mocks
         cy.mount(nextPage, {
 
             computed: store.getters,
+            data() {
+                return {
+                    uiText: uiText
+                };
+            },
             mocks: { $store: store }
         });
 
-        // C. Store with values for completed home page
-        store.state.currentPage = "home";
-        store.state.dataTable = ["some data"];
+        // Act - Click the next page button
+        cy.get("[data-cy='button-nextpage']").click();
 
-        // Act - Click on the next page button
-        cy.get("[data-cy='button-nextpage']")
-          .click()
-          .intercept("/categorization", req => {
+        // Assert
 
-            // Do not navigate to categorization page since this is a component test
-            req.destroy();
+        // 1. Check if the url correctly includes the next page name
+        cy.wait("@buttonclick").its("request.url").should("include", store.getters.getNextPage());
 
-            // Assert - currentPage mutation has been called with the correct page name
-            cy.get("@commitSpy").should("have.been.calledWith", "setCurrentPage", "categorization");
-          });
+        // 2. Check to see if the set current page mutation has fired for the next page
+        cy.get("@commitSpy").should("have.been.calledWith", "setCurrentPage", store.getters.getNextPage());
     });
 });
