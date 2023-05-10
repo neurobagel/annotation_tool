@@ -23,9 +23,6 @@ describe("next page button", () => {
 
                 getNextPage: () => {
 
-                    console.log("getNextPage fired");
-
-                    // return ( "mypage" === store.state.currentPage ) ? "mynextpage" : "mypage";
                     return "mynextpage";
                 }
             },
@@ -33,8 +30,6 @@ describe("next page button", () => {
             mutations: {
 
                 setCurrentPage: () => (p_pageName) => {
-
-                    console.log("setCurrentPage fired");
 
                     store.state.currentPage = p_pageName;
                 }
@@ -101,7 +96,6 @@ describe("next page button", () => {
         });
 
         // Assert - Button is enabled when next page is accessible
-        // cy.get("[data-cy='button-nextpage']").should("not.be.disabled");
         cy.get("[data-cy='button-nextpage']").should("not.have.class", "disabled");
     });
 
@@ -123,7 +117,6 @@ describe("next page button", () => {
         });
 
         // Assert - Button is enabled when next page is accessible
-        // cy.get("[data-cy='button-nextpage']").should("be.disabled");
         cy.get("[data-cy='button-nextpage']").should("have.class", "disabled");
     });
 
@@ -164,10 +157,7 @@ describe("next page button", () => {
             expect(req.url).to.contain(store.getters.getNextPage());
         });
 
-        // 3. Set up a spy on the store commit function
-        cy.spy(store, "commit").as("commitSpy");
-
-        // 4. Mount the next page button with mocks
+        // 3. Mount the next page button with mocks
         cy.mount(nextPage, {
 
             computed: store.getters,
