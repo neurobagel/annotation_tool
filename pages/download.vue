@@ -31,6 +31,9 @@
 
 <script>
 
+    // Fields listed in mapState below can be found in the store (index.js)
+    import { mapState } from "vuex";
+
     // Saves annotated data dictionary to user's computer
     import { saveAs } from "file-saver";
 
@@ -62,15 +65,20 @@
 
         computed: {
 
-            datasetName() {
+            ...mapState([
+
+                "dataDictionary"
+            ]),
+
+            dataDictionaryFilenameNoExtension() {
 
                 // Dataset name is original data table filename with no extension
-                return this.dataTable.filename.split(".").slice(0, -1).join(".");
+                return this.dataDictionary.filename.split(".").slice(0, -1).join(".");
             },
 
             defaultOutputFilename() {
 
-                return `${this.datasetName}_annotated_${Date.now()}.json`;
+                return `${this.dataDictionaryFilenameNoExtension}_annotated_${Date.now()}.json`;
             }
         },
 
@@ -83,9 +91,10 @@
                 // // 1. Format the annotated data dictionary into propietary JSON format
                 // const jsonData = this.transformAnnotatedDictionaryToJSON();
 
-                // // 2. Open file dialog to prompt the user to name it and
-                // // download it to their location of choice
+                // 2. Open file dialog to prompt the user to name it and
+                // download it to their location of choice
                 // this.fileSaverSaveAs(jsonData);
+                this.fileSaverSaveAs(this.dataDictionary.annotated);
             },
 
             fileSaverSaveAs(p_jsonData) {
