@@ -90,7 +90,9 @@ export const state = () => ({
         // and stores the extended version created during annotation in annotated.
         // We use this both as a state object and as the template for the downloadable data dictionary
         userProvided: {},
-        annotated: {}
+        annotated: {},
+
+        filename: "default"
     },
 
     dataTable: [],
@@ -450,7 +452,11 @@ export const actions = {
 
     processDataDictionary({ state, commit, getters }, { data, filename }) {
 
+        // 1. Save the user-provided data dictionary
         commit("setDataDictionary", { newDataDictionary: JSON.parse(data), storeColumns: getters.getColumnNames });
+
+        // 2. Save the filename of the user-provided data dictionary
+        commit("setDataDictionaryFilename", filename);
     },
 
     processDataTable({ state, commit, getters }, { data, filename }) {
@@ -603,6 +609,12 @@ export const mutations = {
         // 2. Create a new object in case additions/deletions to the data
         // dictionary object in order to maintain Vue reactivity
         p_state.dataDictionary = Object.assign({}, p_state.dataDictionary);
+    },
+
+    setDataDictionaryFilename(p_state, p_filename) {
+
+        // Save the filename of the user-provided data dictionary
+        p_state.dataDictionary.filename = p_filename;
     },
 
     setDataTable(p_state, p_dataTable) {
