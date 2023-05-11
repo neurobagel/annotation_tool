@@ -11,7 +11,9 @@ export const state = () => ({
     appSetting: {
 
         // The string label applied to values designated as "missing values" when the data are annotated.
-        missingValueLabel: "missing value"
+        missingValueLabel: "missing value",
+
+        termURLPrefix: "nb"
     },
 
     categoricalOptions: {
@@ -234,6 +236,52 @@ export const getters = {
     getHeuristic: (p_state) => (p_columnName) => {
 
         return p_state.dataDictionary.annotated[p_columnName].transformationHeuristic;
+    },
+
+    getJsonOutputCategorical: (p_state) => (p_columnName) => {
+
+        // 0. Initialized output object
+        const annotatedDictColumn = p_state.dataDictionary.annotated[p_columnName];
+        const category = p_state.columnToCategoryMap[p_columnName];
+        const formattedOutput = {
+
+            Annotations: {
+
+                IsAbout: {},
+                Levels: {}
+            }
+        };
+
+        // 1. Fill out Annotations 'IsAbout' section
+        formattedOutput.Annotations.IsAbout.Label = category;
+        formattedOutput.Annotations.IsAbout.TermURL = p_state.appSetting.termURLPrefix +
+            category[0].toLowerCase() + category.substring(1);
+
+        // 2. Fill out Annotations 'Levels' section
+        Object.keys(annotatedDictColumn.valueMap).forEach(rawValue => {
+
+            p_state.categoricalOptions[category].forEach(option => {
+
+                if ( annotatedDictColumn.valueMap[rawValue] === option.label ) {
+
+                    formattedOutput.Annotations.Levels[rawValue].Label = option.label;
+                    formattedOutput.Annotations.Levels[rawValue].TermURL = option.identifier;
+                }
+            });
+        });
+
+        // 3. Copy over any other sections from the annotated data dictionary
+        Object.keys(annotatedDictColumn).forEach(dictKey => {
+
+            // A. Copy over all other values from the annotated data dictionary except the valuemap
+            if ( "valueMap" !== dictKey ) {
+
+                formattedOutput[dictKey] =
+                    Object.assign({}, annotatedDictColumn[dictKey]);
+            }
+        });
+
+        return formattedOutput;
     },
 
     getMappedCategories: (p_state) => (p_categorySkipList=[]) => {
