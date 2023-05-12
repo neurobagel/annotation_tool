@@ -1,5 +1,7 @@
 import { getters } from "~/store";
 
+const category = "category1";
+const columnName = "column1";
 let store = {
 
     getters: getters,
@@ -10,18 +12,18 @@ let store = {
         categoricalOptions: {
 
             category1: [
+
                 { label: "annotatedValue1", identifier: "https://example.org/option_1"},
                 { label: "annotatedValue2", identifier: "https://example.org/option_2"}
             ]
         },
-        columnToCategoryMap: {
-
-            column1: "category1"
-        },
-
+        columnToCategoryMap: { column1: "category1" },
         dataDictionary: {
+
             annotated: {
+
                 column1: {
+
                     valueMap: { "rawValue1": "annotatedValue1" }
                 }
             }
@@ -31,9 +33,7 @@ let store = {
 
 describe("getCategoricalJsonOutput", () => {
 
-    it.skip("Make sure categorical json output is schema compliant", () => {
-
-        let columnName = "column1";
+    it("Make sure categorical json output is schema compliant", () => {
 
         // Act - Get formatted json output data for discrete value column
         const output = store.getters.getCategoricalJsonOutput(store.state)(columnName);
@@ -61,9 +61,6 @@ describe("getCategoricalJsonOutput", () => {
 
     it("Make sure 'IsAbout' fields are properly formatted", () => {
 
-        let columnName = "column1";
-        let category = "category1";
-
         // Act - Get formatted json output data for discrete value column
         const output = store.getters.getCategoricalJsonOutput(store.state)(columnName);
 
@@ -78,8 +75,6 @@ describe("getCategoricalJsonOutput", () => {
     });
 
     it("Make sure 'Levels' contains correctly transformed value map data from the store's annotated data dictionary", () => {
-
-        let columnName = "column1";
 
         // Act - Get formatted json output data for discrete value column
         const output = store.getters.getCategoricalJsonOutput(store.state)(columnName);
