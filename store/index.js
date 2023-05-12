@@ -157,7 +157,11 @@ export const getters = {
 
             Annotations: {
 
-                IsAbout: {},
+                IsAbout: {
+
+                    Label: "",
+                    TermURL: ""
+                },
                 Levels: {}
             }
         };
@@ -175,6 +179,8 @@ export const getters = {
 
         // 2. Fill out Annotations 'Levels' section
         Object.keys(annotatedDictColumn.valueMap).forEach(rawValue => {
+
+            formattedOutput.Annotations.Levels[rawValue] = {};
 
             p_state.categoricalOptions[category].forEach(option => {
 
