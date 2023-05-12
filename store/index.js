@@ -148,6 +148,47 @@ export const getters = {
         return p_state.categories[p_category].componentName;
     },
 
+    getCategoricalJsonOutput: (p_state) => (p_columnName) => {
+
+        // 0. Initialize output object
+        const annotatedDictColumn = p_state.dataDictionary.annotated[p_columnName];
+        const category = p_state.columnToCategoryMap[p_columnName];
+        const formattedOutput = {
+
+            Annotations: {
+
+                IsAbout: {},
+                Levels: {}
+            }
+        };
+
+        // 1. Fill out Annotations 'IsAbout' section
+
+        // A. Label matches the assigned category
+        formattedOutput.Annotations.IsAbout.Label = category;
+
+        // B. Term includes a prefix followed by colon and then first-letter uppercased version of category
+        // NOTE: All categories are uppercased but this is not guaranteed with future custom categories
+        // specified by the user
+        formattedOutput.Annotations.IsAbout.TermURL = p_state.appSetting.termURLPrefix + ":" +
+            category[0].toUpperCase() + category.substring(1);
+
+        // 2. Fill out Annotations 'Levels' section
+        Object.keys(annotatedDictColumn.valueMap).forEach(rawValue => {
+
+            p_state.categoricalOptions[category].forEach(option => {
+
+                if ( annotatedDictColumn.valueMap[rawValue] === option.label ) {
+
+                    formattedOutput.Annotations.Levels[rawValue].Label = option.label;
+                    formattedOutput.Annotations.Levels[rawValue].TermURL = option.identifier;
+                }
+            });
+        });
+
+        return formattedOutput;
+    },
+
     getCategoricalOptions: (p_state) => (p_column) => {
 
         // Return the options for this column listed in the current (hardcoded)
@@ -236,52 +277,6 @@ export const getters = {
     getHeuristic: (p_state) => (p_columnName) => {
 
         return p_state.dataDictionary.annotated[p_columnName].transformationHeuristic;
-    },
-
-    getJsonOutputCategorical: (p_state) => (p_columnName) => {
-
-        // 0. Initialized output object
-        const annotatedDictColumn = p_state.dataDictionary.annotated[p_columnName];
-        const category = p_state.columnToCategoryMap[p_columnName];
-        const formattedOutput = {
-
-            Annotations: {
-
-                IsAbout: {},
-                Levels: {}
-            }
-        };
-
-        // 1. Fill out Annotations 'IsAbout' section
-        formattedOutput.Annotations.IsAbout.Label = category;
-        formattedOutput.Annotations.IsAbout.TermURL = p_state.appSetting.termURLPrefix +
-            category[0].toLowerCase() + category.substring(1);
-
-        // 2. Fill out Annotations 'Levels' section
-        Object.keys(annotatedDictColumn.valueMap).forEach(rawValue => {
-
-            p_state.categoricalOptions[category].forEach(option => {
-
-                if ( annotatedDictColumn.valueMap[rawValue] === option.label ) {
-
-                    formattedOutput.Annotations.Levels[rawValue].Label = option.label;
-                    formattedOutput.Annotations.Levels[rawValue].TermURL = option.identifier;
-                }
-            });
-        });
-
-        // 3. Copy over any other sections from the annotated data dictionary
-        Object.keys(annotatedDictColumn).forEach(dictKey => {
-
-            // A. Copy over all other values from the annotated data dictionary except the valuemap
-            if ( "valueMap" !== dictKey ) {
-
-                formattedOutput[dictKey] =
-                    Object.assign({}, annotatedDictColumn[dictKey]);
-            }
-        });
-
-        return formattedOutput;
     },
 
     getMappedCategories: (p_state) => (p_categorySkipList=[]) => {
