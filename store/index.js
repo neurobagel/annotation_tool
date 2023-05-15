@@ -11,9 +11,7 @@ export const state = () => ({
     appSetting: {
 
         // The string label applied to values designated as "missing values" when the data are annotated.
-        missingValueLabel: "missing value",
-
-        termURLPrefix: "nb"
+        missingValueLabel: "missing value"
     },
 
     categoricalOptions: {
@@ -37,17 +35,20 @@ export const state = () => ({
         "Age": {
 
             componentName: "annot-continuous-values",
-            explanation: "This is an explanation for how to annotate age."
+            explanation: "This is an explanation for how to annotate age.",
+            identifier: "nb:hasAge"
         },
         "Sex": {
 
             componentName: "annot-categorical",
-            explanation: "This is an explanation for how to annotate sex."
+            explanation: "This is an explanation for how to annotate sex.",
+            identifier: "nb:hasSex"
         },
         "Diagnosis": {
 
             componentName: "annot-categorical",
-            explanation: "This is an explanation for how to annotate diagnosis."
+            explanation: "This is an explanation for how to annotate diagnosis.",
+            identifier: "nb:hasDiagnosis"
         }
     },
 
@@ -171,11 +172,8 @@ export const getters = {
         // A. Label matches the assigned category
         formattedOutput.Annotations.IsAbout.Label = category;
 
-        // B. Term includes a prefix followed by colon and then first-letter uppercased version of category
-        // NOTE: All categories are uppercased but this is not guaranteed with future custom categories
-        // specified by the user
-        formattedOutput.Annotations.IsAbout.TermURL = p_state.appSetting.termURLPrefix + ":" +
-            category[0].toUpperCase() + category.substring(1);
+        // B. Term matches the category identifier
+        formattedOutput.Annotations.IsAbout.TermURL = p_state.categories[category].identifier;
 
         // 2. Fill out Annotations 'Levels' section
         Object.keys(annotatedDictColumn.valueMap).forEach(rawValue => {

@@ -8,7 +8,6 @@ let store = {
 
     state: {
 
-        appSetting: { termURLPrefix: "prefix" },
         categoricalOptions: {
 
             category1: [
@@ -16,6 +15,14 @@ let store = {
                 { label: "annotatedValue1", identifier: "https://example.org/option_1"},
                 { label: "annotatedValue2", identifier: "https://example.org/option_2"}
             ]
+        },
+        categories: {
+            "category1": {
+
+                componentName: "annot-categorical",
+                explanation: "This is an explanation for how to annotate category1.",
+                identifier: "nb:hasCategory1"
+            }
         },
         columnToCategoryMap: { column1: "category1" },
         dataDictionary: {
@@ -69,9 +76,7 @@ describe("getCategoricalJsonOutput", () => {
 
         // Assert - TermURL in this column's 'IsAbout' section is properly formatted
         // with prefix, colon, and capitalized term
-        expect(output.Annotations.IsAbout.TermURL).to.equal(
-            store.state.appSetting.termURLPrefix + ":"
-            + category[0].toUpperCase() + category.substring(1));
+        expect(output.Annotations.IsAbout.TermURL).to.equal("nb:hasCategory1");
     });
 
     it("Make sure 'Levels' contains correctly transformed value map data from the store's annotated data dictionary", () => {
