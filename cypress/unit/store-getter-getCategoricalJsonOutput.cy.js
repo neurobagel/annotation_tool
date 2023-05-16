@@ -31,7 +31,7 @@ let store = {
 
                 column1: {
 
-                    valueMap: { "rawValue1": "annotatedValue1" }
+                    valueMap: { "rawValue1": "https://example.org/option_1" }
                 }
             }
         }
@@ -88,12 +88,11 @@ describe("getCategoricalJsonOutput", () => {
         expect(Object.keys(output.Annotations.Levels)).to.deep.equal(
             Object.keys(store.state.dataDictionary.annotated[columnName].valueMap));
 
-        // Assert - Labels in each object in 'Levels' should match annotated value from the
+        // Assert - Labels in each object in 'Levels' should match label from the
         // store's annotated data dictionary value map
         Object.keys(output.Annotations.Levels).forEach(rawValue => {
 
-            expect(output.Annotations.Levels[rawValue].Label).to.equal(
-                store.state.dataDictionary.annotated[columnName].valueMap[rawValue]);
+            expect(output.Annotations.Levels[rawValue].Label).to.equal("annotatedValue1");
         });
     });
 });

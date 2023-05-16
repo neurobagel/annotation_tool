@@ -182,8 +182,7 @@ export const getters = {
 
             p_state.categoricalOptions[category].forEach(option => {
 
-                if ( annotatedDictColumn.valueMap[rawValue] === option.label ) {
-
+                if ( annotatedDictColumn.valueMap[rawValue] === option.identifier ) {
                     formattedOutput.Annotations.Levels[rawValue].Label = option.label;
                     formattedOutput.Annotations.Levels[rawValue].TermURL = option.identifier;
                 }
