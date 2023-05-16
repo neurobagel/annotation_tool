@@ -23,9 +23,26 @@ export const state = () => ({
             { label: "other", identifier: "bids:other" }
         ],
         "Diagnosis": [
-            { label: "Depressive disorder", identifier: "snomed:35489007"},
-            { label: "Parkinson's disease", identifier: "snomed:49049000"},
-            { label: "other", identifier: "snomed:other"}
+            {label: "Acute depression", identifier: "snomed:712823008"},
+            {label: "Anxiety", identifier: "snomed:48694002"},
+            {label: "Anxiety disorder", identifier: "snomed:197480006"},
+            {label: "Attention deficit hyperactivity disorder", identifier: "snomed:406506008"},
+            {label: "Autism spectrum disorder", identifier: "snomed:35919005"},
+            {label: "Borderline personality disorder", identifier: "snomed:20010003"},
+            {label: "Concussion injury of brain", identifier: "snomed:110030002"},
+            {label: "Disorder of cardiovascular system", identifier: "snomed:49601007"},
+            {label: "Dyslexia", identifier: "snomed:59770006"},
+            {label: "Fibromyalgia", identifier: "snomed:203082005"},
+            {label: "Hearing problem", identifier: "snomed:300228004"},
+            {label: "Mental disorder",  identifier: "snomed:74732009"},
+            {label: "Migraine",  identifier: "snomed:37796009"},
+            {label: "Schizophrenia", identifier: "snomed:58214004"},
+            {label: "Separation anxiety", identifier: "snomed:126943008"},
+            {label: "Smoker",  identifier: "snomed:77176002"},
+            {label: "Social phobia",  identifier: "snomed:25501002"},
+            {label: "Specific spelling disorder", identifier: "snomed:268738002"},
+            {label: "Traumatic brain injury", identifier: "snomed:127295002"},
+            {label: "Visual impairment", identifier: "snomed:397540003"}
         ]
     },
 
