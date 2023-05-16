@@ -101,6 +101,6 @@ describe("getCategoricalJsonOutput", () => {
     it("Make sure 'MissingValues' is the same as 'missingValues' from annotated data dictionary ", () => {
         const output = store.getters.getCategoricalJsonOutput(store.state)(columnName);
 
-        expect(Object.keys(output.Annotations.MissingValues)).to.deep.equal(Object.keys({0: "missing"}));
+        expect(Object.keys(output.Annotations.MissingValues)).to.deep.equal(Object.keys(["missing"]));
     });
 });

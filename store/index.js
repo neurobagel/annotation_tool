@@ -164,7 +164,7 @@ export const getters = {
                     TermURL: ""
                 },
                 Levels: {},
-                MissingValues: {}
+                MissingValues: []
             }
         };
 
@@ -190,7 +190,9 @@ export const getters = {
             });
         });
 
-        formattedOutput.Annotations.MissingValues = annotatedDictColumn.missingValues;
+        Object.keys(annotatedDictColumn.missingValues).forEach(key => {
+            formattedOutput.Annotations.MissingValues.push(annotatedDictColumn.missingValues[key]);
+        });
 
         return formattedOutput;
     },
