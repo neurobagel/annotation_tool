@@ -163,7 +163,8 @@ export const getters = {
                     Label: "",
                     TermURL: ""
                 },
-                Levels: {}
+                Levels: {},
+                MissingValues: {}
             }
         };
 
@@ -188,6 +189,8 @@ export const getters = {
                 }
             });
         });
+
+        formattedOutput.Annotations.MissingValues = annotatedDictColumn.missingValues;
 
         return formattedOutput;
     },

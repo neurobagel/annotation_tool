@@ -31,7 +31,8 @@ let store = {
 
                 column1: {
 
-                    valueMap: { "rawValue1": "https://example.org/option_1" }
+                    valueMap: { "rawValue1": "https://example.org/option_1" },
+                    missingValues: {0: "missing"}
                 }
             }
         }
@@ -55,6 +56,7 @@ describe("getCategoricalJsonOutput", () => {
 
         expect(output.Annotations).to.have.property("IsAbout");
         expect(output.Annotations).to.have.property("Levels");
+        expect(output.Annotations).to.have.property("MissingValues");
 
         // Grandchild level
         expect(output.Annotations.IsAbout).to.have.property("Label");
@@ -94,5 +96,11 @@ describe("getCategoricalJsonOutput", () => {
 
             expect(output.Annotations.Levels[rawValue].Label).to.equal("annotatedValue1");
         });
+    });
+
+    it("Make sure 'MissingValues' is the same as 'missingValues' from annotated data dictionary ", () => {
+        const output = store.getters.getCategoricalJsonOutput(store.state)(columnName);
+
+        expect(Object.keys(output.Annotations.MissingValues)).to.deep.equal(Object.keys({0: "missing"}));
     });
 });
