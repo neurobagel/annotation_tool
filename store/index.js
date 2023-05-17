@@ -52,17 +52,20 @@ export const state = () => ({
         "Age": {
 
             componentName: "annot-continuous-values",
-            explanation: "This is an explanation for how to annotate age."
+            explanation: "This is an explanation for how to annotate age.",
+            identifier: "nb:Age"
         },
         "Sex": {
 
             componentName: "annot-categorical",
-            explanation: "This is an explanation for how to annotate sex."
+            explanation: "This is an explanation for how to annotate sex.",
+            identifier: "nb:Sex"
         },
         "Diagnosis": {
 
             componentName: "annot-categorical",
-            explanation: "This is an explanation for how to annotate diagnosis."
+            explanation: "This is an explanation for how to annotate diagnosis.",
+            identifier: "nb:Diagnosis"
         }
     },
 
@@ -161,6 +164,52 @@ export const getters = {
     getAnnotationComponent: (p_state) => (p_category) => {
 
         return p_state.categories[p_category].componentName;
+    },
+
+    getCategoricalJsonOutput: (p_state) => (p_columnName) => {
+
+        // 0. Initialize output object
+        const annotatedDictColumn = p_state.dataDictionary.annotated[p_columnName];
+        const category = p_state.columnToCategoryMap[p_columnName];
+        const formattedOutput = {
+
+            Annotations: {
+
+                IsAbout: {
+
+                    Label: "",
+                    TermURL: ""
+                },
+                Levels: {},
+                MissingValues: []
+            }
+        };
+
+        // 1. Fill out Annotations 'IsAbout' section
+
+        // A. Label matches the assigned category
+        formattedOutput.Annotations.IsAbout.Label = category;
+
+        // B. Term matches the category identifier
+        formattedOutput.Annotations.IsAbout.TermURL = p_state.categories[category].identifier;
+
+        // 2. Fill out Annotations 'Levels' section
+        Object.keys(annotatedDictColumn.valueMap).forEach(rawValue => {
+
+            formattedOutput.Annotations.Levels[rawValue] = {};
+
+            p_state.categoricalOptions[category].forEach(option => {
+
+                if ( annotatedDictColumn.valueMap[rawValue] === option.identifier ) {
+                    formattedOutput.Annotations.Levels[rawValue].Label = option.label;
+                    formattedOutput.Annotations.Levels[rawValue].TermURL = option.identifier;
+                }
+            });
+        });
+
+        formattedOutput.Annotations.MissingValues = annotatedDictColumn.missingValues;
+
+        return formattedOutput;
     },
 
     getCategoricalOptions: (p_state) => (p_column) => {
