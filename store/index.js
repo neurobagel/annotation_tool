@@ -36,19 +36,19 @@ export const state = () => ({
 
             componentName: "annot-continuous-values",
             explanation: "This is an explanation for how to annotate age.",
-            identifier: "nb:hasAge"
+            identifier: "nb:Age"
         },
         "Sex": {
 
             componentName: "annot-categorical",
             explanation: "This is an explanation for how to annotate sex.",
-            identifier: "nb:hasSex"
+            identifier: "nb:Sex"
         },
         "Diagnosis": {
 
             componentName: "annot-categorical",
             explanation: "This is an explanation for how to annotate diagnosis.",
-            identifier: "nb:hasDiagnosis"
+            identifier: "nb:Diagnosis"
         }
     },
 
@@ -190,9 +190,7 @@ export const getters = {
             });
         });
 
-        Object.keys(annotatedDictColumn.missingValues).forEach(key => {
-            formattedOutput.Annotations.MissingValues.push(annotatedDictColumn.missingValues[key]);
-        });
+        formattedOutput.Annotations.MissingValues = annotatedDictColumn.missingValues;
 
         return formattedOutput;
     },
