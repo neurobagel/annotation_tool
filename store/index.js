@@ -149,13 +149,30 @@ export const state = () => ({
     // TODO: Assess whether this is the best place and configuration for storing
     // transformation heuristics
     transformationHeuristics: {
+        float: {
+            TermURL: "nb:float",
+            Label: "float value"
+        },
 
-        // "annot-continuous-values": [
-        //     "", "float", "bounded", "euro", "int", "isoyear"
-        // ]
-        "annot-continuous-values": [
-            "", "float", "bounded", "euro", "int"
-        ]
+        bounded: {
+            TermURL: "nb:bounded",
+            Label: "bounded value"
+        },
+
+        euro: {
+            TermURL: "nb:euro",
+            Label: "european decimal value"
+        },
+
+        int: {
+            TermURL: "nb:int",
+            Label: "integer value"
+        },
+
+        iso8601: {
+            TermURL: "nb",
+            Label: "period of time defined according to the ISO8601 standard"
+        }
     }
 });
 
