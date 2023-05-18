@@ -423,11 +423,7 @@ export const getters = {
 
     getTransformOptions: (p_state) => (p_category) => {
 
-        // 0. Get the data type of the given category
-        const columnDataType = p_state.categories[p_category].componentName;
-
-        // Return the set of transformation heuristics for this data type
-        return p_state.transformationHeuristics[columnDataType];
+        return Object.keys(p_state.transformationHeuristics);
     },
 
     getUniqueValues: (p_state) => (p_category, p_maxValues="None") => {
