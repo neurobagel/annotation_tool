@@ -257,6 +257,33 @@ export const getters = {
         return ( 0 === p_state.dataTable.length) ? [] : Object.keys(p_state.dataTable[0] );
     },
 
+    getContinuousJsonOutput: (p_state) => (p_columnName) => {
+        const annotatedDictColumn = p_state.dataDictionary.annotated[p_columnName];
+        const category = p_state.columnToCategoryMap[p_columnName];
+        const formattedOutput = {
+
+            Annotations: {
+
+                IsAbout: {
+                    Label: "",
+                    TermURL: ""
+                },
+                Transformation: {
+                    Label: "",
+                    TermURL: ""
+                }
+            }
+        };
+
+        formattedOutput.Annotations.IsAbout.Label = category;
+
+        formattedOutput.Annotations.IsAbout.TermURL = p_state.categories[category].identifier;
+
+        formattedOutput.Annotations.Transformation = p_state.transformationHeuristics[annotatedDictColumn.transformationHeuristic];
+
+        return formattedOutput;
+    },
+
     getExplanation: (p_state) => (p_category) => {
 
         return ( "explanation" in p_state.categories[p_category] ) ?
