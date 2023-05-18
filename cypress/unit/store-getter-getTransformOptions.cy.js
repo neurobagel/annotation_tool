@@ -15,11 +15,30 @@ let store = {
         },
 
         transformationHeuristics: {
+            float: {
+                TermURL: "nb:float",
+                Label: "float value"
+            },
 
-            "annot-continuous-values": [
+            bounded: {
+                TermURL: "nb:bounded",
+                Label: "bounded value"
+            },
 
-                "float", "bounded", "euro", "int", "isoyear"
-            ]
+            euro: {
+                TermURL: "nb:euro",
+                Label: "european decimal value"
+            },
+
+            int: {
+                TermURL: "nb:int",
+                Label: "integer value"
+            },
+
+            iso8601: {
+                TermURL: "nb",
+                Label: "period of time defined according to the ISO8601 standard"
+            }
         }
     }
 };
@@ -33,7 +52,7 @@ describe("getTransformOptions", () => {
 
         // Assert
         expect(options).to.deep.equal([
-            "float", "bounded", "euro", "int", "isoyear"
+            "float", "bounded", "euro", "int", "iso8601"
         ]);
     });
 });
