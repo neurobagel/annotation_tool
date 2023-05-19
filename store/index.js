@@ -302,6 +302,43 @@ export const getters = {
         return p_state.dataDictionary.annotated[p_columnName].transformationHeuristic;
     },
 
+    getJsonOutput(p_state, p_getters) {
+
+        let jsonOutput = {};
+
+        // Iteratively step through each column in the data dictionary
+        Object.keys(p_state.dataDictionary.annotated).forEach(columnName => {
+
+            let columnOutput;
+
+            if ( p_getters.isColumnCategorized(columnName) ) {
+
+                switch ( p_getters.getColumnDataType(columnName) ) {
+
+                    case "assessment tool":
+                        break;
+
+                    case "categorical":
+                        columnOutput = p_getters.getCategoricalJsonOutput(columnName);
+                        break;
+
+                    case "continuous":
+                        // columnOutput = getContinuousJsonOutput(columnName);
+                        break;
+                }
+
+            } else {
+
+                // Transfer unannotated data from the user provided data dictionary to the output
+                columnOutput = p_state.dataDictionary.annotated[columnName];
+            }
+
+            jsonOutput[columnName] = columnOutput;
+        });
+
+        return jsonOutput;
+    },
+
     getMappedCategories: (p_state) => (p_categorySkipList=[]) => {
 
         // 1. Remove unmapped (null) columns and skipped categories
