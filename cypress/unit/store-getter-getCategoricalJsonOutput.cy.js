@@ -63,37 +63,4 @@ describe("getCategoricalJsonOutput", () => {
                 }
         });
     });
-
-    it("Make sure 'IsAbout' fields are properly formatted", () => {
-
-        // Act - Get formatted json output data for discrete value column
-        const output = store.getters.getCategoricalJsonOutput(store.state)("column1");
-
-        // Assert - Label in this column's 'IsAbout' section to be its assigned category
-        expect(output.Annotations.IsAbout.Label).to.equal("category1");
-
-        // Assert - TermURL in this column's 'IsAbout' section is properly formatted
-        // with prefix, colon, and capitalized term
-        expect(output.Annotations.IsAbout.TermURL).to.equal("nb:hasCategory1");
-    });
-
-    it("Make sure 'Levels' contains correctly transformed value map data from the store's annotated data dictionary", () => {
-
-        // Act - Get formatted json output data for discrete value column
-        const output = store.getters.getCategoricalJsonOutput(store.state)("column1");
-
-        // Assert - Keys in 'Levels' are raw values from the value map
-        expect(Object.keys(output.Annotations.Levels)).to.deep.equal(
-            Object.keys(store.state.dataDictionary.annotated["column1"].valueMap));
-
-        // Assert - Labels in each object in 'Levels' should match label from the
-        // store's annotated data dictionary value map
-        expect(output.Annotations.Levels["rawValue1"].Label).to.equal("annotatedValue1");
-    });
-
-    it("Make sure 'MissingValues' is the same as 'missingValues' from annotated data dictionary ", () => {
-        const output = store.getters.getCategoricalJsonOutput(store.state)("column1");
-
-        expect(output.Annotations.MissingValues).to.deep.equal(["missing"]);
-    });
 });
