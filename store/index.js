@@ -22,6 +22,7 @@ export const state = () => ({
             { label: "female", identifier: "bids:female" },
             { label: "other", identifier: "bids:other" }
         ],
+
         "Diagnosis": [
             {label: "Acute depression", identifier: "snomed:712823008"},
             {label: "Anxiety", identifier: "snomed:48694002"},
@@ -235,6 +236,15 @@ export const getters = {
         return columnDescription;
     },
 
+    getColumnDataType: (p_state) => (p_columnName) => {
+
+        // 0. Determine the category for this column
+        const category = p_state.columnToCategoryMap(p_columnName);
+
+        // 1. Return the component type from the categories object
+        return p_state.categories[category].componentName;
+    },
+
     getColumnNames(p_state) {
 
         return ( 0 === p_state.dataTable.length) ? [] : Object.keys(p_state.dataTable[0] );
@@ -306,28 +316,32 @@ export const getters = {
 
         let jsonOutput = {};
 
-        // Iteratively step through each column in the data dictionary
+        // 1. Create a JSON output that contains annotations made thus far
         Object.keys(p_state.dataDictionary.annotated).forEach(columnName => {
 
             let columnOutput;
 
+            // A. If a column has been annotated, transform its annotations to json output format
             if ( p_getters.isColumnCategorized(columnName) ) {
 
+                // I. Columns with different data types yield different json outputs
                 switch ( p_getters.getColumnDataType(columnName) ) {
 
-                    case "assessment tool":
-                        break;
+                    // case "assessment tool":
+                    //     break;
 
-                    case "categorical":
+                    case "annot-categorical":
                         columnOutput = p_getters.getCategoricalJsonOutput(columnName);
                         break;
 
-                    case "continuous":
+                    case "annot-continuous":
                         // columnOutput = getContinuousJsonOutput(columnName);
                         break;
                 }
 
-            } else {
+            }
+            // B. Transfer unannotated data from the user provided data dictionary
+            else {
 
                 // Transfer unannotated data from the user provided data dictionary to the output
                 columnOutput = p_state.dataDictionary.annotated[columnName];
@@ -496,6 +510,11 @@ export const getters = {
             return "";
         }
         return description;
+    },
+
+    isColumnCategorized: (p_state) => (p_columnName) => {
+
+        return Object.keys(p_state.columnToCategoryMap).includes(p_columnName);
     },
 
     isPageAccessible: (p_state) => (p_pageName) => {
