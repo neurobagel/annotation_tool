@@ -26,11 +26,6 @@ let store = {
             }
         },
         transformationHeuristics: {
-            float: {
-                TermURL: "nb:float",
-                Label: "float value"
-            },
-
             bounded: {
                 TermURL: "nb:bounded",
                 Label: "bounded value"
@@ -39,6 +34,11 @@ let store = {
             euro: {
                 TermURL: "nb:euro",
                 Label: "european decimal value"
+            },
+
+            float: {
+                TermURL: "nb:float",
+                Label: "float value"
             },
 
             int: {
@@ -58,7 +58,7 @@ describe("getcontinuousJsonOutput", () => {
 
     it("Make sure continuous json output is schema compliant", () => {
 
-        // Act - Get formatted json output data for discrete value column
+        // Act - Get formatted json output data for continuous value column
         const output = store.getters.getContinuousJsonOutput(store.state)("column1");
 
         // Assert - Current annotated data dictionary schema compliance

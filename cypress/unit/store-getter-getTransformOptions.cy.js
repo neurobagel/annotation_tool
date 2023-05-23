@@ -15,11 +15,6 @@ let store = {
         },
 
         transformationHeuristics: {
-            float: {
-                TermURL: "nb:float",
-                Label: "float value"
-            },
-
             bounded: {
                 TermURL: "nb:bounded",
                 Label: "bounded value"
@@ -28,6 +23,11 @@ let store = {
             euro: {
                 TermURL: "nb:euro",
                 Label: "european decimal value"
+            },
+
+            float: {
+                TermURL: "nb:float",
+                Label: "float value"
             },
 
             int: {
