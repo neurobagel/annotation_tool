@@ -149,13 +149,30 @@ export const state = () => ({
     // TODO: Assess whether this is the best place and configuration for storing
     // transformation heuristics
     transformationHeuristics: {
+        bounded: {
+            TermURL: "nb:bounded",
+            Label: "bounded value"
+        },
 
-        // "annot-continuous-values": [
-        //     "", "float", "bounded", "euro", "int", "isoyear"
-        // ]
-        "annot-continuous-values": [
-            "", "float", "bounded", "euro", "int"
-        ]
+        euro: {
+            TermURL: "nb:euro",
+            Label: "european decimal value"
+        },
+
+        float: {
+            TermURL: "nb:float",
+            Label: "float value"
+        },
+
+        int: {
+            TermURL: "nb:int",
+            Label: "integer value"
+        },
+
+        iso8601: {
+            TermURL: "nb",
+            Label: "period of time defined according to the ISO8601 standard"
+        }
     }
 });
 
@@ -238,6 +255,33 @@ export const getters = {
     getColumnNames(p_state) {
 
         return ( 0 === p_state.dataTable.length) ? [] : Object.keys(p_state.dataTable[0] );
+    },
+
+    getContinuousJsonOutput: (p_state) => (p_columnName) => {
+        const annotatedDictColumn = p_state.dataDictionary.annotated[p_columnName];
+        const category = p_state.columnToCategoryMap[p_columnName];
+        const formattedOutput = {
+
+            Annotations: {
+
+                IsAbout: {
+                    Label: "",
+                    TermURL: ""
+                },
+                Transformation: {
+                    Label: "",
+                    TermURL: ""
+                }
+            }
+        };
+
+        formattedOutput.Annotations.IsAbout.Label = category;
+
+        formattedOutput.Annotations.IsAbout.TermURL = p_state.categories[category].identifier;
+
+        formattedOutput.Annotations.Transformation = p_state.transformationHeuristics[annotatedDictColumn.transformationHeuristic];
+
+        return formattedOutput;
     },
 
     getExplanation: (p_state) => (p_category) => {
@@ -406,11 +450,7 @@ export const getters = {
 
     getTransformOptions: (p_state) => (p_category) => {
 
-        // 0. Get the data type of the given category
-        const columnDataType = p_state.categories[p_category].componentName;
-
-        // Return the set of transformation heuristics for this data type
-        return p_state.transformationHeuristics[columnDataType];
+        return Object.keys(p_state.transformationHeuristics);
     },
 
     getUniqueValues: (p_state) => (p_category, p_maxValues="None") => {
