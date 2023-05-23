@@ -149,11 +149,6 @@ export const state = () => ({
     // TODO: Assess whether this is the best place and configuration for storing
     // transformation heuristics
     transformationHeuristics: {
-        float: {
-            TermURL: "nb:float",
-            Label: "float value"
-        },
-
         bounded: {
             TermURL: "nb:bounded",
             Label: "bounded value"
@@ -162,6 +157,11 @@ export const state = () => ({
         euro: {
             TermURL: "nb:euro",
             Label: "european decimal value"
+        },
+
+        float: {
+            TermURL: "nb:float",
+            Label: "float value"
         },
 
         int: {
