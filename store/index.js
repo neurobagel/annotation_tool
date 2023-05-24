@@ -402,8 +402,8 @@ export const getters = {
 
             let columnOutput;
 
-            // A. If a column has been annotated, transform its annotations to json output format
-            if ( p_getters.isColumnCategorized(p_state)(columnName) ) {
+            // A. If a column has been categorized/annotated, transform its annotations to json output format
+            if ( null !== p_state.columnToCategoryMap[columnName] ) {
 
                 // I. Columns with different data types yield different json outputs
                 switch ( p_getters.getColumnDataType(p_state)(columnName) ) {
@@ -586,11 +586,6 @@ export const getters = {
             return "";
         }
         return description;
-    },
-
-    isColumnCategorized: (p_state) => (p_columnName) => {
-
-        return null !== p_state.columnToCategoryMap[p_columnName];
     },
 
     isPageAccessible: (p_state) => (p_pageName) => {
