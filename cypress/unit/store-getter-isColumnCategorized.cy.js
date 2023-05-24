@@ -6,7 +6,11 @@ let store = {
 
     state: {
 
-        columnToCategoryMap: { column1: "category1" }
+        columnToCategoryMap: {
+
+            column1: "category1",
+            column2: null
+        }
     }
 };
 
