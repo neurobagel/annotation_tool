@@ -22,10 +22,28 @@ export const state = () => ({
             { label: "female", identifier: "bids:female" },
             { label: "other", identifier: "bids:other" }
         ],
+
         "Diagnosis": [
-            { label: "Depressive disorder", identifier: "snomed:35489007"},
-            { label: "Parkinson's disease", identifier: "snomed:49049000"},
-            { label: "other", identifier: "snomed:other"}
+            {label: "Acute depression", identifier: "snomed:712823008"},
+            {label: "Anxiety", identifier: "snomed:48694002"},
+            {label: "Anxiety disorder", identifier: "snomed:197480006"},
+            {label: "Attention deficit hyperactivity disorder", identifier: "snomed:406506008"},
+            {label: "Autism spectrum disorder", identifier: "snomed:35919005"},
+            {label: "Borderline personality disorder", identifier: "snomed:20010003"},
+            {label: "Concussion injury of brain", identifier: "snomed:110030002"},
+            {label: "Disorder of cardiovascular system", identifier: "snomed:49601007"},
+            {label: "Dyslexia", identifier: "snomed:59770006"},
+            {label: "Fibromyalgia", identifier: "snomed:203082005"},
+            {label: "Hearing problem", identifier: "snomed:300228004"},
+            {label: "Mental disorder",  identifier: "snomed:74732009"},
+            {label: "Migraine",  identifier: "snomed:37796009"},
+            {label: "Schizophrenia", identifier: "snomed:58214004"},
+            {label: "Separation anxiety", identifier: "snomed:126943008"},
+            {label: "Smoker",  identifier: "snomed:77176002"},
+            {label: "Social phobia",  identifier: "snomed:25501002"},
+            {label: "Specific spelling disorder", identifier: "snomed:268738002"},
+            {label: "Traumatic brain injury", identifier: "snomed:127295002"},
+            {label: "Visual impairment", identifier: "snomed:397540003"}
         ]
     },
 
@@ -35,17 +53,20 @@ export const state = () => ({
         "Age": {
 
             componentName: "annot-continuous-values",
-            explanation: "This is an explanation for how to annotate age."
+            explanation: "This is an explanation for how to annotate age.",
+            identifier: "nb:Age"
         },
         "Sex": {
 
             componentName: "annot-categorical",
-            explanation: "This is an explanation for how to annotate sex."
+            explanation: "This is an explanation for how to annotate sex.",
+            identifier: "nb:Sex"
         },
         "Diagnosis": {
 
             componentName: "annot-categorical",
-            explanation: "This is an explanation for how to annotate diagnosis."
+            explanation: "This is an explanation for how to annotate diagnosis.",
+            identifier: "nb:Diagnosis"
         }
     },
 
@@ -132,12 +153,35 @@ export const state = () => ({
     // transformation heuristics
     transformationHeuristics: {
 
-        // "annot-continuous-values": [
-        //     "", "float", "bounded", "euro", "int", "isoyear"
-        // ]
-        "annot-continuous-values": [
-            "", "float", "bounded", "euro", "int"
-        ]
+        bounded: {
+
+            Label: "bounded value",
+            TermURL: "nb:bounded"
+        },
+
+        euro: {
+
+            Label: "european decimal value",
+            TermURL: "nb:euro"
+        },
+
+        float: {
+
+            Label: "float value",
+            TermURL: "nb:float"
+        },
+
+        int: {
+
+            Label: "integer value",
+            TermURL: "nb:int"
+        },
+
+        iso8601: {
+
+            Label: "period of time defined according to the ISO8601 standard",
+            TermURL: "nb"
+        }
     }
 });
 
@@ -146,6 +190,64 @@ export const getters = {
     getAnnotationComponent: (p_state) => (p_category) => {
 
         return p_state.categories[p_category].componentName;
+    },
+
+    getCategoricalJsonOutput: (p_state) => (p_columnName) => {
+
+        // 0. Initialize output object
+        const annotatedDictColumn = p_state.dataDictionary.annotated[p_columnName];
+        const category = p_state.columnToCategoryMap[p_columnName];
+        const formattedOutput = {
+
+            Annotations: {
+
+                IsAbout: {
+
+                    Label: "",
+                    TermURL: ""
+                },
+                Levels: {},
+                MissingValues: []
+            }
+        };
+
+        // 1. Fill out Annotations 'IsAbout' section
+
+        // A. Label matches the assigned category
+        formattedOutput.Annotations.IsAbout.Label = category;
+
+        // B. Term matches the category identifier
+        formattedOutput.Annotations.IsAbout.TermURL = p_state.categories[category].identifier;
+
+        // 2. Fill out Annotations 'Levels' section
+        Object.keys(annotatedDictColumn.valueMap).forEach(rawValue => {
+
+            formattedOutput.Annotations.Levels[rawValue] = {};
+
+            // A. Save value map via labels and identifers
+            p_state.categoricalOptions[category].forEach(option => {
+
+                if ( annotatedDictColumn.valueMap[rawValue] === option.identifier ) {
+
+                    formattedOutput.Annotations.Levels[rawValue].Label = option.label;
+                    formattedOutput.Annotations.Levels[rawValue].TermURL = option.identifier;
+                }
+            });
+        });
+
+        // 3. Save any other keys from data dictionary
+        Object.keys(annotatedDictColumn).forEach(columnEntry => {
+
+            if ( "missingValues" !== columnEntry && "valueMap" !== columnEntry ) {
+
+                formattedOutput[columnEntry] = annotatedDictColumn[columnEntry];
+            }
+        });
+
+        // 4. Save missing values
+        formattedOutput.Annotations.MissingValues = annotatedDictColumn.missingValues;
+
+        return formattedOutput;
     },
 
     getCategoricalOptions: (p_state) => (p_column) => {
@@ -171,9 +273,64 @@ export const getters = {
         return columnDescription;
     },
 
+    getColumnDataType: (p_state) => (p_columnName) => {
+
+        // Determine the category for this column
+        const category = p_state.columnToCategoryMap[p_columnName];
+
+        // Return the component type from the categories object
+        return ( null === category ) ? null : p_state.categories[category].componentName;
+    },
+
     getColumnNames(p_state) {
 
-        return ( 0 === p_state.dataTable.length) ? [] : Object.keys(p_state.dataTable[0] );
+        return ( 0 === p_state.dataTable.length ) ? [] : Object.keys(p_state.dataTable[0]);
+    },
+
+    getContinuousJsonOutput: (p_state) => (p_columnName) => {
+
+        // 0. Initialize output object
+        const annotatedDictColumn = p_state.dataDictionary.annotated[p_columnName];
+        const category = p_state.columnToCategoryMap[p_columnName];
+        const formattedOutput = {
+
+            Annotations: {
+
+                IsAbout: {
+                    Label: "",
+                    TermURL: ""
+                },
+                Transformation: {
+                    Label: "",
+                    TermURL: ""
+                }
+            }
+        };
+
+        // 1. Fill out Annotations 'IsAbout' section
+
+        // A. Label matches the assigned category
+        formattedOutput.Annotations.IsAbout.Label = category;
+
+        // B. Term matches the category identifier
+        formattedOutput.Annotations.IsAbout.TermURL = p_state.categories[category].identifier;
+
+        // 2. Save the transformation heuristic from the list of possible heuristics
+        formattedOutput.Annotations.Transformation = p_state.transformationHeuristics[annotatedDictColumn.transformationHeuristic];
+
+        // 3. Save the missing values
+        formattedOutput.Annotations.MissingValues = annotatedDictColumn.missingValues;
+
+        // 4. Save any other keys from data dictionary
+        Object.keys(annotatedDictColumn).forEach(columnEntry => {
+
+            if ( "missingValues" !== columnEntry && "transformationHeuristic" !== columnEntry ) {
+
+                formattedOutput[columnEntry] = annotatedDictColumn[columnEntry];
+            }
+        });
+
+        return formattedOutput;
     },
 
     getExplanation: (p_state) => (p_category) => {
@@ -236,6 +393,46 @@ export const getters = {
     getHeuristic: (p_state) => (p_columnName) => {
 
         return p_state.dataDictionary.annotated[p_columnName].transformationHeuristic;
+    },
+
+    getJsonOutput(p_state, p_getters) {
+
+        let jsonOutput = {};
+
+        // 1. Create a JSON output that contains annotations made thus far
+        Object.keys(p_state.dataDictionary.annotated).forEach(columnName => {
+
+            let columnOutput;
+
+            // A. If a column has been categorized/annotated, transform its annotations to json output format
+            if ( null !== p_state.columnToCategoryMap[columnName] ) {
+
+                // I. Columns with different data types yield different json outputs
+                switch ( p_getters.getColumnDataType(p_state)(columnName) ) {
+
+                    case "annot-categorical":
+
+                        columnOutput = p_getters.getCategoricalJsonOutput(p_state)(columnName);
+                        break;
+
+                    case "annot-continuous":
+
+                        columnOutput = p_getters.getContinuousJsonOutput(p_state)(columnName);
+                        break;
+                }
+
+            }
+            // B. Transfer unannotated data from the user provided data dictionary
+            else {
+
+                // Transfer unannotated data from the user provided data dictionary to the output
+                columnOutput = p_state.dataDictionary.annotated[columnName];
+            }
+
+            jsonOutput[columnName] = columnOutput;
+        });
+
+        return jsonOutput;
     },
 
     getMappedCategories: (p_state) => (p_categorySkipList=[]) => {
@@ -342,11 +539,7 @@ export const getters = {
 
     getTransformOptions: (p_state) => (p_category) => {
 
-        // 0. Get the data type of the given category
-        const columnDataType = p_state.categories[p_category].componentName;
-
-        // Return the set of transformation heuristics for this data type
-        return p_state.transformationHeuristics[columnDataType];
+        return Object.keys(p_state.transformationHeuristics);
     },
 
     getUniqueValues: (p_state) => (p_category, p_maxValues="None") => {

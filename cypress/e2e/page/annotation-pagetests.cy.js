@@ -168,7 +168,7 @@ describe("tests on annotation page ui with programmatic state loading and store 
                     // NOTE: This value of '3' should be pulled from the interface via the number of unique diagnosis values returned
                     cy.get("[data-cy='categoricalSelector_0']").click().type("Depressive{enter}");
                     cy.get("[data-cy='categoricalSelector_1']").click().type("Parkins{enter}");
-                    cy.get("[data-cy='categoricalSelector_2']").click().type("Other{enter}");
+                    cy.get("[data-cy='categoricalSelector_2']").click().type("Smoker{enter}");
 
                     // 5. Assert annotation nav and next page button are enabled
                     cy.assertNextPageAccess("download", true);
