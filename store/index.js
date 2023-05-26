@@ -413,7 +413,7 @@ export const getters = {
                         columnOutput = p_getters.getCategoricalJsonOutput(p_state)(columnName);
                         break;
 
-                    case "annot-continuous":
+                    case "annot-continuous-values":
 
                         columnOutput = p_getters.getContinuousJsonOutput(p_state)(columnName);
                         break;
