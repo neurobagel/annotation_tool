@@ -22,7 +22,6 @@ export const state = () => ({
             { label: "female", identifier: "bids:female" },
             { label: "other", identifier: "bids:other" }
         ],
-
         "Diagnosis": [
             {label: "Acute depression", identifier: "snomed:712823008"},
             {label: "Anxiety", identifier: "snomed:48694002"},
@@ -415,7 +414,7 @@ export const getters = {
                         columnOutput = p_getters.getCategoricalJsonOutput(p_state)(columnName);
                         break;
 
-                    case "annot-continuous":
+                    case "annot-continuous-values":
 
                         columnOutput = p_getters.getContinuousJsonOutput(p_state)(columnName);
                         break;

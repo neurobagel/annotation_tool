@@ -26,7 +26,7 @@ let store = {
             },
             category2: {
 
-                componentName: "annot-continuous",
+                componentName: "annot-continuous-values",
                 identifier: "category2Identifier"
             }
         },
