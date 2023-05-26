@@ -7,7 +7,8 @@ let store = {
     state: {
 
         categories: {
-            "category1": {
+
+            category1: {
 
                 componentName: "annot-continuous-values",
                 explanation: "This is an explanation for how to annotate category1.",
@@ -21,34 +22,37 @@ let store = {
 
                 column1: {
 
+                    missingValues: [],
                     transformationHeuristic: "euro"
                 }
             }
         },
         transformationHeuristics: {
+
             bounded: {
-                TermURL: "nb:bounded",
-                Label: "bounded value"
-            },
 
+                Label: "bounded value",
+                TermURL: "nb:bounded"
+            },
             euro: {
-                TermURL: "nb:euro",
-                Label: "european decimal value"
-            },
 
+                Label: "european decimal value",
+                TermURL: "nb:euro"
+            },
             float: {
-                TermURL: "nb:float",
-                Label: "float value"
-            },
 
+                Label: "float value",
+                TermURL: "nb:float"
+            },
             int: {
-                TermURL: "nb:int",
-                Label: "integer value"
-            },
 
+                Label: "integer value",
+                TermURL: "nb:int"
+            },
             iso8601: {
-                TermURL: "nb",
-                Label: "period of time defined according to the ISO8601 standard"
+
+                Label: "period of time defined according to the ISO8601 standard",
+                TermURL: "nb"
             }
         }
     }
@@ -62,20 +66,22 @@ describe("getcontinuousJsonOutput", () => {
         const output = store.getters.getContinuousJsonOutput(store.state)("column1");
 
         // Assert - Current annotated data dictionary schema compliance
-        expect(output).to.deep.equal(
-            {
+        expect(output).to.deep.equal({
 
-                Annotations: {
-                    IsAbout: {
-                        Label: "category1",
-                        TermURL: "nb:hasCategory1"
-                    },
-                    Transformation: {
+            Annotations: {
 
-                        Label: "european decimal value",
-                        TermURL: "nb:euro"
-                    }
+                IsAbout: {
+
+                    Label: "category1",
+                    TermURL: "nb:hasCategory1"
+                },
+                MissingValues: [],
+                Transformation: {
+
+                    Label: "european decimal value",
+                    TermURL: "nb:euro"
                 }
+            }
         });
     });
 });

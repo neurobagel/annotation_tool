@@ -22,6 +22,7 @@ export const state = () => ({
             { label: "female", identifier: "bids:female" },
             { label: "other", identifier: "bids:other" }
         ],
+
         "Diagnosis": [
             {label: "Acute depression", identifier: "snomed:712823008"},
             {label: "Anxiety", identifier: "snomed:48694002"},
@@ -149,29 +150,35 @@ export const state = () => ({
     // TODO: Assess whether this is the best place and configuration for storing
     // transformation heuristics
     transformationHeuristics: {
+
         bounded: {
-            TermURL: "nb:bounded",
-            Label: "bounded value"
+
+            Label: "bounded value",
+            TermURL: "nb:bounded"
         },
 
         euro: {
-            TermURL: "nb:euro",
-            Label: "european decimal value"
+
+            Label: "european decimal value",
+            TermURL: "nb:euro"
         },
 
         float: {
-            TermURL: "nb:float",
-            Label: "float value"
+
+            Label: "float value",
+            TermURL: "nb:float"
         },
 
         int: {
-            TermURL: "nb:int",
-            Label: "integer value"
+
+            Label: "integer value",
+            TermURL: "nb:int"
         },
 
         iso8601: {
-            TermURL: "nb",
-            Label: "period of time defined according to the ISO8601 standard"
+
+            Label: "period of time defined according to the ISO8601 standard",
+            TermURL: "nb"
         }
     }
 });
@@ -215,15 +222,27 @@ export const getters = {
 
             formattedOutput.Annotations.Levels[rawValue] = {};
 
+            // A. Save value map via labels and identifers
             p_state.categoricalOptions[category].forEach(option => {
 
                 if ( annotatedDictColumn.valueMap[rawValue] === option.identifier ) {
+
                     formattedOutput.Annotations.Levels[rawValue].Label = option.label;
                     formattedOutput.Annotations.Levels[rawValue].TermURL = option.identifier;
                 }
             });
         });
 
+        // 3. Save any other keys from data dictionary
+        Object.keys(annotatedDictColumn).forEach(columnEntry => {
+
+            if ( "missingValues" !== columnEntry && "valueMap" !== columnEntry ) {
+
+                formattedOutput[columnEntry] = annotatedDictColumn[columnEntry];
+            }
+        });
+
+        // 4. Save missing values
         formattedOutput.Annotations.MissingValues = annotatedDictColumn.missingValues;
 
         return formattedOutput;
@@ -252,12 +271,23 @@ export const getters = {
         return columnDescription;
     },
 
+    getColumnDataType: (p_state) => (p_columnName) => {
+
+        // Determine the category for this column
+        const category = p_state.columnToCategoryMap[p_columnName];
+
+        // Return the component type from the categories object
+        return ( null === category ) ? null : p_state.categories[category].componentName;
+    },
+
     getColumnNames(p_state) {
 
-        return ( 0 === p_state.dataTable.length) ? [] : Object.keys(p_state.dataTable[0] );
+        return ( 0 === p_state.dataTable.length ) ? [] : Object.keys(p_state.dataTable[0]);
     },
 
     getContinuousJsonOutput: (p_state) => (p_columnName) => {
+
+        // 0. Initialize output object
         const annotatedDictColumn = p_state.dataDictionary.annotated[p_columnName];
         const category = p_state.columnToCategoryMap[p_columnName];
         const formattedOutput = {
@@ -275,11 +305,28 @@ export const getters = {
             }
         };
 
+        // 1. Fill out Annotations 'IsAbout' section
+
+        // A. Label matches the assigned category
         formattedOutput.Annotations.IsAbout.Label = category;
 
+        // B. Term matches the category identifier
         formattedOutput.Annotations.IsAbout.TermURL = p_state.categories[category].identifier;
 
+        // 2. Save the transformation heuristic from the list of possible heuristics
         formattedOutput.Annotations.Transformation = p_state.transformationHeuristics[annotatedDictColumn.transformationHeuristic];
+
+        // 3. Save the missing values
+        formattedOutput.Annotations.MissingValues = annotatedDictColumn.missingValues;
+
+        // 4. Save any other keys from data dictionary
+        Object.keys(annotatedDictColumn).forEach(columnEntry => {
+
+            if ( "missingValues" !== columnEntry && "transformationHeuristic" !== columnEntry ) {
+
+                formattedOutput[columnEntry] = annotatedDictColumn[columnEntry];
+            }
+        });
 
         return formattedOutput;
     },
@@ -344,6 +391,46 @@ export const getters = {
     getHeuristic: (p_state) => (p_columnName) => {
 
         return p_state.dataDictionary.annotated[p_columnName].transformationHeuristic;
+    },
+
+    getJsonOutput(p_state, p_getters) {
+
+        let jsonOutput = {};
+
+        // 1. Create a JSON output that contains annotations made thus far
+        Object.keys(p_state.dataDictionary.annotated).forEach(columnName => {
+
+            let columnOutput;
+
+            // A. If a column has been categorized/annotated, transform its annotations to json output format
+            if ( null !== p_state.columnToCategoryMap[columnName] ) {
+
+                // I. Columns with different data types yield different json outputs
+                switch ( p_getters.getColumnDataType(p_state)(columnName) ) {
+
+                    case "annot-categorical":
+
+                        columnOutput = p_getters.getCategoricalJsonOutput(p_state)(columnName);
+                        break;
+
+                    case "annot-continuous-values":
+
+                        columnOutput = p_getters.getContinuousJsonOutput(p_state)(columnName);
+                        break;
+                }
+
+            }
+            // B. Transfer unannotated data from the user provided data dictionary
+            else {
+
+                // Transfer unannotated data from the user provided data dictionary to the output
+                columnOutput = p_state.dataDictionary.annotated[columnName];
+            }
+
+            jsonOutput[columnName] = columnOutput;
+        });
+
+        return jsonOutput;
     },
 
     getMappedCategories: (p_state) => (p_categorySkipList=[]) => {
