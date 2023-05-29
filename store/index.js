@@ -407,16 +407,16 @@ export const getters = {
             if ( null !== p_state.columnToCategoryMap[columnName] ) {
 
                 // I. Columns with different data types yield different json outputs
-                switch ( p_getters.getColumnDataType(p_state)(columnName) ) {
+                switch ( p_getters.getColumnDataType(columnName) ) {
 
                     case "annot-categorical":
 
-                        columnOutput = p_getters.getCategoricalJsonOutput(p_state)(columnName);
+                        columnOutput = p_getters.getCategoricalJsonOutput(columnName);
                         break;
 
                     case "annot-continuous-values":
 
-                        columnOutput = p_getters.getContinuousJsonOutput(p_state)(columnName);
+                        columnOutput = p_getters.getContinuousJsonOutput(columnName);
                         break;
                 }
 
