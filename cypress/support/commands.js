@@ -154,6 +154,53 @@ Cypress.Commands.add("loadAppState", (p_pageName, p_dataset, p_pageData) => {
     } else if ( "download" == p_pageName ) {
 
         // Load state for download page
+
+        // 1. Link all given category column pairs and initialize
+        for ( const [category, columnCount] of p_pageData.categories ) {
+
+            for ( let index = 0; index < columnCount; index++ ) {
+
+                // A. Link the column to this category
+                cy.commitToVuexStore("alterColumnCategoryMapping", {
+
+                    category: category,
+                    columnName: p_dataset["category_columns"][category][index]
+                });
+            }
+        }
+
+        // 2. Create annotations for each categorized column
+
+        // A. Age column annotations
+        cy.commitToVuexStore("setHeuristic", {
+
+            columnName: "age",
+            heuristic: "bounded"
+        });
+        cy.commitToVuexStore("changeMissingStatus", {
+            column: "age",
+            markAsMissing: true,
+            value: " "
+        });
+
+        // B. Sex column annotations
+        cy.commitToVuexStore("selectCategoricalOption", {
+
+            columnName: "sex",
+            optionValue: "bids:male",
+            rawValue: "M"
+        });
+        cy.commitToVuexStore("selectCategoricalOption", {
+
+            columnName: "sex",
+            optionValue: "bids:female",
+            rawValue: "F"
+        });
+        cy.commitToVuexStore("changeMissingStatus", {
+            column: "sex",
+            markAsMissing: true,
+            value: "N/A"
+        });
     }
 });
 
