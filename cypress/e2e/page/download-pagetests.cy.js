@@ -55,12 +55,20 @@ describe("tests on download page ui via programmatic state loading and store int
 
             it("Clicking download button downloads annotated data dictionary JSON", () => {
 
-                // 1. Download the annotated data dictionary in Neurobagel JSON format
-                cy.get("[data-cy='download-button']")
-                    .click();
+                // 0. Checking downloads folder state before click
+                cy.task("downloads", "cypress/downloads").then(folderStateBefore => {
+
+                    // 1. Download the annotated data dictionary in Neurobagel JSON format
+                    cy.get("[data-cy='download-button']")
+                        .click();
+
+                    // 2. Check number of files in downloads folder has increased by one
+                    cy.task("downloads", "cypress/downloads").then(folderStateAfter => {
+
+                        expect(folderStateAfter.length).to.be.eq(folderStateBefore.length + 1);
+                    });
+                });
             });
         });
-
     });
-
 });
