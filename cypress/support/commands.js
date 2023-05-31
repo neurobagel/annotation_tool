@@ -123,7 +123,7 @@ Cypress.Commands.add("dispatchToVuexStore", (p_action, p_data) => {
 // Retrieves store value via getters
 Cypress.Commands.add("getVuexStoreValue", (p_storeVariableName) => {
 
-    return cy.window().its("$nuxt.$store.getters." + p_storeVariableName);
+    return cy.window().its("$nuxt.$store.state." + p_storeVariableName);
 });
 
 // Takes given data and executes the logic needed to programmatically load state
@@ -178,6 +178,7 @@ Cypress.Commands.add("loadAppState", (p_pageName, p_dataset, p_pageData) => {
             heuristic: "bounded"
         });
         cy.commitToVuexStore("changeMissingStatus", {
+
             column: "age",
             markAsMissing: true,
             value: " "
