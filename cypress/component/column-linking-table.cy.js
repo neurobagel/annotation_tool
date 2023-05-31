@@ -137,7 +137,7 @@ describe("The column-linking-table component", () => {
             .contains(participantIDColumn)
             .click();
 
-        // 3. Assert - Make sure linking mutation is commited to the store
+        // 3. Assert - Make sure linking mutation is committed to the store
         cy.get("@commitSpy").should("have.been.calledWith", "alterColumnCategoryMapping", { category: subjectIDCategory, columnName: participantIDColumn });
     });
 });
