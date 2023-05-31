@@ -30,7 +30,7 @@ describe("tests on download page ui via programmatic state loading and store int
                 // 3. Move to the download page
                 cy.window().its("$nuxt.$router").then(router => {
 
-                    // A. Route to annotation page
+                    // A. Route to download page
                     router.push({ path: "/download" });
 
                     // B. Once routing is complete, set the current page in the nuxt store
@@ -56,16 +56,28 @@ describe("tests on download page ui via programmatic state loading and store int
             it("Clicking download button downloads annotated data dictionary JSON", () => {
 
                 // 0. Checking downloads folder state before click
+                // NOTE: This runs the NodeJS command 'fs.readdirSync' to poll the 'annotation_tool/cypress/downloads folder'
+                // as to its current contents
                 cy.task("downloads", "cypress/downloads").then(folderStateBefore => {
 
                     // 1. Download the annotated data dictionary in Neurobagel JSON format
                     cy.get("[data-cy='download-button']")
                         .click();
 
-                    // 2. Check number of files in downloads folder has increased by one
+                    // 2. Check contents of downloads folder
                     cy.task("downloads", "cypress/downloads").then(folderStateAfter => {
 
+                        // A. Check number of files in downloads folder has increased by one
                         expect(folderStateAfter.length).to.be.eq(folderStateBefore.length + 1);
+
+                        // B. Check that the last file retrieved by fs.readdirSync contains the data dictionary input file prefix
+                        // as stored in dataDictionary.filename
+                        cy.getVuexStoreValue("dataDictionary").then(dataDictionary => {
+
+                            const dataDictionaryFilenameNoExt = dataDictionary.filename.split(".").slice(0, -1).join(".");
+
+                            expect(folderStateAfter[folderStateAfter.length - 1]).to.contain(dataDictionaryFilenameNoExt);
+                        });
                     });
                 });
             });
