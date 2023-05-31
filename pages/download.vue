@@ -31,6 +31,12 @@
 
 <script>
 
+    // Fields listed in mapState below can be found in the store (index.js)
+    import { mapState } from "vuex";
+
+    // Allows for reference to store data by creating simple, implicit getters
+    import { mapGetters } from "vuex";
+
     // Saves annotated data dictionary to user's computer
     import { saveAs } from "file-saver";
 
@@ -62,15 +68,25 @@
 
         computed: {
 
-            datasetName() {
+            ...mapGetters([
+
+                "getJsonOutput"
+            ]),
+
+            ...mapState([
+
+                "dataDictionary"
+            ]),
+
+            dataDictionaryFilenameNoExtension() {
 
                 // Dataset name is original data table filename with no extension
-                return this.dataTable.filename.split(".").slice(0, -1).join(".");
+                return this.dataDictionary.filename.split(".").slice(0, -1).join(".");
             },
 
             defaultOutputFilename() {
 
-                return `${this.datasetName}_annotated_${Date.now()}.json`;
+                return `${this.dataDictionaryFilenameNoExtension}_annotated_${Date.now()}.json`;
             }
         },
 
@@ -80,12 +96,10 @@
             // Leaving this code in as a reminder what the file saveAs functionality needs
             downloadAnnotatedData() {
 
-                // // 1. Format the annotated data dictionary into propietary JSON format
-                // const jsonData = this.transformAnnotatedDictionaryToJSON();
-
-                // // 2. Open file dialog to prompt the user to name it and
-                // // download it to their location of choice
-                // this.fileSaverSaveAs(jsonData);
+                // Open file dialog to prompt the user to name the
+                // JSON-formatted annotated data dictionary and download it to
+                // their location of choice
+                this.fileSaverSaveAs(this.getJsonOutput);
             },
 
             fileSaverSaveAs(p_jsonData) {

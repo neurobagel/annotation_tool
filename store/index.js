@@ -22,7 +22,6 @@ export const state = () => ({
             { label: "female", identifier: "bids:female" },
             { label: "other", identifier: "bids:other" }
         ],
-
         "Diagnosis": [
             {label: "Acute depression", identifier: "snomed:712823008"},
             {label: "Anxiety", identifier: "snomed:48694002"},
@@ -111,7 +110,9 @@ export const state = () => ({
         // and stores the extended version created during annotation in annotated.
         // We use this both as a state object and as the template for the downloadable data dictionary
         userProvided: {},
-        annotated: {}
+        annotated: {},
+
+        filename: "default"
     },
 
     dataTable: [],
@@ -406,16 +407,16 @@ export const getters = {
             if ( null !== p_state.columnToCategoryMap[columnName] ) {
 
                 // I. Columns with different data types yield different json outputs
-                switch ( p_getters.getColumnDataType(p_state)(columnName) ) {
+                switch ( p_getters.getColumnDataType(columnName) ) {
 
                     case "annot-categorical":
 
-                        columnOutput = p_getters.getCategoricalJsonOutput(p_state)(columnName);
+                        columnOutput = p_getters.getCategoricalJsonOutput(columnName);
                         break;
 
                     case "annot-continuous-values":
 
-                        columnOutput = p_getters.getContinuousJsonOutput(p_state)(columnName);
+                        columnOutput = p_getters.getContinuousJsonOutput(columnName);
                         break;
                 }
 
@@ -643,7 +644,11 @@ export const actions = {
 
     processDataDictionary({ state, commit, getters }, { data, filename }) {
 
+        // 1. Save the user-provided data dictionary
         commit("setDataDictionary", { newDataDictionary: JSON.parse(data), storeColumns: getters.getColumnNames });
+
+        // 2. Save the filename of the user-provided data dictionary
+        commit("setDataDictionaryFilename", filename);
     },
 
     processDataTable({ state, commit, getters }, { data, filename }) {
@@ -796,6 +801,12 @@ export const mutations = {
         // 2. Create a new object in case additions/deletions to the data
         // dictionary object in order to maintain Vue reactivity
         p_state.dataDictionary = Object.assign({}, p_state.dataDictionary);
+    },
+
+    setDataDictionaryFilename(p_state, p_filename) {
+
+        // Save the filename of the user-provided data dictionary
+        p_state.dataDictionary.filename = p_filename;
     },
 
     setDataTable(p_state, p_dataTable) {
