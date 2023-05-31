@@ -1,0 +1,25 @@
+name: End to end tests (Cypress)
+
+on: [push]
+
+jobs:
+  cypress-run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout 🔍
+        uses: actions/checkout@v2
+
+      - name: Set up node env
+        uses: actions/setup-node@v2.1.2
+        with:
+          node-version: 16
+                  
+      # Install NPM dependencies, cache them correctly
+      # and run all Cypress End to End tests
+      - name: Run End to End tests 🧪
+        uses: cypress-io/github-action@v4
+        with:
+          build: npm run build
+          start: npm start
+          component: false
+
