@@ -19,6 +19,25 @@ $ npm run generate
 
 For detailed explanation on how things work, check out the [documentation](https://nuxtjs.org).
 
+**use node v16.x LTS**!
+
+:warning: 
+The Annotation Tool is built with the Nuxt framework and currently depends on Nuxt2. 
+Nuxt2 does not support node versions beyond the v16 LTS (see e.g. [this Github issue](https://github.com/nuxt/nuxt/issues/10844)).
+If you want to run the tool locally, make sure you are using node v16.x.
+A good way to manage different node versions is to use the [node version manager](https://github.com/nvm-sh/nvm) tool.
+
+## Deployment
+
+To deploy the static build on GH pages, run
+
+```bash
+npm run generate
+npm run deploy
+```
+
+See the [Nuxt documentation](https://nuxtjs.org/deployments/github-pages/) for more details.
+
 ## Special Directories
 
 You can create the following extra directories, some of which have special behaviors. Only `pages` is required; you can delete them if you don't want to use their functionality.

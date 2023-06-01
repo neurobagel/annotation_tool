@@ -1,0 +1,35 @@
+name: cd
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  cd:
+   runs-on: ubuntu-latest
+   steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Set up node env
+      uses: actions/setup-node@v2.1.2
+      with:
+        node-version: 16
+
+    - name: Create .env file
+      run: |
+        echo "API_QUERY_URL=${{ vars.API_QUERY_URL }}" > .env
+
+    - name: Install dependencies
+      run: yarn
+
+    - name: Generate
+      run: yarn generate
+    
+    - name: Deploy
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./dist
