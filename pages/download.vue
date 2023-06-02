@@ -18,7 +18,7 @@
                     class="float-right"
                     data-cy="download-button"
                     variant="success"
-                    @click="downloadAnnotatedData">
+                    @click="fileSaverSaveAs(getJsonOutput)">
                     {{ uiText.downloadButton }}
                 </b-button>
             </b-col>
@@ -92,16 +92,6 @@
 
         methods: {
 
-            // NOTE: Commenting out code for downloadAnnotedData and transformAnnotatedJSON for now
-            // Leaving this code in as a reminder what the file saveAs functionality needs
-            downloadAnnotatedData() {
-
-                // Open file dialog to prompt the user to name the
-                // JSON-formatted annotated data dictionary and download it to
-                // their location of choice
-                this.fileSaverSaveAs(this.getJsonOutput);
-            },
-
             fileSaverSaveAs(p_jsonData) {
 
                 // 1. Create a blob version of the JSON output file
@@ -110,17 +100,6 @@
                 // 2. Open 'save as' file dialog box to allow user to save JSON output file to user's computer
                 saveAs(blob, this.defaultOutputFilename);
             }
-
-            // transformAnnotatedTableToJSON() {
-
-            //     // Transform the annotated data dictionary into a proprietary JSON format for the output file
-            //     return {
-
-            //         name: this.datasetName,
-            //         type: "dataset",
-            //         hasSamples: Object.keys(this.dataDictionary.annotated).map(entry => this.transformDataDictionaryEntry(entry))
-            //     };
-            // }
         }
     };
 
