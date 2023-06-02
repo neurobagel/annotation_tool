@@ -19,8 +19,10 @@
     "bootstrap-vue": "^2.21.2",
     "core-js": "^3.19.3",
     "file-saver": "^2.0.5",
+    "fs": "^0.0.1-security",
     "nuxt": "^2.15.8",
     "papaparse": "^5.3.1",
+    "uuid": "^9.0.0",
     "vue": "^2.6.14",
     "vue-select": "^3.18.3",
     "vue-server-renderer": "^2.6.14",
@@ -29,7 +31,7 @@
   },
   "devDependencies": {
     "cy-verify-downloads": "^0.1.8",
-    "cypress": "^10.3.0",
+    "cypress": "^12.9.0",
     "editorconfig": "^0.15.3",
     "eslint": "^8.11.0",
     "eslint-config-airbnb": "^19.0.4",
@@ -38,6 +40,7 @@
     "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-vue": "^8.5.0",
     "husky": "^7.0.4",
+    "lint-staged": "^13.1.2",
     "push-dir": "^0.4.1"
   }
 }

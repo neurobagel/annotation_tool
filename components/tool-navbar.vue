@@ -20,13 +20,14 @@
                 <b-navbar-nav class="ml-auto" id="right-nav">
 
                     <b-nav-item
-                        v-for="(navItem, _key) in navItems"
-                        :active="pageName === navItem.fullName"
+                        v-for="(navItem, _key) in pageData"
+                        :active="currentPageName === navItem.fullName"
+                        :class="getNavItemColor(navItem)"
                         :data-cy="'menu-item-' + navItem.pageName"
-                        :disabled="!navItem.accessible"
+                        :disabled="!isPageAccessible(navItem.pageName)"
                         :key="navItem.pageName"
                         :to="navItem.location"
-                        :class="determineNavItemColor(navItem)">
+                        @click="setCurrentPage(navItem.pageName)">
                         {{ navItem.fullName }}
                     </b-nav-item>
 
@@ -42,13 +43,16 @@
 
 <script>
 
+    // Allows for reference to store data by creating simple, implicit getters
+    import { mapGetters } from "vuex";
+
+    // Allows for direct mutations of store data
+    import { mapMutations } from "vuex";
+
+    // Fields listed in mapState below can be found in the store (index.js)
+    import { mapState } from "vuex";
+
     export default {
-
-        props: {
-
-            navItems: { type: Object, required: true },
-            pageName: { type: String, required: true }
-        },
 
         data() {
 
@@ -62,18 +66,43 @@
             };
         },
 
+        computed: {
+
+            ...mapGetters([
+
+                "isPageAccessible"
+            ]),
+
+            ...mapState([
+
+                "currentPage",
+                "pageData"
+            ]),
+
+            currentPageName() {
+
+                return this.pageData[this.currentPage].fullName;
+            }
+        },
+
         methods: {
 
-            determineNavItemColor(p_navItemData) {
+            ...mapMutations([
 
+                "setCurrentPage"
+            ]),
+
+            getNavItemColor(p_navItemData) {
+
+                // Default color for currently unaccessible page
                 let variant = "secondary";
 
-                // The nav item for this page
-                if ( this.pageName === p_navItemData.fullName ) {
+                // The nav item color for the current page
+                if ( this.currentPageName === p_navItemData.fullName ) {
                     variant = "dark";
                 }
                 // Else, if the page is accessible
-                else if ( p_navItemData.accessible  ) {
+                else if ( this.isPageAccessible(p_navItemData.pageName) ) {
                     variant = "success";
                 }
 
@@ -81,6 +110,7 @@
             }
         }
     };
+
 </script>
 
 <style>
@@ -105,6 +135,7 @@
     }
 
     .navbar {
+
         background-color: white !important;
     }
 
@@ -124,6 +155,7 @@
     }
 
     #right-nav {
+
         padding-right: 2em;
     }
 

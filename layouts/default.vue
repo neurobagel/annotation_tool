@@ -3,13 +3,13 @@
     <div>
 
         <!-- Navigation bar -->
-        <tool-navbar
-            :nav-items="pageData"
-            :nav-order="pageOrder"
-            :page-name="pageData[currentPage].fullName" />
+        <tool-navbar />
 
         <!-- Current page -->
         <Nuxt />
+
+        <!-- Next page button -->
+        <next-page v-if="getNextPage()!==''" />
 
     </div>
 
@@ -17,21 +17,17 @@
 
 <script>
 
-    // Allows for reference to store data by creating simple, implicit getters
-    // Fields listed in mapState below can be found in the store (index.js)
-    import { mapState } from "vuex";
+    import { mapGetters } from "vuex";
 
     export default {
 
         name: "DefaultLayout",
 
-        computed: {
+        methods: {
 
-            ...mapState([
+            ...mapGetters([
 
-                "currentPage",
-                "pageData",
-                "pageOrder"
+                "getNextPage"
             ])
         }
     };

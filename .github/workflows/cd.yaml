@@ -14,13 +14,9 @@ jobs:
       uses: actions/checkout@v3
 
     - name: Set up node env
-      uses: actions/setup-node@v2.1.2
+      uses: actions/setup-node@v3.6.0
       with:
         node-version: 16
-
-    - name: Create .env file
-      run: |
-        echo "API_QUERY_URL=${{ vars.API_QUERY_URL }}" > .env
 
     - name: Install dependencies
       run: yarn
