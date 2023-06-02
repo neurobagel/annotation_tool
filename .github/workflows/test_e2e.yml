@@ -19,7 +19,7 @@ jobs:
       - name: Run End to End tests 🧪
         uses: cypress-io/github-action@v5
         with:
-          build: npm run dev
+          build: npm run build
           start: npm start
           component: false
 
