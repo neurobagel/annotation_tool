@@ -223,7 +223,7 @@ export const getters = {
 
             formattedOutput.Annotations.Levels[rawValue] = {};
 
-            // A. Save value map via labels and identifers
+            // A. Save value map via labels and identifiers
             p_state.categoricalOptions[category].forEach(option => {
 
                 if ( annotatedDictColumn.valueMap[rawValue] === option.identifier ) {

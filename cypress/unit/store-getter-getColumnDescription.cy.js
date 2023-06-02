@@ -20,7 +20,7 @@ describe("getColumnDescription", () => {
         expect(result).to.be.equal("This is my first column");
     });
 
-    it("Returns an empty string if no descripton exists", () => {
+    it("Returns an empty string if no description exists", () => {
 
         const result = getters.getColumnDescription(state)("lazyColumn");
         expect(result).to.be.empty;

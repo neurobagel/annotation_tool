@@ -113,7 +113,7 @@
 
             // transformAnnotatedTableToJSON() {
 
-            //     // Transform the annotated data dictionary into a propietary JSON format for the output file
+            //     // Transform the annotated data dictionary into a proprietary JSON format for the output file
             //     return {
 
             //         name: this.datasetName,

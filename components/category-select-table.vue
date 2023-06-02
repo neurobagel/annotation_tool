@@ -65,7 +65,7 @@
                 // If a new category was selected...
                 if ( 0 !== p_row.length ) {
 
-                    // Tell the parent page about the category selction
+                    // Tell the parent page about the category selection
                     this.$emit("category-select", { category: p_row[0].category });
                 }
             },

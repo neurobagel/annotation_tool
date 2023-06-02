@@ -57,7 +57,7 @@ describe("Continuous values component", () => {
             mutations: {
 
                 // NOTE: changeMissingStatus reflects a future 'mark as missing' feature
-                // for the continous value component
+                // for the continuous value component
                 changeMissingStatus: () => ({ column, value, markAsMissing}) => {},
                 setHeuristic: ({ columnName, heuristic }) => {
 
