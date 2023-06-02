@@ -60,6 +60,5 @@ export default {
 		}
 	},
 
-	devtool: "source-map",
-	target: "static"
+	devtool: "source-map"
 };
