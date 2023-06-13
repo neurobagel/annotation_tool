@@ -10,13 +10,15 @@
         <b-card-body class="columns-card-body">
             <b-list-group>
                 <b-list-group-item
+                    data-cy="mappedColumns"
                     class="d-flex justify-content-between align-items-center"
                     :key="columnName"
-                    v-for="columnName of relevantColumns">
-                    {{ columnName }} {{ retrieveColumnDescription(columnName) }}
+                    v-for="columnName of getMappedColumns(activeCategory)">
+                    {{ columnName }} {{ getColumnDescription(columnName) }}
                     <b-button
+                        :data-cy="'remove_' + columnName"
                         variant="danger"
-                        @click="removeColumn(columnName)">
+                        @click="alterColumnCategoryMapping({category: activeCategory, columnName: columnName})">
                         {{ uiText.removeButton }}
                     </b-button>
                 </b-list-group-item>
@@ -29,16 +31,17 @@
 
 <script>
 
+    // Allows for reference to store data by creating simple, implicit getters
+    import { mapGetters, mapMutations } from "vuex";
+
     export default {
 
         props: {
 
-            relevantColumns: { type: Array, required: true }
+            activeCategory: { type: String, required: true }
         },
 
-        inject: ["columnDescription"],
-
-        name: "AnnotatePartAnnotatedColumns",
+        name: "AnnotColumns",
 
         data() {
 
@@ -52,25 +55,17 @@
             };
         },
 
+        computed: {
+            ...mapGetters([
+                "getMappedColumns",
+                "getColumnDescription"
+            ])
+        },
+
         methods: {
-
-            removeColumn(columnName) {
-
-                // Trigger an unlinking of this column from its previously assigned category in the store
-                this.$emit("remove:column", {
-
-                    removedColumn: columnName
-                });
-            },
-
-            retrieveColumnDescription(p_columnName) {
-
-                // Attempt to get the description of this column from the data dictionary
-                const columnDescription = this.columnDescription(p_columnName);
-
-                // Return the column description if it exists, otherwise return blank string
-                return ( null !== columnDescription ) ? ` - ${columnDescription}` : "";
-            }
+            ...mapMutations([
+                "alterColumnCategoryMapping"
+            ])
         }
     };
 

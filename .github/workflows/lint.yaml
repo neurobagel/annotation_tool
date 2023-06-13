@@ -1,0 +1,16 @@
+name: lint
+
+on: [pull_request, workflow_dispatch]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Run ESLint
+      run: npm run lint
