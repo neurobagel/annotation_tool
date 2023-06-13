@@ -6,11 +6,12 @@
         <b-table
             bordered
             outlined
-            :fields="fields"
+            data-cy="column-linking-table-table"
             head-variant="dark"
-            :items="tableData"
-            @row-clicked="applyCategory"
-            :tbody-tr-class="styleTableRow" />
+            :fields="uiText.tableFields"
+            :items="tableRows"
+            :tbody-tr-class="styleTableRow"
+            @row-clicked="applyCategory" />
 
     </b-container>
 
@@ -18,23 +19,67 @@
 
 <script>
 
+    // Allows for reference to store (index.js)
+    import { mapMutations, mapGetters, mapState } from "vuex";
+
     export default {
 
         props: {
 
-            categoryClasses: { type: Object, required: true },
-            columnToCategoryMap: { type: Object, required: true },
-            fields: { type: Array, required: true },
-            selectedCategory: { type: String, required: true },
-            tableData: { type: Array, required: true }
+            selectedCategory: { type: String, required: true }
+        },
+
+        data() {
+
+            return {
+
+                uiText: {
+
+                    tableFields: [
+
+                        { key: "column" },
+                        { key: "description" }
+                    ]
+                }
+            };
+        },
+
+        computed: {
+
+            ...mapGetters([
+
+                "getColumnNames",
+                "getColumnDescription"
+            ]),
+
+            ...mapState([
+
+                "colorInfo",
+                "columnToCategoryMap"
+            ]),
+
+            tableRows() {
+
+                return this.getColumnNames.map(column => ({
+
+                    category: this.columnToCategoryMap[column],
+                    column: column,
+                    description: this.getColumnDescription(column)
+                }));
+            }
         },
 
         methods: {
 
+            ...mapMutations([
+
+                "alterColumnCategoryMapping"
+            ]),
+
             applyCategory(p_row, p_index, p_event) {
 
-                // Tell the parent page that a column has been linked with a category
-                this.$emit("column-name-selected", { column: p_row.column });
+                // Link or unlink the currently-selected/active category and the clicked column
+                this.alterColumnCategoryMapping({ category: this.selectedCategory, columnName: p_row.column });
             },
 
             styleTableRow(p_row, p_rowType) {
@@ -42,7 +87,7 @@
                 // Check to see what category has been assigned to this row's column, if any
                 const assignedCategory = this.columnToCategoryMap[p_row.column];
 
-                return ( null === assignedCategory ) ? "" : this.categoryClasses[assignedCategory];
+                return ( null === assignedCategory ) ? "" : this.colorInfo.categoryClasses[assignedCategory];
             }
         }
     };
