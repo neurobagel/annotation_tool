@@ -20,14 +20,14 @@
     "core-js": "^3.19.3",
     "file-saver": "^2.0.5",
     "fs": "^0.0.1-security",
-    "nuxt": "^2.17.0",
+    "nuxt": "^3.5.3",
     "papaparse": "^5.3.1",
     "uuid": "^9.0.0",
     "vue": "^2.6.14",
     "vue-select": "^3.18.3",
     "vue-server-renderer": "^2.6.14",
     "vue-template-compiler": "^2.6.14",
-    "webpack": "^4.46.0"
+    "webpack": "^5.86.0"
   },
   "devDependencies": {
     "cy-verify-downloads": "^0.1.8",
