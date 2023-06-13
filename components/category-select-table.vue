@@ -1,63 +1,60 @@
 <template>
 
-    <b-container fluid>
+    <div>
 
-        <!-- Heading for category select component -->
-        <b-row>
-            <h3>{{ title }}</h3>
+        <b-row class="no-padding-row">
+
+            <b-col cols="12" class="no-padding-col">
+                <b-table
+                    outlined
+                    selectable
+                    head-variant="dark"
+                    :items="categoryTable"
+                    @row-selected="selectCategory"
+                    select-mode="single"
+                    selected-variant=""
+                    :tbody-tr-class="styleTableRow"
+                    thead-class="hidden" />
+            </b-col>
         </b-row>
 
-        <!-- Instructions prompting the user how to link categories and columns -->
-        <b-row>
-            <p class="instructions-text">
-                {{ instructions }}
-            </p>
-        </b-row>
-
-        <!-- Category selection table -->
-        <b-row>
-            <b-table
-                outlined
-                selectable
-                head-variant="dark"
-                :items="categoryTable"
-                @row-selected="selectCategory"
-                select-mode="single"
-                selected-variant=""
-                :tbody-tr-class="styleTableRow"
-                thead-class="hidden" />
-        </b-row>
-
-    </b-container>
+    </div>
 
 </template>
 
 <script>
 
+    // Allows for reference to store data by creating simple, implicit getters
+    import { mapGetters } from "vuex";
+
+    // Fields listed in mapState below can be found in the store (index.js)
+    import { mapState } from "vuex";
+
     export default {
+
+        name: "CategorySelectTable",
 
         props: {
 
-            categories: { type: Array, required: true },
-            categoryClasses: { type: Object, required: true },
-            instructions: { type: String, required: true },
-            title: { type: String, required: true }
-        },
-
-        data() {
-
-            return {
-
-                selectedCategory: this.categories[0]
-            };
+            selectedCategory: { type: String, required: true }
         },
 
         computed: {
 
+            ...mapGetters([
+
+                "getCategoryNames"
+            ]),
+
+            ...mapState([
+
+                "colorInfo"
+            ]),
+
             categoryTable() {
 
                 // Return a list of dicts for each category in the table
-                return this.categories.map((name) => ({ category: name }));
+                return this.getCategoryNames.map((name) => ({ category: name }));
             }
         },
 
@@ -68,11 +65,8 @@
                 // If a new category was selected...
                 if ( 0 !== p_row.length ) {
 
-                    // 1. Save the newly selected category, if given
-                    this.selectedCategory = p_row[0].category;
-
-                    // 2. Tell the parent page about the category selection
-                    this.$emit("category-select", { category: this.selectedCategory });
+                    // Tell the parent page about the category selection
+                    this.$emit("category-select", { category: p_row[0].category });
                 }
             },
 
@@ -83,7 +77,7 @@
                     "category-transparent" : "category-opaque";
 
                 // 2. Get the color class for this row
-                const colorClass = this.categoryClasses[p_row.category];
+                const colorClass = this.colorInfo.categoryClasses[p_row.category];
 
                 return [opacityClass, colorClass];
             }

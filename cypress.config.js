@@ -1,6 +1,7 @@
 const { defineConfig } = require("cypress");
 
 const { isFileExist, findFiles } = require("cy-verify-downloads");
+const fs = require("fs");
 
 module.exports = defineConfig({
 
@@ -18,7 +19,13 @@ module.exports = defineConfig({
             // Implement node event listeners here
 
             // cy-verify-downloads plugin
-            on("task", { isFileExist, findFiles });
+            on("task", {
+                async downloads(downloadsPath) {
+                    return fs.readdirSync(downloadsPath);
+                },                
+                findFiles,
+                isFileExist
+            });
         }
     },
 

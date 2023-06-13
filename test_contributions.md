@@ -31,7 +31,7 @@ TBD
 
 ### When to use `cy.get` and if we can rely on the DOM state
 
-Since we are using the server-side rendering version of Vue/Nuxt, it is acceptable to check the DOM for state. (In a client-side rendered app, it would not be.) Therefore we can utilize `cy.get` and its corresponding timeout time to watch for the appearance of objects on the page. However, there are other means for checking the app state. This includes checking the annotation tool Vuex store and can be done via the `getNuxtStoreValue` command.
+Since we are using the server-side rendering version of Vue/Nuxt, it is acceptable to check the DOM for state. (In a client-side rendered app, it would not be.) Therefore we can utilize `cy.get` and its corresponding timeout time to watch for the appearance of objects on the page. However, there are other means for checking the app state. This includes checking the annotation tool Vuex store and can be done via the `getVuexStoreValue` command.
 
 ### Making testing tests easier
 
@@ -59,7 +59,7 @@ _datasetMeetsTestCriteria_
 
 This function takes an object specifying page-specific criteria for a test and compares it to the config json of the dataset being used (also passed in).
 
-_dispatchToNuxtStore_ and _getNuxtStoreValue_
+_dispatchToVuexStore_ and _getVuexStoreValue_
 
 These functions are quick means of getting access to the Vuex store, either for calling actions or getting values via getters.
 This is possible because of Cypress' access to the `$nuxt` object.
