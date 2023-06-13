@@ -49,7 +49,7 @@ For detailed explanation on how things work, check out the [documentation](https
 
 ## Annotation Workflow
 
-1. Upload data table (and/or data dictinary)
+1. Upload data table (and/or data dictionary)
 2. Linking columns you want annotated with Neurobagel metadata categories
 3. Annotate the values of the those categirzed columns
 4. Download an annotated version of a BIDS-style data dictionary for your dataset
