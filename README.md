@@ -1,6 +1,6 @@
 # Annotation Tool
 
-<div>
+<div align="center">
     <a href="https://github.com/neurobagel/annotation_tool/actions/workflows/pages/pages-build-deployment">
         <img src="https://img.shields.io/website?down_color=CD5C5C&down_message=down&label=deployed%20app&style=flat-square&up_color=B0C4DE&up_message=live&url=https%3A%2F%2Fannotate.neurobagel.org%2F" alt="deployed app">
     </a>
@@ -26,7 +26,21 @@
 
 [Neurobagel's](https://www.neurobagel.org/) annotation tool takes BID-style [phenotypic data](https://github.com/neurobagel/annotation_tool/blob/master/cypress/fixtures/examples/good/ds003653_participant.tsv) and [corresponding data description files](https://github.com/neurobagel/annotation_tool/blob/master/cypress/fixtures/examples/good/ds003653_participant.json) and gives users the ability to annotate their data using the Neurobagel data model for preparation to inject that modeled data into Neurobagel's graph database for [federated querying](https://github.com/neurobagel/query-tool).
 
-## Setup
+The annotation tool is a Vue application, developed in [JavaScript](https://www.javascript.com/) using a variety of tools including [Nuxt](https://nuxtjs.org/), [Cypress](https://www.cypress.io/), and [BootstrapVue](https://bootstrap-vue.org/docs).
+
+[Quickstart](#quickstart) |
+[Local Installation](#local-installation) |
+[Workflow](#annotation-workflow) |
+[Navigation](#general-navigation) |
+[Page Instructions](#page-instructions) |
+[Testing](#testing) |
+[License](#license)
+
+## Quickstart
+
+The demo version of the annotation tool is hosted at [https://annotate.neurobagel.org/](https://annotate.neurobagel.org/).
+
+## Local Installation
 
 ### Building and running
 
@@ -44,8 +58,26 @@ $ npm run start
 # Generate static project
 $ npm run generate
 ```
+### Deployment
 
-For detailed explanation on how things work, check out the [documentation](https://nuxtjs.org).
+To deploy the static build on GH pages, run
+
+```bash
+npm run generate
+npm run deploy
+```
+
+See the [Nuxt documentation](https://nuxtjs.org/deployments/github-pages/) for more details.
+
+### Developer information
+
+**use node v16.x LTS**!
+
+:warning: 
+The Annotation Tool is built with the Nuxt framework and currently depends on Nuxt2. 
+Nuxt2 does not support node versions beyond the v16 LTS (see e.g. [this Github issue](https://github.com/nuxt/nuxt/issues/10844)).
+If you want to run the tool locally, make sure you are using node v16.x.
+A good way to manage different node versions is to use the [node version manager](https://github.com/nvm-sh/nvm) tool.
 
 ## Annotation Workflow
 
@@ -143,69 +175,9 @@ Click the <span style="color:green;">download annotated data button</span> to do
 
 ![Home page with uploaded table and dictionary files](./images/readme_download_button.png)
 
-## Developer information
-
-**use node v16.x LTS**!
-
-:warning: 
-The Annotation Tool is built with the Nuxt framework and currently depends on Nuxt2. 
-Nuxt2 does not support node versions beyond the v16 LTS (see e.g. [this Github issue](https://github.com/nuxt/nuxt/issues/10844)).
-If you want to run the tool locally, make sure you are using node v16.x.
-A good way to manage different node versions is to use the [node version manager](https://github.com/nvm-sh/nvm) tool.
-
-## Deployment
-
-To deploy the static build on GH pages, run
-
-```bash
-npm run generate
-npm run deploy
-```
-
 ## Testing
 
 The Annotation tool uses [Cypress](https://www.cypress.io/) for integration, component, and unit testing. See the [cypress folder](https://github.com/neurobagel/annotation_tool/tree/master/cypress) for tests, custom commands, and test data.
-
-See the [Nuxt documentation](https://nuxtjs.org/deployments/github-pages/) for more details.
-
-## Special Directories
-
-You can create the following extra directories, some of which have special behaviors. Only `pages` is required; you can delete them if you don't want to use their functionality.
-
-### `assets`
-
-The assets directory contains your uncompiled assets such as Stylus or Sass files, images, or fonts.
-
-More information about the usage of this directory in [the documentation](https://nuxtjs.org/docs/2.x/directory-structure/assets).
-
-### `components`
-
-The components directory contains your Vue.js components. Components make up the different parts of your page and can be reused and imported into your pages, layouts and even other components.
-
-More information about the usage of this directory in [the documentation](https://nuxtjs.org/docs/2.x/directory-structure/components).
-
-### `layouts`
-
-Layouts are a great help when you want to change the look and feel of your Nuxt app, whether you want to include a sidebar or have distinct layouts for mobile and desktop.
-
-More information about the usage of this directory in [the documentation](https://nuxtjs.org/docs/2.x/directory-structure/layouts).
-
-
-### `pages`
-
-This directory contains your application views and routes. Nuxt will read all the `*.vue` files inside this directory and setup Vue Router automatically.
-
-More information about the usage of this directory in [the documentation](https://nuxtjs.org/docs/2.x/get-started/routing).
-
-### `plugins`
-
-The plugins directory contains JavaScript plugins that you want to run before instantiating the root Vue.js Application. This is the place to add Vue plugins and to inject functions or constants. Every time you need to use `Vue.use()`, you should create a file in `plugins/` and add its path to plugins in `nuxt.config.js`.
-
-More information about the usage of this directory in [the documentation](https://nuxtjs.org/docs/2.x/directory-structure/plugins).
-
-### `static`
-
-This directory contains your static files. Each file inside this directory is mapped to `/`.
 
 ## License
 
