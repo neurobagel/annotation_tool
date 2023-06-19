@@ -16,3 +16,5 @@ updates:
         update-types: ["version-update:semver-major"]
       - dependency-name: 'vue'
         update-types: ["version-update:semver-major"]
+      - dependency-name: 'webpack'
+        update-types: ["version-update:semver-major"]
