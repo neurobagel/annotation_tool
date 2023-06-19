@@ -39,7 +39,7 @@
     "eslint-plugin-cypress": "^2.12.1",
     "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-vue": "^8.5.0",
-    "husky": "^7.0.4",
+    "husky": "^8.0.3",
     "lint-staged": "^13.1.2",
     "push-dir": "^0.4.1"
   }
