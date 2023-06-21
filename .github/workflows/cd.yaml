@@ -19,10 +19,10 @@ jobs:
         node-version: 16
 
     - name: Install dependencies
-      run: npm install
+      run: yarn
 
     - name: Generate
-      run: npm run generate
+      run: yarn generate
     
     - name: Deploy
       uses: peaceiris/actions-gh-pages@v3
