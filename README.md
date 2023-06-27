@@ -21,7 +21,9 @@
     <a href="LICENSE">
         <img src="https://img.shields.io/github/license/neurobagel/query-tool?color=4682B4&style=flat-square" alt="GitHub license">
     </a>
-    <img src="https://zenodo.org/badge/DOI/10.5281/zenodo.8088067.svg" alt="Zenodo DOI">
+    <a href="https://doi.org/10.5281/zenodo.8088067">
+        <img src="https://zenodo.org/badge/DOI/10.5281/zenodo.8088067.svg" alt="Zenodo DOI">
+    </a>
 </div>
         
 <br>
