@@ -96,7 +96,7 @@ describe("The index page", () => {
         });
 
         // Act
-        cy.get("[data-cy='data-table-selector']").contains("Choose file").click().selectFile("@exampleTable");
+        cy.get("[data-cy='data-table-selector']").contains("Choose file").selectFile("@exampleTable");
 
         // Assert
         cy.get("@dispatchSpy").should("have.been.calledWith", "processDataTable", {
@@ -128,7 +128,7 @@ describe("The index page", () => {
         });
 
         // Act
-        cy.get("[data-cy='data-dictionary-selector']").contains("Choose file").click().selectFile("@exampleDictionary");
+        cy.get("[data-cy='data-dictionary-selector']").contains("Choose file").selectFile("@exampleDictionary");
 
         // Assert
         cy.get("@dispatchSpy").should("have.been.calledWith", "processDataDictionary", {
