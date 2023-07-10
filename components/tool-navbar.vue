@@ -7,7 +7,7 @@
 
             <!-- Brand -->
             <b-navbar-brand class="brand-styling">
-                <h1>{{ uiText.toolName }}</h1>
+                <h1>{{ uiText.toolName }}: uiText.subtitle</h1>
             </b-navbar-brand>
 
             <!-- Collapse toggle -->
@@ -61,6 +61,7 @@
                 // Text for UI elements
                 uiText: {
 
+                    subtitle: "Harmonize phenotypic data",
                     toolName: "Annotation Tool"
                 }
             };
