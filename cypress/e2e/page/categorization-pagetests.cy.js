@@ -105,6 +105,35 @@ describe("Tests on categorization page ui via programmatic state loading and sto
                     cy.assertNextPageAccess("annotation", true);
                 }
             });
+
+            // Description of task:
+            // 1. Selects 'Subject ID' category
+            // 2. Links one column as a subject ID
+            // Expected results: Color of linked column changes
+            it("Make sure the color changes after clicking", () => {
+
+                cy.get("[data-cy='column-linking-table'] tbody > tr")
+                    .contains(p_dataset["category_columns"]["Subject ID"][0])
+                    .parent()
+                    .invoke("css", "background-color")
+                    .then((p_oldColor) => {
+
+                        // Act
+
+                        // 1. Categorize a row in the column linking table with 'Subject ID' category from
+                        // the category select table
+                        cy.categorizeColumn("Subject ID", p_dataset["category_columns"]["Subject ID"][0]);
+
+                        // Assert
+
+                        // 2. Check that the new color of the categorized row is different than its previous
+                        // background color
+                        cy.get("[data-cy='column-linking-table'] tbody > tr")
+                            .contains(p_dataset["category_columns"]["Subject ID"][0])
+                            .parent()
+                            .should("not.have.css", "background-color", p_oldColor);
+                    });
+            });
         });
     });
 });
