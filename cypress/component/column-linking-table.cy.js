@@ -147,50 +147,39 @@ describe("The column-linking-table component", () => {
         cy.get("@commitSpy").should("have.been.calledWith", "alterColumnCategoryMapping", { category: subjectIDCategory, columnName: participantIDColumn });
     });
 
-    it("Altering the columnToCategoryMap restyles a table row to reflect current column categorization", () => {
-
-        // 0. The first category and column
-        const participantIDColumn = store.getters.getColumnNames()[0];
-        const subjectIDCategory = store.getters.getCategoryNames()[0];
+    it("If a data table column is categorized, its table row is styled", () => {
 
         // 1. Arrange - Mount the component
         cy.mount(ColumnLinkingTable, {
 
-            computed: store.getters,
+            computed: Object.assign(store.getters, {
+
+                columnToCategoryMap: () => {
+
+                    return {
+                        "participant_id": null,
+                        "age": "Age",
+                        "sex": null
+                    };
+                }
+            }),
             mocks: { $store: store },
             plugins: ["bootstrap-vue"],
             propsData: props
         });
 
-        cy.get("[data-cy='column-linking-table-table'] tbody > :nth-child(1) > [aria-colindex='1']")
-            .contains(participantIDColumn)
+        // 2. Assert - The categorized column is styled
+        cy.get("[data-cy='column-linking-table-table']")
+            .contains("age")
             .parent()
-            .as("tableRow");
+            .should("have.class", "category-style-2");
 
-        // 2. Act and Assert
-
-        cy.get("@tableRow")
-            .invoke("css", "background-color")
-            .then((p_oldBackgroundColor) => {
-
-                // A. Categorize the first data table column with the first category
-                store.mutations.alterColumnCategoryMapping(store.state)({category: subjectIDCategory, columnName: participantIDColumn});
-
-                // B. Check to see if the color of the first row in the column linking
-                // table corresponding to the first data table column has changed
-                cy.get("@tableRow")
-                    .invoke("css", "background-color")
-                    .should("not.equal", p_oldBackgroundColor)
-                    .then(() => {
-
-                        // C. Uncategorize the first data table column
-                        store.mutations.alterColumnCategoryMapping(store.state)({category: subjectIDCategory, columnName: participantIDColumn});
-
-                        // D. Check to see if the color of the first row in the column linking has gone back to default
-                        cy.get("@tableRow")
-                            .invoke("css", "background-color")
-                            .should("equal", p_oldBackgroundColor);
-                });
-            });
+        // 3. Assert - Uncategorized columns are unstyled
+        cy.get("[data-cy='column-linking-table-table']").contains("participant_id").parent()
+            .should("not.have.class", "category-style-1")
+            .should("not.have.class", "category-style-2")
+            .should("not.have.class", "category-style-3")
+            .should("not.have.class", "category-style-4")
+            .should("not.have.class", "category-style-5");
     });
 });
