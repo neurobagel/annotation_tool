@@ -33,21 +33,6 @@ describe("The column-linking-table component", () => {
                     ];
                 },
 
-                colorInfo: () => {
-
-                    return {
-
-                        categoryClasses: {
-
-                            "Subject ID": "category-style-1",
-                            "Age": "category-style-2",
-                            "Sex": "category-style-3",
-                            "Diagnosis": "category-style-4",
-                            "Assessment Tool": "category-style-5"
-                        }
-                    };
-                },
-
                 getColumnNames: () => {
 
                     return [
@@ -61,22 +46,43 @@ describe("The column-linking-table component", () => {
                 getColumnDescription: () => (p_columnName) => {
 
                     return "descriptions help";
-                },
-
-                columnToCategoryMap: () => {
-
-                    return {
-
-                        "participant_id": null,
-                        "age": null,
-                        "sex": null
-                    };
                 }
             },
 
             mutations: {
 
-                alterColumnCategoryMap: () => ({category, column}) => {}
+                alterColumnCategoryMapping: () => ({category, columnName}) => {
+
+                    if ( null === store.state.columnToCategoryMap[columnName] ) {
+
+                        store.state.columnToCategoryMap[columnName] = category;
+                    } else {
+
+                        store.state.columnToCategoryMap[columnName] = null;
+                    }
+                }
+            },
+
+            state: {
+
+                colorInfo: {
+
+                    categoryClasses: {
+
+                        "Subject ID": "category-style-1",
+                        "Age": "category-style-2",
+                        "Sex": "category-style-3",
+                        "Diagnosis": "category-style-4",
+                        "Assessment Tool": "category-style-5"
+                    }
+                },
+
+                columnToCategoryMap: {
+
+                    "participant_id": null,
+                    "age": null,
+                    "sex": null
+                }
             }
         };
 
@@ -139,5 +145,41 @@ describe("The column-linking-table component", () => {
 
         // 3. Assert - Make sure linking mutation is committed to the store
         cy.get("@commitSpy").should("have.been.calledWith", "alterColumnCategoryMapping", { category: subjectIDCategory, columnName: participantIDColumn });
+    });
+
+    it("If a data table column is categorized, its table row is styled", () => {
+
+        // 1. Arrange - Mount the component
+        cy.mount(ColumnLinkingTable, {
+
+            computed: Object.assign(store.getters, {
+
+                columnToCategoryMap: () => {
+
+                    return {
+                        "participant_id": null,
+                        "age": "Age",
+                        "sex": null
+                    };
+                }
+            }),
+            mocks: { $store: store },
+            plugins: ["bootstrap-vue"],
+            propsData: props
+        });
+
+        // 2. Assert - The categorized column is styled
+        cy.get("[data-cy='column-linking-table-table']")
+            .contains("age")
+            .parent()
+            .should("have.class", "category-style-2");
+
+        // 3. Assert - Uncategorized columns are unstyled
+        cy.get("[data-cy='column-linking-table-table']").contains("participant_id").parent()
+            .should("not.have.class", "category-style-1")
+            .should("not.have.class", "category-style-2")
+            .should("not.have.class", "category-style-3")
+            .should("not.have.class", "category-style-4")
+            .should("not.have.class", "category-style-5");
     });
 });

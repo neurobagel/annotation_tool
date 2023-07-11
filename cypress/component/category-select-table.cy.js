@@ -33,6 +33,15 @@ const computed = {
     }
 };
 
+const categoryColorMap = {
+
+    "Subject ID": "rgb(164, 208, 90)",
+    "Age": "rgb(127, 23, 167)",
+    "Sex": "rgb(70, 76, 174)",
+    "Diagnosis": "rgb(236, 197, 50)",
+    "Assessment Tool": "rgb(128, 1, 1)"
+};
+
 // Tests
 
 describe("Table for selecting categories to linking to table columns on the categorization page", () => {
@@ -65,6 +74,33 @@ describe("Table for selecting categories to linking to table columns on the cate
             // 3. Assert
             cy.get("@onCategorySelectSpy")
                 .should("have.been.calledWith", { category: computed.getCategoryNames()[index] });
+        }
+    });
+
+    it("Ensure each category has its correct background color", () => {
+
+        // 1. Arrange
+
+        // Mount the component
+        cy.mount(CategorySelectTable, {
+
+            computed: computed,
+
+            plugins: ["bootstrap-vue"],
+
+            propsData: { selectedCategory: computed.getCategoryNames()[0] }
+        });
+
+        // Test each row in the category select table
+        for ( let index = 0; index < computed.getCategoryNames().length; index++ ) {
+
+            const categoryName = computed.getCategoryNames()[index];
+
+            // 2. Assert
+            cy.get("td")
+                .contains(categoryName)
+                .parent()
+                .should("have.css", "background-color", categoryColorMap[categoryName]);
         }
     });
 });
