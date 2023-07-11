@@ -83,8 +83,7 @@ describe("tests on annotation page ui with programmatic state loading and store 
                         .click();
 
                     // B. Select the 'float' transformation heuristic
-                    // :data-cy="'selectTransform_' + columnName"
-                    cy.get("[data-cy='selectTransform_age']").click().type("float{enter}");
+                    cy.get("[data-cy='selectTransform_age']").type("float{enter}");
 
                     // 5. Assert annotation nav and next page button are enabled
                     cy.assertNextPageAccess("download", true);
@@ -124,8 +123,10 @@ describe("tests on annotation page ui with programmatic state loading and store 
                         .click();
 
                     // B. Select annotation choices for 'Sex' column values
-                    cy.get("[data-cy='categoricalSelector_0']").click().type("male{enter}");
-                    cy.get("[data-cy='categoricalSelector_1']").click().type("female{enter}");
+                    cy.get("[data-cy='categoricalSelector_0']").click();
+                    cy.get("[data-cy='categoricalSelector_0']").type("male{enter}");
+                    cy.get("[data-cy='categoricalSelector_1']").click();
+                    cy.get("[data-cy='categoricalSelector_1']").type("female{enter}");
 
                     // 5. Assert annotation nav and next page button are enabled
                     cy.assertNextPageAccess("download", true);
@@ -166,9 +167,12 @@ describe("tests on annotation page ui with programmatic state loading and store 
 
                     // B. Enter annotated values for each unique value in the 'Diagnosis'-categorized column
                     // NOTE: This value of '3' should be pulled from the interface via the number of unique diagnosis values returned
-                    cy.get("[data-cy='categoricalSelector_0']").click().type("Depressive{enter}");
-                    cy.get("[data-cy='categoricalSelector_1']").click().type("Parkins{enter}");
-                    cy.get("[data-cy='categoricalSelector_2']").click().type("Smoker{enter}");
+                    cy.get("[data-cy='categoricalSelector_0']").click();
+                    cy.get("[data-cy='categoricalSelector_0']").type("Depressive{enter}");
+                    cy.get("[data-cy='categoricalSelector_1']").click();
+                    cy.get("[data-cy='categoricalSelector_1']").type("Parkins{enter}");
+                    cy.get("[data-cy='categoricalSelector_2']").click();
+                    cy.get("[data-cy='categoricalSelector_2']").type("Smoker{enter}");
 
                     // 5. Assert annotation nav and next page button are enabled
                     cy.assertNextPageAccess("download", true);

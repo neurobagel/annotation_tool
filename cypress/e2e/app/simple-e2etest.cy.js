@@ -45,7 +45,6 @@ describe("End to end test using a simple UI path through the app", () => {
             // B. Select data table file
             cy.get("[data-cy='data-table-selector']")
                 .contains("Choose file")
-                .click()
                 .selectFile(dataFolder + p_dataset.data_table);
 
             // C. Assert that categorization nav item and next button are enabled
@@ -54,7 +53,6 @@ describe("End to end test using a simple UI path through the app", () => {
             // D. Select participants dictionary
             cy.get("[data-cy='data-dictionary-selector']")
                 .contains("Choose file")
-                .click()
                 .selectFile(dataFolder + p_dataset.data_dictionary);
 
             // E. Click the next page button to proceed to the categorization page
@@ -103,7 +101,8 @@ describe("End to end test using a simple UI path through the app", () => {
 
                     // B. Select the 'float' transformation heuristic
                     // :data-cy="'selectTransform_' + columnName" where columnName is age
-                    cy.get("[data-cy='selectTransform_age']").click().type("float{enter}");
+                    cy.get("[data-cy='selectTransform_age']").click();
+                    cy.get("[data-cy='selectTransform_age']").type("float{enter}");
 
                     // D. Assert that next page nav and button are enabled for download page
                     cy.assertNextPageAccess("download", true);

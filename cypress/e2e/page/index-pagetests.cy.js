@@ -44,7 +44,6 @@ describe("Tests on the index page via store interaction", () => {
                 // 2. Select data table file
                 cy.get("[data-cy='data-table-selector']")
                     .contains("Choose file")
-                    .click()
                     .selectFile(fixturesFolder + p_dataset.source_folder + p_dataset.data_table);
 
                 // 3. Assert that categorization nav item and next button are enabled
@@ -86,7 +85,6 @@ describe("Tests on the index page via store interaction", () => {
                 // 2. Select data table file
                 cy.get("[data-cy='data-table-selector']")
                     .contains("Choose file")
-                    .click()
                     .selectFile(dataFolder + p_dataset.data_table);
 
                 // 3. Assert that categorization nav item and next button are enabled
@@ -95,7 +93,6 @@ describe("Tests on the index page via store interaction", () => {
                 // 4. Select participants dictionary
                 cy.get("[data-cy='data-dictionary-selector']")
                     .contains("Choose file")
-                    .click()
                     .selectFile(dataFolder + p_dataset.data_dictionary);
 
                 // 3. Assert that categorization nav item and next button are *still* enabled
