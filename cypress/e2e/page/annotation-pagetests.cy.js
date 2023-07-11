@@ -83,8 +83,6 @@ describe("tests on annotation page ui with programmatic state loading and store 
                         .click();
 
                     // B. Select the 'float' transformation heuristic
-                    // :data-cy="'selectTransform_' + columnName"
-                    cy.get("[data-cy='selectTransform_age']").click();
                     cy.get("[data-cy='selectTransform_age']").type("float{enter}");
 
                     // 5. Assert annotation nav and next page button are enabled
