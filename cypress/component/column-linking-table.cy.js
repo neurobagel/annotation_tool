@@ -147,7 +147,7 @@ describe("The column-linking-table component", () => {
         cy.get("@commitSpy").should("have.been.calledWith", "alterColumnCategoryMapping", { category: subjectIDCategory, columnName: participantIDColumn });
     });
 
-    it("Clicking on a table row modifies the row color if category is selected", () => {
+    it("Altering the columnToCategoryMap restyles a table row to reflect current column categorization", () => {
 
         // 0. The first category and column
         const participantIDColumn = store.getters.getColumnNames()[0];
