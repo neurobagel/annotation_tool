@@ -33,21 +33,6 @@ describe("The column-linking-table component", () => {
                     ];
                 },
 
-                colorInfo: () => {
-
-                    return {
-
-                        categoryClasses: {
-
-                            "Subject ID": "category-style-1",
-                            "Age": "category-style-2",
-                            "Sex": "category-style-3",
-                            "Diagnosis": "category-style-4",
-                            "Assessment Tool": "category-style-5"
-                        }
-                    };
-                },
-
                 getColumnNames: () => {
 
                     return [
@@ -61,22 +46,43 @@ describe("The column-linking-table component", () => {
                 getColumnDescription: () => (p_columnName) => {
 
                     return "descriptions help";
-                },
-
-                columnToCategoryMap: () => {
-
-                    return {
-
-                        "participant_id": null,
-                        "age": null,
-                        "sex": null
-                    };
                 }
             },
 
             mutations: {
 
-                alterColumnCategoryMap: () => ({category, column}) => {}
+                alterColumnCategoryMapping: () => ({category, columnName}) => {
+
+                    if ( null === store.state.columnToCategoryMap[columnName] ) {
+
+                        store.state.columnToCategoryMap[columnName] = category;
+                    } else {
+
+                        store.state.columnToCategoryMap[columnName] = null;
+                    }
+                }
+            },
+
+            state: {
+
+                colorInfo: {
+
+                    categoryClasses: {
+
+                        "Subject ID": "category-style-1",
+                        "Age": "category-style-2",
+                        "Sex": "category-style-3",
+                        "Diagnosis": "category-style-4",
+                        "Assessment Tool": "category-style-5"
+                    }
+                },
+
+                columnToCategoryMap: {
+
+                    "participant_id": null,
+                    "age": null,
+                    "sex": null
+                }
             }
         };
 
@@ -139,5 +145,52 @@ describe("The column-linking-table component", () => {
 
         // 3. Assert - Make sure linking mutation is committed to the store
         cy.get("@commitSpy").should("have.been.calledWith", "alterColumnCategoryMapping", { category: subjectIDCategory, columnName: participantIDColumn });
+    });
+
+    it("Clicking on a table row modifies the row color if category is selected", () => {
+
+        // 0. The first category and column
+        const participantIDColumn = store.getters.getColumnNames()[0];
+        const subjectIDCategory = store.getters.getCategoryNames()[0];
+
+        // 1. Arrange - Mount the component
+        cy.mount(ColumnLinkingTable, {
+
+            computed: store.getters,
+            mocks: { $store: store },
+            plugins: ["bootstrap-vue"],
+            propsData: props
+        });
+
+        cy.get("[data-cy='column-linking-table-table'] tbody > :nth-child(1) > [aria-colindex='1']")
+            .contains(participantIDColumn)
+            .parent()
+            .as("tableRow");
+
+        // 2. Act and Assert
+
+        cy.get("@tableRow")
+            .invoke("css", "background-color")
+            .then((p_oldBackgroundColor) => {
+
+                // A. Categorize the first data table column with the first category
+                store.mutations.alterColumnCategoryMapping(store.state)({category: subjectIDCategory, columnName: participantIDColumn});
+
+                // B. Check to see if the color of the first row in the column linking
+                // table corresponding to the first data table column has changed
+                cy.get("@tableRow")
+                    .invoke("css", "background-color")
+                    .should("not.equal", p_oldBackgroundColor)
+                    .then(() => {
+
+                        // C. Uncategorize the first data table column
+                        store.mutations.alterColumnCategoryMapping(store.state)({category: subjectIDCategory, columnName: participantIDColumn});
+
+                        // D. Check to see if the color of the first row in the column linking has gone back to default
+                        cy.get("@tableRow")
+                            .invoke("css", "background-color")
+                            .should("equal", p_oldBackgroundColor);
+                });
+            });
     });
 });
