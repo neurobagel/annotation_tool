@@ -137,7 +137,8 @@ describe("Continuous values component", () => {
         });
 
         // Act
-        cy.get("[data-cy='selectTransform_column1']").click().contains("euro").click();
+        cy.get("[data-cy='selectTransform_column1']").click();
+        cy.get("[data-cy='selectTransform_column1']").contains("euro").click();
 
         // Assert - With euro transformation selected, preview values should have ',' replaced with '.'
         cy.get("[data-cy='dataTable-column1'] tr").eq(1)
@@ -216,7 +217,8 @@ describe("Continuous values component", () => {
         });
 
         // Act
-        cy.get("[data-cy='selectTransform_column1']").click().contains("euro").click();
+        cy.get("[data-cy='selectTransform_column1']").click();
+        cy.get("[data-cy='selectTransform_column1']").contains("euro").click();
 
         // Assert - With euro transformation selected, preview values should have ',' replaced with '.'
         cy.get("[data-cy='dataTable-column1'] tr").eq(1)
@@ -228,7 +230,8 @@ describe("Continuous values component", () => {
 
         // Act
         cy.get(".nav-link").contains("column2").click();
-        cy.get("[data-cy='selectTransform_column2']").click().contains("euro").click();
+        cy.get("[data-cy='selectTransform_column2']").click();
+        cy.get("[data-cy='selectTransform_column2']").contains("euro").click();
 
         // Assert - With euro transformation selected, preview values should have ',' replaced with '.'
         cy.get("[data-cy='dataTable-column2'] tr").eq(1)
