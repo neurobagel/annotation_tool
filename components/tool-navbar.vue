@@ -39,26 +39,30 @@
                     <b-nav-item
                         class="dark"
                         data-cy="version"
-                        href="https://github.com/neurobagel/annotation_tool/tree/v0.2.0/">
+                        href="https://github.com/neurobagel/annotation_tool/releases/tag/0.2.0"
+                        target="_blank">
                         {{ uiText.version }}
                         <!-- style="border-left: 2px solid #212529;" -->
                     </b-nav-item>
                     <b-nav-item
                         class="dark"
                         data-cy="docs"
-                        href="https://www.neurobagel.org/documentation/" >
+                        href="https://www.neurobagel.org/documentation/"
+                        target="_blank">
                         {{ uiText.documentation }}
                     </b-nav-item>
                     <b-nav-item
                         class="dark"
                         data-cy="feedback"
-                        href="https://github.com/neurobagel/annotation_tool/issues/">
+                        href="https://github.com/neurobagel/annotation_tool/issues/"
+                        target="_blank">
                         {{ uiText.feedback }}
                     </b-nav-item>
                     <b-nav-item
                         class="dark"
                         data-cy="github"
-                        href="https://github.com/neurobagel/annotation_tool/">
+                        href="https://github.com/neurobagel/annotation_tool/"
+                        target="_blank">
                         <b-icon icon="github" font-scale="1"/>
                     </b-nav-item>
 
