@@ -6,8 +6,13 @@
         <b-navbar toggleable="lg" type="light" variant="light">
 
             <!-- Brand -->
-            <b-navbar-brand class="brand-styling">
-                <h1>{{ uiText.toolName }}</h1>
+            <b-navbar-brand class="brand-styling" href="https://www.neurobagel.org/" target="_blank">
+                <b-row style="padding: 0; margin: 0;">
+                    {{ uiText.toolName }}
+                </b-row>
+                <b-row id="nav-subtitle" style="padding: 0; margin: 0;">
+                    {{ uiText.subtitle }}
+                </b-row>
             </b-navbar-brand>
 
             <!-- Collapse toggle -->
@@ -29,6 +34,36 @@
                         :to="navItem.location"
                         @click="setCurrentPage(navItem.pageName)">
                         {{ navItem.fullName }}
+                    </b-nav-item>
+                    <span id="nav-separator">|</span>
+                    <b-nav-item
+                        class="dark"
+                        data-cy="version"
+                        href="https://github.com/neurobagel/annotation_tool/releases/tag/0.2.0"
+                        target="_blank">
+                        {{ uiText.version }}
+                        <!-- style="border-left: 2px solid #212529;" -->
+                    </b-nav-item>
+                    <b-nav-item
+                        class="dark"
+                        data-cy="docs"
+                        href="https://www.neurobagel.org/documentation/"
+                        target="_blank">
+                        {{ uiText.documentation }}
+                    </b-nav-item>
+                    <b-nav-item
+                        class="dark"
+                        data-cy="feedback"
+                        href="https://github.com/neurobagel/annotation_tool/issues/"
+                        target="_blank">
+                        {{ uiText.feedback }}
+                    </b-nav-item>
+                    <b-nav-item
+                        class="dark"
+                        data-cy="github"
+                        href="https://github.com/neurobagel/annotation_tool/"
+                        target="_blank">
+                        <b-icon icon="github" font-scale="1"/>
                     </b-nav-item>
 
                 </b-navbar-nav>
@@ -61,7 +96,11 @@
                 // Text for UI elements
                 uiText: {
 
-                    toolName: "Annotation Tool"
+                    documentation: "Documentation",
+                    feedback: "Feedback",
+                    subtitle: "Harmonize phenotypic data",
+                    toolName: "Neurobagel Annotate",
+                    version: "v0.2.0"
                 }
             };
         },
@@ -117,7 +156,6 @@
 
     .brand-styling {
 
-        font-size: 2.25em;
         font-family: -apple-system,
             BlinkMacSystemFont,
             "Segoe UI",
@@ -131,12 +169,16 @@
             "Segoe UI Emoji",
             "Segoe UI Symbol",
             "Noto Color Emoji";
+        font-size: 2em;
+        font-weight: 700;
         padding-left: 1em;
     }
 
     .navbar {
 
         background-color: white !important;
+        padding-top: 1em;
+        padding-bottom: 1em;
     }
 
     .nav-item.dark a {
@@ -152,6 +194,19 @@
     .nav-item.success a {
 
         color: #28a745 !important;
+    }
+
+    #nav-separator {
+
+        font-size: 1.5em;
+    }
+
+    #nav-subtitle {
+
+        color: #470a68;
+        font-size: 16px;
+        font-weight: normal;
+        text-decoration: none;
     }
 
     #right-nav {

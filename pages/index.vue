@@ -4,7 +4,7 @@
 
         <!-- Data table file loading area -->
         <b-row>
-            <h2>{{ uiText.dataTableHeader }}</h2>
+            <h3>{{ uiText.dataTableHeader }}</h3>
         </b-row>
 
         <!-- Shows file contents -->
@@ -28,7 +28,7 @@
 
         <!-- Data dictionary file loading area -->
         <b-row>
-            <h2>{{ uiText.dataDictionaryHeader }}</h2>
+            <h3>{{ uiText.dataDictionaryHeader }}</h3>
         </b-row>
 
         <!-- Shows file contents -->
