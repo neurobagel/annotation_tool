@@ -47,7 +47,7 @@
                     <b-nav-item
                         class="dark"
                         data-cy="docs"
-                        href="https://www.neurobagel.org/documentation/"
+                        href="https://www.neurobagel.org/annotation_tool/"
                         target="_blank">
                         {{ uiText.documentation }}
                     </b-nav-item>
