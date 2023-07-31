@@ -38,7 +38,7 @@
     "eslint-config-prettier": "^8.9.0",
     "eslint-plugin-cypress": "^2.12.1",
     "eslint-plugin-prettier": "^5.0.0",
-    "eslint-plugin-vue": "^9.15.1",
+    "eslint-plugin-vue": "^9.16.1",
     "husky": "^8.0.3",
     "lint-staged": "^13.2.3",
     "push-dir": "^0.4.1"
