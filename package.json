@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "@nuxtjs/axios": "^5.13.6",
-    "bootstrap": "^4.6.1",
+    "bootstrap": "^5.3.1",
     "bootstrap-vue": "^2.23.1",
     "core-js": "^3.32.0",
     "file-saver": "^2.0.5",
