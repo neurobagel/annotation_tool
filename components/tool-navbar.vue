@@ -53,13 +53,6 @@
                     </b-nav-item>
                     <b-nav-item
                         class="dark"
-                        data-cy="feedback"
-                        href="https://github.com/neurobagel/annotation_tool/issues/"
-                        target="_blank">
-                        {{ uiText.feedback }}
-                    </b-nav-item>
-                    <b-nav-item
-                        class="dark"
                         data-cy="github"
                         href="https://github.com/neurobagel/annotation_tool/"
                         target="_blank">
@@ -97,7 +90,6 @@
                 uiText: {
 
                     documentation: "Documentation",
-                    feedback: "Feedback",
                     subtitle: "Harmonize phenotypic data",
                     toolName: "Neurobagel Annotate",
                     version: "v0.2.0"

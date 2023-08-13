@@ -4,6 +4,11 @@ export default {
 	head: {
 
 		title: "Annotation Tool",
+		script: [
+			{
+				src: 'https://w.appzi.io/w.js?token=YVTHd'
+			}
+		],
 		htmlAttrs: {
 			lang: "en"
 		},
