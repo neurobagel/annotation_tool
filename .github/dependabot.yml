@@ -6,6 +6,10 @@ updates:
     directory: '/'
     schedule:
       interval: 'weekly'
+    labels:
+      - "@ bot"
+      - "maint:dependency"
+      - "type:maintenance"
 
   - package-ecosystem: 'npm'
     directory: '/'
@@ -18,3 +22,7 @@ updates:
         update-types: ["version-update:semver-major"]
       - dependency-name: 'webpack'
         update-types: ["version-update:semver-major"]
+    labels:
+      - "@ bot"
+      - "maint:dependency"
+      - "type:maintenance"
