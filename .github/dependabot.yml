@@ -25,6 +25,6 @@ updates:
       - dependency-name: 'bootstrap'
         update-types: ["version-update:semver-major"]
     labels:
-      - "@ bot"
+      - "_bot"
       - "maint:dependency"
       - "type:maintenance"
