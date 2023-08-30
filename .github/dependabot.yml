@@ -24,7 +24,9 @@ updates:
         update-types: ["version-update:semver-major"]
       - dependency-name: 'bootstrap'
         update-types: ["version-update:semver-major"]
+      - dependency-name: 'eslint-plugin-prettier'
+        update-types: ["version-update:semver-major"]
     labels:
-      - "@ bot"
+      - "_bot"
       - "maint:dependency"
       - "type:maintenance"
