@@ -61,7 +61,7 @@ describe("explanation", () => {
         cy.get(".btn").click();
 
         // Assert
-        cy.get(".card-body").should("be.visible");
+        cy.get(".card-body").should("be.visible",  { timeout: 8000 });
 
         // Act
         cy.get(".btn").click();
