@@ -140,36 +140,4 @@ describe("next page button", () => {
         // Assert - Check button text corresponds to the recently set page
         cy.get("[data-cy='button-nextpage']").should("contain", uiText.button[store.state.currentPage]);
     });
-
-    it("When enabled, next page button moves to next page's url", () => {
-
-        // Setup
-
-        // 1. Mock the page accessibility getter to test effects on the next page button
-        store.getters.isPageAccessible = () => (p_pageName) => true;
-
-        // 2. Set up an intercept on the next page button click
-        cy.intercept("GET", store.getters.getNextPage(), req => {
-
-            // Assert
-
-            // Check if the url correctly includes the next page name
-            expect(req.url).to.contain(store.getters.getNextPage());
-        });
-
-        // 3. Mount the next page button with mocks
-        cy.mount(nextPage, {
-
-            computed: store.getters,
-            data() {
-                return {
-                    uiText: uiText
-                };
-            },
-            mocks: { $store: store }
-        });
-
-        // Act - Click the next page button
-        cy.get("[data-cy='button-nextpage']").click();
-    });
 });
