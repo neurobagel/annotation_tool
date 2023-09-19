@@ -61,6 +61,8 @@ describe("explanation", () => {
         cy.get(".btn").click();
 
         // Assert
+        // The timeout statement is set here as this test case often takes longer and fails on the CI
+        // while it passes locally. This is a workaround to make the test pass on the CI.
         cy.get(".card-body").should("be.visible",  { timeout: 8000 });
 
         // Act
