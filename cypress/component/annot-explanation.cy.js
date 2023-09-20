@@ -61,13 +61,13 @@ describe("explanation", () => {
         cy.get(".btn").click();
 
         // Assert
-        cy.get(".card-body").should("be.visible");
+        cy.get("[data-cy='test']").should("be.visible");
 
         // Act
         cy.get(".btn").click();
 
         // Assert
-        cy.get(".card-body").should("not.be.visible");
+        cy.get("[data-cy='test']").should("not.be.visible");
     });
 
     it("Displays default when no explanation provided", () => {
