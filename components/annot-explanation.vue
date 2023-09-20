@@ -11,7 +11,7 @@
             </b-card-header>
 
             <b-collapse :id="'explanation-' + uniqueID" accordion="explanation-accordion" role="tabpanel">
-                <b-card-body data-cy="test">
+                <b-card-body>
                     <b-card-text>{{ explanationText }}</b-card-text>
                 </b-card-body>
             </b-collapse>
