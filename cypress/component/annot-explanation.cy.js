@@ -33,7 +33,7 @@ describe("explanation", () => {
 
     });
 
-    it("Expands when clicked and collapsed when clicked again", () => {
+    it("Checks the content of the explanation", () => {
 
         // Act
         cy.mount(annotExplanation, {

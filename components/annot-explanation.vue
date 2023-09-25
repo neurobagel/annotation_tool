@@ -18,7 +18,6 @@
 <script>
 
     import { mapGetters } from "vuex";
-    import { v4 as uuidv4 } from "uuid";
 
     export default {
 
@@ -41,11 +40,7 @@
 
                     cardTitle: "Explanation",
                     defaultText: "No category/explanation has been provided."
-                },
-
-                // If we have multiple instances of the accoridion,
-                // the unique ID ensures that their behaviours don't interfere
-                uniqueID: uuidv4()
+                }
             };
         },
 
