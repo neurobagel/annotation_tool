@@ -3,19 +3,12 @@
     <div>
 
         <b-card no-body class="mb-1">
-
-            <b-card-header class="p-1" header-tag="header" role="tab">
-                <b-button block v-b-toggle="'explanation-' + uniqueID" variant="info">
-                    {{ uiText.cardTitle }}
-                </b-button>
+            <b-card-header class="p-1" header-tag="header" role="tab" align="center">
+                {{ uiText.cardTitle }}
             </b-card-header>
-
-            <b-collapse :id="'explanation-' + uniqueID" accordion="explanation-accordion" role="tabpanel">
-                <b-card-body>
-                    <b-card-text>{{ explanationText }}</b-card-text>
-                </b-card-body>
-            </b-collapse>
-
+            <b-card-body>
+                <b-card-text>{{ explanationText }}</b-card-text>
+            </b-card-body>
         </b-card>
 
     </div>

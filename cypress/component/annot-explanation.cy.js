@@ -33,21 +33,6 @@ describe("explanation", () => {
 
     });
 
-    it("Starts collapsed", () => {
-
-        // Act
-        cy.mount(annotExplanation, {
-
-            computed: store.getters,
-            plugins: ["bootstrap-vue"],
-            propsData: props,
-            mocks: { $store: store }
-        });
-
-        // Assert
-        cy.get(".card-body").should("be.hidden");
-    });
-
     it("Expands when clicked and collapsed when clicked again", () => {
 
         // Act
@@ -58,16 +43,10 @@ describe("explanation", () => {
             propsData: props,
             mocks: { $store: store }
         });
-        cy.get(".btn").click();
 
         // Assert
         cy.get(".card-body").should("be.visible");
-
-        // Act
-        cy.get(".btn").click();
-
-        // Assert
-        cy.get(".card-body").should("not.be.visible");
+        cy.get(".card-body").should("contain", "Age explanation");
     });
 
     it("Displays default when no explanation provided", () => {
