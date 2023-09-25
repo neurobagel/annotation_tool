@@ -59,7 +59,6 @@ describe("explanation", () => {
             mocks: { $store: store }
         });
         cy.get(".btn").click();
-        cy.wait(2000);
 
         // Assert
         cy.get(".card-body").should("be.visible");
