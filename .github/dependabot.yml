@@ -26,9 +26,6 @@ updates:
         update-types: ["version-update:semver-major"]
       - dependency-name: 'eslint-plugin-prettier'
         update-types: ["version-update:semver-major"]
-      - dependency-name: 'cypress-io/github-action'
-        update-types: ["version-update:semver-major"]
-
     labels:
       - "_bot"
       - "maint:dependency"
