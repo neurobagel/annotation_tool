@@ -30,7 +30,7 @@
   },
   "devDependencies": {
     "cy-verify-downloads": "^0.1.17",
-    "cypress": "^13.1.0",
+    "cypress": "^13.2.0",
     "editorconfig": "^2.0.0",
     "eslint": "^8.49.0",
     "eslint-config-airbnb": "^19.0.4",
