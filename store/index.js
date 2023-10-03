@@ -155,31 +155,31 @@ export const state = () => ({
         bounded: {
 
             Label: "bounded value",
-            TermURL: "nb:bounded"
+            TermURL: "nb:FromBounded"
         },
 
         euro: {
 
             Label: "european decimal value",
-            TermURL: "nb:euro"
+            TermURL: "nb:FromEuro"
         },
 
         float: {
 
             Label: "float value",
-            TermURL: "nb:float"
+            TermURL: "nb:FromFloat"
         },
 
         int: {
 
             Label: "integer value",
-            TermURL: "nb:int"
+            TermURL: "nb:FromInt"
         },
 
         iso8601: {
 
             Label: "period of time defined according to the ISO8601 standard",
-            TermURL: "nb"
+            TermURL: "nb:FromISO8601"
         }
     }
 });

@@ -41,7 +41,7 @@ const expectedContinuousJson = {
         MissingValues: [],
         Transformation: {
             Label: "bounded value",
-            TermURL: "nb:bounded"
+            TermURL: "nb:FromBounded"
         }
     },
     Description: "age of the participant",
