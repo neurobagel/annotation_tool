@@ -16,27 +16,27 @@ let store = {
 
         transformationHeuristics: {
             bounded: {
-                TermURL: "nb:bounded",
+                TermURL: "nb:FromBounded",
                 Label: "bounded value"
             },
 
             euro: {
-                TermURL: "nb:euro",
+                TermURL: "nb:FromEuro",
                 Label: "european decimal value"
             },
 
             float: {
-                TermURL: "nb:float",
+                TermURL: "nb:FromFloat",
                 Label: "float value"
             },
 
             int: {
-                TermURL: "nb:int",
+                TermURL: "nb:FromInt",
                 Label: "integer value"
             },
 
             iso8601: {
-                TermURL: "nb",
+                TermURL: "nb:FromISO8601",
                 Label: "period of time defined according to the ISO8601 standard"
             }
         }
