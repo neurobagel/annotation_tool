@@ -79,4 +79,36 @@ describe("Tool Group component", () => {
         cy.get("[data-cy='assessment-column-table']").contains("column3");
     });
 
+    it("has a dropdown with different assessment tools", () => {
+        cy.mount(categoryToolGroup, {
+            mocks: {
+
+                $store: store
+            }
+        });
+
+        cy.get("[data-cy='toolgroup-select']").should("be.visible");
+        cy.get("[data-cy='toolgroup-select']").click();
+        // For now the tool groups come from inside the component and we know they will include MOCA
+        cy.get("[data-cy='toolgroup-select']").type("MOCA{enter}");
+        cy.get("[data-cy='toolgroup-select']").should("contain", "MOCA");
+    });
+
+    it("checks tool table functionality", () => {
+        cy.mount(categoryToolGroup, {
+            mocks: {
+                $store: store
+            }
+        });
+        cy.get("[data-cy='assessment-tool-table']").should("not.exist");
+        cy.get("[data-cy='toolgroup-select']").click();
+        cy.get("[data-cy='toolgroup-select']").type("MOCA{enter}");
+        cy.get("[data-cy='toolgroup-select']").should("contain", "MOCA");
+        cy.get("[data-cy='assessment-tool-table']").should("be.visible");
+        cy.get("[data-cy='assessment-tool-table']").contains("MOCA");
+
+
+    });
+
+
 });
