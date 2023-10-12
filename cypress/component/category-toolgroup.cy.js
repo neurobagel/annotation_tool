@@ -94,7 +94,7 @@ describe("Tool Group component", () => {
         cy.get("[data-cy='toolgroup-select']").should("contain", "MOCA");
     });
 
-    it("checks tool table functionality", () => {
+    it("lets me create new tools and shows them in a table", () => {
         cy.mount(categoryToolGroup, {
             mocks: {
                 $store: store
@@ -107,8 +107,33 @@ describe("Tool Group component", () => {
         cy.get("[data-cy='assessment-tool-table']").should("be.visible");
         cy.get("[data-cy='assessment-tool-table']").contains("MOCA");
 
-
     });
 
+    it("if I have already made a tool, I cannot make another one    ", () => {
+        cy.mount(categoryToolGroup, {
+            mocks: {
+                $store: store
+            }
+        });
+        // Do it the first time
+        cy.get("[data-cy='toolgroup-select']").click();
+        cy.get("[data-cy='toolgroup-select']").type("MOCA{enter}");
+        cy.get("[data-cy='toolgroup-select']").click();
+        cy.get("[data-cy='toolgroup-select']").type("SomeOtherThing{enter}");
+        // I hope nobody asks me to explain this
+        cy.get("[data-cy='assessment-tool-table']")
+            .find("tr:contains('MOCA')")
+            .filter((index, element) => Cypress.$(element).text() === "MOCA")
+            .should("have.length", 1);
 
+        // Do it again
+        cy.get("[data-cy='toolgroup-select']").click();
+        // The reason this is expected to fail is because the dropdown will not permit the
+        // user to type and enter again. Maybe we should make the assert more explicit
+        cy.get("[data-cy='toolgroup-select']").type("MOCA{enter}");
+        cy.get("[data-cy='assessment-tool-table']")
+            .find("tr:contains('MOCA')")
+            .filter((index, element) => Cypress.$(element).text() === "MOCA")
+            .should("have.length", 1);
+    });
 });

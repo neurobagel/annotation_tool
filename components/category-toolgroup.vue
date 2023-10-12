@@ -15,7 +15,8 @@
             label="Select a tool"
             :options="toolGroups"
             outlined
-            @input="selectTool" />
+            @input="selectTool"
+            :selectable="(option) => !selectedTools.some(el => el.tool.includes(option))" />
 
         <b-table
             v-if="selectedTools.length > 0"
@@ -55,7 +56,10 @@
         },
         methods: {
             selectTool(selectedTool) {
+
                 this.selectedTools.push({ tool: selectedTool});
+                console.log('selected', selectedTool);
+                console.log('list', this.selectedTools);
 
             }
         }
