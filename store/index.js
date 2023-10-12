@@ -560,7 +560,7 @@ export const getters = {
         return columns;
     },
 
-    getUniqueColumnValues: (p_state, p_getters) => (columnName, p_maxValues="None") => {
+    getUniqueColumnValues: (p_state) => (columnName, p_maxValues="None") => {
             let uniqueColumnValues = new Set();
             for ( let index = 0; index < p_state.dataTable.length; index++ ) {
 
@@ -591,7 +591,7 @@ export const getters = {
         const columns = p_getters.getColumnsForCategory(p_category);
         const uniqueValues = {};
         for (const column of columns) {
-            uniqueValues[column] = p_getters.getUniqueColumnValues(column);
+            uniqueValues[column] = p_getters.getUniqueColumnValues(column, p_maxValues);
         }
         return uniqueValues;
     },
