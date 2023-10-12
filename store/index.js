@@ -66,6 +66,12 @@ export const state = () => ({
             componentName: "annot-categorical",
             explanation: "This is an explanation for how to annotate diagnosis.",
             identifier: "nb:Diagnosis"
+        },
+        "Assessment Tool": {
+
+            componentName: "annot-categorical",
+            explanation: "This is an explanation for how to annotate diagnosis.",
+            identifier: "nb:Diagnosis"
         }
     },
 
@@ -541,41 +547,52 @@ export const getters = {
         return Object.keys(p_state.transformationHeuristics);
     },
 
-    getUniqueValues: (p_state) => (p_category, p_maxValues="None") => {
-
-        // 1. Construct an object containing a list of unique values for each column
-        const uniqueValues = {};
+    getColumnsForCategory: (p_state) => (p_category) => {
+        const columns = [];
         for ( const columnName in p_state.columnToCategoryMap ) {
 
-            // A. Create a new list for values for each column linked to the given category
             if ( p_category === p_state.columnToCategoryMap[columnName] ) {
 
-                // I. Save unique values for each column
-                uniqueValues[columnName] = new Set();
-                for ( let index = 0; index < p_state.dataTable.length; index++ ) {
-
-                    // a. Check to see if this value is marked as 'missing' for this column
-                    let value = p_state.dataTable[index][columnName];
-                    if ( !p_state.dataDictionary?.annotated[columnName].missingValues.includes(value) ) {
-
-                        uniqueValues[columnName].add(value);
-                    }
-                }
-
-                // II. Convert the unique values list for this column from a set to an array
-                uniqueValues[columnName] = [...uniqueValues[columnName]];
-
-                // III. Trim the value list if a maximum value amount was given
-                // NOTE: Trimming is done here instead of only looking at p_maxValues rows
-                // just in case there are blank entries for columns in the data table
-                if ( "None" !== p_maxValues ) {
-
-                    uniqueValues[columnName] = uniqueValues[columnName].slice(0, p_maxValues);
-                }
+                columns.push(columnName);
             }
         }
 
+        return columns;
+    },
+
+    getUniqueColumnValues: (p_state, p_getters) => (columnName, p_maxValues="None") => {
+            let uniqueColumnValues = new Set();
+            for ( let index = 0; index < p_state.dataTable.length; index++ ) {
+
+                // a. Check to see if this value is marked as 'missing' for this column
+                let value = p_state.dataTable[index][columnName];
+                if ( !p_state.dataDictionary?.annotated[columnName].missingValues.includes(value) ) {
+
+                    uniqueColumnValues.add(value);
+                }
+            }
+
+            // II. Convert the unique values list for this column from a set to an array
+            uniqueColumnValues = [...uniqueColumnValues];
+
+            // III. Trim the value list if a maximum value amount was given
+            // NOTE: Trimming is done here instead of only looking at p_maxValues rows
+            // just in case there are blank entries for columns in the data table
+            if ( "None" !== p_maxValues ) {
+
+                uniqueColumnValues = uniqueColumnValues.slice(0, p_maxValues);
+            }
+
         // Return an object containing a list of unique values for each column
+        return uniqueColumnValues;
+    },
+
+    getUniqueValues: (p_state, p_getters) => (p_category, p_maxValues="None") => {
+        const columns = p_getters.getColumnsForCategory(p_category);
+        const uniqueValues = {};
+        for (const column of columns) {
+            uniqueValues[column] = p_getters.getUniqueColumnValues(column);
+        }
         return uniqueValues;
     },
 

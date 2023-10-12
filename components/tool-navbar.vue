@@ -56,7 +56,7 @@
                         data-cy="github"
                         href="https://github.com/neurobagel/annotation_tool/"
                         target="_blank">
-                        <b-icon icon="github" font-scale="1"/>
+                        <b-icon icon="github" font-scale="1" />
                     </b-nav-item>
 
                 </b-navbar-nav>
