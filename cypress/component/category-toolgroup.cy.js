@@ -88,7 +88,6 @@ describe("Tool Group component", () => {
         });
 
         cy.get("[data-cy='toolgroup-select']").should("be.visible");
-        cy.get("[data-cy='toolgroup-select']").click();
         // For now the tool groups come from inside the component and we know they will include MOCA
         cy.get("[data-cy='toolgroup-select']").type("MOCA{enter}");
         cy.get("[data-cy='toolgroup-select']").should("contain", "MOCA");
@@ -101,7 +100,6 @@ describe("Tool Group component", () => {
             }
         });
         cy.get("[data-cy='assessment-tool-table']").should("not.exist");
-        cy.get("[data-cy='toolgroup-select']").click();
         cy.get("[data-cy='toolgroup-select']").type("MOCA{enter}");
         cy.get("[data-cy='toolgroup-select']").should("contain", "MOCA");
         cy.get("[data-cy='assessment-tool-table']").should("be.visible");
@@ -116,9 +114,7 @@ describe("Tool Group component", () => {
             }
         });
         // Do it the first time
-        cy.get("[data-cy='toolgroup-select']").click();
         cy.get("[data-cy='toolgroup-select']").type("MOCA{enter}");
-        cy.get("[data-cy='toolgroup-select']").click();
         cy.get("[data-cy='toolgroup-select']").type("SomeOtherThing{enter}");
         // I hope nobody asks me to explain this
         cy.get("[data-cy='assessment-tool-table']")
@@ -127,7 +123,6 @@ describe("Tool Group component", () => {
             .should("have.length", 1);
 
         // Do it again
-        cy.get("[data-cy='toolgroup-select']").click();
         // The reason this is expected to fail is because the dropdown will not permit the
         // user to type and enter again. Maybe we should make the assert more explicit
         cy.get("[data-cy='toolgroup-select']").type("MOCA{enter}");
@@ -143,7 +138,6 @@ describe("Tool Group component", () => {
                 $store: store
             }
         });
-        cy.get("[data-cy='toolgroup-select']").click();
         cy.get("[data-cy='toolgroup-select']").type("MOCA{enter}");
 
         // Grab the element background color before beiing
@@ -156,11 +150,15 @@ describe("Tool Group component", () => {
         });
     });
 
-    it("when I select a tool and then click on a column, the column gets highlighted", () => {
+    it("when a tool is selected and I click on a column, the column gets highlighted", () => {
         cy.mount(categoryToolGroup, {
             mocks: {
                 $store: store
             }
         });
+        cy.get("[data-cy='toolgroup-select']").type("MOCA{enter}");
+        // select the first tool
+        cy.get("[data-cy='assessment-tool-table']").find("tr:contains('MOCA')").click();
+
     });
 });
