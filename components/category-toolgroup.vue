@@ -12,13 +12,6 @@
             @row-selected="highlightRow"
             :tbody-tr-class="styleTableRow"
             thead-class="hidden" />
-        <b-table
-            data-cy="assessment-column-table"
-            outlined
-            head-variant="dark"
-            :items="tableRows"
-            selected-variant=""
-            thead-class="hidden" />
 
         <v-select
             data-cy="toolgroup-select"
@@ -27,6 +20,17 @@
             outlined
             @input="selectTool"
             :selectable="(option) => !selectedTools.some(el => el.tool.includes(option))" />
+
+        <b-table
+            data-cy="assessment-column-table"
+            outlined
+            head-variant="dark"
+            :items="tableRows"
+            selected-variant=""
+            thead-class="hidden"
+            @row-clicked="mapColumnToTool"
+            :tbody-tr-class="styleRow" />
+
 
     </div>
 </template>
@@ -40,7 +44,13 @@
             return {
                 toolGroups: ["MOCA", "UPDRSIII", "SomeOtherThing", "AnotherThing"],
                 selectedTools: [],
-                selectedTool: null
+                selectedTool: null,
+                //Todo: populate keys using columns that are coming from the store
+                column2ToolMap: {
+                    column1: null,
+                    column2: null,
+                    column3: null
+                }
             };
 
         },
@@ -73,6 +83,20 @@
                     return "selected-tool";
                 }
                 return "";
+            },
+            mapColumnToTool(row) {
+                if (this.column2ToolMap[row.column] === this.selectedTool) {
+                    this.column2ToolMap[row.column] = null;
+                } else {
+                    this.column2ToolMap[row.column] = this.selectedTool;
+                }
+            },
+            styleRow(p_row) {
+                if (this.column2ToolMap[p_row.column] === this.selectedTool) {
+                    return "selected-tool";
+                } else {
+                    return "";
+                }
             }
         }
     };

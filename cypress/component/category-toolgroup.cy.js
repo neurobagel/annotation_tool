@@ -159,6 +159,13 @@ describe("Tool Group component", () => {
         cy.get("[data-cy='toolgroup-select']").type("MOCA{enter}");
         // select the first tool
         cy.get("[data-cy='assessment-tool-table']").find("tr:contains('MOCA')").click();
-
+        // Then the column gets highlighted
+        cy.get("[data-cy='assessment-column-table']").find("tr:contains('column1')")
+        .invoke("css", "background-color").then((InitialBackgroundColor) => {
+            cy.get("[data-cy='assessment-column-table']")
+            .find("tr:contains('column1')").click();
+            // assert that element has different color after
+            cy.get("[data-cy='assessment-column-table']").find("tr:contains('column1')").should("not.have.css", "background-color", InitialBackgroundColor);
+        });
     });
 });
