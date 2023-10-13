@@ -136,4 +136,26 @@ describe("Tool Group component", () => {
             .filter((index, element) => Cypress.$(element).text() === "MOCA")
             .should("have.length", 1);
     });
+
+    it("when I click on a tool the tool gets highlighted", () => {
+        cy.mount(categoryToolGroup, {
+            mocks: {
+                $store: store
+            }
+        });
+        cy.get("[data-cy='toolgroup-select']").click();
+        cy.get("[data-cy='toolgroup-select']").type("MOCA{enter}");
+        // assert that the element has white background
+        cy.get("[data-cy='assessment-tool-table']").contains("MOCA").should("have.css", "background-color", "rgb(255, 255, 255)");
+        cy.get("[data-cy='assessment-tool-table']").contains("MOCA").click();
+        cy.get("[data-cy='assessment-tool-table']").contains("MOCA").should("have.css", "background-color", "rgb(255, 0, 0)");
+    });
+
+    it("when I selet a tool and then click on a column, the column gets highlighted", () => {
+        cy.mount(categoryToolGroup, {
+            mocks: {
+                $store: store
+            }
+        });
+    });
 });
