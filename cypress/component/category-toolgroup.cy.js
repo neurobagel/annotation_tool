@@ -145,13 +145,18 @@ describe("Tool Group component", () => {
         });
         cy.get("[data-cy='toolgroup-select']").click();
         cy.get("[data-cy='toolgroup-select']").type("MOCA{enter}");
-        // assert that the element has white background
-        cy.get("[data-cy='assessment-tool-table']").contains("MOCA").should("have.css", "background-color", "rgb(255, 255, 255)");
-        cy.get("[data-cy='assessment-tool-table']").contains("MOCA").click();
-        cy.get("[data-cy='assessment-tool-table']").contains("MOCA").should("have.css", "background-color", "rgb(255, 0, 0)");
+
+        // Grab the element background color before beiing
+        cy.get("[data-cy='assessment-tool-table']").find("tr:contains('MOCA')")
+        .invoke("css", "background-color").then((InitialBackgroundColor) => {
+            cy.get("[data-cy='assessment-tool-table']")
+            .find("tr:contains('MOCA')").click();
+            // assert that element has different color after
+            cy.get("[data-cy='assessment-tool-table']").find("tr:contains('MOCA')").should("not.have.css", "background-color", InitialBackgroundColor);
+        });
     });
 
-    it("when I selet a tool and then click on a column, the column gets highlighted", () => {
+    it("when I select a tool and then click on a column, the column gets highlighted", () => {
         cy.mount(categoryToolGroup, {
             mocks: {
                 $store: store

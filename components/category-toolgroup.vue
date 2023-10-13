@@ -1,12 +1,22 @@
 <template>
     <div>
         <b-table
-            data-cy="assessment-column-table"
+            v-if="selectedTools.length > 0"
+            data-cy="assessment-tool-table"
             outlined
             selectable
             head-variant="dark"
-            :items="tableRows"
+            :items="selectedTools"
             select-mode="single"
+            selected-variant=""
+            @row-selected="highlightRow"
+            :tbody-tr-class="styleTableRow"
+            thead-class="hidden" />
+        <b-table
+            data-cy="assessment-column-table"
+            outlined
+            head-variant="dark"
+            :items="tableRows"
             selected-variant=""
             thead-class="hidden" />
 
@@ -18,16 +28,6 @@
             @input="selectTool"
             :selectable="(option) => !selectedTools.some(el => el.tool.includes(option))" />
 
-        <b-table
-            v-if="selectedTools.length > 0"
-            data-cy="assessment-tool-table"
-            outlined
-            selectable
-            head-variant="dark"
-            :items="selectedTools"
-            select-mode="single"
-            selected-variant=""
-            thead-class="hidden" />
     </div>
 </template>
 
@@ -39,7 +39,8 @@
         data() {
             return {
                 toolGroups: ["MOCA", "UPDRSIII", "SomeOtherThing", "AnotherThing"],
-                selectedTools: []
+                selectedTools: [],
+                selectedTool: null
             };
 
         },
@@ -58,10 +59,28 @@
             selectTool(selectedTool) {
 
                 this.selectedTools.push({ tool: selectedTool});
-                console.log('selected', selectedTool);
-                console.log('list', this.selectedTools);
 
+            },
+            highlightRow(rows) {
+                if ( 0 !== rows.length ) {
+                    this.selectedTool = rows[0].tool;
+                }
+
+            },
+
+            styleTableRow(p_row) {
+                if (p_row.tool === this.selectedTool) {
+                    return "selected-tool";
+                }
+                return "";
             }
         }
     };
 </script>
+<style>
+
+.selected-tool {
+    background-color: red !important;
+}
+
+</style>
