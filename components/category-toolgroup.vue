@@ -1,37 +1,44 @@
 <template>
     <div>
-        <b-table
-            v-if="selectedTools.length > 0"
-            data-cy="assessment-tool-table"
-            outlined
-            selectable
-            head-variant="dark"
-            :items="selectedTools"
-            select-mode="single"
-            selected-variant=""
-            @row-selected="highlightRow"
-            :tbody-tr-class="styleTableRow"
-            thead-class="hidden" />
+        <b-row>
+            <b-col cols="6">
+                <v-select
+                    data-cy="toolgroup-select"
+                    label="Select a tool"
+                    :options="toolGroups"
+                    outlined
+                    @input="selectTool"
+                    :selectable="(option) => !selectedTools.some(el => el.tool.includes(option))" />
+            </b-col>
+        </b-row>
+        <b-row>
+            <b-col>
+                <b-table
+                    v-if="selectedTools.length > 0"
+                    data-cy="assessment-tool-table"
+                    outlined
+                    selectable
+                    head-variant="dark"
+                    :items="selectedTools"
+                    select-mode="single"
+                    selected-variant=""
+                    @row-selected="highlightRow"
+                    :tbody-tr-class="styleTableRow"
+                    thead-class="hidden" />
 
-        <v-select
-            data-cy="toolgroup-select"
-            label="Select a tool"
-            :options="toolGroups"
-            outlined
-            @input="selectTool"
-            :selectable="(option) => !selectedTools.some(el => el.tool.includes(option))" />
-
-        <b-table
-            data-cy="assessment-column-table"
-            outlined
-            head-variant="dark"
-            :items="tableRows"
-            selected-variant=""
-            thead-class="hidden"
-            @row-clicked="mapColumnToTool"
-            :tbody-tr-class="styleRow" />
-
-
+            </b-col>
+            <b-col>
+                <b-table
+                    data-cy="assessment-column-table"
+                    outlined
+                    head-variant="dark"
+                    :items="tableRows"
+                    selected-variant=""
+                    thead-class="hidden"
+                    @row-clicked="mapColumnToTool"
+                    :tbody-tr-class="styleRow" />
+            </b-col>
+        </b-row>
     </div>
 </template>
 
@@ -75,7 +82,6 @@
                 if ( 0 !== rows.length ) {
                     this.selectedTool = rows[0].tool;
                 }
-
             },
 
             styleTableRow(p_row) {
