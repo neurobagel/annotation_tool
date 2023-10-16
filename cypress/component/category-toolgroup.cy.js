@@ -34,17 +34,19 @@ describe("Tool Group component", () => {
             ],
 
             toolTerms: [
-                {label: 'MOCA', id: 'cogatlas:MOCA'},
-                {label: 'UPDRSIII', id: 'cogatlas:UPDRSIII'},
-                {label: 'SomeOtherThing', id: 'cogatlas:SomeOtherThing'},
-                {label: 'AnotherThing', id: 'cogatlas:AnotherThing'}
+                {label: 'MOCA', id: 'cogatlas:MOCA', selected: false},
+                {label: 'UPDRSIII', id: 'cogatlas:UPDRSIII', selected: false},
+                {label: 'SomeOtherThing', id: 'cogatlas:SomeOtherThing', selected: false},
+                {label: 'AnotherThing', id: 'cogatlas:AnotherThing', selected: false}
             ]
         };
         store = {
 
+            commit: () => {},
             state: state,
             getters: {
-                getColumnsForCategory: getters.getColumnsForCategory(state)
+                getColumnsForCategory: getters.getColumnsForCategory(state),
+                getSelectedTools: getters.getSelectedTools(state)
             }
         };
     });
@@ -86,7 +88,7 @@ describe("Tool Group component", () => {
         cy.get("[data-cy='assessment-column-table']").contains("column3");
     });
 
-    it("has a dropdown with different assessment tools", () => {
+    it("gets assessment tool names from the store and shows them in a dropdown", () => {
         cy.mount(categoryToolGroup, {
             mocks: {
 
@@ -100,17 +102,17 @@ describe("Tool Group component", () => {
         cy.get("[data-cy='toolgroup-select']").should("contain", "MOCA");
     });
 
-    it("lets me create new tools and shows them in a table", () => {
+    it("selecting a tool group fires a createTool mutation", () => {
+        cy.spy(store, "commit").as("commitSpy");
         cy.mount(categoryToolGroup, {
             mocks: {
                 $store: store
             }
         });
-        cy.get("[data-cy='assessment-tool-table']").should("not.exist");
+
         cy.get("[data-cy='toolgroup-select']").type("MOCA{enter}");
-        cy.get("[data-cy='toolgroup-select']").should("contain", "MOCA");
-        cy.get("[data-cy='assessment-tool-table']").should("be.visible");
-        cy.get("[data-cy='assessment-tool-table']").contains("MOCA");
+        cy.get("@commitSpy").should("have.been.calledWith", "createTool", { identifier: 'cogatlas:MOCA', label: 'MOCA' });
+
 
     });
 

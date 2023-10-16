@@ -44,7 +44,7 @@
 
 <script>
 
-    import { mapGetters, mapState } from 'vuex';
+    import { mapGetters, mapState, mapMutations } from 'vuex';
 
     export default {
         data() {
@@ -80,11 +80,17 @@
             }
         },
         methods: {
+            ...mapMutations([
+
+                "createTool"
+            ]),
             selectTool(selectedTool) {
-                this.selectedTools.push({
-                    tool: selectedTool.label,
-                    identifier: selectedTool.id
+
+                this.createTool({
+                    identifier: selectedTool.id,
+                    label: selectedTool.label
                 });
+
             },
             highlightRow(rows) {
                 if ( 0 !== rows.length ) {
