@@ -4,11 +4,10 @@
             <b-col cols="6">
                 <v-select
                     data-cy="toolgroup-select"
-                    label="Select a tool"
-                    :options="toolGroups"
+                    :options="toolTerms"
                     outlined
                     @input="selectTool"
-                    :selectable="(option) => !selectedTools.some(el => el.tool.includes(option))" />
+                    :selectable="(option) => !selectedTools.some(el => el.tool.includes(option.label))" />
             </b-col>
         </b-row>
         <b-row>
@@ -44,12 +43,11 @@
 
 <script>
 
-    import { mapGetters } from 'vuex';
+    import { mapGetters, mapState } from 'vuex';
 
     export default {
         data() {
             return {
-                toolGroups: ["MOCA", "UPDRSIII", "SomeOtherThing", "AnotherThing"],
                 selectedTools: [],
                 selectedTool: null,
                 //Todo: populate keys using columns that are coming from the store
@@ -66,6 +64,11 @@
             ...mapGetters([
                 'getColumnsForCategory'
             ]),
+
+            ...mapState([
+
+                "toolTerms"
+            ]),
             tableRows() {
                 return this.getColumnsForCategory('Assessment Tool').map(column => ({
                     column: column
@@ -74,9 +77,8 @@
         },
         methods: {
             selectTool(selectedTool) {
-
-                this.selectedTools.push({ tool: selectedTool});
-
+                console.log('someone selected', selectedTool);
+                this.selectedTools.push({ tool: selectedTool.label});
             },
             highlightRow(rows) {
                 if ( 0 !== rows.length ) {

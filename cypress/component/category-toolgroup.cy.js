@@ -31,6 +31,13 @@ describe("Tool Group component", () => {
                 { column1: 2, column2: "column2_value2", column3: "column3_value2" },
                 { column1: 1, column2: "column2_value3", column3: "column3_value3" },
                 { column1: 3, column2: "column2_value2", column3: "column3_value4" }
+            ],
+
+            toolTerms: [
+                {label: 'MOCA', id: 'cogatlas:MOCA'},
+                {label: 'UPDRSIII', id: 'cogatlas:UPDRSIII'},
+                {label: 'SomeOtherThing', id: 'cogatlas:SomeOtherThing'},
+                {label: 'AnotherThing', id: 'cogatlas:AnotherThing'}
             ]
         };
         store = {
