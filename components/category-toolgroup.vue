@@ -50,7 +50,10 @@
         data() {
             return {
                 selectedTools: [],
-                selectedTool: null,
+                selectedTool: {
+                    tool: null,
+                    identifier: null
+                },
                 //Todo: populate keys using columns that are coming from the store
                 column2ToolMap: {
                     column1: null,
@@ -78,7 +81,6 @@
         },
         methods: {
             selectTool(selectedTool) {
-                console.log('someone selected', selectedTool);
                 this.selectedTools.push({
                     tool: selectedTool.label,
                     identifier: selectedTool.id
@@ -86,25 +88,25 @@
             },
             highlightRow(rows) {
                 if ( 0 !== rows.length ) {
-                    this.selectedTool = rows[0].tool;
+                    this.selectedTool = rows[0];
                 }
             },
 
             styleTableRow(p_row) {
-                if (p_row.tool === this.selectedTool) {
+                if (p_row.identifier === this.selectedTool.identifier) {
                     return "selected-tool";
                 }
                 return "";
             },
             mapColumnToTool(row) {
-                if (this.column2ToolMap[row.column] === this.selectedTool) {
+                if (this.column2ToolMap[row.column] === this.selectedTool.identifier) {
                     this.column2ToolMap[row.column] = null;
                 } else {
-                    this.column2ToolMap[row.column] = this.selectedTool;
+                    this.column2ToolMap[row.column] = this.selectedTool.identifier;
                 }
             },
             styleRow(p_row) {
-                if (this.column2ToolMap[p_row.column] === this.selectedTool) {
+                if (this.column2ToolMap[p_row.column] === this.selectedTool.identifier) {
                     return "selected-tool";
                 } else {
                     return "";
