@@ -4,6 +4,14 @@ import { getters } from "~/store";
 let store;
 let state;
 
+// TODO see if we can replace this by manipulating state and passing by reference
+const makeGetters =(state) => {
+    return {
+        getColumnsForCategory: getters.getColumnsForCategory(state),
+        getSelectedTools: getters.getSelectedTools(state)
+    };
+};
+
 describe("Tool Group component", () => {
 
     beforeEach(() => {
@@ -13,6 +21,12 @@ describe("Tool Group component", () => {
                 column1: "Assessment Tool",
                 column2: "Age",
                 column3: "Assessment Tool"
+            },
+
+            column2ToolMap: {
+                column1: 'cogatlas:MOCA',
+                column2: null,
+                column3: 'cogatlas:UPDRSIII'
             },
 
             dataDictionary: {
@@ -44,10 +58,7 @@ describe("Tool Group component", () => {
 
             commit: () => {},
             state: state,
-            getters: {
-                getColumnsForCategory: getters.getColumnsForCategory(state),
-                getSelectedTools: getters.getSelectedTools(state)
-            }
+            getters: makeGetters(state)
         };
     });
 
@@ -97,7 +108,6 @@ describe("Tool Group component", () => {
         });
 
         cy.get("[data-cy='toolgroup-select']").should("be.visible");
-        // For now the tool groups come from inside the component and we know they will include MOCA
         cy.get("[data-cy='toolgroup-select']").type("MOCA{enter}");
         cy.get("[data-cy='toolgroup-select']").should("contain", "MOCA");
     });
@@ -116,38 +126,62 @@ describe("Tool Group component", () => {
 
     });
 
-    it("if I have already made a tool, I cannot make another one    ", () => {
+    it("when a tool is selected in the store, it appears in the tool table", () => {
+        store.state.toolTerms[0]['selected'] = true;
+        store.getters = makeGetters(store.state);
         cy.mount(categoryToolGroup, {
             mocks: {
                 $store: store
             }
         });
-        // Do it the first time
-        cy.get("[data-cy='toolgroup-select']").type("MOCA{enter}");
-        cy.get("[data-cy='toolgroup-select']").type("SomeOtherThing{enter}");
-        // I hope nobody asks me to explain this
-        cy.get("[data-cy='assessment-tool-table']")
-            .find("tr:contains('MOCA')")
-            .filter((index, element) => Cypress.$(element).text() === "MOCA")
-            .should("have.length", 1);
 
-        // Do it again
-        // The reason this is expected to fail is because the dropdown will not permit the
-        // user to type and enter again. Maybe we should make the assert more explicit
-        cy.get("[data-cy='toolgroup-select']").type("MOCA{enter}");
-        cy.get("[data-cy='assessment-tool-table']")
-            .find("tr:contains('MOCA')")
-            .filter((index, element) => Cypress.$(element).text() === "MOCA")
-            .should("have.length", 1);
+        cy.get("[data-cy='assessment-tool-table']").contains('MOCA');
+    });
+
+    it("tools in the tool-table start unselected and become styled when clicked", () => {
+        store.state.toolTerms[0]['selected'] = true;
+        store.state.toolTerms[2]['selected'] = true;
+        store.getters = makeGetters(store.state);
+        cy.mount(categoryToolGroup, {
+            mocks: {
+                $store: store
+            }
+        });
+
+        cy.get("[data-cy='assessment-tool-table']").find("tr:contains('MOCA')")
+        .invoke("css", "background-color").then((InitialBackgroundColor) => {
+            cy.get("[data-cy='assessment-tool-table']")
+            .find("tr:contains('MOCA')").click();
+            // assert that element has different color after
+            cy.get("[data-cy='assessment-tool-table']").find("tr:contains('MOCA')").should("not.have.css", "background-color", InitialBackgroundColor);
+        });
+    });
+
+    it("if a tool is already created, trying to create it again has no effect", () => {
+        store.state.toolTerms[0]['selected'] = true;
+        store.getters = makeGetters(store.state);
+
+        cy.spy(store, "commit").as("commitSpy");
+
+        cy.mount(categoryToolGroup, {
+            mocks: {
+                $store: store
+            }
+        });
+        cy.get("[data-cy='assessment-tool-table']").contains("MOCA").click();
+        cy.get("@commitSpy").should("not.have.been.called");
+
     });
 
     it("when I click on a tool the tool gets highlighted", () => {
+        store.state.toolTerms[0]['selected'] = true;
+        store.getters = makeGetters(store.state);
+
         cy.mount(categoryToolGroup, {
             mocks: {
                 $store: store
             }
         });
-        cy.get("[data-cy='toolgroup-select']").type("MOCA{enter}");
 
         // Grab the element background color before beiing
         cy.get("[data-cy='assessment-tool-table']").find("tr:contains('MOCA')")
@@ -159,22 +193,27 @@ describe("Tool Group component", () => {
         });
     });
 
-    it("when a tool is selected and I click on a column, the column gets highlighted", () => {
+    it("when a column is mapped to a tool and the tool gets selected, the column gets highlighted", () => {
+        // MOCA
+        store.state.toolTerms[0]['selected'] = true;
+        // UPDRS
+        store.state.toolTerms[1]['selected'] = true;
+        store.getters = makeGetters(store.state);
+
         cy.mount(categoryToolGroup, {
             mocks: {
                 $store: store
             }
         });
-        cy.get("[data-cy='toolgroup-select']").type("MOCA{enter}");
-        // select the first tool
+        // Starting out with a different tool selected
         cy.get("[data-cy='assessment-tool-table']").find("tr:contains('MOCA')").click();
-        // Then the column gets highlighted
-        cy.get("[data-cy='assessment-column-table']").find("tr:contains('column1')")
+        cy.get("[data-cy='assessment-column-table']").find("tr:contains('column3')")
         .invoke("css", "background-color").then((InitialBackgroundColor) => {
-            cy.get("[data-cy='assessment-column-table']")
-            .find("tr:contains('column1')").click();
+            cy.get("[data-cy='assessment-tool-table']")
+            // Selecting the tool my column is mapped to should change my columns styling
+            .find("tr:contains('UPDRSIII')").click();
             // assert that element has different color after
-            cy.get("[data-cy='assessment-column-table']").find("tr:contains('column1')").should("not.have.css", "background-color", InitialBackgroundColor);
+            cy.get("[data-cy='assessment-column-table']").find("tr:contains('column3')").should("not.have.css", "background-color", InitialBackgroundColor);
         });
     });
 });

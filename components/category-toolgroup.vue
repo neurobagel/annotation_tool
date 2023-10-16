@@ -7,21 +7,21 @@
                     :options="toolTerms"
                     outlined
                     @input="selectTool"
-                    :selectable="(option) => !selectedTools.some(el => el.tool.includes(option.label))" />
+                    :selectable="(option) => !getSelectedTools.some(el => el.id.includes(option.id))" />
             </b-col>
         </b-row>
         <b-row>
             <b-col>
                 <b-table
-                    v-if="selectedTools.length > 0"
+                    v-if="getSelectedTools.length > 0"
                     data-cy="assessment-tool-table"
                     outlined
                     selectable
                     head-variant="dark"
-                    :items="selectedTools"
+                    :items="getSelectedTools"
                     select-mode="single"
                     selected-variant=""
-                    :fields="[{ key: 'tool' }]"
+                    :fields="[{ key: 'label' }]"
                     @row-selected="highlightRow"
                     :tbody-tr-class="styleTableRow"
                     thead-class="hidden" />
@@ -49,16 +49,9 @@
     export default {
         data() {
             return {
-                selectedTools: [],
                 selectedTool: {
                     tool: null,
                     identifier: null
-                },
-                //Todo: populate keys using columns that are coming from the store
-                column2ToolMap: {
-                    column1: null,
-                    column2: null,
-                    column3: null
                 }
             };
 
@@ -66,12 +59,14 @@
 
         computed: {
             ...mapGetters([
-                'getColumnsForCategory'
+                'getColumnsForCategory',
+                'getSelectedTools'
             ]),
 
             ...mapState([
 
-                "toolTerms"
+                "toolTerms",
+                "column2ToolMap"
             ]),
             tableRows() {
                 return this.getColumnsForCategory('Assessment Tool').map(column => ({
@@ -85,6 +80,7 @@
                 "createTool"
             ]),
             selectTool(selectedTool) {
+                console.log('getter says', this.getSelectedTools);
 
                 this.createTool({
                     identifier: selectedTool.id,
@@ -96,10 +92,12 @@
                 if ( 0 !== rows.length ) {
                     this.selectedTool = rows[0];
                 }
+                console.log('selected is', this.selectedTool);
             },
 
             styleTableRow(p_row) {
-                if (p_row.identifier === this.selectedTool.identifier) {
+                console.log('row is', p_row, 'and selected is', this.selectedTool);
+                if (p_row.id === this.selectedTool.id) {
                     return "selected-tool";
                 }
                 return "";
@@ -112,7 +110,7 @@
                 }
             },
             styleRow(p_row) {
-                if (this.column2ToolMap[p_row.column] === this.selectedTool.identifier) {
+                if (this.column2ToolMap[p_row.column] === this.selectedTool.id) {
                     return "selected-tool";
                 } else {
                     return "";
