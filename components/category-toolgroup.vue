@@ -21,6 +21,7 @@
                     :items="selectedTools"
                     select-mode="single"
                     selected-variant=""
+                    :fields="[{ key: 'tool' }]"
                     @row-selected="highlightRow"
                     :tbody-tr-class="styleTableRow"
                     thead-class="hidden" />
@@ -78,7 +79,10 @@
         methods: {
             selectTool(selectedTool) {
                 console.log('someone selected', selectedTool);
-                this.selectedTools.push({ tool: selectedTool.label});
+                this.selectedTools.push({
+                    tool: selectedTool.label,
+                    identifier: selectedTool.id
+                });
             },
             highlightRow(rows) {
                 if ( 0 !== rows.length ) {
