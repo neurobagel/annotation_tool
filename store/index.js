@@ -611,7 +611,7 @@ export const getters = {
         return description;
     },
 
-    isPageAccessible: (p_state) => (p_pageName) => {
+    isPageAccessible: (p_state, p_getters) => (p_pageName) => {
 
         let pageAccessible = false;
 
@@ -643,10 +643,13 @@ export const getters = {
                                                                     null !== category)
                                                             .length >= 1 );
 
+                // 3. Make sure all columns about assessment tools are mapped to something
+                const allAssessmentColumnsAreMapped = p_getters.getColumnsForCategory("Assessment Tool")
+                    .every(column => p_state.columnToToolMap[column] !== null);
                 // Annotation page is only accessible if one (and only one)
                 // column has been categorized as 'Subject ID' and if at least
                 // one category other than Subject ID has been categorized
-                pageAccessible = singleSubjectIDColumn && notOnlySubjectIDCategorized;
+                pageAccessible = singleSubjectIDColumn && notOnlySubjectIDCategorized && allAssessmentColumnsAreMapped;
 
                 break;
             }
