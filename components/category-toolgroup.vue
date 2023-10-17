@@ -81,12 +81,12 @@
                 "alterColumnToToolMapping"
             ]),
             selectTool(selectedTool) {
-
-                this.createToolGroup({
-                    identifier: selectedTool.identifier,
-                    label: selectedTool.label
-                });
-
+                if ( selectedTool !== null ) {
+                    this.createToolGroup({
+                        identifier: selectedTool.identifier,
+                        label: selectedTool.label
+                    });
+                }
             },
             highlightRow(rows) {
                 if ( 0 !== rows.length ) {
