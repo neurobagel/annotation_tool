@@ -770,6 +770,10 @@ export const mutations = {
         // Column to category map lists all columns as keys with default value of null
         p_state.columnToCategoryMap =
             Object.fromEntries(p_columns.map((column) => [column, null]));
+        // TODO: consider refactoring this so we don't initialize all columns
+        // but only the ones that are assigned to assessment tool
+        p_state.columnToToolMap =
+            Object.fromEntries(p_columns.map((column) => [column, null]));
     },
 
     initializeDataDictionary(p_state) {
