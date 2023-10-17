@@ -99,6 +99,25 @@ describe("Tool Group component", () => {
         cy.get("[data-cy='assessment-column-table']").contains("column3");
     });
 
+    it("before a tool is selected, all columns are unstyled", () => {
+        store.state.columnToToolMap = {
+                column1: null,
+                column2: null,
+                column3: null
+        };
+
+        cy.mount(categoryToolGroup, {
+            mocks: {
+
+                $store: store
+            }
+        });
+
+        cy.get("[data-cy='assessment-column-table']").find("tr:contains('column1')").should('not.have.class', 'selected-tool');
+        cy.get("[data-cy='assessment-column-table']").find("tr:contains('column3')").should('not.have.class', 'selected-tool');
+
+    });
+
     it("gets assessment tool names from the store and shows them in a dropdown", () => {
         cy.mount(categoryToolGroup, {
             mocks: {

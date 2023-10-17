@@ -104,7 +104,10 @@
                 this.alterColumnToToolMapping({columnName: row.column, toolIdentifier: this.selectedTool.identifier});
             },
             styleRow(p_row) {
-                if (this.columnToToolMap[p_row.column] === this.selectedTool.identifier) {
+                if (
+                    (this.columnToToolMap[p_row.column] !== null) &&
+                    (this.columnToToolMap[p_row.column] === this.selectedTool.identifier)
+                ) {
                     return "selected-tool";
                 } else {
                     return "";
