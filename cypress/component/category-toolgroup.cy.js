@@ -183,7 +183,6 @@ describe("Tool Group component", () => {
             }
         });
 
-        // Grab the element background color before beiing
         cy.get("[data-cy='assessment-tool-table']").find("tr:contains('MOCA')")
         .invoke("css", "background-color").then((InitialBackgroundColor) => {
             cy.get("[data-cy='assessment-tool-table']")
@@ -191,6 +190,16 @@ describe("Tool Group component", () => {
             // assert that element has different color after
             cy.get("[data-cy='assessment-tool-table']").find("tr:contains('MOCA')").should("not.have.css", "background-color", InitialBackgroundColor);
         });
+    });
+
+    it("when a tool is selected and I click on a column, the column gets mapped to the tool", () => {
+        cy.mount(categoryToolGroup, {
+            mocks: {
+                $store: store
+            }
+        });
+
+        cy.get().should('be.invisilbe');
     });
 
     it("when a column is mapped to a tool and the tool gets selected, the column gets highlighted", () => {

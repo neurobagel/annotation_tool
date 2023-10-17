@@ -94,7 +94,6 @@
             },
 
             styleTableRow(p_row) {
-                console.log('row is', p_row, 'and selected is', this.selectedTool);
                 if (p_row.id === this.selectedTool.id) {
                     return "selected-tool";
                 }
