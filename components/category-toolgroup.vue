@@ -35,7 +35,7 @@
                     :items="tableRows"
                     selected-variant=""
                     thead-class="hidden"
-                    @row-clicked="mapColumnToTool"
+                    @row-clicked="mapColumn"
                     :tbody-tr-class="styleRow" />
             </b-col>
         </b-row>
@@ -77,7 +77,8 @@
         methods: {
             ...mapMutations([
 
-                "createTool"
+                "createTool",
+                "mapColumnToTool"
             ]),
             selectTool(selectedTool) {
 
@@ -99,12 +100,8 @@
                 }
                 return "";
             },
-            mapColumnToTool(row) {
-                if (this.columnToToolMap[row.column] === this.selectedTool.identifier) {
-                    this.columnToToolMap[row.column] = null;
-                } else {
-                    this.columnToToolMap[row.column] = this.selectedTool.identifier;
-                }
+            mapColumn(row) {
+                this.mapColumnToTool(row.column, this.selectedTool.id);
             },
             styleRow(p_row) {
                 if (this.columnToToolMap[p_row.column] === this.selectedTool.id) {

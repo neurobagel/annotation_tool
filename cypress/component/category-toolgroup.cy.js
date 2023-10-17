@@ -192,14 +192,25 @@ describe("Tool Group component", () => {
         });
     });
 
-    it("when a tool is selected and I click on a column, the column gets mapped to the tool", () => {
+    it("clicking on column with tool fires mapping mutation every time", () => {
+        store.state.toolTerms[0]['selected'] = true;
+        store.getters = makeGetters(store.state);
+
+        cy.spy(store, "commit").as("commitSpy");
+
         cy.mount(categoryToolGroup, {
             mocks: {
                 $store: store
             }
         });
 
-        cy.get().should('be.invisilbe');
+        cy.get("[data-cy='assessment-tool-table']").contains('MOCA').click();
+        cy.get("[data-cy='assessment-column-table']").contains("column1").click();
+        cy.get("@commitSpy").should("have.been.calledWith", "mapColumnToTool", "column1", "cogatlas:MOCA");
+        cy.get("[data-cy='assessment-column-table']").contains("column1").click();
+        cy.get("@commitSpy").should("have.been.calledWith", "mapColumnToTool", "column1", "cogatlas:MOCA");
+        cy.get("[data-cy='assessment-column-table']").contains("column3").click();
+        cy.get("@commitSpy").should("have.been.calledWith", "mapColumnToTool", "column3", "cogatlas:MOCA");
     });
 
     it("when a column is mapped to a tool and the tool gets selected, the column gets highlighted", () => {
