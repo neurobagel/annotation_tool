@@ -142,6 +142,17 @@ describe("Tool Group component", () => {
         cy.get("[data-cy='toolgroup-select']").type("MOCA{enter}");
         cy.get("@commitSpy").should("have.been.calledWith", "createToolGroup", { identifier: 'cogatlas:MOCA', label: 'MOCA' });
 
+    });
+
+    it("clearing the dropdown selection does not crash the app", () => {
+        cy.mount(categoryToolGroup, {
+            mocks: {
+                $store: store
+            }
+        });
+
+        cy.get("[data-cy='toolgroup-select']").type("MOCA{enter}");
+        cy.get("[data-cy='toolgroup-select']").get('button').click();
 
     });
 
