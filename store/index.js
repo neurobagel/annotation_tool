@@ -200,7 +200,9 @@ export const state = () => ({
             identifier: "cogAtlas:UPDRS",
             selected: false
         }
-    ]
+    ],
+
+    columnToToolMap: {}
 });
 
 export const getters = {

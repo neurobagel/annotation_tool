@@ -66,7 +66,7 @@
             ...mapState([
 
                 "toolTerms",
-                "column2ToolMap"
+                "columnToToolMap"
             ]),
             tableRows() {
                 return this.getColumnsForCategory('Assessment Tool').map(column => ({
@@ -101,14 +101,14 @@
                 return "";
             },
             mapColumnToTool(row) {
-                if (this.column2ToolMap[row.column] === this.selectedTool.identifier) {
-                    this.column2ToolMap[row.column] = null;
+                if (this.columnToToolMap[row.column] === this.selectedTool.identifier) {
+                    this.columnToToolMap[row.column] = null;
                 } else {
-                    this.column2ToolMap[row.column] = this.selectedTool.identifier;
+                    this.columnToToolMap[row.column] = this.selectedTool.identifier;
                 }
             },
             styleRow(p_row) {
-                if (this.column2ToolMap[p_row.column] === this.selectedTool.id) {
+                if (this.columnToToolMap[p_row.column] === this.selectedTool.id) {
                     return "selected-tool";
                 } else {
                     return "";
