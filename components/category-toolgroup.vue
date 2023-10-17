@@ -7,7 +7,7 @@
                     :options="toolTerms"
                     outlined
                     @input="selectTool"
-                    :selectable="(option) => !getSelectedTools.some(el => el.id.includes(option.id))" />
+                    :selectable="(option) => !getSelectedTools.some(el => el.identifier.includes(option.identifier))" />
             </b-col>
         </b-row>
         <b-row>
@@ -77,13 +77,13 @@
         methods: {
             ...mapMutations([
 
-                "createTool",
-                "mapColumnToTool"
+                "createToolGroup",
+                "alterColumnToToolMapping"
             ]),
             selectTool(selectedTool) {
 
-                this.createTool({
-                    identifier: selectedTool.id,
+                this.createToolGroup({
+                    identifier: selectedTool.identifier,
                     label: selectedTool.label
                 });
 
@@ -95,16 +95,16 @@
             },
 
             styleTableRow(p_row) {
-                if (p_row.id === this.selectedTool.id) {
+                if (p_row.identifier === this.selectedTool.identifier) {
                     return "selected-tool";
                 }
                 return "";
             },
             mapColumn(row) {
-                this.mapColumnToTool(row.column, this.selectedTool.id);
+                this.alterColumnToToolMapping({columnName: row.column, toolIdentifier: this.selectedTool.identifier});
             },
             styleRow(p_row) {
-                if (this.columnToToolMap[p_row.column] === this.selectedTool.id) {
+                if (this.columnToToolMap[p_row.column] === this.selectedTool.identifier) {
                     return "selected-tool";
                 } else {
                     return "";

@@ -48,10 +48,10 @@ describe("Tool Group component", () => {
             ],
 
             toolTerms: [
-                {label: 'MOCA', id: 'cogatlas:MOCA', selected: false},
-                {label: 'UPDRSIII', id: 'cogatlas:UPDRSIII', selected: false},
-                {label: 'SomeOtherThing', id: 'cogatlas:SomeOtherThing', selected: false},
-                {label: 'AnotherThing', id: 'cogatlas:AnotherThing', selected: false}
+                {label: 'MOCA', identifier: 'cogatlas:MOCA', selected: false},
+                {label: 'UPDRSIII', identifier: 'cogatlas:UPDRSIII', selected: false},
+                {label: 'SomeOtherThing', identifier: 'cogatlas:SomeOtherThing', selected: false},
+                {label: 'AnotherThing', identifier: 'cogatlas:AnotherThing', selected: false}
             ]
         };
         store = {
@@ -121,7 +121,7 @@ describe("Tool Group component", () => {
         });
 
         cy.get("[data-cy='toolgroup-select']").type("MOCA{enter}");
-        cy.get("@commitSpy").should("have.been.calledWith", "createTool", { identifier: 'cogatlas:MOCA', label: 'MOCA' });
+        cy.get("@commitSpy").should("have.been.calledWith", "createToolGroup", { identifier: 'cogatlas:MOCA', label: 'MOCA' });
 
 
     });
@@ -206,11 +206,11 @@ describe("Tool Group component", () => {
 
         cy.get("[data-cy='assessment-tool-table']").contains('MOCA').click();
         cy.get("[data-cy='assessment-column-table']").contains("column1").click();
-        cy.get("@commitSpy").should("have.been.calledWith", "mapColumnToTool", "column1", "cogatlas:MOCA");
+        cy.get("@commitSpy").should("have.been.calledWith", "alterColumnToToolMapping", {columnName:"column1", toolIdentifier: "cogatlas:MOCA"});
         cy.get("[data-cy='assessment-column-table']").contains("column1").click();
-        cy.get("@commitSpy").should("have.been.calledWith", "mapColumnToTool", "column1", "cogatlas:MOCA");
+        cy.get("@commitSpy").should("have.been.calledWith", "alterColumnToToolMapping", {columnName:"column1", toolIdentifier:  "cogatlas:MOCA"});
         cy.get("[data-cy='assessment-column-table']").contains("column3").click();
-        cy.get("@commitSpy").should("have.been.calledWith", "mapColumnToTool", "column3", "cogatlas:MOCA");
+        cy.get("@commitSpy").should("have.been.calledWith", "alterColumnToToolMapping", {columnName: "column3", toolIdentifier: "cogatlas:MOCA"});
     });
 
     it("when a column is mapped to a tool and the tool gets selected, the column gets highlighted", () => {
