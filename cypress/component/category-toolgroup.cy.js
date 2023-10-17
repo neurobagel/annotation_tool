@@ -127,7 +127,7 @@ describe("Tool Group component", () => {
     });
 
     it("when a tool is selected in the store, it appears in the tool table", () => {
-        store.state.toolTerms[0]['selected'] = true;
+        store.state.toolTerms.spli[0]['selected'] = true;
         store.getters = makeGetters(store.state);
         cy.mount(categoryToolGroup, {
             mocks: {

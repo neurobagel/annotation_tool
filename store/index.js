@@ -187,7 +187,20 @@ export const state = () => ({
             Label: "period of time defined according to the ISO8601 standard",
             TermURL: "nb:FromISO8601"
         }
-    }
+    },
+
+    toolTerms: [
+        {
+            label: "MOCA",
+            identifier: "cogAtlas:MOCA",
+            selected: false
+        },
+        {
+            label: "UPDRS",
+            identifier: "cogAtlas:UPDRS",
+            selected: false
+        }
+    ]
 });
 
 export const getters = {
@@ -453,20 +466,6 @@ export const getters = {
         return [...categorySet];
     },
 
-    getMappedColumns: (p_state) => (p_category) => {
-
-        const mappedColumns = [];
-        for ( const column in p_state.columnToCategoryMap ) {
-
-            if ( p_category === p_state.columnToCategoryMap[column] ) {
-
-                mappedColumns.push(column);
-            }
-        }
-
-        return mappedColumns;
-    },
-
     getMissingValues: (p_state) => (p_category) => {
 
         // 1. Retrieve all columns linked with the given category
@@ -540,6 +539,10 @@ export const getters = {
         }
 
         return selectedCategoricalOption;
+    },
+
+    getSelectedTools: (p_state) =>  {
+        return p_state.toolTerms.filter(term => term.selected);
     },
 
     getTransformOptions: (p_state) => (p_category) => {
@@ -745,6 +748,11 @@ export const mutations = {
             p_state.dataDictionary.annotated[column].missingValues.splice(
                 p_state.dataDictionary.annotated[column].missingValues.indexOf(value), 1);
         }
+    },
+
+    createToolGroup(p_state, newTool) {
+        const toolIndex = p_state.toolTerms.findIndex(tool => tool.identifier === newTool.identifier);
+        p_state.toolTerms.splice(toolIndex, 1, Object.assign(p_state.toolTerms[toolIndex], { selected: true }));
     },
 
     initializeColumnToCategoryMap(p_state, p_columns) {

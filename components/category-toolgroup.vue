@@ -80,7 +80,6 @@
                 "createTool"
             ]),
             selectTool(selectedTool) {
-                console.log('getter says', this.getSelectedTools);
 
                 this.createTool({
                     identifier: selectedTool.id,
@@ -92,7 +91,6 @@
                 if ( 0 !== rows.length ) {
                     this.selectedTool = rows[0];
                 }
-                console.log('selected is', this.selectedTool);
             },
 
             styleTableRow(p_row) {
