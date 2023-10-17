@@ -752,8 +752,8 @@ export const mutations = {
         }
     },
 
-    alterColumnToToolMapping(p_state, columnName, toolIdentifier) {
-        if ( p_state.columnToToolMap[columnName] == toolIdentifier ) {
+    alterColumnToToolMapping(p_state, {columnName, toolIdentifier}) {
+        if ( p_state.columnToToolMap[columnName] === toolIdentifier ) {
             p_state.columnToToolMap[columnName] = null;
         } else {
             p_state.columnToToolMap[columnName] = toolIdentifier;

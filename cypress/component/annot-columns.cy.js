@@ -4,7 +4,7 @@ import annotColumns from "~/components/annot-columns.vue";
 const store = {
     commit: () => {},
     getters: {
-        getMappedColumns: () => (activeCategory) => {
+        getColumnsForCategory: () => (activeCategory) => {
             return [
                     "column1",
                     "column2",
