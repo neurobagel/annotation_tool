@@ -72,6 +72,28 @@ describe("Tool Group component", () => {
 
     });
 
+    it("if nothing is selected or mapped, component is empty", () => {
+        store.state.columnToCategoryMap = {
+            column1: null,
+            column2: null,
+            column3: null
+        };
+        store.state.columnToToolMap = {
+            column1: null,
+            column2: null,
+            column3: null
+        };
+        cy.mount(categoryToolGroup, {
+            mocks: {
+                $store: store
+            }
+        });
+        cy.get("[data-cy='toolgroup-select']").should('not.exist');
+        cy.get("[data-cy='assessment-tool-table']").should('not.exist');
+        cy.get("[data-cy='assessment-column-table']").should('not.exist');
+
+    });
+
     it("has a table of columns about assessment tools on the right", () => {
 
         cy.mount(categoryToolGroup, {

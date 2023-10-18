@@ -3,6 +3,7 @@
         <b-row>
             <b-col cols="6">
                 <v-select
+                    v-if="tableRows.length > 0"
                     data-cy="toolgroup-select"
                     :options="toolTerms"
                     outlined
@@ -29,6 +30,7 @@
             </b-col>
             <b-col>
                 <b-table
+                    v-if="tableRows.length > 0"
                     data-cy="assessment-column-table"
                     outlined
                     head-variant="dark"
