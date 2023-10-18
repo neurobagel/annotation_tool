@@ -1,6 +1,7 @@
 import { getters } from "~/store";
 
 let state = {};
+getters.getColumnsForCategory = getters.getColumnsForCategory(state);
 
 describe("isPageAccessible", () => {
 
@@ -14,6 +15,10 @@ describe("isPageAccessible", () => {
             columnToCategoryMap: {
 
                 "column1Name": "Subject ID"
+            },
+            columnToToolMap: {
+
+                "column1Name": null
             },
 
             dataTable: [
@@ -34,13 +39,13 @@ describe("isPageAccessible", () => {
         let nextPage = "categorization";
 
         // Assert
-        expect(getters.isPageAccessible(state)(nextPage)).to.be.true;
+        expect(getters.isPageAccessible(state, getters)(nextPage)).to.be.true;
 
         // Setup
         state.dataTable = [];
 
         // Assert
-        expect(getters.isPageAccessible(state)(nextPage)).to.be.false;
+        expect(getters.isPageAccessible(state, getters)(nextPage)).to.be.false;
     });
 
     it("Test page accessibility via the categorization page", () => {
@@ -50,13 +55,13 @@ describe("isPageAccessible", () => {
         state.columnToCategoryMap["column2Name"] = "Sex";
 
         // Assert
-        expect(getters.isPageAccessible(state)(nextPage)).to.be.true;
+        expect(getters.isPageAccessible(state, getters)(nextPage)).to.be.true;
 
         // Setup
         state.columnToCategoryMap = {};
 
         // Assert
-        expect(getters.isPageAccessible(state)(nextPage)).to.be.false;
+        expect(getters.isPageAccessible(state, getters)(nextPage)).to.be.false;
     });
 
     it("Test page accessibility via the annotation page", () => {
@@ -65,12 +70,12 @@ describe("isPageAccessible", () => {
         let nextPage = "download";
 
         // Assert
-        expect(getters.isPageAccessible(state)(nextPage)).to.be.true;
+        expect(getters.isPageAccessible(state, getters)(nextPage)).to.be.true;
 
         // Setup
         state.annotationCount = 0;
 
         // Assert
-        expect(getters.isPageAccessible(state)(nextPage)).to.be.false;
+        expect(getters.isPageAccessible(state, getters)(nextPage)).to.be.false;
     });
 });
