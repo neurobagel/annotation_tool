@@ -69,9 +69,9 @@ export const state = () => ({
         },
         "Assessment Tool": {
 
-            componentName: "annot-categorical",
-            explanation: "This is an explanation for how to annotate diagnosis.",
-            identifier: "nb:Diagnosis"
+            componentName: "annot-tool",
+            explanation: "This is an explanation for how to annotate a tool.",
+            identifier: "nb:AssessmentTool"
         }
     },
 
@@ -643,7 +643,7 @@ export const getters = {
                                                                     null !== category)
                                                             .length >= 1 );
 
-                // 3. Make sure all columns about assessment tools are mapped to something
+// 3. Make sure all columns about assessment tools are mapped to something
                 const allAssessmentColumnsAreMapped = p_getters.getColumnsForCategory("Assessment Tool")
                     .every(column => p_state.columnToToolMap[column] !== null);
                 // Annotation page is only accessible if one (and only one)
@@ -756,7 +756,7 @@ export const mutations = {
     },
 
     alterColumnToToolMapping(p_state, {columnName, toolIdentifier}) {
-        if ( p_state.columnToToolMap[columnName] === toolIdentifier ) {
+        if ( p_state.columnToToolMap[columnName] == toolIdentifier ) {
             p_state.columnToToolMap[columnName] = null;
         } else {
             p_state.columnToToolMap[columnName] = toolIdentifier;

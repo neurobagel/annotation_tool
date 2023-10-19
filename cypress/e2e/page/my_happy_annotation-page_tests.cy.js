@@ -1,5 +1,6 @@
 describe("to annotate an assessment ", () => {
 
+
     it("sets up some stuff", () => {
         // Load some data
         cy.visit('/');
@@ -58,6 +59,5 @@ describe("to annotate an assessment ", () => {
         cy.window().its("$nuxt.$router").then(router => {
             router.push({ path: "/annotation" });
         });
-
     });
 });
