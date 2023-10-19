@@ -10,7 +10,8 @@
                     v-for="({label, identifier}, index) in getSelectedTools"
                     :key="index"
                     :title="label">
-                    {{ identifier }}
+                    <annot-single-tool
+                        :name="identifier" />
                 </b-tab>
 
             </b-tabs>
