@@ -6,7 +6,7 @@
             :data-cy="('tool-annotation-for-' + name)"
             :fields="toolFields"
             :items="uniqueColumnValues">
-            <template #cell(missingValue)="row">
+            <template #cell(missing_value)="row">
                 <b-button
                     :data-cy="'missingValueButton_' + row.index"
                     variant="danger"
@@ -35,7 +35,7 @@
                 toolFields: [
                     "column",
                     "value",
-                    "Missing Value"
+                    "missing_value"
                 ]
             };
         },

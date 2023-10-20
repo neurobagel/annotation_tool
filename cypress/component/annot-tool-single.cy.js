@@ -34,12 +34,15 @@ describe("Annotation tool component", () => {
         cy.mount(annotSingleTool, {
             propsData: props
         });
+
         cy.get('table')
             .find('tr')
-            .each(row => {
-                cy.wrap(row)
-                .find('button')
-                .should('exist');
+            .each((row, index) => {
+                // skip the first (header) row
+                if (index !== 0) {
+                    cy.wrap(row)
+                    .contains("Mark as missing");
+                }
             });
 
     });
