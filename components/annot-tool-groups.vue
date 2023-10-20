@@ -11,7 +11,8 @@
                     :key="index"
                     :title="label">
                     <annot-single-tool
-                        :name="identifier" />
+                        :name="identifier"
+                        :uniqueColumnValues="provideUniqueValues(identifier)" />
                 </b-tab>
 
             </b-tabs>
@@ -28,8 +29,19 @@
     export default {
         computed: {
             ...mapGetters([
-                "getSelectedTools"
+                "getSelectedTools",
+                "getColumnsForTool",
+                "getUniqueColumnValues"
             ])
+        },
+        methods: {
+            provideUniqueValues(identifier) {
+                const toolColumns = this.getColumnsForTool(identifier);
+                return toolColumns
+                    .map(column => this.getUniqueColumnValues(column)
+                        .map(value => ({"column": column, "value": value})))
+                    .flat();
+            }
         }
     };
 

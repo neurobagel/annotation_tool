@@ -69,7 +69,7 @@ export const state = () => ({
         },
         "Assessment Tool": {
 
-            componentName: "annot-tool",
+            componentName: "annot-tool-groups",
             explanation: "This is an explanation for how to annotate a tool.",
             identifier: "nb:AssessmentTool"
         }

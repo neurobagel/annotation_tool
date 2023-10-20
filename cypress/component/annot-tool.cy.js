@@ -10,11 +10,17 @@ const getters = {
                 selected: true
             },
             {
-                label: "my best tool",
-                identifier: "cogAtlas:SuperTool",
+                label: "UPDRS",
+                identifier: "cogAtlas:UPDRS",
                 selected: true
             }
         ];
+    },
+    getColumnsForTool: () => (p_tool) => {
+        return ["column1", "column2"];
+    },
+    getUniqueColumnValues: () => (column) => {
+        return [1, 2, 3];
     }
 };
 
@@ -58,7 +64,7 @@ describe("Annotation tool component", () => {
             props: props
         });
         cy.contains('MOCA');
-        cy.contains('my best tool');
+        cy.contains('UPDRS');
     });
 
     it("mounts a subcomponent for each tool and provides the correct props to it", () => {
@@ -68,6 +74,6 @@ describe("Annotation tool component", () => {
             props: props
         });
         cy.contains('MOCA');
-        cy.contains('my best tool');
+        cy.contains('UPDRS');
     });
 });
