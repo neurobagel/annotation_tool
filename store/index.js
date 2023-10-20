@@ -565,6 +565,12 @@ export const getters = {
         return columns;
     },
 
+    getColumnsForTool: (p_state) => (p_tool) => {
+
+        return Object.keys(p_state.columnToToolMap)
+        .filter(key => p_state.columnToToolMap[key] === p_tool);
+    },
+
     getUniqueColumnValues: (p_state) => (columnName, p_maxValues="None") => {
             let uniqueColumnValues = new Set();
             for ( let index = 0; index < p_state.dataTable.length; index++ ) {
