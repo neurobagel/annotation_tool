@@ -10,7 +10,7 @@
                 <b-button
                     :data-cy="'missingValueButton_' + row.index"
                     variant="danger"
-                    @click="changeMissingStatus({column: row.item['columnName'], value: row.item['rawValue'], markAsMissing: true})">
+                    @click="emitMissingValue(row.item['column'], row.item['value']) ">
                     {{ uiText.missingValueButton }}
                 </b-button>
             </template>
@@ -48,6 +48,11 @@
             ...mapGetters([
                 "getSelectedTools"
             ])
+        },
+        methods: {
+            emitMissingValue(column, value) {
+                this.$emit("declareMissing", {column, value});
+            }
         }
     };
 

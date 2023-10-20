@@ -30,7 +30,7 @@ describe("Annotation tool component", () => {
 
     });
 
-    it("each row has a button called Missing Value", () => {
+    it("each row has a button called 'Mark as missing'", () => {
         cy.mount(annotSingleTool, {
             propsData: props
         });
@@ -43,6 +43,29 @@ describe("Annotation tool component", () => {
                     cy.wrap(row)
                     .contains("Mark as missing");
                 }
+            });
+
+    });
+
+    it("clicking the missing value button emits a 'declareMissing' event", () => {
+        const spy = cy.spy().as("emitSpy");
+        cy.mount(annotSingleTool, {
+            propsData: props,
+            listeners: {
+                declareMissing: spy
+            }
+        });
+
+        cy.get('table')
+            .find('tr')
+            .eq(1) // Select the second row (0 index), see https://docs.cypress.io/api/commands/eq
+            .then(row => {
+                cy.wrap(row).contains("Mark as missing").click();
+            });
+        cy.get("@emitSpy")
+            .should("have.been.calledWith", {
+                column: "column1",
+                value: "val1"
             });
 
     });
