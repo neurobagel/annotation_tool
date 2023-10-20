@@ -1,6 +1,6 @@
 <template>
 
-    <div >
+    <div>
         <b-table
             striped
             :data-cy="('tool-annotation-for-' + name)"
