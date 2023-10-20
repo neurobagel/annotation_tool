@@ -733,6 +733,7 @@ export const mutations = {
                 break;
 
             case "Diagnosis":
+            case "Assessment Tool":
             case "Sex":
 
                 p_state.dataDictionary.annotated[columnName] = Object.assign(
