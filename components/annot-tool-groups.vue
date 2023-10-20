@@ -12,7 +12,8 @@
                     :title="label">
                     <annot-single-tool
                         :name="identifier"
-                        :uniqueColumnValues="provideUniqueValues(identifier)" />
+                        :uniqueColumnValues="provideUniqueValues(identifier)"
+                        @declareMissing="changeMissingStatus(Object.assign($event, {markAsMissing: true}))" />
                 </b-tab>
 
             </b-tabs>
@@ -24,8 +25,8 @@
 </template>
 
 <script>
-    import { mapGetters } from "vuex";
-
+    import { mapGetters, mapMutations } from "vuex";
+    // @declareMissing="changeMissingStatus(Object.assign($event, {markAsMissing: true}))" />
     export default {
         computed: {
             ...mapGetters([
@@ -35,6 +36,10 @@
             ])
         },
         methods: {
+            ...mapMutations([
+
+                "changeMissingStatus"
+            ]),
             provideUniqueValues(identifier) {
                 const toolColumns = this.getColumnsForTool(identifier);
                 return toolColumns
