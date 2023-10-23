@@ -30,7 +30,7 @@
     "webpack": "^4.47.0"
   },
   "devDependencies": {
-    "cy-verify-downloads": "^0.2.1",
+    "cy-verify-downloads": "^0.2.2",
     "cypress": "^13.3.1",
     "editorconfig": "^2.0.0",
     "eslint": "^8.52.0",
