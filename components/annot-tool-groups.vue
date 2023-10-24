@@ -12,8 +12,8 @@
                     :title="label">
                     <annot-single-tool
                         :name="identifier"
-                        :columns="getColumnsForTool(identifier)"
-                        @declareMissing="changeMissingStatus(Object.assign({}, $event, {markAsMissing: true}))" />
+                        :uniqueColumnValues="provideUniqueValues(identifier)"
+                        @declareMissing="changeMissingStatus(Object.assign($event, {markAsMissing: true}))" />
                 </b-tab>
 
             </b-tabs>
