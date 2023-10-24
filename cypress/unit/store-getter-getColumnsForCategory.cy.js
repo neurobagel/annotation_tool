@@ -13,17 +13,17 @@ const store = {
     }
 };
 
-describe("getMappedColumns", () => {
+describe("getColumnsForCategory", () => {
 
     it("Gets list of columns of a given category", () => {
 
         // Assert
-        expect(getters.getMappedColumns(store.state)("category1")).to.deep.equal(["column1", "column3"]);
+        expect(getters.getColumnsForCategory(store.state)("category1")).to.deep.equal(["column1", "column3"]);
     });
 
     it("Gets empty list if a given category is not assigned to any columns", () => {
 
         // Assert
-        expect(getters.getMappedColumns(store.state)("category4")).to.deep.equal([]);
+        expect(getters.getColumnsForCategory(store.state)("category4")).to.deep.equal([]);
     });
 });

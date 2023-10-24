@@ -49,7 +49,6 @@ describe("tests on annotation page ui with programmatic state loading and store 
             it("Annotate age column; default age format transformations", () => {
 
                 cy.window().its("$nuxt.$store").then(p_store => {
-                    console.dir(p_store);
                 });
 
                 // 0. Categories required for this test and the number of required columns for each category

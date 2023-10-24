@@ -36,7 +36,7 @@ describe("Continuous values component", () => {
 
                     return store.state.dataDictionary.annotated[p_column].transformationHeuristic;
                 },
-                getMappedColumns: () => (p_activeCategory) => {
+                getColumnsForCategory: () => (p_activeCategory) => {
 
                     return ["column1"];
                 },
@@ -153,7 +153,7 @@ describe("Continuous values component", () => {
 
         // Setup
         store.state.dataDictionary.annotated["column2"] = { transformationHeuristic: "" };
-        store.getters.getMappedColumns = () => (p_activeCategory) => {
+        store.getters.getColumnsForCategory = () => (p_activeCategory) => {
 
             return ["column1", "column2"];
         };
@@ -196,7 +196,7 @@ describe("Continuous values component", () => {
 
         // Setup
         store.state.dataDictionary.annotated["column2"] = { transformationHeuristic: "" };
-        store.getters.getMappedColumns = () => (p_activeCategory) => {
+        store.getters.getColumnsForCategory = () => (p_activeCategory) => {
 
             return ["column1", "column2"];
         };

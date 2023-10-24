@@ -13,7 +13,7 @@
                     data-cy="mappedColumns"
                     class="d-flex justify-content-between align-items-center"
                     :key="columnName"
-                    v-for="columnName of getMappedColumns(activeCategory)">
+                    v-for="columnName of getColumnsForCategory(activeCategory)">
                     {{ columnName }} {{ getColumnDescription(columnName) }}
                     <b-button
                         :data-cy="'remove_' + columnName"
@@ -57,7 +57,7 @@
 
         computed: {
             ...mapGetters([
-                "getMappedColumns",
+                "getColumnsForCategory",
                 "getColumnDescription"
             ])
         },

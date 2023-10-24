@@ -9,7 +9,7 @@
             <b-tabs content-class="mt-3">
 
                 <b-tab
-                    v-for="(columnName, index) in getMappedColumns(activeCategory)"
+                    v-for="(columnName, index) in getColumnsForCategory(activeCategory)"
                     :key="columnName"
                     :active="0 === index"
                     :title="columnName">
@@ -93,7 +93,7 @@
 
                 "getHarmonizedPreview",
                 "getHeuristic",
-                "getMappedColumns",
+                "getColumnsForCategory",
                 "getTransformOptions",
                 "getUniqueValues"
             ])
