@@ -29,7 +29,7 @@ describe("createToolGroup mutation", () => {
     it("Makes sure mutation sets a value in the toolTerms state object", () => {
 
         // Act
-        mutations.createToolGroup(store.state, { identifier: 'cogAtlas:MOCA', label: 'MOCA' });
+        mutations.createAssessmentTool(store.state, { identifier: 'cogAtlas:MOCA', label: 'MOCA' });
         // Assert
         expect(store.state.toolTerms.filter(tool => tool.identifier === 'cogAtlas:MOCA')[0]['selected']).to.be.true;
     });

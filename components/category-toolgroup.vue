@@ -79,12 +79,12 @@
         methods: {
             ...mapMutations([
 
-                "createToolGroup",
+                "createAssessmentTool",
                 "alterColumnToToolMapping"
             ]),
             selectTool(selectedTool) {
                 if ( selectedTool !== null ) {
-                    this.createToolGroup({
+                    this.createAssessmentTool({
                         identifier: selectedTool.identifier,
                         label: selectedTool.label
                     });

@@ -770,7 +770,7 @@ export const mutations = {
         }
     },
 
-    createToolGroup(p_state, newTool) {
+    createAssessmentTool(p_state, newTool) {
         const toolIndex = p_state.toolTerms.findIndex(tool => tool.identifier === newTool.identifier);
         p_state.toolTerms.splice(toolIndex, 1, Object.assign(p_state.toolTerms[toolIndex], { selected: true }));
     },
