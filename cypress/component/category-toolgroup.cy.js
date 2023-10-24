@@ -104,7 +104,7 @@ describe("Tool Group component", () => {
         cy.get("[data-cy='toolgroup-select']").should("contain", "MOCA");
     });
 
-    it("selecting a tool group fires a createTool mutation", () => {
+    it("selecting a tool group fires a createAssessmentTool mutation", () => {
         cy.spy(store, "commit").as("commitSpy");
         cy.mount(categoryToolGroup, {
             mocks: { $store: store },
@@ -114,7 +114,7 @@ describe("Tool Group component", () => {
         });
 
         cy.get("[data-cy='toolgroup-select']").type("MOCA{enter}");
-        cy.get("@commitSpy").should("have.been.calledWith", "createToolGroup", { identifier: 'cogatlas:MOCA', label: 'MOCA' });
+        cy.get("@commitSpy").should("have.been.calledWith", "createAssessmentTool", { identifier: 'cogatlas:MOCA', label: 'MOCA' });
 
     });
 
