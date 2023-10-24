@@ -62,16 +62,6 @@ describe("Tool Group component", () => {
         };
     });
 
-    it("mounts", () => {
-        cy.mount(categoryToolGroup, {
-            mocks: {
-
-                $store: store
-            }
-        });
-
-    });
-
     it("if nothing is selected or mapped, component is empty", () => {
         store.state.columnToCategoryMap = {
             column1: null,
