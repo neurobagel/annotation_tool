@@ -34,6 +34,11 @@
             </b-col>
 
         </b-row>
+        <b-row>
+            <b-col cols="12">
+                <categoryToolgroup />
+            </b-col>
+        </b-row>
 
     </b-container>
 
@@ -45,43 +50,29 @@
     import { mapGetters } from "vuex";
 
     export default {
-
         name: "CategorizationPage",
-
         data() {
-
             return {
-
                 // Category selection (default is index 0, no selection is -1)
                 selectedCategory: "",
-
                 // Text for UI elements
                 uiText: {
-
                     categorySelectInstructions: "Click category and then corresponding column from tsv file",
                     categorySelectTitle: "Recommended Categories"
                 }
             };
         },
-
         computed: {
-
             ...mapGetters([
-
                 "getCategoryNames"
             ])
         },
-
         mounted() {
-
             // Set selected category to the first category by default
             this.setSelectedCategory(this.getCategoryNames[0]);
         },
-
         methods: {
-
             setSelectedCategory(p_category) {
-
                 // Save the name of the selected category
                 this.selectedCategory = p_category;
             }

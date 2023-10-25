@@ -69,9 +69,9 @@ export const state = () => ({
         },
         "Assessment Tool": {
 
-            componentName: "annot-categorical",
-            explanation: "This is an explanation for how to annotate diagnosis.",
-            identifier: "nb:Diagnosis"
+            componentName: "annot-tool-groups",
+            explanation: "This is an explanation for how to annotate a tool.",
+            identifier: "nb:AssessmentTool"
         }
     },
 
@@ -187,7 +187,22 @@ export const state = () => ({
             Label: "period of time defined according to the ISO8601 standard",
             TermURL: "nb:FromISO8601"
         }
-    }
+    },
+
+    toolTerms: [
+        {
+            label: "MOCA",
+            identifier: "cogAtlas:MOCA",
+            selected: false
+        },
+        {
+            label: "UPDRS",
+            identifier: "cogAtlas:UPDRS",
+            selected: false
+        }
+    ],
+
+    columnToToolMap: {}
 });
 
 export const getters = {
@@ -453,20 +468,6 @@ export const getters = {
         return [...categorySet];
     },
 
-    getMappedColumns: (p_state) => (p_category) => {
-
-        const mappedColumns = [];
-        for ( const column in p_state.columnToCategoryMap ) {
-
-            if ( p_category === p_state.columnToCategoryMap[column] ) {
-
-                mappedColumns.push(column);
-            }
-        }
-
-        return mappedColumns;
-    },
-
     getMissingValues: (p_state) => (p_category) => {
 
         // 1. Retrieve all columns linked with the given category
@@ -542,6 +543,10 @@ export const getters = {
         return selectedCategoricalOption;
     },
 
+    getSelectedTools: (p_state) =>  {
+        return p_state.toolTerms.filter(term => term.selected);
+    },
+
     getTransformOptions: (p_state) => (p_category) => {
 
         return Object.keys(p_state.transformationHeuristics);
@@ -558,6 +563,12 @@ export const getters = {
         }
 
         return columns;
+    },
+
+    getColumnsForTool: (p_state) => (p_tool) => {
+
+        return Object.keys(p_state.columnToToolMap)
+        .filter(key => p_state.columnToToolMap[key] === p_tool);
     },
 
     getUniqueColumnValues: (p_state) => (columnName, p_maxValues="None") => {
@@ -606,7 +617,7 @@ export const getters = {
         return description;
     },
 
-    isPageAccessible: (p_state) => (p_pageName) => {
+    isPageAccessible: (p_state, p_getters) => (p_pageName) => {
 
         let pageAccessible = false;
 
@@ -638,10 +649,13 @@ export const getters = {
                                                                     null !== category)
                                                             .length >= 1 );
 
+// 3. Make sure all columns about assessment tools are mapped to something
+                const allAssessmentColumnsAreMapped = p_getters.getColumnsForCategory("Assessment Tool")
+                    .every(column => p_state.columnToToolMap[column] !== null);
                 // Annotation page is only accessible if one (and only one)
                 // column has been categorized as 'Subject ID' and if at least
                 // one category other than Subject ID has been categorized
-                pageAccessible = singleSubjectIDColumn && notOnlySubjectIDCategorized;
+                pageAccessible = singleSubjectIDColumn && notOnlySubjectIDCategorized && allAssessmentColumnsAreMapped;
 
                 break;
             }
@@ -719,6 +733,7 @@ export const mutations = {
                 break;
 
             case "Diagnosis":
+            case "Assessment Tool":
             case "Sex":
 
                 p_state.dataDictionary.annotated[columnName] = Object.assign(
@@ -747,10 +762,27 @@ export const mutations = {
         }
     },
 
+    alterColumnToToolMapping(p_state, {columnName, toolIdentifier}) {
+        if ( p_state.columnToToolMap[columnName] === toolIdentifier ) {
+            p_state.columnToToolMap[columnName] = null;
+        } else {
+            p_state.columnToToolMap[columnName] = toolIdentifier;
+        }
+    },
+
+    createAssessmentTool(p_state, newTool) {
+        const toolIndex = p_state.toolTerms.findIndex(tool => tool.identifier === newTool.identifier);
+        p_state.toolTerms.splice(toolIndex, 1, Object.assign(p_state.toolTerms[toolIndex], { selected: true }));
+    },
+
     initializeColumnToCategoryMap(p_state, p_columns) {
 
         // Column to category map lists all columns as keys with default value of null
         p_state.columnToCategoryMap =
+            Object.fromEntries(p_columns.map((column) => [column, null]));
+        // TODO: consider refactoring this so we don't initialize all columns
+        // but only the ones that are assigned to assessment tool
+        p_state.columnToToolMap =
             Object.fromEntries(p_columns.map((column) => [column, null]));
     },
 

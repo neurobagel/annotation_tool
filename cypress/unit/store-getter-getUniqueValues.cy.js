@@ -35,11 +35,7 @@ describe("getUniqueValues getter", () => {
 
         store = {
             getters: {
-                // getColumnsForCategory: () => (p_category) => {
-                //     return ["column1", "column2", "column3"];
-                // },
                 getColumnsForCategory: getters.getColumnsForCategory(state),
-
                 getUniqueColumnValues: getters.getUniqueColumnValues(state)
             },
 
