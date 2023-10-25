@@ -78,6 +78,11 @@ describe("tests on download page ui via programmatic state loading and store int
 
                             expect(folderStateAfter[folderStateAfter.length - 1]).to.contain(dataDictionaryFilenameNoExt);
                         });
+                        // C. Check if the last file retrieved contains the Identifies property and its value under the participant_id key
+                        cy.readFile('cypress/downloads/' + folderStateAfter[folderStateAfter.length - 1]).then((fileContent) => {
+                            expect(fileContent.participant_id.Annotations).to.have.property("Identifies");
+                            expect(fileContent.participant_id.Annotations.Identifies).to.eq("participant");
+                          });
                     });
                 });
             });
