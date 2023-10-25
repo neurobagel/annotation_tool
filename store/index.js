@@ -439,6 +439,19 @@ export const getters = {
 
                         columnOutput = p_getters.getContinuousJsonOutput(columnName);
                         break;
+
+                    default:
+                        columnOutput = {
+                            "Description": "A participant ID",
+                            Annotations: {
+
+                                IsAbout: {
+                                    Label: "Subject Unique Identifier",
+                                    TermURL: "nb:ParticipantID"
+                                },
+                                Identifies: "participant"
+                            }
+                        };
                 }
 
             }
@@ -722,6 +735,12 @@ export const mutations = {
         // NOTE: The latter are initialized here to eliminate checks for their
         // nullness in other store functions
         switch ( p_state.columnToCategoryMap[columnName] ) {
+            case "Subject ID":
+                p_state.dataDictionary.annotated[columnName] = Object.assign(
+                    {},
+                    p_state.dataDictionary.userProvided[columnName]
+                );
+                break;
 
             case "Age":
 
