@@ -49,7 +49,10 @@ export const state = () => ({
 
     categories: {
 
-        "Subject ID": {},
+        "Subject ID": {
+            // Added to be used as a case inside the switch statement of getJSONOutput
+            componentName: "participantID"
+        },
         "Age": {
 
             componentName: "annot-continuous-values",
@@ -441,7 +444,7 @@ export const getters = {
                         columnOutput = p_getters.getContinuousJsonOutput(columnName);
                         break;
 
-                    default:
+                    case "participantID":
                         columnOutput = {
                             "Description": "A participant ID",
                             Annotations: {
