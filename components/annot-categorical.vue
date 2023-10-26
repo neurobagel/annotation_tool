@@ -40,6 +40,14 @@
                             {{ uiText.missingValueButton }}
                         </b-button>
                     </template>
+                    <template #cell(isControl)="row" v-if="activeCategory == 'Diagnosis'">
+                        <b-button
+                            :data-cy="'isControlButton_' + row.index"
+                            variant="info"
+                            @click="selectOptionAndUpdate('ncit:C94342', row.item['columnName'], row.item['rawValue'])">
+                            {{ uiText.isControlButton }}
+                        </b-button>
+                    </template>
 
                 </b-table>
 
@@ -85,7 +93,8 @@
 
                     instructions: "Annotate each unique value",
                     missingValueButton: "Mark as missing",
-                    saveButton: "Save Annotation"
+                    saveButton: "Save Annotation",
+                    isControlButton: "Mark as healthy control"
                 }
             };
 
@@ -123,6 +132,14 @@
 
                 return tableData;
             }
+        },
+
+        mounted() {
+            if (this.activeCategory == 'Diagnosis') {
+                this.exampleFields.push("isControl");
+            }
+
+
         },
 
         methods: {

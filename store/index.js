@@ -42,7 +42,8 @@ export const state = () => ({
             {label: "Social phobia",  identifier: "snomed:25501002"},
             {label: "Specific spelling disorder", identifier: "snomed:268738002"},
             {label: "Traumatic brain injury", identifier: "snomed:127295002"},
-            {label: "Visual impairment", identifier: "snomed:397540003"}
+            {label: "Visual impairment", identifier: "snomed:397540003"},
+            {label: "Healthy Control", identifier: "ncit:C94342"}
         ]
     },
 
