@@ -35,17 +35,17 @@ describe("to annotate an assessment ", () => {
             cy.get("[data-cy='column-linking-table']").contains(desiredColumnMapping.column).click();
         });
         // Create two tools
-        cy.get("[data-cy='toolgroup-select']").type("MOCA{enter}");
-        cy.get("[data-cy='toolgroup-select']").type("UPDRS{enter}");
+        cy.get("[data-cy='toolgroup-select']").type("Wechsler Abbreviated Scale of Intelligence{enter}");
+        cy.get("[data-cy='toolgroup-select']").type("Unified Parkinson's Disease Rating Scale{enter}");
         // Map columns to tools
         const desiredColumnToolMappings = [
             {
                 "column": "iq",
-                "tool": "MOCA"
+                "tool": "Wechsler Abbreviated Scale of Intelligence"
             },
             {
                 "column": "stroop",
-                "tool": "UPDRS"
+                "tool": "Unified Parkinson's Disease Rating Scale"
             }
         ];
         desiredColumnToolMappings.forEach(desiredColumnToolMapping => {

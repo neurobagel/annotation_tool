@@ -82,8 +82,8 @@ describe("End to end test using a simple UI path through the app", () => {
                 cy.categorizeColumn("Diagnosis", p_dataset["category_columns"]["Diagnosis"][0]);
                 cy.categorizeColumn("Assessment Tool", p_dataset["category_columns"]["Assessment Tool"][0]);
 
-                cy.get("[data-cy='toolgroup-select']").type("MOCA{enter}");
-                cy.get("[data-cy='assessment-tool-table']").contains("MOCA").click();
+                cy.get("[data-cy='toolgroup-select']").type("Wechsler Abbreviated Scale of Intelligence{enter}");
+                cy.get("[data-cy='assessment-tool-table']").contains("Wechsler Abbreviated Scale of Intelligence").click();
                 cy.get("[data-cy='assessment-column-table']").contains("iq").click();
 
 
@@ -145,8 +145,8 @@ describe("End to end test using a simple UI path through the app", () => {
                             expect(fileContent.group.Annotations.Levels.HC.TermURL).to.eq("ncit:C94342");
                             expect(fileContent.iq.Annotations.IsAbout.Label).to.eq("Assessment tool");
                             expect(fileContent.iq.Annotations.IsAbout.TermURL).to.eq("nb:Assessment");
-                            expect(fileContent.iq.Annotations.IsPartOf.Label).to.eq("MOCA");
-                            expect(fileContent.iq.Annotations.IsPartOf.TermURL).to.eq("cogAtlas:MOCA");
+                            expect(fileContent.iq.Annotations.IsPartOf.Label).to.eq("Wechsler Abbreviated Scale of Intelligence");
+                            expect(fileContent.iq.Annotations.IsPartOf.TermURL).to.eq("cogAtlas:trm_4b94affc43245");
                           });
                     });
 
