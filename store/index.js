@@ -493,6 +493,11 @@ export const getters = {
                                 Identifies: "participant"
                             }
                         };
+                        break;
+
+                    case "annot-tool-groups":
+                        columnOutput = p_getters.getAssessmentToolJSONOutput(columnName);
+                        break;
                 }
 
             }
