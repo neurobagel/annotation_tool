@@ -40,7 +40,7 @@
                             {{ uiText.missingValueButton }}
                         </b-button>
                     </template>
-                    <template #cell(isControl)="row" v-if="activeCategory == 'Diagnosis'">
+                    <template #cell(isControl)="row" v-if="activeCategory === 'Diagnosis'">
                         <b-button
                             :data-cy="'isControlButton_' + row.index"
                             variant="info"
