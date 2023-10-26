@@ -173,7 +173,11 @@ export const state = () => ({
         }
     },
 
-    toolTerms: toolTerms,
+    toolTerms: Object.entries(toolTerms).map(([key, value]) => ({
+        label: value,
+        identifier: key,
+        selected: false
+      })),
 
     columnToToolMap: {}
 });
