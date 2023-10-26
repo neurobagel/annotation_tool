@@ -34,7 +34,8 @@ describe("End to end test using a simple UI path through the app", () => {
 
                     ["Subject ID", 1],
                     ["Age", 1],
-                    ["Diagnosis", 1]
+                    ["Diagnosis", 1],
+                    ["Assessment Tool", 1]
                 ]
             };
 
@@ -79,6 +80,12 @@ describe("End to end test using a simple UI path through the app", () => {
                 // D. Categorize "age" as "Age" and "group" as "Diagnosis"
                 cy.categorizeColumn("Age", p_dataset["category_columns"]["Age"][0]);
                 cy.categorizeColumn("Diagnosis", p_dataset["category_columns"]["Diagnosis"][0]);
+                cy.categorizeColumn("Assessment Tool", p_dataset["category_columns"]["Assessment Tool"][0]);
+
+                cy.get("[data-cy='toolgroup-select']").type("MOCA{enter}");
+                cy.get("[data-cy='assessment-tool-table']").contains("MOCA").click();
+                cy.get("[data-cy='assessment-column-table']").contains("iq").click();
+
 
                 // Since Age and subject ID have been categorized
                 // annotation page is no accessible.
@@ -116,8 +123,6 @@ describe("End to end test using a simple UI path through the app", () => {
                     cy.get("[data-cy='isControlButton_1']").type("Acute{enter}");
                     cy.get("[data-cy='categoricalSelector_2']").type("Hearing{enter}");
 
-
-
                     // D. Assert that next page nav and button are enabled for download page
                     cy.assertNextPageAccess("download", true);
 
@@ -138,6 +143,10 @@ describe("End to end test using a simple UI path through the app", () => {
                         cy.readFile('cypress/downloads/' + folderStateAfter[folderStateAfter.length - 1]).then((fileContent) => {
                             expect(fileContent.group.Annotations.Levels.HC.Label).to.eq("Healthy Control");
                             expect(fileContent.group.Annotations.Levels.HC.TermURL).to.eq("ncit:C94342");
+                            expect(fileContent.iq.Annotations.IsAbout.Label).to.eq("Assessment tool");
+                            expect(fileContent.iq.Annotations.IsAbout.TermURL).to.eq("nb:Assessment");
+                            expect(fileContent.iq.Annotations.IsPartOf.Label).to.eq("MOCA");
+                            expect(fileContent.iq.Annotations.IsPartOf.TermURL).to.eq("cogAtlas:MOCA");
                           });
                     });
 
