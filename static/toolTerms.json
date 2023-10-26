@@ -1,0 +1,12 @@
+[
+    {
+       "label":"MOCA",
+       "identifier":"cogAtlas:MOCA",
+       "selected":false
+    },
+    {
+       "label":"UPDRS",
+       "identifier":"cogAtlas:UPDRS",
+       "selected":false
+    }
+ ]
