@@ -31,7 +31,6 @@ describe("getAssessmentToolJSONOutput", () => {
 
     it("Make sure Assessment tool json output is schema compliant", () => {
 
-        // Act - Get formatted json output data for discrete value column
         const output = store.getters.getAssessmentToolJSONOutput(store.state)("column1");
         expect(output).to.deep.equal(
             {

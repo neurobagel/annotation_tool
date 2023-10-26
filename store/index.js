@@ -240,6 +240,7 @@ export const getters = {
             }
         });
 
+        // Add existing keys from user provided dictionary
         Object.keys(annotatedDictColumn).forEach(columnEntry => {
 
             if ( "missingValues" !== columnEntry && "valueMap" !== columnEntry ) {
