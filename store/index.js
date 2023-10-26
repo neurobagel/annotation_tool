@@ -1,6 +1,8 @@
 // Facilitate Vue reactivity via 'Vue.set' and 'Vue.delete'
 import { Set } from "core-js";
 import Vue from "vue";
+import toolTerms from "~/static/toolTerms.json";
+import diagnosisTerms from "~/static/diagnosisTerms.json";
 
 export const state = () => ({
 
@@ -22,33 +24,15 @@ export const state = () => ({
             { label: "female", identifier: "bids:female" },
             { label: "other", identifier: "bids:other" }
         ],
-        "Diagnosis": [
-            {label: "Acute depression", identifier: "snomed:712823008"},
-            {label: "Anxiety", identifier: "snomed:48694002"},
-            {label: "Anxiety disorder", identifier: "snomed:197480006"},
-            {label: "Attention deficit hyperactivity disorder", identifier: "snomed:406506008"},
-            {label: "Autism spectrum disorder", identifier: "snomed:35919005"},
-            {label: "Borderline personality disorder", identifier: "snomed:20010003"},
-            {label: "Concussion injury of brain", identifier: "snomed:110030002"},
-            {label: "Disorder of cardiovascular system", identifier: "snomed:49601007"},
-            {label: "Dyslexia", identifier: "snomed:59770006"},
-            {label: "Fibromyalgia", identifier: "snomed:203082005"},
-            {label: "Hearing problem", identifier: "snomed:300228004"},
-            {label: "Mental disorder",  identifier: "snomed:74732009"},
-            {label: "Migraine",  identifier: "snomed:37796009"},
-            {label: "Schizophrenia", identifier: "snomed:58214004"},
-            {label: "Separation anxiety", identifier: "snomed:126943008"},
-            {label: "Smoker",  identifier: "snomed:77176002"},
-            {label: "Social phobia",  identifier: "snomed:25501002"},
-            {label: "Specific spelling disorder", identifier: "snomed:268738002"},
-            {label: "Traumatic brain injury", identifier: "snomed:127295002"},
-            {label: "Visual impairment", identifier: "snomed:397540003"}
-        ]
+        "Diagnosis": diagnosisTerms
     },
 
     categories: {
 
-        "Subject ID": {},
+        "Subject ID": {
+            // Added to be used as a case inside the switch statement of getJSONOutput
+            componentName: "participantID"
+        },
         "Age": {
 
             componentName: "annot-continuous-values",
@@ -189,18 +173,11 @@ export const state = () => ({
         }
     },
 
-    toolTerms: [
-        {
-            label: "MOCA",
-            identifier: "cogAtlas:MOCA",
-            selected: false
-        },
-        {
-            label: "UPDRS",
-            identifier: "cogAtlas:UPDRS",
-            selected: false
-        }
-    ],
+    toolTerms: Object.entries(toolTerms).map(([key, value]) => ({
+        label: value,
+        identifier: "cogAtlas:" + key,
+        selected: false
+      })),
 
     columnToToolMap: {}
 });
@@ -210,6 +187,44 @@ export const getters = {
     getAnnotationComponent: (p_state) => (p_category) => {
 
         return p_state.categories[p_category].componentName;
+    },
+
+    getAssessmentToolJSONOutput: (p_state) => (p_columnName) => {
+        const annotatedDictColumn = p_state.dataDictionary.annotated[p_columnName];
+        const formattedOutput = {
+            Annotations: {
+                IsAbout: {
+                    TermURL: "nb:Assessment",
+                    Label: "Assessment tool"
+                },
+                IsPartOf: {
+                    TermURL: "",
+                    Label: ""
+                },
+                MissingValues: []
+            }
+        };
+        const tool = p_state.columnToToolMap[p_columnName];
+
+        p_state.toolTerms.forEach(term => {
+            if ( term.identifier === tool ) {
+                formattedOutput.Annotations.IsPartOf.Label = term.label;
+                formattedOutput.Annotations.IsPartOf.TermURL = term.identifier;
+            }
+        });
+
+        // Add existing keys from user provided dictionary
+        Object.keys(annotatedDictColumn).forEach(columnEntry => {
+
+            if ( "missingValues" !== columnEntry && "valueMap" !== columnEntry ) {
+
+                formattedOutput[columnEntry] = annotatedDictColumn[columnEntry];
+            }
+        });
+
+        formattedOutput.Annotations.MissingValues = annotatedDictColumn.missingValues;
+
+        return formattedOutput;
     },
 
     getCategoricalJsonOutput: (p_state) => (p_columnName) => {
@@ -438,6 +453,24 @@ export const getters = {
                     case "annot-continuous-values":
 
                         columnOutput = p_getters.getContinuousJsonOutput(columnName);
+                        break;
+
+                    case "participantID":
+                        columnOutput = {
+                            "Description": "A participant ID",
+                            Annotations: {
+
+                                IsAbout: {
+                                    Label: "Subject Unique Identifier",
+                                    TermURL: "nb:ParticipantID"
+                                },
+                                Identifies: "participant"
+                            }
+                        };
+                        break;
+
+                    case "annot-tool-groups":
+                        columnOutput = p_getters.getAssessmentToolJSONOutput(columnName);
                         break;
                 }
 
@@ -722,6 +755,12 @@ export const mutations = {
         // NOTE: The latter are initialized here to eliminate checks for their
         // nullness in other store functions
         switch ( p_state.columnToCategoryMap[columnName] ) {
+            case "Subject ID":
+                p_state.dataDictionary.annotated[columnName] = Object.assign(
+                    {},
+                    p_state.dataDictionary.userProvided[columnName]
+                );
+                break;
 
             case "Age":
 
