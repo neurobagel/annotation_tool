@@ -175,7 +175,7 @@ export const state = () => ({
 
     toolTerms: Object.entries(toolTerms).map(([key, value]) => ({
         label: value,
-        identifier: key,
+        identifier: "cogAtlas:" + key,
         selected: false
       })),
 
