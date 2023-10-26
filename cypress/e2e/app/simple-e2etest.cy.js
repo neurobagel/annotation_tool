@@ -33,7 +33,8 @@ describe("End to end test using a simple UI path through the app", () => {
                 categories: [
 
                     ["Subject ID", 1],
-                    ["Age", 1]
+                    ["Age", 1],
+                    ["Diagnosis", 1]
                 ]
             };
 
@@ -75,8 +76,9 @@ describe("End to end test using a simple UI path through the app", () => {
                 // at least one other column must be categorized.
                 cy.assertNextPageAccess("annotation", false);
 
-                // D. Categorize "age" as "Age"
+                // D. Categorize "age" as "Age" and "group" as "Diagnosis"
                 cy.categorizeColumn("Age", p_dataset["category_columns"]["Age"][0]);
+                cy.categorizeColumn("Diagnosis", p_dataset["category_columns"]["Diagnosis"][0]);
 
                 // Since Age and subject ID have been categorized
                 // annotation page is no accessible.
@@ -104,6 +106,18 @@ describe("End to end test using a simple UI path through the app", () => {
                     cy.get("[data-cy='selectTransform_age']").click();
                     cy.get("[data-cy='selectTransform_age']").type("float{enter}");
 
+
+                    // B. Click on the 'Diagnosis' tab
+                    cy.get("[data-cy='annotation-category-tabs'] ul")
+                        .contains("li", "Diagnosis")
+                        .click();
+
+                    cy.get("[data-cy='categoricalSelector_0']").type("Acute{enter}");
+                    cy.get("[data-cy='isControlButton_1']").type("Acute{enter}");
+                    cy.get("[data-cy='categoricalSelector_2']").type("Hearing{enter}");
+
+
+
                     // D. Assert that next page nav and button are enabled for download page
                     cy.assertNextPageAccess("download", true);
 
@@ -118,6 +132,15 @@ describe("End to end test using a simple UI path through the app", () => {
 
                     // B. Assert that csv file has downloaded
                     // cy.verifyDownload(".json", { contains: true });
+
+                    // C. Check the contents of the output
+                    cy.task("downloads", "cypress/downloads").then(folderStateAfter => {
+                        cy.readFile('cypress/downloads/' + folderStateAfter[folderStateAfter.length - 1]).then((fileContent) => {
+                            expect(fileContent.group.Annotations.Levels.HC.Label).to.eq("Healthy Control");
+                            expect(fileContent.group.Annotations.Levels.HC.TermURL).to.eq("ncit:C94342");
+                          });
+                    });
+
                 }
             }
         });

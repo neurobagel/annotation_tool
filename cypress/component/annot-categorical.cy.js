@@ -2,16 +2,16 @@ import annotCategorical from "~/components/annot-categorical.vue";
 
 
 let store;
-
-const props = {
-
-    activeCategory: "category1"
-};
+let props;
 
 
 describe("Categorical annotation", () => {
 
     beforeEach(() => {
+        props = {
+
+            activeCategory: "category1"
+        };
 
         store = {
 
@@ -175,4 +175,46 @@ describe("Categorical annotation", () => {
             propsData: props
         });
     });
+
+    it("Does not display the is healthy control button when the active category is not 'Diagnosis' ", () => {
+        cy.mount(annotCategorical, {
+            computed: store.getters,
+            mocks: {$store: store},
+            propsData: props
+        });
+        cy.get("[data-cy='isControlButton_0']").should("not.exist");
+        cy.get("[data-cy='categoricalTable']").should("not.contain", "Is Control");
+
+    });
+
+    it("Can find the is healthy control button", () => {
+        props.activeCategory = "Diagnosis";
+        cy.mount(annotCategorical, {
+            computed: store.getters,
+            mocks: {$store: store},
+            propsData: props
+        });
+        cy.get("[data-cy='isControlButton_0']").should("be.visible");
+    });
+
+    it("Fires the selectCategorialOption mutation with the correct payload if the is healthy control button is clicked", () => {
+
+        // Setup
+        props.activeCategory = "Diagnosis";
+
+        cy.spy(store, "commit").as("spy");
+
+        cy.mount(annotCategorical, {
+            computed: store.getters,
+            mocks: {$store: store},
+            propsData: props
+        });
+        cy.get("[data-cy='isControlButton_1']").click();
+        cy.get("@spy").should("have.been.calledWith", "selectCategoricalOption", {
+            optionValue: "ncit:C94342",
+            columnName: "column1",
+            rawValue: "HC"
+        });
+    });
+
 });
