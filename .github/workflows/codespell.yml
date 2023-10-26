@@ -18,5 +18,5 @@ jobs:
       - name: Codespell
         uses: codespell-project/actions-codespell@v2
         with:
-          paths-ignore: |
+          exclude-file: |
             ./static/toolTerms.json
