@@ -216,6 +216,43 @@ export const getters = {
         return p_state.categories[p_category].componentName;
     },
 
+    getAssessmentToolJSONOutput: (p_state) => (p_columnName) => {
+        const annotatedDictColumn = p_state.dataDictionary.annotated[p_columnName];
+        const formattedOutput = {
+            Annotations: {
+                IsAbout: {
+                    TermURL: "nb:Assessment",
+                    Label: "Assessment tool"
+                },
+                IsPartOf: {
+                    TermURL: "",
+                    Label: ""
+                },
+                MissingValues: []
+            }
+        };
+        const tool = p_state.columnToToolMap[p_columnName];
+
+        p_state.toolTerms.forEach(term => {
+            if ( term.identifier === tool ) {
+                formattedOutput.Annotations.IsPartOf.Label = term.label;
+                formattedOutput.Annotations.IsPartOf.TermURL = term.identifier;
+            }
+        });
+
+        Object.keys(annotatedDictColumn).forEach(columnEntry => {
+
+            if ( "missingValues" !== columnEntry && "valueMap" !== columnEntry ) {
+
+                formattedOutput[columnEntry] = annotatedDictColumn[columnEntry];
+            }
+        });
+
+        formattedOutput.Annotations.MissingValues = annotatedDictColumn.missingValues;
+
+        return formattedOutput;
+    },
+
     getCategoricalJsonOutput: (p_state) => (p_columnName) => {
 
         // 0. Initialize output object
