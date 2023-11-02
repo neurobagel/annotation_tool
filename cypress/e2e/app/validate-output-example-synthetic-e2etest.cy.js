@@ -75,7 +75,7 @@ describe("to annotate an assessment ", () => {
         cy.get('#vs2__combobox > .vs__selected-options > .vs__search').click();
         cy.get('#vs2__option-1').click();
         cy.get('[data-cy="dataTable-pheno_age"] > tbody > :nth-child(3) > [aria-colindex="3"] > [data-cy="missingValueButton_2"]').click();
-        cy.get('#__BVID__117___BV_tab_button__').click();
+        cy.get("[data-cy='annotation-category-tabs'] ul").contains("li", "Sex").click();
         cy.get('#vs3__combobox > .vs__selected-options > .vs__search').click();
         cy.get('#vs3__option-1').click();
         cy.get('#vs4__combobox > .vs__selected-options > .vs__search').click();
