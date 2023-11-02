@@ -4,22 +4,6 @@
       "identifier":"ncit:C94342"
    },
    {
-      "identifier":"snomed:281004",
-      "label":"Cagny"
-   },
-   {
-      "identifier":"snomed:2992000",
-      "label":"Chanteraine"
-   },
-   {
-      "identifier":"snomed:4088009",
-      "label":"Hiyama"
-   },
-   {
-      "identifier":"snomed:7454002",
-      "label":"\u5317\u90f74\u676110"
-   },
-   {
       "identifier":"snomed:10007009",
       "label":"Coffin-Siris syndrome"
    },
