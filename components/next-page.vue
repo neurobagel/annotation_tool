@@ -18,9 +18,8 @@
                 class="float-right"
                 data-cy="button-nextpage"
                 :disabled="!isPageAccessible(pageData[getNextPage].pageName)"
-                :to="'/' + pageData[getNextPage].location"
                 :variant="nextPageButtonColor"
-                @click="setCurrentPage(getNextPage)">
+                @click="navigateToPage(getNextPage);">
                 {{ uiText.button[currentPage] }}
             </b-button>
         </b-col>
@@ -38,6 +37,8 @@
 
     // Fields listed in mapState below can be found in the store (index.js)
     import { mapState } from "vuex";
+
+    import { mapActions } from "vuex";
 
     export default {
 
@@ -90,6 +91,9 @@
             ...mapMutations([
 
                 "setCurrentPage"
+            ]),
+            ...mapActions([
+                "navigateToPage"
             ])
         }
     };
