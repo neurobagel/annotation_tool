@@ -53,11 +53,6 @@ describe("to annotate an assessment ", () => {
             cy.get("[data-cy='assessment-column-table']").contains(desiredColumnToolMapping.column).click();
         });
 
-        // We apparently are unable to use the normal "next page" button here
-        // for some reason I don't yet understand. So we can force-route ourselves
-        // to the next page here despite the button erroneously not being enabled.
-        cy.window().its("$nuxt.$router").then(router => {
-            router.push({ path: "/annotation" });
-        });
+        cy.get("[data-cy='button-nextpage']").click();
     });
 });
