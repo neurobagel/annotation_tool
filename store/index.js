@@ -20,9 +20,9 @@ export const state = () => ({
 
         "Sex": [
 
-            { label: "male", identifier: "bids:male" },
-            { label: "female", identifier: "bids:female" },
-            { label: "other", identifier: "bids:other" }
+            { label: "Male", identifier: "snomed:248153007" },
+            { label: "Female", identifier: "snomed:248152002" },
+            { label: "other", identifier: "snomed:32570681000036106" }
         ],
         "Diagnosis": diagnosisTerms
     },
@@ -175,7 +175,7 @@ export const state = () => ({
 
     toolTerms: Object.entries(toolTerms).map(([key, value]) => ({
         label: value,
-        identifier: "cogAtlas:" + key,
+        identifier: "cogatlas:" + key,
         selected: false
       })),
 
@@ -480,6 +480,7 @@ export const getters = {
 
                 // Transfer unannotated data from the user provided data dictionary to the output
                 columnOutput = p_state.dataDictionary.annotated[columnName];
+                delete columnOutput.missingValues;
             }
 
             jsonOutput[columnName] = columnOutput;
