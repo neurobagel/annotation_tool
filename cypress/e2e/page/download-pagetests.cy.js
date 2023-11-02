@@ -67,22 +67,23 @@ describe("tests on download page ui via programmatic state loading and store int
                     // 2. Check contents of downloads folder
                     cy.task("downloads", "cypress/downloads").then(folderStateAfter => {
 
-                        // A. Check number of files in downloads folder has increased by one
+                        // Check that we actually downloaded a file
                         expect(folderStateAfter.length).to.be.eq(folderStateBefore.length + 1);
 
-                        // B. Check that the last file retrieved by fs.readdirSync contains the data dictionary input file prefix
-                        // as stored in dataDictionary.filename
+
                         cy.getVuexStoreValue("dataDictionary").then(dataDictionary => {
 
                             const dataDictionaryFilenameNoExt = dataDictionary.filename.split(".").slice(0, -1).join(".");
+                            expect(folderStateAfter.some(filename => filename.includes(dataDictionaryFilenameNoExt))).to.be.true;
 
-                            expect(folderStateAfter[folderStateAfter.length - 1]).to.contain(dataDictionaryFilenameNoExt);
+                            // Because we only have access to dataDictionary within the scope of this promise,
+                            // we need to run our next assertion in here
+                            const targetFile = folderStateAfter.filter(filename => filename.includes(dataDictionaryFilenameNoExt))[0];
+                            cy.readFile('cypress/downloads/' + targetFile).then((fileContent) => {
+                                expect(fileContent.participant_id.Annotations).to.have.property("Identifies");
+                                expect(fileContent.participant_id.Annotations.Identifies).to.eq("participant");
+                              });
                         });
-                        // C. Check if the last file retrieved contains the Identifies property and its value under the participant_id key
-                        cy.readFile('cypress/downloads/' + folderStateAfter[folderStateAfter.length - 1]).then((fileContent) => {
-                            expect(fileContent.participant_id.Annotations).to.have.property("Identifies");
-                            expect(fileContent.participant_id.Annotations.Identifies).to.eq("participant");
-                          });
                     });
                 });
             });
