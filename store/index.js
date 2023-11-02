@@ -706,6 +706,11 @@ export const getters = {
 
 export const actions = {
 
+    navigateToPage({ state, commit }, pageName) {
+        this.$router.push(state.pageData[pageName].location);
+        commit("setCurrentPage", pageName);
+    },
+
     processDataDictionary({ state, commit, getters }, { data, filename }) {
 
         // 1. Save the user-provided data dictionary

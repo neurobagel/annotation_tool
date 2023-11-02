@@ -2,6 +2,7 @@
 
     <div>
 
+
         <!-- Navbar -->
         <b-navbar toggleable="lg" type="light" variant="light">
 
@@ -31,8 +32,7 @@
                         :data-cy="'menu-item-' + navItem.pageName"
                         :disabled="!isPageAccessible(navItem.pageName)"
                         :key="navItem.pageName"
-                        :to="navItem.location"
-                        @click="setCurrentPage(navItem.pageName)">
+                        @click="navigateToPage(navItem.pageName)">
                         {{ navItem.fullName }}
                     </b-nav-item>
                     <span id="nav-separator">|</span>
@@ -71,14 +71,7 @@
 
 <script>
 
-    // Allows for reference to store data by creating simple, implicit getters
-    import { mapGetters } from "vuex";
-
-    // Allows for direct mutations of store data
-    import { mapMutations } from "vuex";
-
-    // Fields listed in mapState below can be found in the store (index.js)
-    import { mapState } from "vuex";
+    import {mapActions, mapState, mapGetters} from "vuex";
 
     export default {
 
@@ -117,10 +110,8 @@
         },
 
         methods: {
-
-            ...mapMutations([
-
-                "setCurrentPage"
+            ...mapActions([
+                "navigateToPage"
             ]),
 
             getNavItemColor(p_navItemData) {
