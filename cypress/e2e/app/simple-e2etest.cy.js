@@ -146,7 +146,7 @@ describe("End to end test using a simple UI path through the app", () => {
                             expect(fileContent.iq.Annotations.IsAbout.Label).to.eq("Assessment tool");
                             expect(fileContent.iq.Annotations.IsAbout.TermURL).to.eq("nb:Assessment");
                             expect(fileContent.iq.Annotations.IsPartOf.Label).to.eq("Wechsler Abbreviated Scale of Intelligence");
-                            expect(fileContent.iq.Annotations.IsPartOf.TermURL).to.eq("cogAtlas:trm_4b94affc43245");
+                            expect(fileContent.iq.Annotations.IsPartOf.TermURL).to.eq("cogatlas:trm_4b94affc43245");
                           });
                     });
 

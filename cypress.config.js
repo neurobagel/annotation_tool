@@ -26,7 +26,8 @@ module.exports = defineConfig({
                 findFiles,
                 isFileExist
             });
-        }
+        },
+        experimentalStudio: true
     },
 
     component: {
