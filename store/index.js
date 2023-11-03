@@ -22,7 +22,7 @@ export const state = () => ({
 
             { label: "Male", identifier: "snomed:248153007" },
             { label: "Female", identifier: "snomed:248152002" },
-            { label: "other", identifier: "snomed:32570681000036106" }
+            { label: "Other", identifier: "snomed:32570681000036106" }
         ],
         "Diagnosis": diagnosisTerms
     },
