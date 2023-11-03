@@ -73,6 +73,9 @@ describe("tests on download page ui via programmatic state loading and store int
 
                         cy.getVuexStoreValue("dataDictionary").then(dataDictionary => {
 
+                            // Using the datadictionary name to locate the file downloaded by test for further verification
+                            // may not be a foolproof solution since if another test ends up using the same data dictionary
+                            // as input this approach may grab the wrong file and lead to test(s) failing
                             const dataDictionaryFilenameNoExt = dataDictionary.filename.split(".").slice(0, -1).join(".");
                             expect(folderStateAfter.some(filename => filename.includes(dataDictionaryFilenameNoExt))).to.be.true;
 
