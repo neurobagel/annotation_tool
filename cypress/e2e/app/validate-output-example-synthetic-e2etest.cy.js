@@ -6,7 +6,7 @@ describe("to annotate an assessment ", () => {
 
         /* ==== Generated with Cypress Studio ==== */
         cy.get('[data-cy="data-dictionary-selector"] > .row > form > .file-selector-button').click();
-        cy.get('[data-cy="data-dictionary-selector"] > .row > form > .file-selector-button > input').selectFile('cypress/fixtures/examples/good/example_synthetic.json', { force: true });
+        cy.get('[data-cy="data-dictionary-selector"] > .row > form > .file-selector-button > input').selectFile('cypress/fixtures/examples/good/example_synthetic_participants.json', { force: true });
         /* ==== End Cypress Studio ==== */
         cy.get("[data-cy='button-nextpage']").click();
 
@@ -105,7 +105,7 @@ describe("to annotate an assessment ", () => {
         cy.task("downloads", "cypress/downloads").then(folderStateAfter => {
             cy.readFile('cypress/downloads/' + folderStateAfter[folderStateAfter.length - 1]).then((outputContent) => {
 
-                const expectedOutput = require('../../fixtures/examples/good/example_synthetic_expected_output.json');
+                const expectedOutput = require('../../fixtures/examples/good/example_synthetic.json');
                 expect(outputContent).to.deep.equal(expectedOutput);
               });
         });
