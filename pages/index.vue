@@ -47,8 +47,9 @@
         <!-- Shows file contents -->
         <b-row>
             <pre
+                v-if="Object.keys(this.dataDictionary.userProvided).length > 0"
                 style="height: 200px; width: 100%; overflow: auto;"
-                v-if="Object.keys(this.dataDictionary.userProvided).length > 0">
+                data-cy="data-dictionary-display">
                 {{ stringifiedDataDictionary }}
             </pre>
             <div v-else>
