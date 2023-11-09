@@ -9,10 +9,10 @@
 
         <!-- Shows file contents -->
         <b-row>
-            <textarea
-                :cols="textArea.height"
-                :rows="textArea.width"
-                :value="stringifiedDataTable"
+            <b-table
+                outlined
+                sticky-header
+                :items="dataTable"
                 data-cy="data-table-display" />
         </b-row>
 
