@@ -33,10 +33,11 @@
 
         <!-- Shows file contents -->
         <b-row>
-            <textarea
-                :cols="textArea.height"
-                :rows="textArea.width"
-                :value="stringifiedDataDictionary"
+            <vue-json-pretty
+                virtual
+                deep="3"
+                height="200"
+                :data="dataDictionary.userProvided"
                 data-cy="data-dictionary-display" />
         </b-row>
 
