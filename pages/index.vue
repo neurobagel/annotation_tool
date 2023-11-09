@@ -7,15 +7,6 @@
             <h3>{{ uiText.dataTableHeader }}</h3>
         </b-row>
 
-        <!-- Shows file contents -->
-        <b-row>
-            <b-table
-                outlined
-                sticky-header
-                :items="dataTable"
-                data-cy="data-table-display" />
-        </b-row>
-
         <!-- Selects data table file (i.e. participants.tsv) -->
         <b-row>
             <file-selector
@@ -25,20 +16,23 @@
                 :enabled="true" />
         </b-row>
 
+        <!-- Shows file contents -->
+        <b-row>
+            <b-table
+                v-if="dataTable.length > 0"
+                outlined
+                sticky-header
+                :items="dataTable"
+                data-cy="data-table-display" />
+            <div v-else>
+                Please provide a data table to see a preview here.
+            </div>
+        </b-row>
+
 
         <!-- Data dictionary file loading area -->
         <b-row>
             <h3>{{ uiText.dataDictionaryHeader }}</h3>
-        </b-row>
-
-        <!-- Shows file contents -->
-        <b-row>
-            <vue-json-pretty
-                virtual
-                deep="3"
-                height="200"
-                :data="dataDictionary.userProvided"
-                data-cy="data-dictionary-display" />
         </b-row>
 
         <b-row>
@@ -48,6 +42,19 @@
                 :content-type="contentTypes.dataDictionary"
                 @file-selected="processDataDictionary($event)"
                 :enabled="dataTableSelected" />
+        </b-row>
+
+        <!-- Shows file contents -->
+        <b-row>
+            <pre
+                style="height: 200px; width: 100%; overflow: auto;"
+                v-if="Object.keys(this.dataDictionary.userProvided).length > 0">
+                {{ stringifiedDataDictionary }}
+            </pre>
+            <div v-else>
+                Provide a data dictionary to see the preview.
+                If you load a data table, a skeleton data dictionary will be created for you
+            </div>
         </b-row>
 
     </b-container>
@@ -101,6 +108,10 @@
                 // Return whether or not a data table has been selected
                 // (used to enable data dictionary selection)
                 return ( this.dataTable.length > 0 );
+            },
+            stringifiedDataDictionary() {
+
+                return JSON.stringify(this.dataDictionary.userProvided, null, 4);
             }
         },
 
