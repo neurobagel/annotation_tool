@@ -9,12 +9,6 @@ describe("Tests on categorization page ui via programmatic state loading and sto
         // NOTE: Add more dataset json files here via 'require'
     ];
 
-    beforeEach(() => {
-
-        // Standard app setup
-        cy.appSetup();
-    });
-
     datasets.forEach((p_dataset) => {
 
         context("Categorization page tests with " + p_dataset.description + " data", () => {

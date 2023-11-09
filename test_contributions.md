@@ -22,7 +22,6 @@ TBD
   - `context` is a container function used to group different kinds of tests within the file and also is used to describe that context
   - `it` defines the individual, specific test you are writing
 *3.* Both `describe` and `context` can contain `beforeEach` functions that will be run before every `context` or before every `it`, respectively
-  - Use the `appSetup` function in your `beforeEach` for the `describe` function. This calls a set of common app configuration commands.
 *4.* Writing individual tests
   - Tests contain three primary sections: setup, action, and assert. They can be repeated as needed depending on the complexity of the test. But a good guideline to follow is to keep tests as simople as possible.
   - It is possible to work with multiple datasets for one test file. The paradigm that has been setup can be seen, for example, in `annotation-pagetests.cy.js`. The idea is that you utilize json files in the `fixtures` folder that describe each dataset and can use functions `datasetMeetsTestCriteria` and `loadAppState` to reflect both the data needs of your test and the dataset that's being used for the test.
