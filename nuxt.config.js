@@ -25,14 +25,15 @@ export default {
 
 	// Global CSS: https://go.nuxtjs.dev/config-css
 	css: [
-
+		"vue-json-pretty/lib/styles.css",
 		"@/assets/css/main.css"
 	],
 
 	// Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
 	plugins: [
 		"@/plugins/bootstrap-vue",
-        "@/plugins/vue-select"
+        "@/plugins/vue-select",
+		"@/plugins/vue-json-pretty"
 	],
 
 	// Auto import components: https://go.nuxtjs.dev/config-components
