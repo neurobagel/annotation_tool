@@ -34,11 +34,7 @@
             </b-col>
 
         </b-row>
-        <b-row>
-            <b-col cols="12">
-                <categoryToolgroup />
-            </b-col>
-        </b-row>
+        <categoryToolgroup />
 
     </b-container>
 

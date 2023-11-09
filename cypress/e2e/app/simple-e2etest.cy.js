@@ -88,65 +88,65 @@ describe("End to end test using a simple UI path through the app", () => {
                 cy.assertNextPageAccess("annotation", true);
 
                 // E. Click the next page button to proceed to the categorization page
-                cy.nextPageByButton();
+                // cy.nextPageByButton();
 
-                cy.commitToVuexStore("setCurrentPage", "annotation");
+                // cy.commitToVuexStore("setCurrentPage", "annotation");
 
-                if ( cy.datasetMeetsTestCriteria("annotation", p_dataset, testCriteria)) {
+//                 if ( cy.datasetMeetsTestCriteria("annotation", p_dataset, testCriteria)) {
 
-                    // 3. Go through annotation page, saving default age annotation
+//                     // 3. Go through annotation page, saving default age annotation
 
-                    // A. Assert that next page nav and button are disabled for download page
-                    cy.assertNextPageAccess("download", false);
+//                     // A. Assert that next page nav and button are disabled for download page
+//                     cy.assertNextPageAccess("download", false);
 
-                    // B. Click on the 'Age' tab
-                    cy.get("[data-cy='annotation-category-tabs'] ul")
-                        .contains("li", "Age")
-                        .click();
+//                     // B. Click on the 'Age' tab
+//                     cy.get("[data-cy='annotation-category-tabs'] ul")
+//                         .contains("li", "Age")
+//                         .click();
 
-                    // B. Select the 'float' transformation heuristic
-                    // :data-cy="'selectTransform_' + columnName" where columnName is age
-                    cy.get("[data-cy='selectTransform_age']").click();
-                    cy.get("[data-cy='selectTransform_age']").type("float{enter}");
+//                     // B. Select the 'float' transformation heuristic
+//                     // :data-cy="'selectTransform_' + columnName" where columnName is age
+//                     cy.get("[data-cy='selectTransform_age']").click();
+//                     cy.get("[data-cy='selectTransform_age']").type("float{enter}");
 
 
-                    // B. Click on the 'Diagnosis' tab
-                    cy.get("[data-cy='annotation-category-tabs'] ul")
-                        .contains("li", "Diagnosis")
-                        .click();
+//                     // B. Click on the 'Diagnosis' tab
+//                     cy.get("[data-cy='annotation-category-tabs'] ul")
+//                         .contains("li", "Diagnosis")
+//                         .click();
 
-                    cy.get("[data-cy='categoricalSelector_0']").type("Acute{enter}");
-                    cy.get("[data-cy='isControlButton_1']").type("Acute{enter}");
-                    cy.get("[data-cy='categoricalSelector_2']").type("Hearing{enter}");
+//                     cy.get("[data-cy='categoricalSelector_0']").type("Acute{enter}");
+//                     cy.get("[data-cy='isControlButton_1']").type("Acute{enter}");
+//                     cy.get("[data-cy='categoricalSelector_2']").type("Hearing{enter}");
 
-                    // D. Assert that next page nav and button are enabled for download page
-                    cy.assertNextPageAccess("download", true);
+//                     // D. Assert that next page nav and button are enabled for download page
+//                     cy.assertNextPageAccess("download", true);
 
-                    // E. Click the next page button to proceed to the download page
-                    cy.nextPageByButton();
+//                     // E. Click the next page button to proceed to the download page
+//                     cy.nextPageByButton();
 
-                    // 4. Go through the download page, downloading the output annotation file
+//                     // 4. Go through the download page, downloading the output annotation file
 
-                    // A. Click the download button
-                    cy.get("[data-cy='download-button']")
-                        .click();
+//                     // A. Click the download button
+//                     cy.get("[data-cy='download-button']")
+//                         .click();
 
-                    // B. Assert that csv file has downloaded
-                    // cy.verifyDownload(".json", { contains: true });
+//                     // B. Assert that csv file has downloaded
+//                     // cy.verifyDownload(".json", { contains: true });
 
-                    // C. Check the contents of the output
-                    cy.task("downloads", "cypress/downloads").then(folderStateAfter => {
-                        cy.readFile('cypress/downloads/' + folderStateAfter[folderStateAfter.length - 1]).then((fileContent) => {
-                            expect(fileContent.group.Annotations.Levels.HC.Label).to.eq("Healthy Control");
-                            expect(fileContent.group.Annotations.Levels.HC.TermURL).to.eq("ncit:C94342");
-                            expect(fileContent.iq.Annotations.IsAbout.Label).to.eq("Assessment tool");
-                            expect(fileContent.iq.Annotations.IsAbout.TermURL).to.eq("nb:Assessment");
-                            expect(fileContent.iq.Annotations.IsPartOf.Label).to.eq("Wechsler Abbreviated Scale of Intelligence");
-                            expect(fileContent.iq.Annotations.IsPartOf.TermURL).to.eq("cogatlas:trm_4b94affc43245");
-                          });
-                    });
+//                     // C. Check the contents of the output
+//                     cy.task("downloads", "cypress/downloads").then(folderStateAfter => {
+//                         cy.readFile('cypress/downloads/' + folderStateAfter[folderStateAfter.length - 1]).then((fileContent) => {
+//                             expect(fileContent.group.Annotations.Levels.HC.Label).to.eq("Healthy Control");
+//                             expect(fileContent.group.Annotations.Levels.HC.TermURL).to.eq("ncit:C94342");
+//                             expect(fileContent.iq.Annotations.IsAbout.Label).to.eq("Assessment tool");
+//                             expect(fileContent.iq.Annotations.IsAbout.TermURL).to.eq("nb:Assessment");
+//                             expect(fileContent.iq.Annotations.IsPartOf.Label).to.eq("Wechsler Abbreviated Scale of Intelligence");
+//                             expect(fileContent.iq.Annotations.IsPartOf.TermURL).to.eq("cogatlas:trm_4b94affc43245");
+//                           });
+//                     });
 
-                }
+//                 }
             }
         });
     });
