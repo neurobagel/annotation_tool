@@ -101,20 +101,6 @@
                 // Return whether or not a data table has been selected
                 // (used to enable data dictionary selection)
                 return ( this.dataTable.length > 0 );
-            },
-
-            stringifiedDataDictionary() {
-
-                return ( 0 === Object.keys(this.dataDictionary.userProvided).length )
-                    ? "" : JSON.stringify(this.dataDictionary.userProvided, null, 4);
-            },
-
-            stringifiedDataTable() {
-
-                // Returns only the cell values of the table as a formatted string (no column names)
-                return this.dataTable.map(row => {
-                    return Object.values(row).join("\t");
-                }).join("\n");
             }
         },
 
