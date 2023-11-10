@@ -28,11 +28,14 @@
         
 <br>
 
-[Neurobagel's](https://www.neurobagel.org/) annotation tool takes BID-style [phenotypic data](https://github.com/neurobagel/annotation_tool/blob/main/cypress/fixtures/examples/good/ds003653_participant.tsv) and [corresponding data description files](https://github.com/neurobagel/annotation_tool/blob/main/cypress/fixtures/examples/good/ds003653_participant.json) and gives users the ability to annotate their data using the Neurobagel data model for preparation to inject that modeled data into Neurobagel's graph database for [federated querying](https://github.com/neurobagel/query-tool).
+[Neurobagel's](https://www.neurobagel.org/) annotation tool takes BIDS-style [phenotypic data](https://github.com/neurobagel/annotation_tool/blob/main/cypress/fixtures/examples/good/ds003653_participant.tsv) and [corresponding data description files](https://github.com/neurobagel/annotation_tool/blob/main/cypress/fixtures/examples/good/ds003653_participant.json) and gives users the ability to annotate their data using the Neurobagel data model for preparation to inject that modeled data into Neurobagel's graph database for [federated querying](https://github.com/neurobagel/query-tool).
 
 The annotation tool is a Vue application, developed in [JavaScript](https://www.javascript.com/) using a variety of tools including [Nuxt](https://nuxtjs.org/), [Cypress](https://www.cypress.io/), and [BootstrapVue](https://bootstrap-vue.org/docs).
 
+Please refer to our [**official documentation**](https://neurobagel.org/annotation_tool/) for more information
+
 [Quickstart](#quickstart) |
+[Documentation](https://neurobagel.org/annotation_tool/) |
 [Local Installation](#local-installation) |
 [Workflow](#annotation-workflow) |
 [Navigation](#general-navigation) |
