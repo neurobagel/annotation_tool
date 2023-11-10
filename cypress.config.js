@@ -6,6 +6,8 @@ const fs = require("fs");
 module.exports = defineConfig({
 
     e2e: {
+        viewportHeight: 1080,
+        viewportWidth: 1920,
 
         baseUrl: "http://localhost:3000",
 

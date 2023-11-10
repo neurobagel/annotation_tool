@@ -9,12 +9,6 @@ describe("tests on download page ui via programmatic state loading and store int
         // NOTE: Add more dataset json files here via 'require'
     ];
 
-    beforeEach(() => {
-
-        // Standard app setup
-        cy.appSetup();
-    });
-
     datasets.forEach((p_dataset) => {
 
         context("download page tests with " + p_dataset.description + " data", () => {

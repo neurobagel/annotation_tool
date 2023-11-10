@@ -8,12 +8,6 @@ describe("tests on annotation page ui with programmatic state loading and store 
         // NOTE: Add more dataset json files here via 'require'
     ];
 
-    beforeEach(() => {
-
-        // Standard app setup
-        cy.appSetup();
-    });
-
     datasets.forEach((p_dataset) => {
 
         context("Annotation page tests with " + p_dataset.description + " data", () => {
