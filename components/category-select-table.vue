@@ -2,9 +2,9 @@
 
     <div>
 
-        <b-row class="no-padding-row">
+        <b-row>
 
-            <b-col cols="12" class="no-padding-col">
+            <b-col cols="12">
                 <b-table
                     outlined
                     selectable
