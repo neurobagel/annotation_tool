@@ -6,13 +6,9 @@ const state = {
         annotated: {
             "goodColumn": {
                 "Levels": {
-                    "value1": {
-                        "Description": "my description"
-                    },
-                    "value2": {
-                        "Description": "my other description"
+                    "value1": "my description",
+                    "value2": "my other description"
                     }
-                }
             },
             "levelsButNothingElse": {
                 "Levels": {

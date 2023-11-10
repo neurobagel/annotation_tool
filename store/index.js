@@ -644,7 +644,7 @@ export const getters = {
     getValueDescription: (p_state) => (p_columnName, p_value) => {
         // Returns the description of a value in a column, if that description exists
         // Otherwise it returns an empty string
-        const description = p_state.dataDictionary.annotated[p_columnName].Levels?.[p_value]?.Description;
+        const description = p_state.dataDictionary.annotated[p_columnName].Levels?.[p_value];
         if ( typeof description  === "undefined" ) {
             return "no description available";
         }
