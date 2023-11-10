@@ -32,7 +32,7 @@
 
 The annotation tool is a Vue application, developed in [JavaScript](https://www.javascript.com/) using a variety of tools including [Nuxt](https://nuxtjs.org/), [Cypress](https://www.cypress.io/), and [BootstrapVue](https://bootstrap-vue.org/docs).
 
-Please refer to our [**official documentation**](https://neurobagel.org/annotation_tool/) for more information
+Please refer to our [**official documentation**](https://neurobagel.org/annotation_tool/) for more information on how to use the annotation tool.
 
 [Quickstart](#quickstart) |
 [Documentation](https://neurobagel.org/annotation_tool/) |
