@@ -96,31 +96,29 @@
 
             styleTableRow(p_row) {
                 if (p_row.identifier === this.selectedTool.identifier) {
-                    return "selected-tool";
+                    return "category-style-5";
                 }
                 return "";
             },
             mapColumn(row) {
                 this.alterColumnToToolMapping({columnName: row.column, toolIdentifier: this.selectedTool.identifier});
             },
-            styleRow(p_row) {
-                if (
-                    (this.columnToToolMap[p_row.column] !== null) &&
-                    (this.columnToToolMap[p_row.column] === this.selectedTool.identifier)
-                ) {
-                    return "selected-tool";
-                } else {
-                    return "";
+            styleRow(row) {
+                const styleClass = [];
+                if ((this.columnToToolMap[row.column] !== null) ) {
+                    styleClass.push("category-style-5");
+                    if (
+                        (this.columnToToolMap[row.column] !== this.selectedTool.identifier)) {
+                        styleClass.push("category-transparent");
+                    }
                 }
+                return styleClass;
             }
         }
     };
 </script>
 <style>
 
-.selected-tool {
-    background-color: red !important;
-}
 .margin-top {
     margin-top: 66px;
 }
