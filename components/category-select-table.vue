@@ -85,17 +85,3 @@
     };
 
 </script>
-
-<style>
-
-    .category-transparent {
-
-        opacity: 0.5;
-    }
-
-    .category-opaque {
-
-        opacity: 1.0;
-    }
-
-</style>
