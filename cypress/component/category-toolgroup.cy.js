@@ -24,7 +24,7 @@ describe("Tool Group component", () => {
         };
         getters = {
             getColumnsForCategory: () => (p_category) => {
-                return ["column1", "column3"];
+                return ["column1", "column2", "column3"];
             },
             getSelectedTools: () => {
                 return [
@@ -88,8 +88,8 @@ describe("Tool Group component", () => {
             }})
         });
 
-        cy.get("[data-cy='assessment-column-table']").find("tr:contains('column1')").should('not.have.class', 'selected-tool');
-        cy.get("[data-cy='assessment-column-table']").find("tr:contains('column3')").should('not.have.class', 'selected-tool');
+        cy.get("[data-cy='assessment-column-table']").find("tr:contains('column1')").should('not.have.class', 'category-style-5');
+        cy.get("[data-cy='assessment-column-table']").find("tr:contains('column3')").should('not.have.class', 'category-style-5');
 
     });
 
@@ -220,15 +220,26 @@ describe("Tool Group component", () => {
             mocks: { $store: store },
             computed: store.getters
         });
-        // Starting out with a different tool selected
+        // Starting out with a different tool selected and then checking the background color
         cy.get("[data-cy='assessment-tool-table']").find("tr:contains('MOCA')").click();
         cy.get("[data-cy='assessment-column-table']").find("tr:contains('column3')")
         .invoke("css", "background-color").then((InitialBackgroundColor) => {
             cy.get("[data-cy='assessment-tool-table']")
             // Selecting the tool my column is mapped to should change my columns styling
             .find("tr:contains('UPDRSIII')").click();
-            // assert that element has different color after
-            cy.get("[data-cy='assessment-column-table']").find("tr:contains('column3')").should("not.have.css", "background-color", InitialBackgroundColor);
+            // assert that element has the same background color after
+            cy.get("[data-cy='assessment-column-table']").find("tr:contains('column3')").should("have.css", "background-color", InitialBackgroundColor);
+        });
+
+        // Starting out with a different tool selected and then checking the opacity
+        cy.get("[data-cy='assessment-tool-table']").find("tr:contains('MOCA')").click();
+        cy.get("[data-cy='assessment-column-table']").find("tr:contains('column3')")
+        .invoke("css", "opacity").then((InitialOpacity) => {
+            cy.get("[data-cy='assessment-tool-table']")
+            // Selecting the tool my column is mapped to should change my columns styling
+            .find("tr:contains('UPDRSIII')").click();
+            // assert that element has a different opacity after
+            cy.get("[data-cy='assessment-column-table']").find("tr:contains('column3')").should("not.have.css", "Opacity", InitialOpacity);
         });
     });
 });
