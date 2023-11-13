@@ -7,15 +7,6 @@
             <h3>{{ uiText.dataTableHeader }}</h3>
         </b-row>
 
-        <!-- Shows file contents -->
-        <b-row>
-            <textarea
-                :cols="textArea.height"
-                :rows="textArea.width"
-                :value="stringifiedDataTable"
-                data-cy="data-table-display" />
-        </b-row>
-
         <!-- Selects data table file (i.e. participants.tsv) -->
         <b-row>
             <file-selector
@@ -25,19 +16,23 @@
                 :enabled="true" />
         </b-row>
 
+        <!-- Shows file contents -->
+        <b-row>
+            <b-table
+                v-if="dataTable.length > 0"
+                outlined
+                sticky-header
+                :items="dataTable"
+                data-cy="data-table-display" />
+            <p v-else class="instructions-text">
+                Please provide a data table to see a preview here.
+            </p>
+        </b-row>
+
 
         <!-- Data dictionary file loading area -->
         <b-row>
             <h3>{{ uiText.dataDictionaryHeader }}</h3>
-        </b-row>
-
-        <!-- Shows file contents -->
-        <b-row>
-            <textarea
-                :cols="textArea.height"
-                :rows="textArea.width"
-                :value="stringifiedDataDictionary"
-                data-cy="data-dictionary-display" />
         </b-row>
 
         <b-row>
@@ -47,6 +42,20 @@
                 :content-type="contentTypes.dataDictionary"
                 @file-selected="processDataDictionary($event)"
                 :enabled="dataTableSelected" />
+        </b-row>
+
+        <!-- Shows file contents -->
+        <b-row>
+            <pre
+                v-if="Object.keys(this.dataDictionary.userProvided).length > 0"
+                style="height: 200px; width: 100%; overflow: auto;"
+                data-cy="data-dictionary-display">
+                {{ stringifiedDataDictionary }}
+            </pre>
+            <p v-else class="instructions-text">
+                Provide a data dictionary to see the preview.
+                If you load a data table, a skeleton data dictionary will be created for you
+            </p>
         </b-row>
 
     </b-container>
@@ -101,19 +110,9 @@
                 // (used to enable data dictionary selection)
                 return ( this.dataTable.length > 0 );
             },
-
             stringifiedDataDictionary() {
 
-                return ( 0 === Object.keys(this.dataDictionary.userProvided).length )
-                    ? "" : JSON.stringify(this.dataDictionary.userProvided, null, 4);
-            },
-
-            stringifiedDataTable() {
-
-                // Returns only the cell values of the table as a formatted string (no column names)
-                return this.dataTable.map(row => {
-                    return Object.values(row).join("\t");
-                }).join("\n");
+                return JSON.stringify(this.dataDictionary.userProvided, null, 4);
             }
         },
 
