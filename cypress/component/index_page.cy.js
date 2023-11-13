@@ -35,9 +35,9 @@ describe("The index page", () => {
         });
 
         // Assert
-        cy.get("[data-cy='data-table-display']").should("be.visible.and.empty");
+        cy.get("[data-cy='data-table-display']").should("not.exist");
         cy.get("[data-cy='data-table-selector']").should("be.visible").contains("Choose file");
-        cy.get("[data-cy='data-dictionary-display']").should("be.visible.and.empty");
+        cy.get("[data-cy='data-dictionary-display']").should("not.exist");
         cy.get("[data-cy='data-dictionary-selector']").should("be.visible").contains("Choose file");
     });
 
@@ -77,10 +77,9 @@ describe("The index page", () => {
             plugins: ["bootstrap-vue"]
         });
 
-        // Assert - Because we're looking at an input field, we need to assert
-        // over the value and can't just use .contains as usual
-        cy.get("[data-cy='data-table-display']").should('include.value', 'val1\tval2');
-        cy.get("[data-cy='data-dictionary-display']").should('include.value', '"col1": "something"');
+        cy.get("[data-cy='data-table-display']").contains("val1");
+        cy.get("[data-cy='data-table-display']").contains("val2");
+        cy.get("[data-cy='data-dictionary-display']").contains('"col1": "something"');
     });
 
     it("Dispatches an action when a dataTable is loaded", () => {
