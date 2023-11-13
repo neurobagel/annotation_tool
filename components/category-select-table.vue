@@ -2,9 +2,9 @@
 
     <div>
 
-        <b-row class="no-padding-row">
+        <b-row>
 
-            <b-col cols="12" class="no-padding-col">
+            <b-col cols="12">
                 <b-table
                     outlined
                     selectable
@@ -85,17 +85,3 @@
     };
 
 </script>
-
-<style>
-
-    .category-transparent {
-
-        opacity: 0.5;
-    }
-
-    .category-opaque {
-
-        opacity: 1.0;
-    }
-
-</style>

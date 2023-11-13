@@ -6,8 +6,8 @@
 	"sex": {
 		"Description": "sex of the participant as reported by the participant",
 		"Levels": {
-			"M": "male",
-			"F": "female"
+			"1": "male",
+			"2": "female"
 		}
 	},
 	"group": {

@@ -13,11 +13,7 @@ describe("End to end test using a simple UI path through the app", () => {
     ];
 
     beforeEach(() => {
-
-        // Standard setup for annotation tool testing
-        cy.appSetup();
-
-        // 2. Open the index page
+        // 1. Open the index page
         cy.visit("/");
     });
 

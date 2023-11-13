@@ -26,16 +26,6 @@
 
 // Standard setup functionality for each collection of tests
 // NOTE: In the future we will likely want to parametrize this for different
-// test setups (i.e. testing across different viewport sizes).
-Cypress.Commands.add("appSetup", () => {
-
-    // Standard setup for annotation tool testing
-
-    // A. Set viewport size
-    // NOTE: Standard 13-inch laptop screen to start, but this can be expanded
-    cy.viewport("macbook-13");
-});
-
 Cypress.Commands.add("assertButtonStatus", (p_buttonName, p_enabled) => {
 
     let chainer = ( p_enabled ) ? "not.have.class" : "have.class";

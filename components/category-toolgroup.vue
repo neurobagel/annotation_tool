@@ -1,18 +1,17 @@
 <template>
-    <div>
-        <b-row>
-            <b-col cols="6">
+    <b-row>
+        <b-col cols="4">
+            <b-row>
                 <v-select
                     v-if="tableRows.length > 0"
                     data-cy="toolgroup-select"
                     :options="toolTerms"
                     outlined
                     @input="selectTool"
-                    :selectable="(option) => !getSelectedTools.some(el => el.identifier.includes(option.identifier))" />
-            </b-col>
-        </b-row>
-        <b-row>
-            <b-col>
+                    :selectable="(option) => !getSelectedTools.some(el => el.identifier.includes(option.identifier))"
+                    class="aligned-element" />
+            </b-row>
+            <b-row>
                 <b-table
                     v-if="getSelectedTools.length > 0"
                     data-cy="assessment-tool-table"
@@ -26,22 +25,21 @@
                     @row-selected="highlightRow"
                     :tbody-tr-class="styleTableRow"
                     thead-class="hidden" />
-
-            </b-col>
-            <b-col>
-                <b-table
-                    v-if="tableRows.length > 0"
-                    data-cy="assessment-column-table"
-                    outlined
-                    head-variant="dark"
-                    :items="tableRows"
-                    selected-variant=""
-                    thead-class="hidden"
-                    @row-clicked="mapColumn"
-                    :tbody-tr-class="styleRow" />
-            </b-col>
-        </b-row>
-    </div>
+            </b-row>
+        </b-col>
+        <b-col cols="8" class="margin-top">
+            <b-table
+                v-if="tableRows.length > 0"
+                data-cy="assessment-column-table"
+                outlined
+                head-variant="dark"
+                :items="tableRows"
+                selected-variant=""
+                thead-class="hidden"
+                @row-clicked="mapColumn"
+                :tbody-tr-class="styleRow" />
+        </b-col>
+    </b-row>
 </template>
 
 <script>
@@ -98,30 +96,34 @@
 
             styleTableRow(p_row) {
                 if (p_row.identifier === this.selectedTool.identifier) {
-                    return "selected-tool";
+                    return "category-style-5";
                 }
                 return "";
             },
             mapColumn(row) {
                 this.alterColumnToToolMapping({columnName: row.column, toolIdentifier: this.selectedTool.identifier});
             },
-            styleRow(p_row) {
-                if (
-                    (this.columnToToolMap[p_row.column] !== null) &&
-                    (this.columnToToolMap[p_row.column] === this.selectedTool.identifier)
-                ) {
-                    return "selected-tool";
-                } else {
-                    return "";
+            styleRow(row) {
+                const styleClass = [];
+                if ((this.columnToToolMap[row.column] !== null) ) {
+                    styleClass.push("category-style-5");
+                    if (
+                        (this.columnToToolMap[row.column] !== this.selectedTool.identifier)) {
+                        styleClass.push("category-transparent");
+                    }
                 }
+                return styleClass;
             }
         }
     };
 </script>
 <style>
 
-.selected-tool {
-    background-color: red !important;
+.margin-top {
+    margin-top: 66px;
+}
+.aligned-element {
+    flex: 1;
 }
 
 </style>

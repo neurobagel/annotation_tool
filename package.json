@@ -26,22 +26,20 @@
     "papaparse": "^5.4.1",
     "vue": "^2.6.14",
     "vue-select": "^3.20.2",
-    "vue-server-renderer": "^2.6.14",
+    "vue-server-renderer": "^2.7.15",
     "vue-template-compiler": "^2.6.14",
     "webpack": "^4.47.0"
   },
   "devDependencies": {
     "cy-verify-downloads": "^0.2.2",
-    "cypress": "^13.3.3",
+    "cypress": "^13.4.0",
     "editorconfig": "^2.0.0",
-    "eslint": "^8.52.0",
+    "eslint": "^8.53.0",
     "eslint-config-airbnb": "^19.0.4",
-    "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-cypress": "^2.15.1",
-    "eslint-plugin-prettier": "^4.2.1",
-    "eslint-plugin-vue": "^9.17.0",
+    "eslint-plugin-vue": "^9.18.1",
     "husky": "^8.0.3",
-    "lint-staged": "^15.0.2",
+    "lint-staged": "^15.1.0",
     "push-dir": "^0.4.1"
   }
 }
