@@ -24,9 +24,9 @@
                 sticky-header
                 :items="dataTable"
                 data-cy="data-table-display" />
-            <div v-else>
+            <p v-else class="instructions-text">
                 Please provide a data table to see a preview here.
-            </div>
+            </p>
         </b-row>
 
 
@@ -52,10 +52,10 @@
                 data-cy="data-dictionary-display">
                 {{ stringifiedDataDictionary }}
             </pre>
-            <div v-else>
+            <p v-else class="instructions-text">
                 Provide a data dictionary to see the preview.
                 If you load a data table, a skeleton data dictionary will be created for you
-            </div>
+            </p>
         </b-row>
 
     </b-container>
