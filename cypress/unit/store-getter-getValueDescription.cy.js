@@ -5,17 +5,13 @@ const state = {
     dataDictionary: {
         annotated: {
             "goodColumn": {
-                "levels": {
-                    "value1": {
-                        "description": "my description"
-                    },
-                    "value2": {
-                        "description": "my other description"
+                "Levels": {
+                    "value1": "my description",
+                    "value2": "my other description"
                     }
-                }
             },
             "levelsButNothingElse": {
-                "levels": {
+                "Levels": {
                 }
             },
             "badColumn": {
@@ -33,12 +29,12 @@ describe("getValueDescription", () => {
         expect(result).to.be.equal("my description");
     });
 
-    it("Returns an empty string if the value does not have a description", () => {
+    it("Returns 'no description available' if the value does not have a description", () => {
 
         const resultNoValue = getters.getValueDescription(state)("levelsButNothingElse", "notExistValue");
-        expect(resultNoValue).to.be.empty;
+        expect(resultNoValue).to.be.equal("no description available");
 
         const resultNoLevels = getters.getValueDescription(state)("badColumn", "notExistValue");
-        expect(resultNoLevels).to.be.empty;
+        expect(resultNoLevels).to.be.equal("no description available");
     });
 });
