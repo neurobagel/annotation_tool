@@ -8,12 +8,19 @@
 
             <!-- Brand -->
             <b-navbar-brand class="brand-styling" href="https://www.neurobagel.org/" target="_blank">
-                <b-row style="padding: 0; margin: 0;">
+                <img
+                    src="https://raw.githubusercontent.com/neurobagel/documentation/main/docs/imgs/logo/neurobagel_logo.png"
+                    alt="Neurobagel Logo"
+                    class="nav-logo" />
+                <div class="nav-title-and-subtitle">
                     {{ uiText.toolName }}
-                </b-row>
-                <b-row id="nav-subtitle" style="padding: 0; margin: 0;">
-                    {{ uiText.subtitle }}
-                </b-row>
+                    <br />
+                    <p class="nav-subtitle">
+                        {{ uiText.subtitle }}
+                    </p>
+                </div>
+
+
             </b-navbar-brand>
 
             <!-- Collapse toggle -->
@@ -23,7 +30,7 @@
             <b-collapse id="nav-collapse" is-nav>
 
                 <!-- Right aligned nav items -->
-                <b-navbar-nav class="ml-auto" id="right-nav">
+                <b-navbar-nav class="ml-auto right-nav">
 
                     <b-nav-item
                         v-for="(navItem, _key) in pageData"
@@ -35,7 +42,7 @@
                         @click="navigateToPage(navItem.pageName)">
                         {{ navItem.fullName }}
                     </b-nav-item>
-                    <span id="nav-separator">|</span>
+                    <span class="nav-separator">|</span>
                     <b-nav-item
                         class="dark"
                         data-cy="version"
@@ -138,7 +145,6 @@
 <style>
 
     .brand-styling {
-
         font-family: -apple-system,
             BlinkMacSystemFont,
             "Segoe UI",
@@ -179,22 +185,34 @@
         color: #28a745 !important;
     }
 
-    #nav-separator {
+    .nav-separator {
 
         font-size: 1.5em;
     }
 
-    #nav-subtitle {
-
-        color: #470a68;
+    .nav-subtitle {
+        color: grey;
         font-size: 16px;
-        font-weight: normal;
+        font-weight: 700;
         text-decoration: none;
     }
 
-    #right-nav {
+    .nav-title-and-subtitle {
+    display: inline-block;
+    vertical-align: middle;
+    margin-left: 10px;
+    margin-top: 10px;
+    }
 
-        padding-right: 2em;
+    .right-nav {
+
+        padding-right: 1em;
+    }
+
+    .nav-logo {
+
+        height: 60px;
+        width: auto;
     }
 
 </style>
