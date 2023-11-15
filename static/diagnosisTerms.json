@@ -27186,5 +27186,29 @@
    {
       "identifier":"snomed:9971000119105",
       "label":"Spinal stenosis in cervical region with myelopathy"
+   },
+   {
+    "identifier":"snomed:203082005",
+    "label":"Fibromyalgia"
+   },
+   {
+    "identifier":"snomed:238131007",
+    "label":"Overweight"
+   },
+   {
+    "identifier":"snomed:397540003",
+    "label":"Visual impairment"
+   },
+   {
+    "identifier":"snomed:432119003",
+    "label":"Aneurysm"
+   },
+   {
+    "identifier":"snomed:59770006",
+    "label":"Dyslexia"
+   },
+   {
+    "identifier":"snomed:87486003",
+    "label":"Aphasia"
    }
 ]
