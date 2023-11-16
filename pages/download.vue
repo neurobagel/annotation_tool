@@ -5,7 +5,7 @@
         <b-row align-h="center">
             <b-col cols="6">
                 <p>
-                    🎉 Congratulations, you have successfully created an <a href="https://neurobagel.org/dictionaries/" target="_blank">augmented .json data dictionary</a>.
+                    🎉 Congratulations, you have successfully created an <a href="https://neurobagel.org/dictionaries/" target="_blank">neurobagel annotated .json data dictionary</a>.
                 </p>
                 <p>
                     Here are some next steps:
