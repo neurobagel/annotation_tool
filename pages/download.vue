@@ -2,20 +2,28 @@
 
     <div>
 
-        <b-row>
-
-            <!-- Annotated data dictionary preview goes here -->
+        <b-row align-h="center">
+            <b-col cols="6">
+                <p>
+                    🎉 Congratulations, you have successfully created an <a href="https://neurobagel.org/dictionaries/" target="_blank">neurobagel annotated .json data dictionary</a>.
+                </p>
+                <p>
+                    Here are some next steps:
+                </p>
+                <ul>
+                    <li>Download the .json data dictionary to your local hard drive by clicking the green "Download" button.</li>
+                    <li>Use the .json data dictionary to <a href="https://neurobagel.org/cli/" target="_blank">create a harmonized view of your data</a></li>
+                    <li>Learn more about <a href="https://neurobagel.org/" target="_blank">neurobagel</a> and how to use harmonized data for cross-dataset search.</li>
+                </ul>
+            </b-col>
 
         </b-row>
 
-        <b-row>
-
-            <b-col cols="9" />
+        <b-row align-h="center">
 
             <!-- Button to download the annotation output data -->
             <b-col cols="3">
                 <b-button
-                    class="float-right"
                     data-cy="download-button"
                     variant="success"
                     @click="fileSaverSaveAs(getJsonOutput)">
