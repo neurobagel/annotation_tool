@@ -2,6 +2,41 @@
 
     <b-container fluid>
 
+        <b-row align-h="center">
+            <b-col cols="6">
+                <h1>
+                    👋 Welcome to the neurobagel annotation tool
+                </h1>
+                <p>
+                    This tool allows you to create a machine readable data dictionary
+                    in .json format for a tabular phenotypic file in .tsv format (Data table).
+                    If you already have a BIDS-like .json data dictionary, you can provide it here
+                    and augment it with more detailed annotations.
+                </p>
+                <p>
+                    🏗️ This tool (like all of neuroabgel) is under active development and we are thankful
+                    for all feedback and suggestions you may have. You can either use our feedback widget
+                    on the side of this window, or open an issue on <a href="https://github.com/neurobagel/annotation_tool" target="_blank">our GitHub repository</a>.
+                </p>
+                <p>
+                    The process of annotations works like this:
+                </p>
+                <ol>
+                    <li>Upload a .tsv tabular phenotypic file (<a href="https://neurobagel.org/annotation_tool/" target="_blank">see our docs for details</a>)</li>
+                    <li>Upload a <a href="https://neurobagel.org/dictionaries/" target="_blank">BIDS-like .json data dictionary</a> (optional)</li>
+                    <li>Annotate any or all "Columns" in your table by telling us what data they are "about"</li>
+                    <li>Annotate the values in the "Columns" you have annotated, by mapping them to controlled terms from
+                        <a href="https://neurobagel.org/term_naming_standards/#currently-used-namespaces" target="_blank">existing vocabularies</a>
+                    </li>
+                    <li>Download your augmented data dictionary in .json</li>
+                    <li>Use the augmented data dictionary to <a href="https://neurobagel.org/cli/" target="_blank">create a harmonized view of your data</a> (optional, uses other neurobagel tools)</li>
+                </ol>
+                <p>
+                    If you want to learn more about neurobagel, check out our website: <a href="https://neurobagel.org/" target="_blank">neurobagel.org</a>.
+                </p>
+            </b-col>
+        </b-row>
+
         <!-- Data table file loading area -->
         <b-row>
             <h3>{{ uiText.dataTableHeader }}</h3>
