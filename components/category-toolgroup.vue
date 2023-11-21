@@ -1,45 +1,59 @@
 <template>
-    <b-row>
-        <b-col cols="4">
-            <b-row>
-                <v-select
-                    v-if="tableRows.length > 0"
-                    data-cy="toolgroup-select"
-                    :options="toolTerms"
-                    outlined
-                    @input="selectTool"
-                    :selectable="(option) => !getSelectedTools.some(el => el.identifier.includes(option.identifier))"
-                    class="aligned-element" />
-            </b-row>
-            <b-row>
+    <div>
+        <b-row>
+            <b-col cols="4">
+                <b-row>
+                    <p
+                        class="instructions-text"
+                        v-if="tableRows.length > 0">
+                        {{ instructions }}
+                    </p>
+                </b-row>
+            </b-col>
+        </b-row>
+
+        <b-row>
+            <b-col cols="4">
+                <b-row>
+                    <v-select
+                        v-if="tableRows.length > 0"
+                        data-cy="toolgroup-select"
+                        :options="toolTerms"
+                        outlined
+                        @input="selectTool"
+                        :selectable="(option) => !getSelectedTools.some(el => el.identifier.includes(option.identifier))"
+                        class="aligned-element" />
+                </b-row>
+                <b-row>
+                    <b-table
+                        v-if="getSelectedTools.length > 0"
+                        data-cy="assessment-tool-table"
+                        outlined
+                        selectable
+                        head-variant="dark"
+                        :items="getSelectedTools"
+                        select-mode="single"
+                        selected-variant=""
+                        :fields="[{ key: 'label' }]"
+                        @row-selected="highlightRow"
+                        :tbody-tr-class="styleTableRow"
+                        thead-class="hidden" />
+                </b-row>
+            </b-col>
+            <b-col cols="8" class="margin-top">
                 <b-table
-                    v-if="getSelectedTools.length > 0"
-                    data-cy="assessment-tool-table"
+                    v-if="tableRows.length > 0"
+                    data-cy="assessment-column-table"
                     outlined
-                    selectable
                     head-variant="dark"
-                    :items="getSelectedTools"
-                    select-mode="single"
+                    :items="tableRows"
                     selected-variant=""
-                    :fields="[{ key: 'label' }]"
-                    @row-selected="highlightRow"
-                    :tbody-tr-class="styleTableRow"
-                    thead-class="hidden" />
-            </b-row>
-        </b-col>
-        <b-col cols="8" class="margin-top">
-            <b-table
-                v-if="tableRows.length > 0"
-                data-cy="assessment-column-table"
-                outlined
-                head-variant="dark"
-                :items="tableRows"
-                selected-variant=""
-                thead-class="hidden"
-                @row-clicked="mapColumn"
-                :tbody-tr-class="styleRow" />
-        </b-col>
-    </b-row>
+                    thead-class="hidden"
+                    @row-clicked="mapColumn"
+                    :tbody-tr-class="styleRow" />
+            </b-col>
+        </b-row>
+    </div>
 </template>
 
 <script>
@@ -52,7 +66,8 @@
                 selectedTool: {
                     tool: null,
                     identifier: null
-                }
+                },
+                instructions: 'Select a tool from the dropdown and then assign columns to it.'
             };
 
         },
