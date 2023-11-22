@@ -13,7 +13,7 @@
                     alt="Neurobagel Logo"
                     class="nav-logo" />
                 <div class="nav-title-and-subtitle">
-                    {{ uiText.toolName }}
+                    {{ uiText.toolName }} <b-badge class="badge">beta</b-badge>
                     <br />
                     <p class="nav-subtitle">
                         {{ uiText.subtitle }}
@@ -213,6 +213,10 @@
 
         height: 60px;
         width: auto;
+    }
+    .badge {
+        font-size: 13px;
+        vertical-align: middle;
     }
 
 </style>
