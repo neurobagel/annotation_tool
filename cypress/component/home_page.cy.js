@@ -1,5 +1,5 @@
 import fileSelector from "~/components/file-selector.vue";
-import indexPage from "~/pages/index.vue";
+import homePage from "~/pages/home.vue";
 
 let store = {};
 
@@ -8,7 +8,7 @@ const stubs = {
     "file-selector": fileSelector
 };
 
-describe("The index page", () => {
+describe("The Home page", () => {
 
     // Setup
     beforeEach(() => {
@@ -27,7 +27,7 @@ describe("The index page", () => {
     it("Mounts empty and displays all UI elements", () => {
 
         // Act
-        cy.mount(indexPage, {
+        cy.mount(homePage, {
 
             mocks: { $store: store },
             stubs: stubs,
@@ -44,7 +44,7 @@ describe("The index page", () => {
     it("Correctly displays previews of the loaded data", () => {
 
         // Act
-        cy.mount(indexPage, {
+        cy.mount(homePage, {
 
             mocks: { $store: Object.assign({}, store, {
 
@@ -87,7 +87,7 @@ describe("The index page", () => {
         // Setup
         cy.fixture("examples/good/example_short.tsv").as("exampleTable");
         cy.spy(store, "dispatch").as("dispatchSpy");
-        cy.mount(indexPage, {
+        cy.mount(homePage, {
 
             mocks: { $store: store },
             stubs: stubs,
@@ -119,7 +119,7 @@ describe("The index page", () => {
         ];
         cy.fixture("examples/good/example_short.json").as("exampleDictionary");
         cy.spy(store, "dispatch").as("dispatchSpy");
-        cy.mount(indexPage, {
+        cy.mount(homePage, {
 
             mocks: { $store: store },
             stubs: stubs,
