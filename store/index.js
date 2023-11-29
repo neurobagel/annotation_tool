@@ -92,8 +92,6 @@ export const state = () => ({
 
     columnToCategoryMap: {},
 
-    currentPage: "home",
-
     dataDictionary: {
 
         // stores the data dictionary loaded by the user (if available) in userProvided
@@ -107,36 +105,7 @@ export const state = () => ({
 
     dataTable: [],
 
-    pageData: {
-
-        home: {
-
-            fullName: "Home",
-            location: "/",
-            pageName: "home"
-        },
-
-        categorization: {
-
-            fullName: "Categorization",
-            location: "categorization",
-            pageName: "categorization"
-        },
-
-        annotation: {
-
-            fullName: "Annotation",
-            location: "annotation",
-            pageName: "annotation"
-        },
-
-        download: {
-
-            fullName: "Download",
-            location: "download",
-            pageName: "download"
-        }
-    },
+    pageOrder: ['home', 'categorization', 'annotation', 'download'],
 
     // TODO: Assess whether this is the best place and configuration for storing
     // transformation heuristics
@@ -652,7 +621,6 @@ export const getters = {
     },
 
     isPageAccessible: (p_state, p_getters) => (p_pageName) => {
-
         let pageAccessible = false;
 
         switch ( p_pageName ) {
@@ -707,9 +675,9 @@ export const getters = {
 
 export const actions = {
 
-    navigateToPage({ state, commit }, pageName) {
-        this.$router.push(state.pageData[pageName].location);
-        commit("setCurrentPage", pageName);
+    navigateToPage( _, pageName) {
+        const targetRoute = this.$router.options.routes.filter((route) => route.name === pageName)[0];
+        this.$router.push(targetRoute.path);
     },
 
     processDataDictionary({ state, commit, getters }, { data, filename }) {
