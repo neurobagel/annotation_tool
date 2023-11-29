@@ -39,20 +39,7 @@ describe("next page button", () => {
 
                 currentPage: "mypage",
                 dataTable: [],
-                pageData: {
-
-                    mypage: {
-
-                        location: "mypage",
-                        pageName: "mypage"
-                    },
-
-                    mynextpage: {
-
-                        location: "mynextpage",
-                        pageName: "mynextpage"
-                    }
-                }
+                pageOrder: ["mypage", "mynextpage"]
             }
         };
     });
@@ -71,7 +58,12 @@ describe("next page button", () => {
                     uiText: uiText
                 };
             },
-            mocks: { $store: store }
+            mocks: {
+                $store: store,
+                $route: {
+                    name: "mypage"
+                }
+            }
         });
 
         // Assert - Correct instructions are visible (since button is disabled due to next page inaccessibility)
@@ -92,7 +84,12 @@ describe("next page button", () => {
                     uiText: uiText
                 };
             },
-            mocks: { $store: store }
+            mocks: {
+                $store: store,
+                $route: {
+                    name: "mypage"
+                }
+            }
         });
 
         // Assert - Button is enabled when next page is accessible
@@ -113,7 +110,12 @@ describe("next page button", () => {
                     uiText: uiText
                 };
             },
-            mocks: { $store: store }
+            mocks: {
+                $store: store,
+                $route: {
+                    name: "mypage"
+                }
+            }
         });
 
         // Assert - Button is enabled when next page is accessible
@@ -134,7 +136,12 @@ describe("next page button", () => {
                     uiText: uiText
                 };
             },
-            mocks: { $store: store }
+            mocks: {
+                $store: store,
+                $route: {
+                    name: "mypage"
+                }
+            }
         });
 
         // Assert - Check button text corresponds to the recently set page
