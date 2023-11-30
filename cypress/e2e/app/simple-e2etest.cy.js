@@ -54,9 +54,8 @@ describe("End to end test using a simple UI path through the app", () => {
                 .selectFile(dataFolder + p_dataset.data_dictionary);
 
             // E. Click the next page button to proceed to the categorization page
-            cy.nextPageByButton();
+            cy.get("[data-cy='button-nextpage']").click();
 
-            cy.commitToVuexStore("setCurrentPage", "categorization");
 
             if ( cy.datasetMeetsTestCriteria("categorization", p_dataset, testCriteria) ) {
 
@@ -88,9 +87,8 @@ describe("End to end test using a simple UI path through the app", () => {
                 cy.assertNextPageAccess("annotation", true);
 
                 // E. Click the next page button to proceed to the categorization page
-                cy.nextPageByButton();
+                cy.get("[data-cy='button-nextpage']").click();
 
-                cy.commitToVuexStore("setCurrentPage", "annotation");
 
                 if ( cy.datasetMeetsTestCriteria("annotation", p_dataset, testCriteria)) {
 
@@ -123,18 +121,15 @@ describe("End to end test using a simple UI path through the app", () => {
                     cy.assertNextPageAccess("download", true);
 
                     // E. Click the next page button to proceed to the download page
-                    cy.nextPageByButton();
+                    cy.get("[data-cy='button-nextpage']").click();
 
                     // 4. Go through the download page, downloading the output annotation file
 
-                    // A. Click the download button
+                    cy.get("[data-cy='button-nextpage']").should('not.exist');
+
                     cy.get("[data-cy='download-button']")
                         .click();
 
-                    // B. Assert that csv file has downloaded
-                    // cy.verifyDownload(".json", { contains: true });
-
-                    // C. Check the contents of the output
                     cy.task("downloads", "cypress/downloads").then(folderStateAfter => {
                         cy.readFile('cypress/downloads/' + folderStateAfter[folderStateAfter.length - 1]).then((fileContent) => {
                             expect(fileContent.group.Annotations.Levels.HC.Label).to.eq("Healthy Control");

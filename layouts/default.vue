@@ -9,7 +9,7 @@
         <Nuxt />
 
         <!-- Next page button -->
-        <next-page />
+        <next-page v-if="$route.name !== 'download'" />
 
     </div>
 
