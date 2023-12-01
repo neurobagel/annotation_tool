@@ -19,22 +19,6 @@ describe("next page button", () => {
 
             commit: () => {},
 
-            getters: {
-
-                getNextPage: () => {
-
-                    return "mynextpage";
-                }
-            },
-
-            mutations: {
-
-                setCurrentPage: () => (p_pageName) => {
-
-                    store.state.currentPage = p_pageName;
-                }
-            },
-
             state: {
 
                 currentPage: "mypage",
@@ -46,13 +30,12 @@ describe("next page button", () => {
 
     it("Does instruction text appear above the next page button when the button is disabled", () => {
 
-        // Setup - The next page after 'mypage' is currently inaccessible
-        store.getters.isPageAccessible = () => (p_pageName) => false;
-
         // Act - Mount the next page button with mocks
         cy.mount(nextPage, {
 
-            computed: store.getters,
+            computed: {
+                isPageAccessible: () => (p_pageName) => false
+            },
             data() {
                 return {
                     uiText: uiText
@@ -72,13 +55,12 @@ describe("next page button", () => {
 
     it("Button is enabled when next page is accessible and vice-versa", () => {
 
-        // Setup - Mock the page accessibility getter to test effects on the next page button
-        store.getters.isPageAccessible = () => (p_pageName) => true;
-
         // Act - Mount the next page button with mocks
         cy.mount(nextPage, {
 
-            computed: store.getters,
+            computed: {
+                isPageAccessible: () => (p_pageName) => true
+            },
             data() {
                 return {
                     uiText: uiText
@@ -98,13 +80,12 @@ describe("next page button", () => {
 
     it("Button is disabled when next page is not accessible", () => {
 
-        // Setup - Mock the page accessibility getter to test effects on the next page button
-        store.getters.isPageAccessible = () => (p_pageName) => false;
-
         // Act - Mount the next page button with mocks
         cy.mount(nextPage, {
 
-            computed: store.getters,
+            computed: {
+                isPageAccessible: () => (p_pageName) => false
+            },
             data() {
                 return {
                     uiText: uiText
@@ -124,13 +105,12 @@ describe("next page button", () => {
 
     it("Does the label on the next page button correspond to the text for the current page?", () => {
 
-        // Setup - Mock the page accessibility getter to test effects on the next page button
-        store.getters.isPageAccessible = () => (p_pageName) => true;
-
         // Act - Mount the next page button with mocks
         cy.mount(nextPage, {
 
-            computed: store.getters,
+            computed: {
+                isPageAccessible: () => (p_pageName) => true
+            },
             data() {
                 return {
                     uiText: uiText
