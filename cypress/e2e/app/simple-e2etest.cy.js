@@ -56,7 +56,6 @@ describe("End to end test using a simple UI path through the app", () => {
             // E. Click the next page button to proceed to the categorization page
             cy.get("[data-cy='button-nextpage']").click();
 
-
             if ( cy.datasetMeetsTestCriteria("categorization", p_dataset, testCriteria) ) {
 
                 // 2. Go through categorization page, categorizing subject ID and age columns in the table
@@ -86,8 +85,16 @@ describe("End to end test using a simple UI path through the app", () => {
                 // annotation page is no accessible.
                 cy.assertNextPageAccess("annotation", true);
 
-                // E. Click the next page button to proceed to the categorization page
+                // E. Click the next page button to proceed to the annotation page
                 cy.get("[data-cy='button-nextpage']").click();
+
+                // Make sure that we can go back with the browser back button and the
+                // app state also updates accordingly
+                cy.get("[data-cy='button-nextpage']").contains('Review and download');
+                cy.go('back');
+                cy.get("[data-cy='button-nextpage']").contains('Annotate columns');
+                cy.go('forward');
+                cy.get("[data-cy='button-nextpage']").contains('Review and download');
 
 
                 if ( cy.datasetMeetsTestCriteria("annotation", p_dataset, testCriteria)) {
