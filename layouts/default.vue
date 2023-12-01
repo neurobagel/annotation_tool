@@ -9,7 +9,7 @@
         <Nuxt />
 
         <!-- Next page button -->
-        <next-page v-if="getNextPage()!==''" />
+        <next-page v-if="$route.name !== 'download'" />
 
     </div>
 
@@ -17,19 +17,9 @@
 
 <script>
 
-    import { mapGetters } from "vuex";
-
     export default {
 
-        name: "DefaultLayout",
-
-        methods: {
-
-            ...mapGetters([
-
-                "getNextPage"
-            ])
-        }
+        name: "DefaultLayout"
     };
 
 </script>

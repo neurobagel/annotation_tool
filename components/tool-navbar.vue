@@ -34,14 +34,14 @@
                 <b-navbar-nav class="ml-auto right-nav">
 
                     <b-nav-item
-                        v-for="(navItem, _key) in pageData"
-                        :active="currentPageName === navItem.fullName"
-                        :class="getNavItemColor(navItem)"
-                        :data-cy="'menu-item-' + navItem.pageName"
-                        :disabled="!isPageAccessible(navItem.pageName)"
-                        :key="navItem.pageName"
-                        @click="navigateToPage(navItem.pageName)">
-                        {{ navItem.fullName }}
+                        v-for="(pageName) in pageOrder"
+                        :active="currentPageName === pageName"
+                        :class="getNavItemColor(pageName)"
+                        :data-cy="'menu-item-' + pageName"
+                        :disabled="!isPageAccessible(pageName)"
+                        :key="pageName"
+                        @click="navigateToPage(pageName)">
+                        {{ pageName }}
                     </b-nav-item>
                     <span class="nav-separator">|</span>
                     <b-nav-item
@@ -107,13 +107,11 @@
 
             ...mapState([
 
-                "currentPage",
-                "pageData"
+                "pageOrder"
             ]),
 
             currentPageName() {
-
-                return this.pageData[this.currentPage].fullName;
+                return this.$route.name;
             }
         },
 
@@ -122,17 +120,17 @@
                 "navigateToPage"
             ]),
 
-            getNavItemColor(p_navItemData) {
+            getNavItemColor(pageName) {
 
                 // Default color for currently unaccessible page
                 let variant = "secondary";
 
                 // The nav item color for the current page
-                if ( this.currentPageName === p_navItemData.fullName ) {
+                if ( this.currentPageName === pageName ) {
                     variant = "dark";
                 }
                 // Else, if the page is accessible
-                else if ( this.isPageAccessible(p_navItemData.pageName) ) {
+                else if ( this.isPageAccessible(pageName) ) {
                     variant = "success";
                 }
 

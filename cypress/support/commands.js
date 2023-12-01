@@ -261,14 +261,6 @@ Cypress.Commands.add("loadTestDataIntoStore", (p_dataset) => {
     });
 });
 
-// Go to the next page by clicking the next page button
-Cypress.Commands.add("nextPageByButton", () => {
-
-    // Click the next page button to proceed to the next page
-    cy.get("[data-cy='button-nextpage']")
-        .click();
-});
-
 // Go to the next page by clicking the nav bar link
 Cypress.Commands.add("nextPageByNav", (p_navItemName) => {
 

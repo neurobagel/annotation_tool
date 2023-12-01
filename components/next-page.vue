@@ -8,7 +8,7 @@
             <p
                 class="instructions-text"
                 data-cy="instructions-nextpage"
-                v-if="!isPageAccessible(getNextPage)">
+                v-if="!isPageAccessible(nextPage)">
                 {{ uiText.instructions[currentPage] }}
             </p>
 
@@ -17,9 +17,9 @@
             <b-button
                 class="float-right"
                 data-cy="button-nextpage"
-                :disabled="!isPageAccessible(pageData[getNextPage].pageName)"
+                :disabled="!isPageAccessible(nextPage)"
                 :variant="nextPageButtonColor"
-                @click="navigateToPage(getNextPage);">
+                @click="navigateToPage(nextPage);">
                 {{ uiText.button[currentPage] }}
             </b-button>
         </b-col>
@@ -69,20 +69,29 @@
 
             ...mapGetters([
 
-                "getNextPage",
                 "isPageAccessible"
             ]),
 
             ...mapState([
 
-                "currentPage",
-                "pageData"
+                "pageOrder"
             ]),
 
-            nextPageButtonColor() {
+            currentPage() {
+                return this.$route.name;
+            },
+            nextPage() {
+                const pageIndex = this.pageOrder.indexOf(this.currentPage);
+                if (pageIndex < this.pageOrder.length - 1) {
+                    return this.pageOrder[pageIndex + 1];
+                } else {
+                    return "";
+                }
+            },
 
+            nextPageButtonColor() {
                 // Bootstrap variant color of the button leading to the next page
-                return this.isPageAccessible(this.getNextPage) ? "success" : "secondary";
+                return this.isPageAccessible(this.nextPage) ? "success" : "secondary";
             }
         },
 

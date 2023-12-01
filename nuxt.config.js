@@ -1,4 +1,19 @@
 export default {
+	// We need to override the default page name from index.vue to home.vue
+	// because we use the auto-generated routes for navigation and want
+	// the first page to be called "home"
+	router: {
+		extendRoutes(routes, resolve) {
+			routes.push({
+			path: '/',
+			name: 'home',
+			components: {
+			// eslint-disable-next-line no-undef
+			default: resolve(__dirname, 'pages/home.vue')
+			}
+		});
+		}
+	},
 
 	// Global page headers: https://go.nuxtjs.dev/config-head
 	head: {
