@@ -494,29 +494,6 @@ export const getters = {
         return missingValues;
     },
 
-    getNextPage(p_state) {
-
-        let nextPage = "";
-
-        switch ( p_state.currentPage ) {
-
-            case "home":
-                nextPage = "categorization";
-                break;
-            case "categorization":
-                nextPage = "annotation";
-                break;
-            case "annotation":
-                nextPage = "download";
-                break;
-            case "download":
-                nextPage = "";
-                break;
-        }
-
-        return nextPage;
-    },
-
     getSelectedCategoricalOption: (p_state) => (p_columnName, p_rawValue) => {
 
         // 0. If raw value does not exist in the value map, returns ""
@@ -834,11 +811,6 @@ export const mutations = {
 
             Vue.set(p_state.dataDictionary.annotated[columnName].valueMap, rawValue, optionValue);
         }
-    },
-
-    setCurrentPage(p_state, p_pageName) {
-
-        p_state.currentPage = p_pageName;
     },
 
     setDataDictionary(p_state, { newDataDictionary, storeColumns }) {
