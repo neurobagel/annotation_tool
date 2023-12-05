@@ -27,6 +27,7 @@ export const state = () => ({
         "Diagnosis": diagnosisTerms
     },
 
+    // The explanation strings for each category, will be split by '.' and turned into bullet points in the annot-explanation component
     categories: {
 
         "Subject ID": {
