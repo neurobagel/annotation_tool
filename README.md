@@ -83,9 +83,6 @@ See the [Nuxt documentation](https://nuxtjs.org/deployments/github-pages/) for m
 
 There are two means of moving forward to the next step in the annotation tool's workflow: (1) the <span style="color:green;">navbar</span> at the top right of the screen which features the page names, and (2) the <span style="color:green;">next page buttons</span> on the bottom right of each page.
 
-:warning: Do not use the browser back/forward buttons for navigation as this is currently a limitation of the tool 
-that may lead to breaking the workflow.
-
 Certain criteria for each page need to be be met in order to move forward. Instructions are offered above the <span style="color:green;">next page button</span>. Once the criteria have been met <span style="color:green;">navbar</span> and <span style="color:green;">next page button</span> will turn from gray to green.
 
 ## Testing
