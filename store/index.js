@@ -27,6 +27,7 @@ export const state = () => ({
         "Diagnosis": diagnosisTerms
     },
 
+    // The explanation strings for each category, will be split by '.' and turned into bullet points in the annot-explanation component
     categories: {
 
         "Subject ID": {
@@ -36,25 +37,25 @@ export const state = () => ({
         "Age": {
 
             componentName: "annot-continuous-values",
-            explanation: "This is an explanation for how to annotate age.",
+            explanation: "Review the annotated columns for Age. Mark missing values. Select a transformation heuristic, check the preview, and finalize the harmonization",
             identifier: "nb:Age"
         },
         "Sex": {
 
             componentName: "annot-categorical",
-            explanation: "This is an explanation for how to annotate sex.",
+            explanation: "Review the annotated columns for Sex. Mark missing values. Annotate each unique value from the dropdown, and finalize the harmonization",
             identifier: "nb:Sex"
         },
         "Diagnosis": {
 
             componentName: "annot-categorical",
-            explanation: "This is an explanation for how to annotate diagnosis.",
+            explanation: "Review the annotated columns for Diagnosis. Mark missing values. Annotate each unique value from the dropdown, and finalize the harmonization",
             identifier: "nb:Diagnosis"
         },
         "Assessment Tool": {
 
             componentName: "annot-tool-groups",
-            explanation: "This is an explanation for how to annotate a tool.",
+            explanation: "Review the annotated columns for Assessment Tool. Mark missing values for each tool",
             identifier: "nb:AssessmentTool"
         }
     },
