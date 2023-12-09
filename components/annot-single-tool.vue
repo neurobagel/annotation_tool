@@ -2,10 +2,10 @@
 
     <div>
         <b-table
-            striped
             :data-cy="('tool-annotation-for-' + name)"
             :fields="toolFields"
-            :items="uniqueColumnValues">
+            :items="uniqueColumnValues"
+            :tbody-tr-class="styleTableRow">
             <template #cell(missing_value)="row">
                 <b-button
                     :data-cy="'missingValueButton_' + row.index"
@@ -52,8 +52,44 @@
         methods: {
             emitMissingValue(column, value) {
                 this.$emit("declareMissing", {column, value});
+            },
+            styleTableRow(row) {
+                const styleClass = [];
+                const columns = this.uniqueColumnValues.map(item => item.column);
+                const uniqueColumns = [...new Set(columns)];
+                const colIndex = uniqueColumns.indexOf(row.column);
+                if (colIndex % 2 === 0) {
+                    if (this.uniqueColumnValues.indexOf(row) % 2 === 0) {
+                        styleClass.push('column1-color1');
+                    }
+                    else {
+                        styleClass.push('column1-color2');
+                    }
+                } else {
+                    if (this.uniqueColumnValues.indexOf(row) % 2 === 0) {
+                        styleClass.push('column2-color1');
+                    }
+                    else {
+                        styleClass.push('column2-color2');
+                    }
+                }
+                return styleClass;
             }
         }
     };
 
 </script>
+<style>
+.column1-color1 {
+  background-color: #f9f9f9;
+}
+.column1-color2 {
+  background-color: #e9ecef;
+}
+.column2-color1 {
+  background-color: #abdde5;
+}
+.column2-color2 {
+  background-color: #aed2d7;
+}
+</style>
