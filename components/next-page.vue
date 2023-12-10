@@ -59,7 +59,7 @@
 
                         "home": "",
                         "categorization": "One column must be categorized as 'Subject ID' and all assessment tools must be grouped to proceed",
-                        "annotation": ""
+                        "annotation": "One categroized column must be annotated to proceed"
                     }
                 }
             };

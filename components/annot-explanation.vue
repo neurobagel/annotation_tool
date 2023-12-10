@@ -7,7 +7,11 @@
                 {{ uiText.cardTitle }}
             </b-card-header>
             <b-card-body>
-                <b-card-text>{{ explanationText }}</b-card-text>
+                <b-card-text><ul>
+                    <li v-for="(sentence, index) in explanationText.split('.')" :key="index">
+                            {{ sentence }}.
+                        </li>
+                </ul></b-card-text>
             </b-card-body>
         </b-card>
 
