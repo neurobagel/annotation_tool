@@ -58,7 +58,9 @@
                 const columns = this.uniqueColumnValues.map(item => item.column);
                 const uniqueColumns = [...new Set(columns)];
                 const colIndex = uniqueColumns.indexOf(row.column);
+                // Apply special styling if we are in a row that belongs to an even column
                 if (colIndex % 2 === 0) {
+                    // Apply "stripe" styling if we are in an even row
                     if (this.uniqueColumnValues.indexOf(row) % 2 === 0) {
                         styleClass.push('column1-color1');
                     }
