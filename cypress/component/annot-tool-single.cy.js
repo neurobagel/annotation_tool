@@ -69,5 +69,28 @@ describe("Annotation tool component", () => {
             });
 
     });
+    it("Displays rows in the table with the correct background color", () => {
+        cy.mount(annotSingleTool, {
+            propsData: props
+        });
+        cy.get('table')
+        .find('tr')
+        .eq(1)
+        .then(row => {
+            cy.wrap(row).should('have.class', 'column1-color1');
+        });
+        cy.get('table')
+        .find('tr')
+        .eq(2)
+        .then(row => {
+            cy.wrap(row).should('have.class', 'column2-color2');
+        });
+        cy.get('table')
+        .find('tr')
+        .eq(3)
+        .then(row => {
+            cy.wrap(row).should('have.class', 'column2-color1');
+        });
+    });
 
 });
