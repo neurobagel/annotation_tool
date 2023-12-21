@@ -1,7 +1,8 @@
 describe("to annotate an assessment ", () => {
-    it("sets up some stuff", () => {
+    beforeEach(() => {
         // Load some data
         cy.visit('/');
+        // TODO replace this UI-based state setting with direct calls to vuex
         cy.get('[data-cy="data-table-selector"]').get('input').selectFile('cypress/fixtures/examples/good/example_synthetic.tsv', { force: true });
 
         /* ==== Generated with Cypress Studio ==== */
@@ -10,7 +11,7 @@ describe("to annotate an assessment ", () => {
         /* ==== End Cypress Studio ==== */
         cy.get("[data-cy='button-nextpage']").click();
 
-        // Categorize some columns
+        // 2. Select annotation category
         const desiredColumnMappings = [
             {
                 "column": "participant_id",
@@ -19,12 +20,20 @@ describe("to annotate an assessment ", () => {
             {
                 "column": "pheno_age",
                 "category": "Age"
-
             },
             {
                 "column": "pheno_sex",
                 "category": "Sex"
-            },
+            }
+        ];
+        desiredColumnMappings.forEach(desiredColumnMapping => {
+            cy.get("[data-cy='categorization-table']").contains(desiredColumnMapping.category).click();
+            cy.get("[data-cy='column-linking-table']").contains(desiredColumnMapping.column).click();
+        });
+    });
+    it("sets up some stuff", () => {
+        // Categorize some columns
+        const desiredColumnMappings = [
             {
                 "column": "pheno_group",
                 "category": "Diagnosis"
@@ -110,5 +119,21 @@ describe("to annotate an assessment ", () => {
               });
         });
     });
-
+    it.only("shows me an error if I didn't finish the annotation, creating invalid output", () => {
+        // Navigate to the next page
+        cy.get("[data-cy='button-nextpage']").click();
+        // But now we only annotate the sex column - which will not create a valid data dictionary
+        /* ==== Generated with Cypress Studio ==== */
+        cy.get('#__BVID__123___BV_tab_button__').click();
+        cy.get('#vs2__combobox > .vs__selected-options > .vs__search').click();
+        cy.get('#vs2__option-1').click();
+        cy.get('#vs3__combobox > .vs__selected-options > .vs__search').click();
+        cy.get('#vs3__option-0').click();
+        cy.get('[aria-colindex="5"] > [data-cy="missingValueButton_2"]').click();
+        /* ==== End Cypress Studio ==== */
+        // NOTE: this button should not be enabled yet when we decide to disallow incomplete annotations
+        cy.get('[data-cy="button-nextpage"]').click();
+        // Ensure the download button is disabled
+        cy.get("[data-cy='download-button']").should("be.disabled");
+    });
 });
