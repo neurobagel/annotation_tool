@@ -134,6 +134,12 @@ describe("to annotate an assessment ", () => {
         // NOTE: this button should not be enabled yet when we decide to disallow incomplete annotations
         cy.get('[data-cy="button-nextpage"]').click();
         // Ensure the download button is disabled
-        cy.get("[data-cy='download-button']").should("be.disabled");
+        cy.get("[data-cy='download-button']").should("have.class", "disabled");
+        // I should see a toast that warns me my download is not finished
+        // Radiobuttons can apparently not be clicked directly, so we first need to click the parent
+        cy.get('.custom-control-label').click();
+        cy.get('[data-cy="force-allow-download"]').check();
+
+        cy.get("[data-cy='download-button']").should("not.have.class", "disabled");
     });
 });

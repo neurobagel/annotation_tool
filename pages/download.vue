@@ -44,9 +44,18 @@
 
             <!-- Button to download the annotation output data -->
             <b-col cols="3">
+                <b-form-checkbox
+                    v-if="outputIsInvalid"
+                    data-cy="force-allow-download"
+                    v-model="forceAllowDownload"
+                    name="check-button"
+                    switch>
+                    Let me download, I know what I'm doing!
+                </b-form-checkbox>
                 <b-button
                     data-cy="download-button"
                     :variant="outputIsInvalid ? 'danger' : 'success'"
+                    :disabled="!allowDownload"
                     @click="fileSaverSaveAs(getJsonOutput)">
                     {{ uiText.downloadButton }}
                 </b-button>
@@ -88,7 +97,9 @@
                     downloadButton: "Download Annotated Data"
                 },
 
-                incompleteAnnotations: []
+                incompleteAnnotations: [],
+
+                forceAllowDownload: false
             };
         },
 
@@ -115,17 +126,21 @@
                 return `${this.dataDictionaryFilenameNoExtension}_annotated_${Date.now()}.json`;
             },
 
-            outputIsInvalid() {
+            outputIsValid() {
                 // Perform JSON schema validation and update validationError
                 const ajv = new Ajv();
                 const isValid = ajv.validate(jsonSchema, this.getJsonOutput);
+                console.log("outputIsValid", isValid);
                 if (!isValid) {
                     this.setIncompleteAnnotations(ajv.errorsText());
                 }
-                return !isValid;
+                return isValid;
             },
-            outputIsValid() {
-                return !this.outputIsInvalid;
+            outputIsInvalid() {
+                return !this.outputIsValid;
+            },
+            allowDownload() {
+                return this.outputIsValid || this.forceAllowDownload;
             }
         },
 
