@@ -123,8 +123,8 @@ describe("to annotate an assessment ", () => {
         // Navigate to the next page
         cy.get("[data-cy='button-nextpage']").click();
         // But now we only annotate the sex column - which will not create a valid data dictionary
+        cy.get("[data-cy='annotation-category-tabs'] ul").contains("li", "Sex").click();
         /* ==== Generated with Cypress Studio ==== */
-        cy.get('#__BVID__123___BV_tab_button__').click();
         cy.get('#vs2__combobox > .vs__selected-options > .vs__search').click();
         cy.get('#vs2__option-1').click();
         cy.get('#vs3__combobox > .vs__selected-options > .vs__search').click();
