@@ -54,11 +54,15 @@ describe("tests on download page ui via programmatic state loading and store int
                 // as to its current contents
                 cy.task("downloads", "cypress/downloads").then(folderStateBefore => {
 
-                    // 1. Download the annotated data dictionary in Neurobagel JSON format
+                    // We need to first force enable the download because it is incomplete
+                    cy.get('.custom-control-label').click();
+                    cy.get('[data-cy="force-allow-download"]').check();
+
+                    // Download the annotated data dictionary in Neurobagel JSON format
                     cy.get("[data-cy='download-button']")
                         .click();
 
-                    // 2. Check contents of downloads folder
+                    // Check contents of downloads folder
                     cy.task("downloads", "cypress/downloads").then(folderStateAfter => {
 
                         // Check that we actually downloaded a file
