@@ -135,7 +135,6 @@
                 // Perform JSON schema validation and update validationError
                 const ajv = new Ajv();
                 const isValid = ajv.validate(jsonSchema, this.getJsonOutput);
-                console.log("outputIsValid", isValid);
                 if (!isValid) {
                     this.setIncompleteAnnotations(ajv.errorsText());
                 }

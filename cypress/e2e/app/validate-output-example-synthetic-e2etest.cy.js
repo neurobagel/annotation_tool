@@ -119,7 +119,7 @@ describe("to annotate an assessment ", () => {
               });
         });
     });
-    it.only("shows me an error if I didn't finish the annotation, creating invalid output", () => {
+    it("shows me an error if I didn't finish the annotation, creating invalid output", () => {
         // Navigate to the next page
         cy.get("[data-cy='button-nextpage']").click();
         // But now we only annotate the sex column - which will not create a valid data dictionary
