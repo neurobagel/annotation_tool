@@ -2,7 +2,7 @@ const Ajv = require('ajv');
 
 const outputJSONFilePath = 'cypress/fixtures/examples/good/ds003653_participant_annotated_1698934398962.json';
 
-const schemaPath = 'cypress/fixtures/schema/neurobagel_data_dictionary.schema.json';
+const schemaPath = 'assets/neurobagel_data_dictionary.schema.json';
 
 
 describe('Validate Output', () => {

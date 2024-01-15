@@ -4,9 +4,35 @@
 
         <b-row align-h="center">
             <b-col cols="6">
-                <p>
-                    🎉 Congratulations, you have successfully created an <a href="https://neurobagel.org/dictionaries/" target="_blank">neurobagel annotated .json data dictionary</a>.
-                </p>
+                <b-alert v-model="outputIsInvalid" variant="danger">
+                    <h1>Incomplete Annotations</h1>
+                    There are incomplete annotations for columns that were mapped to variables.
+                    You can go back and complete these annotations before you download the .json data dictionary.
+                    <br /><br />
+                    The following columns are missing annotations:
+                    <ul v-for="column in incompleteAnnotations" :key="column">
+                        <li>{{ column }}</li>
+                    </ul>
+                    <b>NOTE</b>: If you download the .json data dictionary, without completing the annotations,
+                    the data dictionary will not work with subsequent neurobagel steps.
+                    <br />
+                    <b>
+                        You will not be able to load the data dictionary into the annotation tool to change
+                        mistakes later.
+                    </b>
+                    <br /><br />
+                    <b-button
+                        data-cy="button-backtoannotation"
+                        variant="success"
+                        @click="navigateToPage('annotation');">
+                        Take me back to the Annotation!
+                    </b-button>
+
+                </b-alert>
+                <b-alert v-model="outputIsValid" variant="success">
+                    <h1>🎉 Congratulations!</h1>
+                    You have successfully created an <a href="https://neurobagel.org/dictionaries/" target="_blank">neurobagel annotated .json data dictionary</a>.
+                </b-alert>
                 <p>
                     Here are some next steps:
                 </p>
@@ -23,9 +49,18 @@
 
             <!-- Button to download the annotation output data -->
             <b-col cols="3">
+                <b-form-checkbox
+                    v-if="outputIsInvalid"
+                    data-cy="force-allow-download"
+                    v-model="forceAllowDownload"
+                    name="check-button"
+                    switch>
+                    Let me download, I know what I'm doing!
+                </b-form-checkbox>
                 <b-button
                     data-cy="download-button"
-                    variant="success"
+                    :variant="outputIsInvalid ? 'danger' : 'success'"
+                    :disabled="!allowDownload"
                     @click="fileSaverSaveAs(getJsonOutput)">
                     {{ uiText.downloadButton }}
                 </b-button>
@@ -38,15 +73,10 @@
 </template>
 
 <script>
-
-    // Fields listed in mapState below can be found in the store (index.js)
-    import { mapState } from "vuex";
-
-    // Allows for reference to store data by creating simple, implicit getters
-    import { mapGetters } from "vuex";
-
-    // Saves annotated data dictionary to user's computer
+    import { mapState, mapGetters, mapActions } from "vuex";
     import { saveAs } from "file-saver";
+    import Ajv from "ajv";
+    import jsonSchema from "@/assets/neurobagel_data_dictionary.schema.json";
 
     export default {
 
@@ -70,7 +100,11 @@
                 uiText: {
 
                     downloadButton: "Download Annotated Data"
-                }
+                },
+
+                incompleteAnnotations: [],
+
+                forceAllowDownload: false
             };
         },
 
@@ -95,10 +129,29 @@
             defaultOutputFilename() {
 
                 return `${this.dataDictionaryFilenameNoExtension}_annotated_${Date.now()}.json`;
+            },
+
+            outputIsValid() {
+                // Perform JSON schema validation and update validationError
+                const ajv = new Ajv();
+                const isValid = ajv.validate(jsonSchema, this.getJsonOutput);
+                if (!isValid) {
+                    this.setIncompleteAnnotations(ajv.errorsText());
+                }
+                return isValid;
+            },
+            outputIsInvalid() {
+                return !this.outputIsValid;
+            },
+            allowDownload() {
+                return this.outputIsValid || this.forceAllowDownload;
             }
         },
 
         methods: {
+            ...mapActions([
+                "navigateToPage"
+            ]),
 
             fileSaverSaveAs(p_jsonData) {
 
@@ -107,6 +160,10 @@
 
                 // 2. Open 'save as' file dialog box to allow user to save JSON output file to user's computer
                 saveAs(blob, this.defaultOutputFilename);
+            },
+            setIncompleteAnnotations(p_error) {
+                // Grab the columns that are failing validations. They start by "data" and are sometimes followed by more text
+                this.incompleteAnnotations = [... new Set(p_error.split(",").map(error => error.split("/")[1].split(" ")[0]))];
             }
         }
     };
