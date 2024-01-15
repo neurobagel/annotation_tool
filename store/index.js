@@ -647,6 +647,7 @@ export const getters = {
                 // 2. Make sure at least one other category other than 'Subject ID' has been linked to a column
                 const notOnlySubjectIDCategorized = ( Object.values(p_state.columnToCategoryMap)
                                                             .filter(category => "Subject ID" !== category &&
+                                                                    "Session ID" !== category &&
                                                                     null !== category)
                                                             .length >= 1 );
 
