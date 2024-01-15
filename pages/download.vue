@@ -13,8 +13,13 @@
                     <ul v-for="column in incompleteAnnotations" :key="column">
                         <li>{{ column }}</li>
                     </ul>
-                    <strong>NOTE</strong>: If you download the .json data dictionary, without completing the annotations,
+                    <b>NOTE</b>: If you download the .json data dictionary, without completing the annotations,
                     the data dictionary will not work with subsequent neurobagel steps.
+                    <br />
+                    <b>
+                        You will not be able to load the data dictionary into the annotation tool to change
+                        mistakes later.
+                    </b>
                     <br /><br />
                     <b-button
                         data-cy="button-backtoannotation"
