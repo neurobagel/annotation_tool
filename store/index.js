@@ -34,6 +34,10 @@ export const state = () => ({
             // Added to be used as a case inside the switch statement of getJSONOutput
             componentName: "participantID"
         },
+        "Session ID": {
+            // Added to be used as a case inside the switch statement of getJSONOutput
+            componentName: "sessionID"
+        },
         "Age": {
 
             componentName: "annot-continuous-values",
@@ -69,12 +73,14 @@ export const state = () => ({
             color3: "category-style-3",
             color4: "category-style-4",
             color5: "category-style-5",
+            color6: "category-style-6",
             colorDefault: "category-style-default"
         },
 
         categoryToColorMap: {
 
             "Subject ID": "color1",
+            "Session ID": "color6",
             "Age": "color2",
             "Sex": "color3",
             "Diagnosis": "color4",
@@ -84,6 +90,7 @@ export const state = () => ({
         categoryClasses: {
 
             "Subject ID": "category-style-1",
+            "Session ID": "category-style-6",
             "Age": "category-style-2",
             "Sex": "category-style-3",
             "Diagnosis": "category-style-4",
@@ -439,6 +446,20 @@ export const getters = {
                         };
                         break;
 
+                    case "sessionID":
+                        columnOutput = {
+                            "Description": "A session ID",
+                            Annotations: {
+
+                                IsAbout: {
+                                    Label: "Session Unique Identifier",
+                                    TermURL: "nb:SessionID"
+                                },
+                                Identifies: "session"
+                            }
+                        };
+                        break;
+
                     case "annot-tool-groups":
                         columnOutput = p_getters.getAssessmentToolJSONOutput(columnName);
                         break;
@@ -626,6 +647,7 @@ export const getters = {
                 // 2. Make sure at least one other category other than 'Subject ID' has been linked to a column
                 const notOnlySubjectIDCategorized = ( Object.values(p_state.columnToCategoryMap)
                                                             .filter(category => "Subject ID" !== category &&
+                                                                    "Session ID" !== category &&
                                                                     null !== category)
                                                             .length >= 1 );
 

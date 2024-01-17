@@ -60,7 +60,7 @@
 
             return {
 
-                categorySkipList: ["Subject ID"],
+                categorySkipList: ["Subject ID", "Session ID"],
                 tabNavTitle: 0
             };
         },

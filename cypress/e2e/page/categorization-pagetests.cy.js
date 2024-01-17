@@ -128,6 +128,40 @@ describe("Tests on categorization page ui via programmatic state loading and sto
                             .should("not.have.css", "background-color", p_oldColor);
                     });
             });
+
+            it.only("doesn't enable the next button until something other than Subject ID or Session ID is clicked", () => {
+                // Note: skipping the fancy test dataset handling since we only have one test dataset
+                cy.assertNextPageAccess("annotation", false);
+
+                cy.get("[data-cy='categorization-table']")
+                    .contains("Subject ID")
+                    .click();
+                cy.get("[data-cy='column-linking-table'] tbody > tr > td")
+                    .contains("participant_id")
+                    .click();
+
+                // Still expect the next page to be inaccessible
+                cy.assertNextPageAccess("annotation", false);
+
+                cy.get("[data-cy='categorization-table']")
+                    .contains("Session ID")
+                    .click();
+                cy.get("[data-cy='column-linking-table'] tbody > tr > td")
+                    .contains("age") // TODO: eventually find a good column for this stuff
+                    .click();
+
+                // Still expect the next page to be inaccessible
+                cy.assertNextPageAccess("annotation", false);
+
+                cy.get("[data-cy='categorization-table']")
+                    .contains("Sex")
+                    .click();
+                cy.get("[data-cy='column-linking-table'] tbody > tr > td")
+                    .contains("sex") // TODO: eventually find a good column for this stuff
+                    .click();
+
+                cy.assertNextPageAccess("annotation", true);
+            });
         });
     });
 });
