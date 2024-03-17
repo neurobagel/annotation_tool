@@ -34,10 +34,10 @@
                     You have successfully created an <a href="https://neurobagel.org/dictionaries/" target="_blank">neurobagel annotated .json data dictionary</a>.
                 </b-alert>
                 <h3>Data Dictionary</h3>
+                      <p>
+                        Here is the final .json data dictionary that you have created:
+                      </p>
                 <pre v-if="outputIsValid" v-html="formatJson(getJsonOutput)" />
-                <p v-else>
-                    The data dictionary is invalid. Please go back and complete the annotations.
-                </p>
                 <p>
                     Here are some next steps:
                 </p>
