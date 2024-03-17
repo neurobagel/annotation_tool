@@ -153,6 +153,10 @@
                 "navigateToPage"
             ]),
 
+            formatJson(json) {
+                //format json data dictionary using JSON.stringify method
+                return JSON.stringify(json, null, 2);
+            },
             fileSaverSaveAs(p_jsonData) {
 
                 // 1. Create a blob version of the JSON output file
