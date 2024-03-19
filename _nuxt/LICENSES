@@ -1,3 +1,6 @@
+/** @license URI.js v4.4.1 (c) 2011 Gary Court. License: http://github.com/garycourt/uri-js */
+
+
 /* @license
 Papa Parse
 v5.4.1
@@ -74,6 +77,3 @@ v5.4.1
 https://github.com/mholt/PapaParse
 License: MIT
 */
-
-
-/** @license URI.js v4.4.1 (c) 2011 Gary Court. License: http://github.com/garycourt/uri-js */
