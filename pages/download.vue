@@ -33,6 +33,11 @@
                     <h1>🎉 Congratulations!</h1>
                     You have successfully created an <a href="https://neurobagel.org/dictionaries/" target="_blank">neurobagel annotated .json data dictionary</a>.
                 </b-alert>
+                <h3>Data Dictionary</h3>
+                <p>
+                Here is the final .json data dictionary that you have created:
+                </p>
+                <pre v-if="outputIsValid" v-html="formatJson(getJsonOutput)" />
                 <p>
                     Here are some next steps:
                 </p>
@@ -153,6 +158,10 @@
                 "navigateToPage"
             ]),
 
+            formatJson(json) {
+                //format json data dictionary using JSON.stringify method
+                return JSON.stringify(json, null, 2);
+            },
             fileSaverSaveAs(p_jsonData) {
 
                 // 1. Create a blob version of the JSON output file
