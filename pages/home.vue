@@ -71,6 +71,16 @@
         <b-row>
             <b-col>
                 <h3>{{ uiText.dataDictionaryHeader }}</h3>
+                <b-button data-cy="cannot-reuse-annotations-button" v-b-toggle.collapse-2 variant="warning">Cannot reuse annotations</b-button>
+                <b-collapse id="collapse-2">
+                    <br />
+                    At the moment, the annotation tool is not able to load previously created annotations.
+                    This means thart if you provide a data dictionary here that you created with Neurobagel,
+                    any existing semantic annotations will be removed when the data dictionary is loaded.
+
+                    In practice this means that you cannot resume an aborted previous annotation.
+                    This is a limitation we are going to address: <a href="https://github.com/neurobagel/annotation_tool/issues/601" target="_blank">#601</a>.
+                </b-collapse>
                 <file-selector
                     data-cy="data-dictionary-selector"
                     :content-type="contentTypes.dataDictionary"
