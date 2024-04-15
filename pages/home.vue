@@ -75,7 +75,7 @@
                 <b-collapse id="collapse-2">
                     <br />
                     At the moment, the annotation tool is not able to load previously created annotations.
-                    This means thart if you provide a data dictionary here that you created with Neurobagel,
+                    This means that if you provide a data dictionary here that you created with Neurobagel,
                     any existing semantic annotations will be removed when the data dictionary is loaded.
 
                     In practice this means that you cannot resume an aborted previous annotation.
