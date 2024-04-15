@@ -682,10 +682,14 @@ export const actions = {
 
     processDataDictionary({ state, commit, getters }, { data, filename }) {
 
-        // 1. Save the user-provided data dictionary
-        commit("setDataDictionary", { newDataDictionary: JSON.parse(data), storeColumns: getters.getColumnNames });
+        // If annotations exist in the provided data, remove them first
+        const userDataDictionary = JSON.parse(data);
 
-        // 2. Save the filename of the user-provided data dictionary
+        Object.keys(userDataDictionary).forEach(key => {
+            delete userDataDictionary[key].Annotations;
+        });
+
+        commit("setDataDictionary", { newDataDictionary: userDataDictionary, storeColumns: getters.getColumnNames });
         commit("setDataDictionaryFilename", filename);
     },
 
