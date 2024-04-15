@@ -147,4 +147,5 @@ describe("The Home page", () => {
         });
         cy.get("[data-cy='data-dictionary-selector']").contains("example_short.json");
     });
+
 });
