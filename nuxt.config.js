@@ -22,6 +22,12 @@ export default {
 		script: [
 			{
 				src: 'https://w.appzi.io/w.js?token=YVTHd'
+			},
+			{
+				src: 'https://plausible.neurobagel.org/js/script.js',
+				'data-domain': 'annotate.neurobagel.org',
+				async: 'async',
+				defer: 'defer'
 			}
 		],
 		htmlAttrs: {
