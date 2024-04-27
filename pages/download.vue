@@ -29,7 +29,7 @@
                     </b-button>
 
                 </b-alert>
-                <b-alert v-model="outputIsValid" variant="success">
+                <b-alert v-model="outputIsValid" variant="success" :show="dictionaryCollapsed">
                     <h1>🎉 Congratulations!</h1>
                     You have successfully created an <a href="https://neurobagel.org/dictionaries/" target="_blank">neurobagel annotated .json data dictionary</a>.
                 </b-alert>
@@ -37,7 +37,12 @@
                 <p>
                 Here is the final .json data dictionary that you have created:
                 </p>
+                <b-button size="sm" @click="dictionaryCollapsed = !dictionaryCollapsed">
+                {{ dictionaryCollapsed ? 'Hide' : 'Show' }} Data Dictionary
+                </b-button>
+                <b-collapse v-model="dictionaryCollapsed">
                 <pre v-if="outputIsValid" v-html="formatJson(getJsonOutput)" />
+                </b-collapse>
                 <p>
                     Here are some next steps:
                 </p>
@@ -90,6 +95,8 @@
         data() {
 
             return {
+
+                dictionaryCollapsed: false,
 
                 jsonSpacing: 4,
 
@@ -178,3 +185,10 @@
     };
 
 </script>
+
+<style scoped>
+pre {
+  max-height: 400px;
+  overflow-y: auto;
+}
+</style>
