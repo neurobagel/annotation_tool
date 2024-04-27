@@ -41,6 +41,17 @@ describe("The Home page", () => {
         cy.get("[data-cy='data-dictionary-selector']").should("be.visible").contains("Choose file");
     });
 
+    it("Shows a warning about not being able to reuse annotations in the data dictionary", () => {
+        cy.mount(homePage, {
+
+            mocks: { $store: store },
+            stubs: stubs,
+            plugins: ["bootstrap-vue"]
+        });
+
+        cy.get("[data-cy='cannot-reuse-annotations-button']").should('be.visible').contains("Cannot reuse annotations");
+    });
+
     it("Correctly displays previews of the loaded data", () => {
 
         // Act
@@ -136,4 +147,5 @@ describe("The Home page", () => {
         });
         cy.get("[data-cy='data-dictionary-selector']").contains("example_short.json");
     });
+
 });

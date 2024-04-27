@@ -92,6 +92,28 @@ describe("Tests on the index page via store interaction", () => {
                 // 3. Assert that categorization nav item and next button are *still* enabled
                 cy.assertNextPageAccess("categorization", true);
             });
+
+            it("A big red warning is shown next to the data dictionary button to say: can't use Annotations", () => {
+
+                // 1. Assert that categorization nav item and next button are disabled
+                cy.assertNextPageAccess("categorization", false);
+
+                // 2. Select data table file
+                cy.get("[data-cy='data-table-selector']")
+                    .contains("Choose file")
+                    .selectFile(dataFolder + p_dataset.data_table);
+
+                // 3. Assert that categorization nav item and next button are enabled
+                cy.assertNextPageAccess("categorization", true);
+
+                // 4. Select participants dictionary
+                cy.get("[data-cy='data-dictionary-selector']")
+                    .contains("Choose file")
+                    .selectFile(dataFolder + p_dataset.data_dictionary);
+
+                // 3. Assert that categorization nav item and next button are *still* enabled
+                cy.assertNextPageAccess("categorization", true);
+            });
         });
     });
 });
