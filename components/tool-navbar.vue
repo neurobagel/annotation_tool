@@ -13,7 +13,9 @@
                     alt="Neurobagel Logo"
                     class="nav-logo" />
                 <div class="nav-title-and-subtitle">
-                    {{ uiText.toolName }} <b-badge v-b-tooltip.hover.right="'This tool is under active development. Please report any requests or issues on GitHub.'" class="badge">beta</b-badge>
+                    {{ uiText.toolName }} <b-badge v-b-tooltip.hover.right="'This tool is under active development. Please report any requests or issues on GitHub.'" class="badge">
+                        beta
+                    </b-badge>
 
                     <br />
                     <p class="nav-subtitle">
