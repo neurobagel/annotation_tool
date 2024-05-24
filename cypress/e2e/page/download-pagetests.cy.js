@@ -1,8 +1,6 @@
 describe("tests on download page ui via programmatic state loading and store interaction", () => {
-
     // List of datasets to use for these tests
     const datasets = [
-
         // Good data
         require("../../fixtures/tests/good-test-config.json")
 
@@ -10,11 +8,8 @@ describe("tests on download page ui via programmatic state loading and store int
     ];
 
     datasets.forEach((p_dataset) => {
-
         context("download page tests with " + p_dataset.description + " data", () => {
-
             beforeEach(() => {
-
                 // 1. Open index page
                 cy.visit("/");
 
@@ -23,7 +18,6 @@ describe("tests on download page ui via programmatic state loading and store int
 
                 // 3. Move to the download page
                 cy.window().its("$nuxt.$router").then(router => {
-
                     // A. Route to download page
                     router.push({ path: "/download" });
 
@@ -34,9 +28,7 @@ describe("tests on download page ui via programmatic state loading and store int
 
                 // 4. Categories required for this test and the number of required columns for each category
                 const testCriteria = {
-
                     categories: [
-
                         ["Subject ID", 1],
                         ["Age", 1],
                         ["Sex", 1]
@@ -48,11 +40,13 @@ describe("tests on download page ui via programmatic state loading and store int
             });
 
             it("Clicking download button downloads annotated data dictionary JSON", () => {
-
                 // 0. Checking downloads folder state before click
-                // NOTE: This runs the NodeJS command 'fs.readdirSync' to poll the 'annotation_tool/cypress/downloads folder'
-                // as to its current contents
                 cy.task("downloads", "cypress/downloads").then(folderStateBefore => {
+                    // Ensure the dictionary preview can be shown
+                    cy.get("[data-cy='dictionary-preview-button']").click();
+
+                    // Check if the data dictionary preview is visible
+                    cy.get("[data-cy='dictionary-preview']").should('be.visible');
 
                     // We need to first force enable the download because it is incomplete
                     cy.get('.custom-control-label').click();
@@ -83,7 +77,7 @@ describe("tests on download page ui via programmatic state loading and store int
                             cy.readFile('cypress/downloads/' + targetFile).then((fileContent) => {
                                 expect(fileContent.participant_id.Annotations).to.have.property("Identifies");
                                 expect(fileContent.participant_id.Annotations.Identifies).to.eq("participant");
-                              });
+                            });
                         });
                     });
                 });
