@@ -2,6 +2,7 @@
 import { Set } from "core-js";
 import Vue from "vue";
 import toolTerms from "~/static/toolTerms.json";
+import measurementTerms from "~/static/refactoredmeasurementTerms.json";
 import diagnosisTerms from "~/static/diagnosisTerms.json";
 
 export const state = () => ({
@@ -150,9 +151,9 @@ export const state = () => ({
         }
     },
 
-    toolTerms: Object.entries(toolTerms).map(([key, value]) => ({
+    measurementTerms: Object.entries(measurementTerms).map(([key, value]) => ({
         label: value,
-        identifier: "cogatlas:" + key,
+        identifier: key,
         selected: false
       })),
 
@@ -183,7 +184,7 @@ export const getters = {
         };
         const tool = p_state.columnToToolMap[p_columnName];
 
-        p_state.toolTerms.forEach(term => {
+        p_state.measurementTerms.forEach(term => {
             if ( term.identifier === tool ) {
                 formattedOutput.Annotations.IsPartOf.Label = term.label;
                 formattedOutput.Annotations.IsPartOf.TermURL = term.identifier;
@@ -546,7 +547,7 @@ export const getters = {
     },
 
     getSelectedTools: (p_state) =>  {
-        return p_state.toolTerms.filter(term => term.selected);
+        return p_state.measurementTerms.filter(term => term.selected);
     },
 
     getTransformOptions: (p_state) => (p_category) => {
@@ -788,8 +789,8 @@ export const mutations = {
     },
 
     createAssessmentTool(p_state, newTool) {
-        const toolIndex = p_state.toolTerms.findIndex(tool => tool.identifier === newTool.identifier);
-        p_state.toolTerms.splice(toolIndex, 1, Object.assign(p_state.toolTerms[toolIndex], { selected: true }));
+        const toolIndex = p_state.measurementTerms.findIndex(tool => tool.identifier === newTool.identifier);
+        p_state.measurementTerms.splice(toolIndex, 1, Object.assign(p_state.measurementTerms[toolIndex], { selected: true }));
     },
 
     initializeColumnToCategoryMap(p_state, p_columns) {

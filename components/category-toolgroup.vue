@@ -18,7 +18,7 @@
                     <v-select
                         v-if="tableRows.length > 0"
                         data-cy="toolgroup-select"
-                        :options="toolTerms"
+                        :options="measurementTerms"
                         outlined
                         @input="selectTool"
                         :selectable="(option) => !getSelectedTools.some(el => el.identifier.includes(option.identifier))"
@@ -80,7 +80,7 @@
 
             ...mapState([
 
-                "toolTerms",
+                "measurementTerms",
                 "columnToToolMap"
             ]),
             tableRows() {
