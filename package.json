@@ -32,14 +32,14 @@
   },
   "devDependencies": {
     "cy-verify-downloads": "^0.2.5",
-    "cypress": "^13.13.3",
+    "cypress": "^13.14.2",
     "editorconfig": "^2.0.0",
     "eslint": "^8.57.0",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-plugin-cypress": "^3.5.0",
-    "eslint-plugin-vue": "^9.27.0",
-    "husky": "^9.1.5",
-    "lint-staged": "^15.2.9",
+    "eslint-plugin-vue": "^9.28.0",
+    "husky": "^9.1.6",
+    "lint-staged": "^15.2.10",
     "push-dir": "^0.4.1"
   }
 }
