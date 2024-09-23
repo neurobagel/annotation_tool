@@ -34,7 +34,7 @@
     "cy-verify-downloads": "^0.2.5",
     "cypress": "^13.14.2",
     "editorconfig": "^2.0.0",
-    "eslint": "^8.57.0",
+    "eslint": "^8.57.1",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-plugin-cypress": "^3.5.0",
     "eslint-plugin-vue": "^9.28.0",
