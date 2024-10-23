@@ -2,28 +2,21 @@
 
 <div align="center">
     <a href="https://github.com/neurobagel/annotation_tool/actions/workflows/pages/pages-build-deployment">
-        <img src="https://img.shields.io/website?down_color=CD5C5C&down_message=down&label=deployed%20app&style=flat-square&up_color=B0C4DE&up_message=live&url=https%3A%2F%2Fannotate.neurobagel.org%2F" alt="deployed app">
-    </a>
+        <img src="https://img.shields.io/website?down_color=CD5C5C&down_message=down&label=deployed%20app&style=flat-square&up_color=B0C4DE&up_message=live&url=https%3A%2F%2Fannotate.neurobagel.org%2F" alt="deployed app"></a>
     <a href="https://github.com/neurobagel/annotation_tool/actions/workflows/test_component.yml">
-        <img src="https://img.shields.io/github/actions/workflow/status/neurobagel/annotation_tool/test_component.yml?color=BDB76B&label=component test&style=flat-square" alt="component test">
-    </a>
+        <img src="https://img.shields.io/github/actions/workflow/status/neurobagel/annotation_tool/test_component.yml?color=BDB76B&label=component test&style=flat-square" alt="component test"></a>
     <a href="https://github.com/neurobagel/annotation_tool/actions/workflows/test_e2e.yml">
-        <img src="https://img.shields.io/github/actions/workflow/status/neurobagel/annotation_tool/test_e2e.yml?color=8FBC8F&label=e2e test&style=flat-square" alt="e2e test">
-    </a>
+        <img src="https://img.shields.io/github/actions/workflow/status/neurobagel/annotation_tool/test_e2e.yml?color=8FBC8F&label=e2e test&style=flat-square" alt="e2e test"></a>
 	<a href="https://nodejs.org/en//">
-        <img src="https://img.shields.io/badge/node-20.9.0-CD5C5C?style=flat-square" alt="Node">
-        <a href="https://nuxtjs.org/">
-        <img src="https://img.shields.io/badge/nuxt-2.17.2-F0FFF0?style=flat-square" alt="Nuxt">
-    </a>
+        <img src="https://img.shields.io/badge/node-20.9.0-CD5C5C?style=flat-square" alt="Node"></a>
+    <a href="https://nuxtjs.org/">
+        <img src="https://img.shields.io/badge/nuxt-2.17.2-F0FFF0?style=flat-square" alt="Nuxt"></a>
     <a href="https://vuejs.org/">
-        <img src="https://img.shields.io/badge/vue-2.7.15-D8BFD8?style=flat-square" alt="Vue">
-    </a>
+        <img src="https://img.shields.io/badge/vue-2.7.15-D8BFD8?style=flat-square" alt="Vue"></a>
     <a href="LICENSE">
-        <img src="https://img.shields.io/github/license/neurobagel/query-tool?color=4682B4&style=flat-square" alt="GitHub license">
-    </a>
+        <img src="https://img.shields.io/github/license/neurobagel/query-tool?color=4682B4&style=flat-square" alt="GitHub license"></a>
     <a href="https://doi.org/10.5281/zenodo.8088067">
-        <img src="https://zenodo.org/badge/DOI/10.5281/zenodo.8088067.svg" alt="Zenodo DOI">
-    </a>
+        <img src="https://zenodo.org/badge/DOI/10.5281/zenodo.8088067.svg" alt="Zenodo DOI"></a>
 </div>
         
 <br>
