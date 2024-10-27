@@ -36,7 +36,10 @@ Please refer to our [**official documentation**](https://neurobagel.org/annotati
 
 ## Quickstart
 
-The demo version of the annotation tool is hosted at [https://annotate.neurobagel.org/](https://annotate.neurobagel.org/).
+The latest (stable) version of the annotation tool is hosted at [https://annotate.neurobagel.org/](https://annotate.neurobagel.org/).
+
+The nightly (unstable) version of the annotation tool is hosted at [https://neurobagel-annotator.netlify.app/](https://neurobagel-annotator.netlify.app/).
+
 
 ## Local Installation
 
