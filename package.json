@@ -38,7 +38,7 @@
     "eslint-config-airbnb": "^19.0.4",
     "eslint-plugin-cypress": "^3.6.0",
     "eslint-plugin-vue": "^9.31.0",
-    "husky": "^9.1.6",
+    "husky": "^9.1.7",
     "lint-staged": "^15.2.10",
     "push-dir": "^0.4.1"
   }
