@@ -34,6 +34,14 @@
             </b-col>
 
         </b-row>
+        <b-row>
+            <b-row>
+                <p class="instructions-text">
+                    {{ uiText.assessmentInstructions }}
+                </p>
+            </b-row>
+        </b-row>
+
         <categoryToolgroup />
 
     </b-container>
@@ -54,7 +62,8 @@
                 // Text for UI elements
                 uiText: {
                     categorySelectInstructions: "Click category and then corresponding column from tsv file",
-                    categorySelectTitle: "Recommended Categories"
+                    categorySelectTitle: "Recommended Categories",
+                    assessmentInstructions: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed velit risus, cursus sit amet nunc nec, ultricies ultricies nunc. Nullam nec nunc nec nunc."
                 }
             };
         },
