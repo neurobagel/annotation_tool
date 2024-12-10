@@ -3,20 +3,9 @@
         <b-row>
             <b-col cols="4">
                 <b-row>
-                    <p
-                        class="instructions-text"
-                        v-if="tableRows.length > 0">
-                        {{ instructions }}
-                    </p>
-                </b-row>
-            </b-col>
-        </b-row>
-
-        <b-row>
-            <b-col cols="4">
-                <b-row>
                     <v-select
                         v-if="tableRows.length > 0"
+                        placeholder="Select an assessment tool"
                         data-cy="toolgroup-select"
                         :options="toolTerms"
                         outlined
@@ -40,7 +29,7 @@
                         thead-class="hidden" />
                 </b-row>
             </b-col>
-            <b-col cols="8" class="margin-top">
+            <b-col cols="8">
                 <b-table
                     v-if="tableRows.length > 0"
                     data-cy="assessment-column-table"
