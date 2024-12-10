@@ -48,6 +48,7 @@ describe("columns annotation", () =>  {
                 $store: store
             }
         });
+        cy.get("[data-cy='toggle-collapse-button']").click();
         cy.get("[data-cy='remove_column2']").click();
         cy.get("@commitSpy").should("have.been.calledOnceWith", "alterColumnCategoryMapping", {category: "someCategory", columnName: "column2"});
     });

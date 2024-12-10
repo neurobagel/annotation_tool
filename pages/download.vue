@@ -37,13 +37,13 @@
 
                 <h3>Data Dictionary</h3>
                 <p>
-                Here is the final .json data dictionary that you have created:
+                    Here is the final .json data dictionary that you have created:
                 </p>
                 <b-button data-cy="dictionary-preview-button" size="sm" @click="dictionaryCollapsed = !dictionaryCollapsed">
-                {{ dictionaryCollapsed ? 'Hide' : 'Show' }} Data Dictionary
+                    {{ dictionaryCollapsed ? 'Hide' : 'Show' }} Data Dictionary
                 </b-button>
                 <b-collapse data-cy="dictionary-preview" v-model="dictionaryCollapsed">
-                <pre>{{ formatJson(getJsonOutput) }}</pre>
+                    <pre>{{ formatJson(getJsonOutput) }}</pre>
                 </b-collapse>
                 <p>
                     Here are some next steps:

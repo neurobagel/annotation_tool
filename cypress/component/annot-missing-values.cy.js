@@ -65,6 +65,7 @@ describe("Missing values", () => {
                 });
 
                 // Act
+                cy.get("[data-cy='toggle-collapse-button']").click();
                 cy.get("[data-cy='not-missing-button-column1-val1']").click();
 
                 // Assert
