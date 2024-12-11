@@ -36,9 +36,7 @@
         </b-row>
         <b-row>
             <b-row>
-                <p class="instructions-text">
-                    {{ uiText.assessmentInstructions }}
-                </p>
+                <p class="instructions-text" v-html="uiText.assessmentInstructions" />
             </b-row>
         </b-row>
 
@@ -63,12 +61,11 @@
                 uiText: {
                     categorySelectInstructions: "Click category and then corresponding column from tsv file",
                     categorySelectTitle: "Recommended Categories",
-                    // TODO: The text below is pretty long, would be nice to have line breaks before each numbered point
                     assessmentInstructions: `
-                    Assessment Tool annotation workflow:
-                    1) (ABOVE) Label all columns containing data from assessment tools with the 'Assessment Tool' category on the left.
-                    2) (BELOW) From the dropdown, select each assessment tool present in your data.
-                    3) (BELOW) Select each assessment tool, then click the corresponding columns on the right to link them to the tool.
+                    Assessment Tool annotation workflow:<br>
+                    1) (ABOVE) Label all columns containing data from assessment tools with the 'Assessment Tool' category on the left.<br>
+                    2) (BELOW) From the dropdown, select each assessment tool present in your data.<br>
+                    3) (BELOW) Select each assessment tool, then click the corresponding columns on the right to link them to the tool.<br>
                     Optional: (ABOVE) If you cannot find an assessment tool or cannot link all columns, 
                     you must manually remove the 'Assessment Tool' from the unlinked columns before proceeding.
                     `
