@@ -5,25 +5,36 @@
             no-body
             class="annotation-card">
 
-            <b-card-header>{{ uiText.title }}</b-card-header>
+            <b-card-header>
+                {{ uiText.title }}
+                <b-button
+                    v-b-toggle.annot-missing-values-card-body-collapse
+                    class="float-right"
+                    data-cy="toggle-collapse-button"
+                    @click="toggleCollapse">
+                    {{ isCollapsed ? uiText.expandButton : uiText.collapseButton }}
+                </b-button>
+            </b-card-header>
 
-            <b-card-body class="missing-values-card-body">
-                <b-table
-                    striped
-                    :fields="fields"
-                    :items="tableItems">
-                    <template #cell(not_missing)="data">
-                        <b-button
-                            variant="danger"
-                            :data-cy="'not-missing-button-' + data.item.column + '-' + data.item.value"
-                            @click="removeValue(data.item)">
-                            {{ uiText.notMissingButton }}
-                        </b-button>
-                    </template>
+            <b-collapse id="annot-missing-values-card-body-collapse">
+                <b-card-body class="missing-values-card-body">
+                    <b-table
+                        striped
+                        :fields="fields"
+                        :items="tableItems">
+                        <template #cell(not_missing)="data">
+                            <b-button
+                                variant="danger"
+                                :data-cy="'not-missing-button-' + data.item.column + '-' + data.item.value"
+                                @click="removeValue(data.item)">
+                                {{ uiText.notMissingButton }}
+                            </b-button>
+                        </template>
 
-                </b-table>
+                    </b-table>
 
-            </b-card-body>
+                </b-card-body>
+            </b-collapse>
 
         </b-card>
     </div>
@@ -48,6 +59,7 @@
         data() {
 
             return {
+                isCollapsed: true,
 
                 fields: [
 
@@ -60,7 +72,9 @@
                 uiText: {
 
                     notMissingButton: "Not Missing",
-                    title: "Missing Values"
+                    title: "Missing Values",
+                    expandButton: "Expand",
+                    collapseButton: "Collapse"
                 }
             };
         },
@@ -103,6 +117,10 @@
 
                 "changeMissingStatus"
             ]),
+
+            toggleCollapse() {
+                this.isCollapsed = !this.isCollapsed;
+            },
 
             removeValue(p_tableItem) {
 

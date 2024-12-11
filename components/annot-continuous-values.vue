@@ -37,7 +37,10 @@
                         </b-col>
 
                         <b-col cols="4">
+                            {{ uiText.dropDownExplanationText }}
+                            <br />
                             <v-select
+                                placeholder="Select the type of age"
                                 :data-cy="'selectTransform_' + columnName"
                                 :options="getTransformOptions(activeCategory)"
                                 :value="getHeuristic(columnName)"
@@ -82,7 +85,8 @@
 
                     instructions: "Review the age harmonization",
                     missingValueButton: "Mark as missing",
-                    saveButton: "Save Annotation"
+                    saveButton: "Save Annotation",
+                    dropDownExplanationText: "Please select the format of age values in this column"
                 }
             };
         },
