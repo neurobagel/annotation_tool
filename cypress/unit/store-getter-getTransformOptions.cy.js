@@ -30,11 +30,6 @@ let store = {
                 Label: "float value"
             },
 
-            int: {
-                TermURL: "nb:FromInt",
-                Label: "integer value"
-            },
-
             iso8601: {
                 TermURL: "nb:FromISO8601",
                 Label: "period of time defined according to the ISO8601 standard"

@@ -17,7 +17,7 @@
             },
             "Transformation": {
                 "Label": "integer value",
-                "TermURL": "nb:FromInt"
+                "TermURL": "nb:FromFloat"
             },
             "MissingValues": []
         },

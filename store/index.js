@@ -137,12 +137,6 @@ export const state = () => ({
             TermURL: "nb:FromFloat"
         },
 
-        int: {
-
-            Label: "integer value",
-            TermURL: "nb:FromInt"
-        },
-
         iso8601: {
 
             Label: "period of time defined according to the ISO8601 standard",
