@@ -9,7 +9,7 @@
                     There are incomplete annotations for columns that were mapped to variables.
                     You can go back and complete these annotations before you download the .json data dictionary.
                     <br /><br />
-                    The following columns are missing annotations:
+                    The following columns have incomplete annotations:
                     <ul v-for="column in incompleteAnnotations" :key="column">
                         <li>{{ column }}</li>
                     </ul>

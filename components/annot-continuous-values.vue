@@ -86,7 +86,7 @@
                     instructions: "Review the age harmonization",
                     missingValueButton: "Mark as missing",
                     saveButton: "Save Annotation",
-                    dropDownExplanationText: "Please select the format of age values in this column"
+                    dropDownExplanationText: "Please select the format of age values in this column*"
                 }
             };
         },
