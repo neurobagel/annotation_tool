@@ -950,5 +950,10 @@ export const mutations = {
             Vue.set(p_state, key, initialState[key]);
           }
         });
-      }
+      },
+
+    deselectTool(p_state, toolIdentifier) {
+        const toolIndex = p_state.toolTerms.findIndex(tool => tool.identifier === toolIdentifier);
+        p_state.toolTerms[toolIndex].selected = false;
+    }
 };
