@@ -944,8 +944,8 @@ export const mutations = {
     },
 
     resetState(p_state) {
+        const initialState = getDefaultState();
         Object.keys(p_state).forEach((key) => {
-          const initialState = getDefaultState();
           if (Object.prototype.hasOwnProperty.call(initialState, key)) {
             Vue.set(p_state, key, initialState[key]);
           }
