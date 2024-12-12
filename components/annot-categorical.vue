@@ -26,6 +26,7 @@
 
                         <v-select
                             :data-cy="'categoricalSelector' + '_' + row.index"
+                            :filter-by="filterOptions"
                             :options="getCategoricalOptions(row.item['columnName'])"
                             :reduce="term => term.identifier"
                             :value="getSelectedCategoricalOption(row.item['columnName'], row.item['rawValue'])"
@@ -150,7 +151,31 @@
                 "selectCategoricalOption",
                 "updateAnnotationCount"
             ]),
+            filterOptions(option, label, search) {
+                if (!label || search[0].toLowerCase() !== label[0].toLowerCase()) {
+                    return false;
+                }
 
+                let labelIndex = 1;
+                for (let searchIndex = 1; searchIndex < search.length; searchIndex++) {
+                    const searchChar = search[searchIndex].toLowerCase();
+                    let matchFound = false;
+
+                    while (labelIndex < label.length) {
+                        if (label[labelIndex].toLowerCase() === searchChar) {
+                            matchFound = true;
+                            labelIndex++;
+                            break;
+                        }
+                        labelIndex++;
+                    }
+
+                    if (!matchFound) {
+                        return false;
+                    }
+                }
+                return true;
+            },
             selectOptionAndUpdate(p_optionValue, p_columnName, p_rawValue) {
 
                 // 1. Set the categoricla option for this value in the store

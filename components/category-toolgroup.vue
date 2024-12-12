@@ -5,6 +5,7 @@
                 <b-row>
                     <v-select
                         v-if="tableRows.length > 0"
+                        :filter-by="filterOptions"
                         placeholder="Select an assessment tool"
                         data-cy="toolgroup-select"
                         :options="toolTerms"
@@ -84,6 +85,31 @@
                 "createAssessmentTool",
                 "alterColumnToToolMapping"
             ]),
+            filterOptions(option, label, search) {
+                if (!label || search[0].toLowerCase() !== label[0].toLowerCase()) {
+                    return false;
+                }
+
+                let labelIndex = 1;
+                for (let searchIndex = 1; searchIndex < search.length; searchIndex++) {
+                    const searchChar = search[searchIndex].toLowerCase();
+                    let matchFound = false;
+
+                    while (labelIndex < label.length) {
+                        if (label[labelIndex].toLowerCase() === searchChar) {
+                            matchFound = true;
+                            labelIndex++;
+                            break;
+                        }
+                        labelIndex++;
+                    }
+
+                    if (!matchFound) {
+                        return false;
+                    }
+                }
+                return true;
+            },
             selectTool(selectedTool) {
                 if ( selectedTool !== null ) {
                     this.createAssessmentTool({

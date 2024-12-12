@@ -79,13 +79,21 @@
             </b-col>
 
         </b-row>
+        <b-row align-h="center">
+            <b-col cols="3">
+                <b-button
+                    @click="restartAnnotation">
+                    {{ uiText.restartButton }}
+                </b-button>
+            </b-col>
+        </b-row>
 
     </div>
 
 </template>
 
 <script>
-    import { mapState, mapGetters, mapActions } from "vuex";
+    import { mapState, mapGetters, mapActions, mapMutations } from "vuex";
     import { saveAs } from "file-saver";
     import Ajv from "ajv";
     import jsonSchema from "@/assets/neurobagel_data_dictionary.schema.json";
@@ -113,7 +121,8 @@
                 // Text for UI elements
                 uiText: {
 
-                    downloadButton: "Download Annotated Data"
+                    downloadButton: "Download Annotated Data",
+                    restartButton: "Annotate Another Dataset"
                 },
 
                 incompleteAnnotations: [],
@@ -163,10 +172,18 @@
         },
 
         methods: {
+            ...mapMutations([
+                "resetState"
+            ]),
+
             ...mapActions([
                 "navigateToPage"
             ]),
 
+            restartAnnotation() {
+                this.resetState();
+                this.navigateToPage("home");
+            },
             formatJson(p_jsonData) {
                 if (p_jsonData) {
                     return JSON.stringify(p_jsonData, null, this.jsonSpacing);
