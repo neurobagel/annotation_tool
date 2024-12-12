@@ -47,7 +47,7 @@ describe("getTransformOptions", () => {
 
         // Assert
         expect(options).to.deep.equal([
-            "bounded", "euro", "float", "int", "iso8601"
+            "bounded", "euro", "float", "iso8601"
         ]);
     });
 });
