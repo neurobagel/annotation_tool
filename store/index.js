@@ -4,7 +4,9 @@ import Vue from "vue";
 import toolTerms from "~/static/toolTerms.json";
 import diagnosisTerms from "~/static/diagnosisTerms.json";
 
-export const state = () => ({
+// The default state of the store
+function getDefaultState() {
+    return {
 
     // Keeps track of number of annotations made in current run;
     // > 0 annotations allows access to the download page
@@ -151,7 +153,10 @@ export const state = () => ({
       })),
 
     columnToToolMap: {}
-});
+};
+}
+
+export const state = () => getDefaultState();
 
 export const getters = {
 
@@ -936,5 +941,14 @@ export const mutations = {
 
         // 2. Save the updated annotation in the store
         p_state.annotationCount = count;
-    }
+    },
+
+    resetState(p_state) {
+        const initialState = getDefaultState();
+        Object.keys(p_state).forEach((key) => {
+          if (Object.prototype.hasOwnProperty.call(initialState, key)) {
+            Vue.set(p_state, key, initialState[key]);
+          }
+        });
+      }
 };
