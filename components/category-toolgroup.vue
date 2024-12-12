@@ -5,16 +5,14 @@
                 <b-row>
                     <v-select
                         v-if="tableRows.length > 0"
-                        :filterBy="filterOptions"
+                        :filter-by="filterOptions"
                         placeholder="Select an assessment tool"
                         data-cy="toolgroup-select"
                         :options="toolTerms"
                         outlined
                         @input="selectTool"
                         :selectable="(option) => !getSelectedTools.some(el => el.identifier.includes(option.identifier))"
-                        class="aligned-element"
-                        >
-                    </v-select>
+                        class="aligned-element" />
                 </b-row>
                 <b-row>
                     <b-table
@@ -59,8 +57,7 @@
                     tool: null,
                     identifier: null
                 },
-                instructions: 'Select a tool from the dropdown and then assign columns to it.',
-                searchText: ""
+                instructions: 'Select a tool from the dropdown and then assign columns to it.'
             };
 
         },
@@ -111,8 +108,6 @@
                         return false;
                     }
                 }
-
-                this.searchText = search;
                 return true;
             },
             selectTool(selectedTool) {
