@@ -35,6 +35,7 @@ module.exports = defineConfig({
     component: {
         viewportHeight: 1080,
         viewportWidth: 1920,
+
         devServer: {
 
             bundler: "webpack",

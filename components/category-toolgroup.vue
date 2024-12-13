@@ -86,22 +86,22 @@
                 "alterColumnToToolMapping"
             ]),
             filterOptions(option, label, search) {
+                // Match the first character of the label with the first character of the search string
                 if (!label || search[0].toLowerCase() !== label[0].toLowerCase()) {
                     return false;
                 }
 
-                let labelIndex = 1;
+                let labelIndex = 0;
                 for (let searchIndex = 1; searchIndex < search.length; searchIndex++) {
                     const searchChar = search[searchIndex].toLowerCase();
                     let matchFound = false;
 
-                    while (labelIndex < label.length) {
+                    while (labelIndex < label.length-1) {
+                        labelIndex++;
                         if (label[labelIndex].toLowerCase() === searchChar) {
                             matchFound = true;
-                            labelIndex++;
                             break;
                         }
-                        labelIndex++;
                     }
 
                     if (!matchFound) {
