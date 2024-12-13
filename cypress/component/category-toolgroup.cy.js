@@ -127,7 +127,7 @@ describe("Tool Group component", () => {
         });
 
         cy.get("[data-cy='toolgroup-select']").type("MOCA{enter}");
-        cy.get("[data-cy='toolgroup-select']").get('button').click();
+        cy.get("[data-cy='toolgroup-select']").get('button').eq(0).click();
 
     });
 

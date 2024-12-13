@@ -24,10 +24,18 @@
                         :items="getSelectedTools"
                         select-mode="single"
                         selected-variant=""
-                        :fields="[{ key: 'label' }]"
+                        :fields="[{ key: 'label', label: 'Label' }, { key: 'actions', label: '' }]"
                         @row-selected="highlightRow"
                         :tbody-tr-class="styleTableRow"
-                        thead-class="hidden" />
+                        thead-class="hidden">
+                        <template #cell(actions)="row">
+                            <div class="d-flex justify-content-end">
+                                <b-button variant="danger" size="sm" @click="removeTool(row.item)">
+                                    Remove
+                                </b-button>
+                            </div>
+                        </template>
+                    </b-table>
                 </b-row>
             </b-col>
             <b-col cols="8">
@@ -39,12 +47,22 @@
                     :items="tableRows"
                     selected-variant=""
                     thead-class="hidden"
+                    :fields="[{ key: 'column', label: 'Column' }, { key: 'actions', label: '' }]"
                     @row-clicked="mapColumn"
-                    :tbody-tr-class="styleRow" />
+                    :tbody-tr-class="styleRow">
+                    <template #cell(actions)="row">
+                        <div class="d-flex justify-content-end">
+                            <b-button variant="danger" size="sm" @click="removeColumn(row.item)">
+                                Remove
+                            </b-button>
+                        </div>
+                    </template>
+                </b-table>
             </b-col>
         </b-row>
     </div>
 </template>
+
 
 <script>
 
@@ -143,6 +161,13 @@
                     }
                 }
                 return styleClass;
+            },
+            removeTool(tool) {
+                this.deselectTool(tool.identifier);
+            },
+            removeColumn(row) {
+                this.alterColumnToToolMapping({ columnName: row.column, toolIdentifier: this.selectedTool.identifier });
+                this.alterColumnCategoryMapping({ columnName: row.column, category: "Assessment Tool" });
             }
         }
     };
