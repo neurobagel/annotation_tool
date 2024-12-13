@@ -163,12 +163,13 @@
                     let matchFound = false;
 
                     while (labelIndex < label.length) {
+                        labelIndex++;
                         if (label[labelIndex].toLowerCase() === searchChar) {
                             matchFound = true;
                             break;
                         }
                     }
-                    labelIndex++;
+
 
                     if (!matchFound) {
                         return false;
