@@ -91,12 +91,12 @@
                     return false;
                 }
 
-                let labelIndex = 1;
+                let labelIndex = 0;
                 for (let searchIndex = 1; searchIndex < search.length; searchIndex++) {
                     const searchChar = search[searchIndex].toLowerCase();
                     let matchFound = false;
 
-                    while (labelIndex < label.length) {
+                    while (labelIndex < label.length-1) {
                         labelIndex++;
                         if (label[labelIndex].toLowerCase() === searchChar) {
                             matchFound = true;
