@@ -86,6 +86,7 @@
                 "alterColumnToToolMapping"
             ]),
             filterOptions(option, label, search) {
+                // Match the first character of the label with the first character of the search string
                 if (!label || search[0].toLowerCase() !== label[0].toLowerCase()) {
                     return false;
                 }
@@ -98,11 +99,10 @@
                     while (labelIndex < label.length) {
                         if (label[labelIndex].toLowerCase() === searchChar) {
                             matchFound = true;
-                            labelIndex++;
                             break;
                         }
-                        labelIndex++;
                     }
+                    labelIndex++;
 
                     if (!matchFound) {
                         return false;
