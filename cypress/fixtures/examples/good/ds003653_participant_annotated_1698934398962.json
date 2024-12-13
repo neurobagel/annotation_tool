@@ -16,7 +16,7 @@
                 "TermURL": "nb:Age"
             },
             "Transformation": {
-                "Label": "integer value",
+                "Label": "float value",
                 "TermURL": "nb:FromFloat"
             },
             "MissingValues": []

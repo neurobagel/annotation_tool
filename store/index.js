@@ -944,16 +944,11 @@ export const mutations = {
     },
 
     resetState(p_state) {
+        const initialState = getDefaultState();
         Object.keys(p_state).forEach((key) => {
-          const initialState = getDefaultState();
           if (Object.prototype.hasOwnProperty.call(initialState, key)) {
             Vue.set(p_state, key, initialState[key]);
           }
         });
-      },
-
-    deselectTool(p_state, toolIdentifier) {
-        const toolIndex = p_state.toolTerms.findIndex(tool => tool.identifier === toolIdentifier);
-        p_state.toolTerms[toolIndex].selected = false;
-    }
+      }
 };
