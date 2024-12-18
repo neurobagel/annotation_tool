@@ -1,8 +1,8 @@
 // Facilitate Vue reactivity via 'Vue.set' and 'Vue.delete'
 import { Set } from "core-js";
 import Vue from "vue";
-import toolTerms from "~/static/toolTerms.json";
 import diagnosisTerms from "~/static/diagnosisTerms.json";
+import assessmentTerms from "~/static/assessmentTerms.json";
 
 // The default state of the store
 function getDefaultState() {
@@ -146,11 +146,11 @@ function getDefaultState() {
         }
     },
 
-    toolTerms: Object.entries(toolTerms).map(([key, value]) => ({
-        label: value,
-        identifier: "cogatlas:" + key,
+    toolTerms: assessmentTerms.map(term => ({
+        label: term.label,
+        identifier: term.identifier,
         selected: false
-      })),
+    })),
 
     columnToToolMap: {}
 };

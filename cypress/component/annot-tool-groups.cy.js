@@ -6,12 +6,12 @@ const getters = {
         return [
             {
                 label: "MOCA",
-                identifier: "cogAtlas:MOCA",
+                identifier: "snomed:MOCA",
                 selected: true
             },
             {
                 label: "UPDRS",
-                identifier: "cogAtlas:UPDRS",
+                identifier: "snomed:UPDRS",
                 selected: true
             }
         ];
@@ -64,7 +64,7 @@ describe("Annotation tool component", () => {
             stubs: stubs,
             props: props
         });
-        cy.get('[data-cy="tool-annotation-for-cogAtlas:MOCA"]').contains('column1');
+        cy.get('[data-cy="tool-annotation-for-snomed:MOCA"]').contains('column1');
     });
 
     it("clicking the missing value button fires correct mutation", () => {
@@ -78,7 +78,7 @@ describe("Annotation tool component", () => {
             mocks: { $store: mockStore }
         });
 
-        cy.get('[data-cy="tool-annotation-for-cogAtlas:MOCA"]')
+        cy.get('[data-cy="tool-annotation-for-snomed:MOCA"]')
             .get('table')
             .find('tr')
             .eq(1)

@@ -1,4 +1,4 @@
 [codespell]
-skip = .git,*.pdf,*.svg,package-lock.json,./static/toolTerms.json,./static/diagnosisTerms.json
+skip = .git,*.pdf,*.svg,package-lock.json,./static/assessmentTerms.json,./static/diagnosisTerms.json
 # 
 # ignore-words-list = 

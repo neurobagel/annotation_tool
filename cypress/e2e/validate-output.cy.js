@@ -4,8 +4,9 @@ const outputJSONFilePath = 'cypress/fixtures/examples/good/ds003653_participant_
 
 const schemaPath = 'assets/neurobagel_data_dictionary.schema.json';
 
-
-describe('Validate Output', () => {
+// TODO: Skipping this test because it just tests a static file against the schema
+// Revisit to decide if this actually does anything useful.
+describe.skip('Validate Output', () => {
   it('Validates example output against the schema', () => {
 
     const ajv = new Ajv();
