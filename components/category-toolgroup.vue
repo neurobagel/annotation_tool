@@ -101,7 +101,9 @@
             ...mapMutations([
 
                 "createAssessmentTool",
-                "alterColumnToToolMapping"
+                "alterColumnToToolMapping",
+                "alterColumnCategoryMapping",
+                "deselectTool"
             ]),
             filterOptions(option, label, search) {
                 // Match the first character of the label with the first character of the search string
