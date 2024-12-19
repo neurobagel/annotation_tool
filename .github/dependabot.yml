@@ -8,8 +8,7 @@ updates:
       interval: 'weekly'
     labels:
       - "_bot"
-      - "maint:dependency"
-      - "type:maintenance"
+      - "dependencies"
 
   - package-ecosystem: 'npm'
     directory: '/'
@@ -28,5 +27,4 @@ updates:
         update-types: ["version-update:semver-major"]
     labels:
       - "_bot"
-      - "maint:dependency"
-      - "type:maintenance"
+      - "dependencies"
