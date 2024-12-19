@@ -16,12 +16,12 @@ let store = {
         toolTerms: [
             {
                 label: "MOCA",
-                identifier: "cogAtlas:MOCA",
+                identifier: "snomed:MOCA",
                 selected: false
             }
         ],
         columnToToolMap: {
-            column1: "cogAtlas:MOCA"
+            column1: "snomed:MOCA"
         }
 
     }
@@ -40,7 +40,7 @@ describe("getAssessmentToolJSONOutput", () => {
                         "Label": "Assessment tool"
                     },
                     "IsPartOf": {
-                        "TermURL": "cogAtlas:MOCA",
+                        "TermURL": "snomed:MOCA",
                         "Label": "MOCA"
                     },
                     MissingValues: ["Missing"]
