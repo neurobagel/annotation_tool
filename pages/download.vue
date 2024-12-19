@@ -32,7 +32,7 @@
 
                 <b-alert v-model="outputIsValid" variant="success" :show="dictionaryCollapsed">
                     <h1>🎉 Congratulations!</h1>
-                    You have successfully created an <a href="https://neurobagel.org/dictionaries/" target="_blank">neurobagel annotated .json data dictionary</a>.
+                    You have successfully created a <a href="https://neurobagel.org/data_models/dictionaries/" target="_blank">neurobagel annotated .json data dictionary</a>.
                 </b-alert>
 
                 <h3>Data Dictionary</h3>
@@ -50,7 +50,7 @@
                 </p>
                 <ul>
                     <li>Download the .json data dictionary to your local hard drive by clicking the green "Download" button.</li>
-                    <li>Use the .json data dictionary to <a href="https://neurobagel.org/cli/" target="_blank">create a harmonized view of your data</a></li>
+                    <li>Use the .json data dictionary to <a href="https://neurobagel.org/user_guide/cli/" target="_blank">create a harmonized view of your data</a></li>
                     <li>Learn more about <a href="https://neurobagel.org/" target="_blank">neurobagel</a> and how to use harmonized data for cross-dataset search.</li>
                 </ul>
             </b-col>

@@ -23,21 +23,21 @@
                 <b-collapse id="collapse-1">
                     <br />
                     <p>
-                        More details can be found <a href="https://neurobagel.org/annotation_tool/" target="_blank">in our documentation</a>.
+                        More details can be found <a href="https://neurobagel.org/user_guide/annotation_tool/" target="_blank">in our documentation</a>.
                     </p>
                     <ol>
-                        <li>Upload a TSV phenotypic file (<a href="https://neurobagel.org/data_prep/" target="_blank">see our docs for the TSV requirements</a>)</li>
+                        <li>Upload a TSV phenotypic file (<a href="https://neurobagel.org/user_guide/data_prep/" target="_blank">see our docs for the TSV requirements</a>)</li>
                         <li>Upload a <a href="https://bids-specification.readthedocs.io/en/stable/03-modality-agnostic-files.html#participants-file" target="_blank">BIDS-compatible JSON data dictionary</a> (optional)</li>
                         <li>Annotate any or all COLUMNS in your data table by telling us what kind of subject information they are "about"</li>
                         <li>
                             Annotate the unique VALUES in the columns you have annotated, by mapping them to controlled terms from
-                            <a href="https://neurobagel.org/term_naming_standards/#currently-used-namespaces" target="_blank">existing vocabularies</a>
+                            <a href="https://neurobagel.org/data_models/term_naming_standards/#currently-used-namespaces" target="_blank">existing vocabularies</a>
                         </li>
                         <li>Download your annotated JSON data dictionary</li>
                     </ol>
                     <b>What next?</b>
                     <p>
-                        You can now use the new data dictionary to <a href="https://neurobagel.org/cli/" target="_blank">create a harmonized representation of your subject-level data</a> (optional, uses other neurobagel tools).<br />
+                        You can now use the new data dictionary to <a href="https://neurobagel.org/user_guide/cli/" target="_blank">create a harmonized representation of your subject-level data</a> (optional, uses other neurobagel tools).<br />
                         To learn more about neurobagel, check out our website: <a href="https://neurobagel.org/" target="_blank">neurobagel.org</a>.
                     </p>
                 </b-collapse>
