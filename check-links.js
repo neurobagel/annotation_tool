@@ -20,7 +20,7 @@ async function run(files) {
     const results = await check({
       path: file,
       recurse: true,
-      concurrency: 5,
+      concurrency: 5
     });
 
     for (const link of results.links) {

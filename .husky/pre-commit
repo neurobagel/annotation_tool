@@ -3,4 +3,29 @@
 
 echo "Running pre-commit checks..."
 
+# Run the link checker
+echo "Checking links in HTML files..."
 node check-links.js
+LINK_CHECK_EXIT_CODE=$?
+
+# Run lint-staged
+echo "Running lint-staged..."
+npx lint-staged
+LINT_STAGED_EXIT_CODE=$?
+
+# Check the exit codes of both processes
+if [ $LINK_CHECK_EXIT_CODE -ne 0 ]; then
+  echo "Link check failed. Please fix the broken links before committing."
+fi
+
+if [ $LINT_STAGED_EXIT_CODE -ne 0 ]; then
+  echo "Lint-staged failed. Please fix the linting issues before committing."
+fi
+
+# Abort commit if any checks fail
+if [ $LINK_CHECK_EXIT_CODE -ne 0 ] || [ $LINT_STAGED_EXIT_CODE -ne 0 ]; then
+  echo "Pre-commit checks failed. Aborting commit."
+  exit 1
+fi
+
+echo "All checks passed! Proceeding with commit."
