@@ -47,6 +47,14 @@
  */
 
 
+/* @license
+Papa Parse
+v5.5.2
+https://github.com/mholt/PapaParse
+License: MIT
+*/
+
+
 /*!
  * Vue.js v2.7.16
  * (c) 2014-2023 Evan You
@@ -62,15 +70,7 @@
 
 /* @license
 Papa Parse
-v5.4.1
-https://github.com/mholt/PapaParse
-License: MIT
-*/
-
-
-/* @license
-Papa Parse
-v5.4.1
+v5.5.2
 https://github.com/mholt/PapaParse
 License: MIT
 */
